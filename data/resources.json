@@ -1,0 +1,9 @@
+{
+  "resources": [
+    {
+      "slug": "reading-order",
+      "title": "Reading Order",
+      "description": "A placeholder resource for the first reading path through the stories."
+    }
+  ]
+}

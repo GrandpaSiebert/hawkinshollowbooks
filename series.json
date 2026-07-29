@@ -1,0 +1,19 @@
+{
+  "series": [
+    {
+      "slug": "storybook-series",
+      "title": "Storybook Series",
+      "subtitle": "A gentle entry into Hawkins Hollow",
+      "description": "This series introduces the world through warm, story-led entries suited for early readers.",
+      "books": [
+        {
+          "title": "The Porch Light",
+          "series": "Storybook Series",
+          "age": "4-6",
+          "description": "A reassuring first introduction to the town and its people.",
+          "link": "#"
+        }
+      ]
+    }
+  ]
+}

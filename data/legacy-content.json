@@ -1,0 +1,111 @@
+{
+  "pages": [
+    {
+      "route": "storybook-shelf.html",
+      "pageTitle": "Storybook Shelf",
+      "subtitle": "A gathering place for the earliest stories in Hawkins Hollow.",
+      "description": "Welcome to the Hawkins Hollow Storybook Shelf.",
+      "summaryOrBodyCopy": [
+        "Welcome to the Hawkins Hollow Storybook Shelf.",
+        "These illustrated stories invite children and families into a gentle countryside community filled with familiar feelings, caring relationships, small adventures, and characters who grow by living alongside one another.",
+        "Stories Made to Be Shared",
+        "Hawkins Hollow Storybooks are created for reading together—at bedtime, during a quiet afternoon, in a classroom reading corner, or anywhere a child and a caring grown-up can pause for a story.",
+        "Each book stands on its own, so families may begin with whichever character, feeling, or adventure seems like the best fit.",
+        "The Shelf Is Growing",
+        "Individual story listings, book covers, descriptions, and purchase links will be added here as the Hawkins Hollow website continues to grow.",
+        "For now, visitors may learn more about the Storybook Series and explore the rest of Hawkins Hollow.",
+        "Shelf Space Ready for New Stories",
+        "Future story listings will appear here as new books are added.",
+        "Choose the Story That Feels Right",
+        "There is no required reading order in Hawkins Hollow. Begin with one story that catches your attention, share it at your own pace, and return whenever the porch light calls you back."
+      ],
+      "ageText": "",
+      "links": [
+        {
+          "label": "About the Storybook Series",
+          "href": "storybook-series.html"
+        },
+        {
+          "label": "Explore All Book Series",
+          "href": "books.html"
+        }
+      ],
+      "imageReferences": [
+        "assets/banners/023 Hawkins Hollow Storybook Shelf Ribbon.png"
+      ],
+      "seriesRelationship": "storybook-shelf",
+      "notes": "Preserved from build/storybook-shelf.html.",
+      "status": "legacy-preserved"
+    },
+    {
+      "route": "storybook-series.html",
+      "pageTitle": "Storybook Series",
+      "subtitle": "Gentle stories for young readers and first-time visitors.",
+      "description": "A series designed to introduce familiar places and warm characters through simple story arcs.",
+      "summaryOrBodyCopy": [
+        "A series designed to introduce familiar places and warm characters through simple story arcs.",
+        "Books in this series"
+      ],
+      "ageText": "",
+      "links": [
+        {
+          "label": "View the Storybook Series",
+          "href": "storybook-series.html"
+        }
+      ],
+      "imageReferences": [
+        "assets/banners/031 Hawkins Hollow Storybooks Ribbon.png"
+      ],
+      "seriesRelationship": "storybook-series",
+      "notes": "Preserved from build/storybook-series.html.",
+      "status": "legacy-preserved"
+    },
+    {
+      "route": "the-porch-light.html",
+      "pageTitle": "The Porch Light",
+      "subtitle": "A story of home, welcome, and a bright porch in the evening.",
+      "description": "A gentle first story that introduces the warm glow of the porch and the people who gather nearby.",
+      "summaryOrBodyCopy": [
+        "About this book",
+        "In this opening story, a child follows the porch light home and discovers the welcoming feeling of Hawkins Hollow."
+      ],
+      "ageText": "4-6",
+      "links": [
+        {
+          "label": "Back to series",
+          "href": "storybook-shelf.html"
+        }
+      ],
+      "imageReferences": [
+        "assets/banners/023 Hawkins Hollow Storybook Shelf Ribbon.png",
+        "images/placeholder-cover.jpg"
+      ],
+      "seriesRelationship": "storybook-shelf",
+      "notes": "Preserved from build/the-porch-light.html. This is the banner-bearing historical Porch Light route.",
+      "status": "legacy-preserved"
+    },
+    {
+      "route": "book-the-porch-light.html",
+      "pageTitle": "The Porch Light",
+      "subtitle": "Storybook Shelf",
+      "description": "A gentle first story that introduces the warm glow of the porch and the people who gather nearby.",
+      "summaryOrBodyCopy": [
+        "About this book",
+        "In this opening story, a child follows the porch light home and discovers the welcoming feeling of Hawkins Hollow."
+      ],
+      "ageText": "4-6",
+      "links": [
+        {
+          "label": "Back to series",
+          "href": "storybook-shelf.html"
+        }
+      ],
+      "imageReferences": [
+        "images/placeholder-cover.jpg"
+      ],
+      "seriesRelationship": "storybook-shelf",
+      "notes": "Preserved from build/book-the-porch-light.html. This is a distinct historical Porch Light page variant with the same conceptual relationship.",
+      "status": "legacy-preserved"
+    }
+  ]
+}

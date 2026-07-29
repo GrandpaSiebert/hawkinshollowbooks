@@ -1,0 +1,58 @@
+{
+  "series": [
+    {
+      "slug": "storybooks",
+      "title": "Storybooks",
+      "description": "",
+      "sortOrder": 1
+    },
+    {
+      "slug": "first-readers",
+      "title": "First Readers",
+      "description": "",
+      "sortOrder": 2
+    },
+    {
+      "slug": "second-readers",
+      "title": "Second Readers",
+      "description": "",
+      "sortOrder": 3
+    },
+    {
+      "slug": "basic-training",
+      "title": "Basic Training",
+      "description": "",
+      "sortOrder": 4
+    },
+    {
+      "slug": "growing-together",
+      "title": "Growing Together",
+      "description": "",
+      "sortOrder": 5
+    },
+    {
+      "slug": "bedtime-library",
+      "title": "Bedtime Library",
+      "description": "",
+      "sortOrder": 6
+    },
+    {
+      "slug": "tender-times",
+      "title": "Tender Times",
+      "description": "",
+      "sortOrder": 7
+    },
+    {
+      "slug": "holiday-story-poems",
+      "title": "Holiday Story Poems",
+      "description": "",
+      "sortOrder": 8
+    },
+    {
+      "slug": "hero-play-poems",
+      "title": "Hero Play Poems",
+      "description": "",
+      "sortOrder": 9
+    }
+  ]
+}

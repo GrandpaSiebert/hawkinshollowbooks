@@ -1,0 +1,275 @@
+{
+  "characters": [
+    {
+      "slug": "grandpa",
+      "code": "Gpa",
+      "name": "Grandpa",
+      "role": "Storyteller",
+      "heroImage": "/assets/characters/individuals/Gpa-HP-V001.png",
+      "description": "A gentle guide who helps visitors understand the warmth of Hawkins Hollow.",
+      "featured": false,
+      "published": true,
+      "sortOrder": 90
+    },
+    {
+      "slug": "alice-mole",
+      "code": "Ali",
+      "name": "Alice Mole",
+      "heroImage": "/assets/characters/individuals/Ali-HP-V001.png",
+      "description": "A thoughtful friend who often discovers answers by listening.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 10
+    },
+    {
+      "slug": "spencer-field-mouse",
+      "code": "Spe",
+      "name": "Spencer Field Mouse",
+      "heroImage": "/assets/characters/individuals/Spe-HP-V001.png",
+      "description": "A careful thinker who enjoys sharing ideas and wondering about the world.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 20
+    },
+    {
+      "slug": "asher-chipmunk",
+      "code": "Ash",
+      "name": "Asher Chipmunk",
+      "heroImage": "/assets/characters/individuals/Ash-HP-V001.png",
+      "description": "A quiet observer whose smallest responses often become the biggest moments.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 30
+    },
+    {
+      "slug": "kaydence-owl",
+      "code": "Kay",
+      "name": "Kaydence Owl",
+      "heroImage": "/assets/characters/individuals/Kay-HP-V001.png",
+      "description": "Curious, careful, and always ready to learn something new.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 40
+    },
+    {
+      "slug": "aydin-caracara",
+      "code": "Ayd",
+      "name": "Aydin Caracara",
+      "heroImage": "/assets/characters/individuals/Ayd-HP-V001.png",
+      "description": "A friendly explorer who enjoys questions, discovery, and helping others.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 50
+    },
+    {
+      "slug": "aleea-caracara",
+      "code": "Ale",
+      "name": "Aleea Caracara",
+      "heroImage": "/assets/characters/individuals/Ale-HP-V001.png",
+      "description": "A gentle encourager who reminds friends they belong.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 60
+    },
+    {
+      "slug": "austin-turtle",
+      "code": "Aus",
+      "name": "Austin Turtle",
+      "heroImage": "/assets/characters/individuals/Aus-HP-V001.png",
+      "description": "Steady, patient, and dependable when friends need someone beside them.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 70
+    },
+    {
+      "slug": "bentley-crow",
+      "code": "Ben",
+      "name": "Bentley Crow",
+      "heroImage": "/assets/characters/individuals/Ben-HP-V001.png",
+      "description": "Growing a little with every new adventure.",
+      "featured": true,
+      "published": true,
+      "sortOrder": 80
+    },
+    {
+      "slug": "aralynn-fox",
+      "code": "Ara",
+      "name": "Aralynn Fox",
+      "heroImage": "/assets/characters/individuals/Ara-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 100
+    },
+    {
+      "slug": "baxter-badger",
+      "code": "Bax",
+      "name": "Baxter Badger",
+      "heroImage": "/assets/characters/individuals/Bax-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 110
+    },
+    {
+      "slug": "blain-turtle",
+      "code": "Blain",
+      "name": "Blain Turtle",
+      "heroImage": "/assets/characters/individuals/Blain-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 120
+    },
+    {
+      "slug": "brandon-rabbit",
+      "code": "Bra",
+      "name": "Brandon Rabbit",
+      "heroImage": "/assets/characters/individuals/Bra-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 130
+    },
+    {
+      "slug": "callen-crow",
+      "code": "Cal",
+      "name": "Callen Crow",
+      "heroImage": "/assets/characters/individuals/Cal-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 140
+    },
+    {
+      "slug": "emmitt-armadillo",
+      "code": "Emm",
+      "name": "Emmitt Armadillo",
+      "heroImage": "/assets/characters/individuals/Emm-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 150
+    },
+    {
+      "slug": "garrett-hedgehog",
+      "code": "Gar",
+      "name": "Garrett Hedgehog",
+      "heroImage": "/assets/characters/individuals/Gar-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 160
+    },
+    {
+      "slug": "grandma-siebert",
+      "code": "Gma",
+      "name": "Grandma Siebert",
+      "heroImage": "/assets/characters/individuals/Gma-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 170
+    },
+    {
+      "slug": "harlie-mouse",
+      "code": "Har",
+      "name": "Harlie Mouse",
+      "heroImage": "/assets/characters/individuals/Har-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 180
+    },
+    {
+      "slug": "haylee-prairie-dog",
+      "code": "Hay",
+      "name": "Haylee Prairie Dog",
+      "heroImage": "/assets/characters/individuals/Hay-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 190
+    },
+    {
+      "slug": "kayla-rabbit",
+      "code": "Kayla",
+      "name": "Kayla Rabbit",
+      "heroImage": "/assets/characters/individuals/Kayla-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 200
+    },
+    {
+      "slug": "lex-hedgehog",
+      "code": "Lex",
+      "name": "Lex Hedgehog",
+      "heroImage": "/assets/characters/individuals/Lex-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 210
+    },
+    {
+      "slug": "lillian-squirrel",
+      "code": "Lil",
+      "name": "Lillian Squirrel",
+      "heroImage": "/assets/characters/individuals/Lil-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 220
+    },
+    {
+      "slug": "mimi-hawkins",
+      "code": "Mimi",
+      "name": "Mimi Hawkins",
+      "heroImage": "/assets/characters/individuals/Mimi-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 230
+    },
+    {
+      "slug": "pop-pop-farmer-hawkins",
+      "code": "Pop",
+      "name": "Pop-pop/Farmer Hawkins",
+      "heroImage": "/assets/characters/individuals/Pop-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 240
+    },
+    {
+      "slug": "skylin-crow",
+      "code": "Sky",
+      "name": "Skylin Crow",
+      "heroImage": "/assets/characters/individuals/Sky-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 250
+    },
+    {
+      "slug": "trinity-egret",
+      "code": "Trinity",
+      "name": "Trinity Egret",
+      "heroImage": "/assets/characters/individuals/Trinity-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 260
+    },
+    {
+      "slug": "zylar-squirrel",
+      "code": "Zyl",
+      "name": "Zylar Squirrel",
+      "heroImage": "/assets/characters/individuals/Zyl-HP-V001.png",
+      "description": "",
+      "featured": false,
+      "published": true,
+      "sortOrder": 270
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "items": [
+    { "label": "Home", "href": "index.html" },
+    { "label": "Start Here", "href": "start-here.html" },
+    { "label": "Books", "href": "books.html" },
+    { "label": "Characters", "href": "characters.html" },
+    { "label": "Resources", "href": "resources.html" },
+    { "label": "Community", "href": "community.html" }
+  ]
+}

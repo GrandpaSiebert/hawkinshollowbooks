@@ -1,0 +1,9 @@
+Website Build Checklist
+=======================
+
+Home | Banner | Layout | Text | Links | Images | Complete
+Start Here | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
+About Hawkins Hollow | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
+Books | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
+Resources | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
+Community | ✔ | ✔ | ☐ | ☐ | ☐ | ☐

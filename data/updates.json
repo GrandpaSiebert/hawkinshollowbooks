@@ -1,0 +1,9 @@
+{
+  "updates": [
+    {
+      "slug": "first-vertical-slice",
+      "title": "First vertical slice built",
+      "summary": "A simple generator now produces a working path from home to book detail."
+    }
+  ]
+}

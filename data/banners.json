@@ -1,0 +1,58 @@
+{
+  "home": {
+    "title": "Welcome to Hawkins Hollow",
+    "subtitle": "A place where stories gather and every path leads toward a warm welcome.",
+    "bannerId": "001",
+    "image": "assets/banners/001 Hawkins Hollow Homepage Ribbon.png",
+    "alt": "Welcome Home to Hawkins Hollow banner showing the farmhouse, red barn, oak tree, and front gate."
+  },
+  "start-here": {
+    "title": "Start Here",
+    "subtitle": "A gentle first step into the town and its stories.",
+    "bannerId": "006",
+    "image": "assets/banners/006 Hawkins Hollow New to Hawkins Hollow Ribbon.png",
+    "alt": "Start Here banner featuring the welcoming entrance to Hawkins Hollow."
+  },
+  "characters": {
+    "title": "Meet the Friends of Hawkins Hollow",
+    "subtitle": "Every Hawkins Hollow story begins with someone worth knowing.",
+    "bannerId": "011",
+    "image": "assets/banners/011 Hawkins Hollow Meet Ribbon.png",
+    "alt": "Meet the Friends banner welcoming visitors to the characters of Hawkins Hollow."
+  },
+  "books": {
+    "title": "Books",
+    "subtitle": "Explore every Hawkins Hollow book series.",
+    "bannerId": "016",
+    "image": "assets/banners/016 Hawkins Hollow Explore Ribbon.png",
+    "alt": "Books banner welcoming visitors to the Hawkins Hollow book collections."
+  },
+  "resources": {
+    "title": "Resources",
+    "subtitle": "Free child resources for families and classrooms.",
+    "bannerId": "141",
+    "image": "assets/banners/141 Hawkins Hollow Free Child Resoures Ribbon.png",
+    "alt": "Resources banner for free child resources in Hawkins Hollow."
+  },
+  "storybook-shelf": {
+    "title": "Storybook Shelf",
+    "subtitle": "A gathering place for the earliest stories in Hawkins Hollow.",
+    "bannerId": "023",
+    "image": "assets/banners/023 Hawkins Hollow Storybook Shelf Ribbon.png",
+    "alt": "Storybook Shelf banner showing the shelves and storybook charm of Hawkins Hollow."
+  },
+  "storybook-series": {
+    "title": "Storybook Series",
+    "subtitle": "Gentle stories for young readers and first-time visitors.",
+    "bannerId": "031",
+    "image": "assets/banners/031 Hawkins Hollow Storybooks Ribbon.png",
+    "alt": "Storybook Series banner featuring a warm and welcoming collection of early stories."
+  },
+  "the-porch-light": {
+    "title": "The Porch Light",
+    "subtitle": "A story of home, welcome, and a bright porch in the evening.",
+    "bannerId": "023",
+    "image": "assets/banners/023 Hawkins Hollow Storybook Shelf Ribbon.png",
+    "alt": "Storybook Shelf banner showing the shelves and storybook charm of Hawkins Hollow."
+  }
+}

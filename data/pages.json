@@ -1,0 +1,91 @@
+{
+  "pages": [
+    {
+      "slug": "index",
+      "title": "Home",
+      "template": "landing",
+      "content": "Welcome to Hawkins Hollow Books. This home page is the entry point for the first vertical slice.",
+      "navigation": true,
+      "navLabel": "Home",
+      "order": 10,
+      "published": true
+    },
+    {
+      "slug": "start-here",
+      "title": "Start Here",
+      "template": "article",
+      "content": "This is a placeholder guide page for first-time visitors.",
+      "navigation": true,
+      "navLabel": "Start Here",
+      "order": 20,
+      "published": true
+    },
+    {
+      "slug": "books",
+      "title": "Books",
+      "template": "article",
+      "content": "This page introduces the books section and links to the Storybook Shelf series.",
+      "navigation": true,
+      "navLabel": "Books",
+      "order": 30,
+      "published": true
+    },
+    {
+      "slug": "characters",
+      "title": "Characters",
+      "template": "under-construction",
+      "navigation": true,
+      "navLabel": "Characters",
+      "order": 40,
+      "published": true
+    },
+    {
+      "slug": "resources",
+      "title": "Resources",
+      "template": "under-construction",
+      "navigation": true,
+      "navLabel": "Resources",
+      "order": 50,
+      "published": true
+    },
+    {
+      "slug": "community",
+      "title": "Community",
+      "template": "under-construction",
+      "navigation": true,
+      "navLabel": "Neighbors",
+      "order": 60,
+      "published": true
+    },
+    {
+      "slug": "storybook-shelf",
+      "title": "Storybook Shelf",
+      "template": "legacy",
+      "status": "legacy",
+      "legacyReference": { "type": "series", "slug": "storybook-shelf" },
+      "navigation": false,
+      "order": 70,
+      "published": true
+    },
+    {
+      "slug": "storybook-series",
+      "title": "Storybook Series",
+      "template": "legacy",
+      "status": "legacy",
+      "legacyReference": { "type": "series", "slug": "storybook-series" },
+      "navigation": false,
+      "order": 80,
+      "published": true
+    },
+    {
+      "slug": "the-porch-light",
+      "title": "The Porch Light",
+      "template": "legacy",
+      "status": "legacy",
+      "legacyReference": { "type": "book", "slug": "the-porch-light" },
+      "navigation": false,
+      "order": 90,
+      "published": true
+    }
+  ]
+}
