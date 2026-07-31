@@ -21,6 +21,7 @@ jobs:
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -48,10 +49,10 @@ jobs:
           find build-recovery -maxdepth 2 -type f -name "*.html" | sort
 
       - name: Verify entry page exists
-  run: |
-    test -f build-recovery/index.html
-    echo "Generated HTML:"
-    find build-recovery -maxdepth 2 -type f -name "*.html" | sort
+        run: |
+          test -f build-recovery/index.html
+          echo "Generated HTML:"
+          find build-recovery -maxdepth 2 -type f -name "*.html" | sort
 
       - name: Ensure Pages artifact markers
         run: |
