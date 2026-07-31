@@ -192,11 +192,37 @@ function buildBookIndex(files) {
 
 function scanLibrary(siteRoot) {
   const libraryRoot = path.join(siteRoot, 'Library');
+  const startedAt = new Date().toISOString();
   if (!fs.existsSync(libraryRoot)) {
-    throw new Error(`Library folder not found at ${libraryRoot}`);
+    const completedAt = new Date().toISOString();
+    const emptyCategories = buildCategorySummary([]);
+    return {
+      scan: {
+        generatedAt: completedAt,
+        startedAt,
+        libraryRoot: 'Library',
+        missingLibrary: true,
+        summary: {
+          folderCount: 0,
+          fileCount: 0,
+          categories: emptyCategories
+        },
+        folders: [],
+        files: []
+      },
+      index: {
+        generatedAt: completedAt,
+        libraryRoot: 'Library',
+        missingLibrary: true,
+        summary: {
+          indexedBooks: 0,
+          categories: emptyCategories
+        },
+        books: []
+      }
+    };
   }
 
-  const startedAt = new Date().toISOString();
   const folders = [];
   const files = [];
 
