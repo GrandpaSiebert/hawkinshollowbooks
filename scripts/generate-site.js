@@ -176,6 +176,44 @@ function createMergedBookIndex(libraryIndex, amazonLookup) {
   };
 }
 
+function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
+  const seriesBySlug = new Map(((seriesData && seriesData.series) || [])
+    .map((entry) => [String(entry.slug || '').toLowerCase(), entry.title || entry.slug || '']));
+
+  const books = ((booksData && booksData.books) || [])
+    .filter((book) => Boolean(book && (book.code || book.slug)))
+    .map((book) => {
+      const seriesSlug = String(book.seriesSlug || '').toLowerCase();
+      const seriesTitle = seriesBySlug.get(seriesSlug) || book.seriesSlug || '';
+      const id = book.code || String(book.slug || '').toUpperCase();
+      const cover = (book.coverImage || '').replace(/^\//, '');
+      const files = cover ? [cover] : [];
+      return {
+        id,
+        title: book.title || id,
+        series: seriesTitle,
+        seriesCode: seriesSlug,
+        folder: `Books/${seriesTitle}`,
+        files,
+        fileTypes: cover
+          ? [{ extension: String(cover).toLowerCase().split('.').pop(), count: 1 }]
+          : []
+      };
+    })
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+  return {
+    generatedAt: new Date().toISOString(),
+    libraryRoot: 'data/books.json',
+    synthesized: true,
+    summary: {
+      indexedBooks: books.length,
+      categories: [{ category: 'Books', fileCount: books.length }]
+    },
+    books
+  };
+}
+
 function writeMergedBookIndex(siteRoot, mergedBookIndex) {
   const outputPath = path.join(siteRoot, 'generated', 'merged-book-index.json');
   fs.writeFileSync(outputPath, `${JSON.stringify(mergedBookIndex, null, 2)}\n`, 'utf8');
@@ -2413,7 +2451,14 @@ function buildSite() {
   const config = readJson('data/site-config.json');
   const banners = readJson('data/banners.json');
   const libraryScan = readJson('generated/library-scan.json');
-  const libraryIndex = readJson('generated/library-index.json');
+  const rawLibraryIndex = readJson('generated/library-index.json');
+  const hasLibraryBooks = Boolean(rawLibraryIndex && Array.isArray(rawLibraryIndex.books) && rawLibraryIndex.books.length > 0);
+  const libraryIndex = hasLibraryBooks
+    ? rawLibraryIndex
+    : synthesizeLibraryIndexFromBooksData(booksData, seriesData);
+  if (!hasLibraryBooks) {
+    console.log(`Library folder unavailable in build environment. Using synthesized index from data/books.json (${libraryIndex.summary.indexedBooks} records).`);
+  }
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }
     : readJson('generated/amazon-index.json');
