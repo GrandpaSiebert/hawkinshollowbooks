@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: node generate-site.js
+        run: node scripts/generate-site.js
 
       - name: Ensure Pages artifact markers
         run: |
