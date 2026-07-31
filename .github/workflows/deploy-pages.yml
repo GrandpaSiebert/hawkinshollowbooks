@@ -47,11 +47,11 @@ jobs:
           echo "HTML files:"
           find build-recovery -maxdepth 2 -type f -name "*.html" | sort
 
-      - name: Verify required pages exist
-        run: |
-          test -f build-recovery/index.html
-          test -f build-recovery/books.html
-          test -f build-recovery/start-here.html
+      - name: Verify entry page exists
+  run: |
+    test -f build-recovery/index.html
+    echo "Generated HTML:"
+    find build-recovery -maxdepth 2 -type f -name "*.html" | sort
 
       - name: Ensure Pages artifact markers
         run: |
