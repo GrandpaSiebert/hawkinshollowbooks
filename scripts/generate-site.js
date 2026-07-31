@@ -2070,8 +2070,8 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
     .filter((character) => character.featured === true)
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map(
-      (character) => `<a class="character-card" href="characters/${character.slug}.html" aria-label="Meet ${character.name}">
-          <img src="${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="320" height="180" loading="lazy" />
+        (character) => `<a class="character-card" href="characters/${character.slug}.html" aria-label="Meet ${character.name}">
+          <img class="character-hero-thumb" src="${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
           <h3>${character.name}</h3>
           <p>${character.description}</p>
         </a>`
@@ -2129,7 +2129,7 @@ function renderCharacterDetailPage(character, site, nav, config) {
     character.name,
     character.description,
     `<section class="content-card">
-      <img src="../${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="640" height="360" />
+      <img class="character-hero-full" src="../${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="640" height="640" />
       <h1>${character.name}</h1>
       <p>${character.description}</p>
       <p><a href="../characters.html">Back to Meet the Friends of Hawkins Hollow</a></p>
