@@ -37,6 +37,22 @@ jobs:
       - name: Build site
         run: node scripts/generate-site.js
 
+      - name: Debug built files
+        run: |
+          echo "PWD=$(pwd)"
+          echo "Top level:"
+          ls -la
+          echo "build-recovery:"
+          ls -la build-recovery
+          echo "HTML files:"
+          find build-recovery -maxdepth 2 -type f -name "*.html" | sort
+
+      - name: Verify required pages exist
+        run: |
+          test -f build-recovery/index.html
+          test -f build-recovery/books.html
+          test -f build-recovery/start-here.html
+
       - name: Ensure Pages artifact markers
         run: |
           touch build-recovery/.nojekyll
