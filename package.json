@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Official website for the Hawkins Hollow family of children's books by Grandpa Siebert.",
   "scripts": {
-    "build": "node generate-site.js"
+    "build": "node scripts/generate-site.js"
   },
   "license": "UNLICENSED"
 }
