@@ -58,6 +58,16 @@
       "published": true
     },
     {
+      "slug": "map",
+      "title": "Come Wander Hawkins Hollow",
+      "template": "article",
+      "content": "Explore Hawkins Hollow by place.",
+      "navigation": true,
+      "navLabel": "Map",
+      "order": 65,
+      "published": true
+    },
+    {
       "slug": "storybook-shelf",
       "title": "Storybook Shelf",
       "template": "legacy",

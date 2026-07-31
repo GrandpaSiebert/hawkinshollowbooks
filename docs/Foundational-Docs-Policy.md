@@ -1,0 +1,60 @@
+# Foundational Docs Policy
+
+This policy protects the stable identity anchors of Hawkins Hollow while allowing implementation to evolve.
+
+## Scope
+
+The following documents are foundational:
+
+- docs/Architecture.md
+- docs/Build-Pipeline.md
+- docs/Hawkins-Hollow-Promise.md
+- docs/Hawkins-Hollow-Voice.md
+
+## Policy
+
+- Foundational documents are stable by default.
+- Changes must be deliberate, discussed, and relatively rare.
+- Product and implementation changes should usually adapt to these documents, not the other way around.
+
+## When Changes Are Appropriate
+
+A foundational update is appropriate only when at least one of these is true:
+
+- A principle is unclear or contradictory.
+- A confirmed project direction has changed.
+- A missing principle is causing repeated confusion or regressions.
+
+## Change Requirements
+
+Before merging a foundational-doc change:
+
+1. State the reason for change in plain language.
+2. Describe impact on contributors and visitor experience.
+3. Confirm alignment with the Hawkins Hollow Promise and Voice rules.
+4. Verify related companion docs are still consistent.
+
+## Foundational Change Note (Required)
+
+Every foundational-doc update should include a short note in the pull request or release notes answering:
+
+1. Why did this principle need to change?
+2. How does the change better fulfill the Promise?
+3. What existing experiences should be reviewed because of this change?
+
+## Stability Rule
+
+Code, UI, and content may evolve continuously.
+Foundational documents should evolve intentionally.
+
+Stable principles. Flexible implementation.
+
+## Documentation Growth Rule
+
+Do not add a new documentation file unless it clearly cannot be represented as a section in an existing authoritative document.
+
+Before creating a new document, explain:
+
+1. Why an existing document is insufficient.
+2. Which audience or responsibility the new document uniquely serves.
+3. How overlap with existing docs will be prevented.

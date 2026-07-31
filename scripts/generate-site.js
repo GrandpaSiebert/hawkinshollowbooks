@@ -786,6 +786,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     }).join('')}</ul>`;
 
   const resourceLinks = [];
+  resourceLinks.push('<a class="button" href="../../map.html">Open the Map of Hawkins Hollow</a>');
   if (entity.type === 'book' && entity.purchaseLinks) {
     if (entity.purchaseLinks.paperback) {
       resourceLinks.push(`<a class="button" href="${entity.purchaseLinks.paperback}" target="_blank" rel="noopener noreferrer">Buy Paperback</a>`);
@@ -1192,10 +1193,31 @@ function buildAmazonLookup(amazonIndex) {
   return map;
 }
 
-function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLookup) {
-  const books = ((libraryIndex && libraryIndex.books) || [])
+function getSeriesBooksFromLibraryIndex(libraryIndex, seriesName) {
+  return ((libraryIndex && libraryIndex.books) || [])
     .filter((book) => (book.series || '').toLowerCase() === seriesName.toLowerCase())
     .sort((a, b) => a.id.localeCompare(b.id));
+}
+
+function renderSeriesDoorwayFromLibraryIndex(libraryIndex, seriesName, audienceText, experienceText, reassuranceText, invitationLabel) {
+  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName);
+  const starter = books[0] || null;
+  const starterLine = starter
+    ? `<p><strong>Start with:</strong> <a href="${getBookPageHref(starter)}">${starter.title || starter.id}</a></p>`
+    : '<p><strong>Start with:</strong> <a href="#library-search">Use search to find a story in this collection.</a></p>';
+  const invitationTitle = invitationLabel || "When you're finished";
+  const reassuranceLine = reassuranceText
+    ? `<p><strong>${invitationTitle}:</strong> ${reassuranceText}</p>`
+    : '';
+
+  return `<p><strong>Who it is for:</strong> ${audienceText}</p>
+    <p><strong>Experience:</strong> ${experienceText}</p>
+    ${starterLine}
+    ${reassuranceLine}`;
+}
+
+function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLookup) {
+  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName);
 
   if (books.length === 0) {
     return '<p class="status-label">No books discovered yet in this series.</p>';
@@ -1398,17 +1420,307 @@ function renderLandingPage(page, site, nav, config, banner) {
   return renderLayout(
     page.title,
     site.tagline,
-    `<section class="hero-card">
-      <p class="eyebrow">Welcome to</p>
-      <h1>${site.siteName}</h1>
-      <p>Hawkins Hollow is a place where stories gather, children find their first favorites, and every path leads toward a warm welcome.</p>
-      <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
+    `<section class="content-card" aria-labelledby="act-one">
+      <p class="eyebrow">Act One</p>
+      <h2 id="act-one">Welcome Home</h2>
+      <section class="hero-card">
+        <p class="eyebrow">Welcome to</p>
+        <h1>${site.siteName}</h1>
+        <p class="welcome-home-line">Look who's home!</p>
+        <p>Hawkins Hollow is a place where stories gather, children find their first favorites, and every path leads toward a warm welcome.</p>
+        <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
+      </section>
+
+      <section class="content-card seasonal-note" id="seasonal-note" aria-live="polite">
+        <h3 id="seasonal-title">Welcome Home This Season</h3>
+        <p id="seasonal-copy">The porch light is on, and Hawkins Hollow is ready for your next visit.</p>
+      </section>
+
+      <section class="content-card seasonal-feature" id="seasonal-feature" aria-labelledby="seasonal-feature-title">
+        <h3 id="seasonal-feature-title">Grandpa's Thought for Today</h3>
+        <div id="seasonal-feature-body"></div>
+      </section>
     </section>
 
-    <section class="content-card">
-      <h2>Begin your visit</h2>
+    <section class="content-card" aria-labelledby="act-two">
+      <p class="eyebrow">Act Two</p>
+      <h2 id="act-two">Where would you like to begin today?</h2>
+      <p>Choose any path. You do not have to start in one place to belong here.</p>
+      <div class="start-anywhere-grid">
+        <a class="start-anywhere-item" href="books.html" aria-label="Read a Story">
+          <p class="start-anywhere-icon" aria-hidden="true">📚</p>
+          <h3>Read a Story</h3>
+          <p>Browse books, reading paths, and family-friendly story collections.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="characters.html" aria-label="Meet a Character">
+          <p class="start-anywhere-icon" aria-hidden="true">👧</p>
+          <h3>Meet a Character</h3>
+          <p>Get to know the friends and families who make Hawkins Hollow feel like home.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="map.html" aria-label="Visit a Place">
+          <p class="start-anywhere-icon" aria-hidden="true">🌳</p>
+          <h3>Visit a Place</h3>
+          <p>Explore the map and step into familiar places like Old Oak and the Reading Stump.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="books.html" aria-label="Explore a Friendship">
+          <p class="start-anywhere-icon" aria-hidden="true">❤️</p>
+          <h3>Explore a Friendship</h3>
+          <p>Use universal search to discover relationships and connected journeys.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="resources.html" aria-label="Find a Family Activity">
+          <p class="start-anywhere-icon" aria-hidden="true">🎁</p>
+          <h3>Find a Family Activity</h3>
+          <p>Find resources and shared activities that help stories grow into conversations.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="community.html" aria-label="Celebrate a Season">
+          <p class="start-anywhere-icon" aria-hidden="true">🎄</p>
+          <h3>Celebrate a Season</h3>
+          <p>Wander seasonal moments, gatherings, and neighborhood traditions.</p>
+        </a>
+      </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="act-three">
+      <p class="eyebrow">Featured Paths</p>
+      <h2 id="act-three">If this is your first visit</h2>
+      <p>Try one of these gentle pathways and see where your curiosity leads.</p>
+      <p id="todays-wander-copy"><strong>Something Grandpa noticed today:</strong> <span id="todays-wander-kind">Notice</span> - The orchard feels especially peaceful today.</p>
+      <p id="todays-wander-invitation">If you feel like a short walk, the path starts there.</p>
+      <p><a id="todays-wander-link" class="button" href="map.html">Take This Walk</a></p>
+      <div class="start-here-grid">
+        <article class="start-here-item">
+          <h3>Meet Spencer</h3>
+          <p><strong>Path:</strong> Meet Spencer -> Visit Old Oak -> Read Spencer's Sound Trail</p>
+          <p><a class="button" href="characters/spencer-field-mouse.html">Begin with Spencer</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Looking for Bedtime?</h3>
+          <p><strong>Path:</strong> Visit Bedtime Library -> Meet Grandma -> Read Together</p>
+          <p><a class="button" href="books.html#series-bedtime-library">Begin with Bedtime Library</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Family Activity Path</h3>
+          <p><strong>Path:</strong> Open Resources -> Pick an activity -> Continue with a related story</p>
+          <p><a class="button" href="resources.html">Begin with Resources</a></p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="act-four">
+      <p class="eyebrow">Act Four</p>
+      <h2 id="act-four">Take a little of Hawkins Hollow home</h2>
+      <p>After you wander a while, the books are waiting to continue the experience.</p>
       <p>Start with the stories, step into the world, and discover the books that make Hawkins Hollow feel like home.</p>
-    </section>`,
+      <p>
+        <a class="button" href="books.html">Browse Books</a>
+        <a class="button" href="storybook-shelf.html">Open the Storybook Shelf</a>
+      </p>
+    </section>
+
+    <script>
+      (function () {
+        var titleEl = document.getElementById('seasonal-title');
+        var copyEl = document.getElementById('seasonal-copy');
+        var featureBodyEl = document.getElementById('seasonal-feature-body');
+        if (!titleEl || !copyEl) {
+          return;
+        }
+
+        var params = new URLSearchParams(window.location.search || '');
+        var override = String(params.get('season') || '').toLowerCase();
+        var month = new Date().getMonth() + 1;
+
+        function getWeekNumber(date) {
+          var d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+          var dayNum = d.getUTCDay() || 7;
+          d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+          var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+          return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+        }
+
+        function pickSeason() {
+          if (override === 'spring' || override === 'summer' || override === 'autumn' || override === 'winter') {
+            return override;
+          }
+          if (month >= 3 && month <= 5) {
+            return 'spring';
+          }
+          if (month >= 6 && month <= 8) {
+            return 'summer';
+          }
+          if (month >= 9 && month <= 11) {
+            return 'autumn';
+          }
+          return 'winter';
+        }
+
+        var season = pickSeason();
+        var seasonCopy = {
+          spring: {
+            thoughts: [
+              {
+                title: 'From the porch this morning',
+                copy: 'I noticed a few new flowers along the orchard path this morning. They seem to know spring has finally arrived.'
+              },
+              {
+                title: 'A little note from Grandpa',
+                copy: 'The creek has been running a little livelier this week. Feels like the whole Hollow is stretching awake.'
+              },
+              {
+                title: 'From the gate today',
+                copy: 'There is a new brightness on the garden rows lately. Makes a person want to take the long way home.'
+              },
+              {
+                title: 'A quiet thought for today',
+                copy: 'The mornings have been softer these past few days. Good weather for wandering and wondering.'
+              }
+            ],
+            featureTitle: 'Visit a Place',
+            featureHref: 'map.html',
+            featureCopy: 'The paths are opening for the season. Start with a place and let the world grow from there.'
+          },
+          summer: {
+            thoughts: [
+              {
+                title: 'From the porch this morning',
+                copy: 'The shade under Old Oak has been mighty comfortable lately. It is a fine place to read together.'
+              },
+              {
+                title: 'A little note from Grandpa',
+                copy: 'The paths have been full of long shadows at supper time. Feels like everyone is in no hurry at all.'
+              },
+              {
+                title: 'From the gate today',
+                copy: 'I passed the garden fence and heard laughter clear across the lane. That is a good sound to keep around.'
+              },
+              {
+                title: 'A quiet thought for today',
+                copy: 'The evenings have been staying with us a little longer. Plenty of time for one more chapter.'
+              }
+            ],
+            featureTitle: 'Read a Story',
+            featureHref: 'books.html',
+            featureCopy: 'Summer is a good time to slow down, settle in, and read together.'
+          },
+          autumn: {
+            thoughts: [
+              {
+                title: 'From the porch this morning',
+                copy: 'The leaves have started telling stories of their own. Sometimes the quiet walks are the best ones.'
+              },
+              {
+                title: 'A little note from Grandpa',
+                copy: 'The leaves have been taking their time this year. I rather like that.'
+              },
+              {
+                title: 'From the gate today',
+                copy: 'There is a crispness in the air that makes the long path feel friendlier somehow.'
+              },
+              {
+                title: 'A quiet thought for today',
+                copy: 'Some days call for a basket, a sweater, and a story read out loud before supper.'
+              }
+            ],
+            featureTitle: 'Explore a Friendship',
+            featureHref: 'books.html',
+            featureCopy: 'This is a good season for listening closely and following the threads between friends.'
+          },
+          winter: {
+            thoughts: [
+              {
+                title: 'From the porch this morning',
+                copy: 'The kettle is warm, the porch light is on, and there always seems to be room for one more story.'
+              },
+              {
+                title: 'A little note from Grandpa',
+                copy: 'The porch has been a little quieter lately. Seems like good weather for one more story.'
+              },
+              {
+                title: 'From the gate today',
+                copy: 'There is a stillness over the lane this week that makes every kind word travel farther.'
+              },
+              {
+                title: 'A quiet thought for today',
+                copy: 'Cold evenings have a way of gathering folks close. Perfect time to read shoulder to shoulder.'
+              }
+            ],
+            featureTitle: 'Find a Family Activity',
+            featureHref: 'resources.html',
+            featureCopy: 'Quiet days are perfect for shared activities, family time, and cozy discovery.'
+          }
+        };
+
+        var selected = seasonCopy[season] || seasonCopy.winter;
+        var thoughtList = selected.thoughts || [];
+        var week = getWeekNumber(new Date());
+        var thought = thoughtList.length > 0 ? thoughtList[week % thoughtList.length] : {
+          title: 'From the porch today',
+          copy: 'The porch light is on, and Hawkins Hollow is ready for your next visit.'
+        };
+
+        titleEl.textContent = thought.title;
+        copyEl.textContent = thought.copy;
+        document.body.classList.add('season-' + season);
+
+        if (featureBodyEl) {
+          featureBodyEl.innerHTML = '<p><strong><a href="' + selected.featureHref + '">' + selected.featureTitle + '</a></strong></p>'
+            + '<p>' + selected.featureCopy + '</p>';
+        }
+
+        var wanderCopyEl = document.getElementById('todays-wander-copy');
+        var wanderInvitationEl = document.getElementById('todays-wander-invitation');
+        var wanderLinkEl = document.getElementById('todays-wander-link');
+        var wanders = [
+          {
+            mode: 'Notice',
+            observation: 'The orchard is especially peaceful this morning.',
+            invitation: 'If you feel like a short walk, start there.',
+            href: 'map.html',
+            cta: 'Take This Walk'
+          },
+          {
+            mode: 'Share',
+            observation: 'Spencer has been waiting for another visitor.',
+            invitation: 'If you are with someone today, say hello together and see where one friendship leads.',
+            href: 'characters/spencer-field-mouse.html',
+            cta: 'Visit Spencer'
+          },
+          {
+            mode: 'Remember',
+            observation: 'This always reminds me that quiet stories can settle a whole evening.',
+            invitation: 'If tonight feels a little full, the Bedtime Library is a gentle place to land.',
+            href: 'books.html#series-bedtime-library',
+            cta: 'Begin Quietly'
+          },
+          {
+            mode: 'Wonder',
+            observation: 'The old bridge has been on my mind this morning.',
+            invitation: 'I keep wondering how it sounds after a gentle rain. If you pass that way, listen for it.',
+            href: 'map.html',
+            cta: 'Start At The Bridge'
+          }
+        ];
+
+        if (wanderCopyEl && wanderLinkEl && wanders.length > 0) {
+          var wander = wanders[week % wanders.length];
+          wanderCopyEl.innerHTML = '<strong>Something Grandpa noticed today:</strong> '
+            + '<span id="todays-wander-kind">' + (wander.mode || 'Notice') + '</span> - '
+            + wander.observation;
+          if (wanderInvitationEl) {
+            wanderInvitationEl.textContent = wander.invitation || '';
+          }
+          wanderLinkEl.setAttribute('href', wander.href);
+          wanderLinkEl.textContent = wander.cta || 'Take This Walk';
+        }
+      })();
+    </script>`,
     site,
     nav,
     `${site.domain}/`,
@@ -1419,7 +1731,51 @@ function renderLandingPage(page, site, nav, config, banner) {
 
 function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup) {
   if (page.slug === 'books') {
+    const firstReadersDoorway = renderSeriesDoorwayFromLibraryIndex(
+      libraryIndex,
+      'First Readers',
+      'Children beginning to read with growing confidence.',
+      'Short, approachable stories with steady pacing and gentle support.',
+      'if you are still smiling, there is another friend waiting just down the path.',
+      'Continue the friendship'
+    );
     const firstReadersCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'First Readers', amazonLookup);
+    const secondReadersDoorway = renderSeriesDoorwayFromLibraryIndex(
+      libraryIndex,
+      'Second Readers',
+      'Developing readers ready for longer story time and richer details.',
+      'Broader adventures that invite conversation and curiosity.',
+      'there are more trails to explore if you would like to keep wandering.',
+      'Stay in this place'
+    );
+    const secondReadersCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Second Readers', amazonLookup);
+    const bedtimeLibraryDoorway = renderSeriesDoorwayFromLibraryIndex(
+      libraryIndex,
+      'Bedtime Library',
+      'Families winding down at the end of the day.',
+      'Quiet, reassuring stories that help everyone settle together.',
+      'you do not have to hurry. When you are ready, there is another quiet place nearby.',
+      'Continue the feeling'
+    );
+    const bedtimeLibraryCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Bedtime Library', amazonLookup);
+    const growingTogetherDoorway = renderSeriesDoorwayFromLibraryIndex(
+      libraryIndex,
+      'Growing Together',
+      'Families talking about belonging, cooperation, and care.',
+      'Heart-forward stories about relationships and everyday kindness.',
+      'sometimes the best part is talking about it together after the story ends.',
+      'Try something together'
+    );
+    const growingTogetherCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Growing Together', amazonLookup);
+    const tenderTimesDoorway = renderSeriesDoorwayFromLibraryIndex(
+      libraryIndex,
+      'Tender Times',
+      'Children and caregivers moving through change or big feelings.',
+      'Comfort-centered stories that create space for reassurance and hope.',
+      'you can pause whenever you need to. When you are ready, a caring friend is nearby.',
+      'When you are ready'
+    );
+    const tenderTimesCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Tender Times', amazonLookup);
     const searchSection = renderSearchSection();
     return renderLayout(
       page.title,
@@ -1432,43 +1788,56 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
     <section class="content-card" aria-labelledby="books-series">
       <h2 id="books-series">Browse the Collections</h2>
       <div class="start-here-grid">
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-storybooks">
           <h3>Storybooks</h3>
-          <p>Our flagship illustrated storybooks that introduce children to Hawkins Hollow through gentle stories, memorable characters, and everyday adventures.</p>
+          <p><strong>Who it is for:</strong> Families who want shared read-aloud moments.</p>
+          <p><strong>Experience:</strong> Gentle illustrated adventures that introduce Hawkins Hollow one memory at a time.</p>
+          <p><strong>Start with:</strong> <a href="storybook-shelf.html">Visit the Storybook Shelf</a></p>
+          <p><strong>Continue the wonder:</strong> after one story, meet a character you just discovered.</p>
           <a class="button" href="storybook-shelf.html">Explore Storybooks</a>
         </article>
 
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-first-readers">
           <h3>First Readers</h3>
-          <p>Simple stories written for children beginning to read independently.</p>
+          ${firstReadersDoorway}
           <p class="status-label">Auto-generated from the Library index.</p>
           ${firstReadersCards}
         </article>
 
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-second-readers">
           <h3>Second Readers</h3>
-          <p>Longer stories for growing readers ready for richer adventures and conversations.</p>
-          <p class="status-label">Coming Soon</p>
+          ${secondReadersDoorway}
+          <p class="status-label">Auto-generated from the Library index.</p>
+          ${secondReadersCards}
         </article>
 
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-bedtime-library">
           <h3>Bedtime Library</h3>
-          <p>Gentle evening stories created to help families slow down and finish the day together.</p>
-          <p class="status-label">Coming Soon</p>
+          ${bedtimeLibraryDoorway}
+          <p class="status-label">Auto-generated from the Library index.</p>
+          ${bedtimeLibraryCards}
         </article>
 
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-growing-together">
           <h3>Growing Together</h3>
-          <p>Stories celebrating friendship, family, cooperation, and belonging.</p>
-          <p class="status-label">Coming Soon</p>
+          ${growingTogetherDoorway}
+          <p class="status-label">Auto-generated from the Library index.</p>
+          ${growingTogetherCards}
         </article>
 
-        <article class="start-here-item">
+        <article class="start-here-item" id="series-tender-times">
           <h3>Tender Times</h3>
-          <p>Comforting stories for children working through change, uncertainty, loss, or difficult emotions.</p>
-          <p class="status-label">Coming Soon</p>
+          ${tenderTimesDoorway}
+          <p class="status-label">Auto-generated from the Library index.</p>
+          ${tenderTimesCards}
         </article>
       </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="explore-a-friendship">
+      <h2 id="explore-a-friendship">Explore a Friendship</h2>
+      <p>The best adventures are often shared. Discover how kindness, listening, courage, and patience grow between friends.</p>
+      <p>Use the search below to begin with a name, a place, or a feeling, then follow the connections.</p>
     </section>
 
     ${searchSection}
@@ -1496,42 +1865,49 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
     </section>
 
     <section class="content-card start-here-series" aria-labelledby="choose-a-place-to-begin">
-      <h2 id="choose-a-place-to-begin">Choose a Place to Begin</h2>
+      <h2 id="choose-a-place-to-begin">Not sure where to begin?</h2>
+      <p>Choose the experience that feels right today. You are not choosing a page. You are choosing a moment.</p>
       <div class="start-here-grid">
         <article class="start-here-item">
           <h3>Storybooks</h3>
-          <p>Illustrated stories for shared reading, bedtime, quiet afternoons, and family story time. These books invite children into Hawkins Hollow through gentle adventures, familiar feelings, and characters who learn by living alongside one another.</p>
+          <p><strong>If you're reading with a young child:</strong> Begin with a shared illustrated story and settle in together.</p>
           <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
         </article>
 
         <article class="start-here-item">
           <h3>First Readers</h3>
-          <p>Short, approachable stories for children beginning to read with growing independence. First Readers use brief lines, supportive illustrations, and comfortable pacing without making the child feel hurried or tested.</p>
-          <p class="status-label">Coming to the website soon</p>
+          <p><strong>If your child is building reading confidence:</strong> Start with a short story that feels encouraging and familiar.</p>
+          <p><strong>Start with:</strong> <a href="books.html#series-first-readers">First Readers on the Books page</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Second Readers</h3>
-          <p>Longer stories for developing readers who are ready for more detail, more conversation, and a little more time inside each Hawkins Hollow moment.</p>
-          <p class="status-label">Coming to the website soon</p>
+          <p><strong>If your family wants a richer reading adventure:</strong> Choose a longer path with more details and discussion.</p>
+          <p><strong>Start with:</strong> <a href="books.html#series-second-readers">Second Readers on the Books page</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Bedtime Library</h3>
-          <p>Quiet stories made for winding down together. The Bedtime Library offers gentle pacing, emotional warmth, and a comfortable ending for the close of the day.</p>
-          <p class="status-label">Coming to the website soon</p>
+          <p><strong>If you're looking for a bedtime story:</strong> Come this way for quiet pacing and reassuring endings.</p>
+          <p><strong>Start with:</strong> <a href="books.html#series-bedtime-library">Bedtime Library on the Books page</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Growing Together</h3>
-          <p>Stories about relationships, cooperation, belonging, and the everyday ways children and families learn to understand one another.</p>
-          <p class="status-label">Coming to the website soon</p>
+          <p><strong>If your family wants encouragement:</strong> Follow stories about belonging, cooperation, and care.</p>
+          <p><strong>Start with:</strong> <a href="books.html#series-growing-together">Growing Together on the Books page</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Tender Times</h3>
-          <p>Comfort-centered stories for children moving through difficult feelings, uncertainty, change, or moments when reassurance matters most.</p>
-          <p class="status-label">Coming to the website soon</p>
+          <p><strong>If someone in your family needs comfort:</strong> Walk this path gently and at your own pace.</p>
+          <p><strong>Start with:</strong> <a href="books.html#series-tender-times">Tender Times on the Books page</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Wander Freely</h3>
+          <p><strong>If you simply want to explore:</strong> Start with a place, then follow what sounds interesting.</p>
+          <p><strong>Start with:</strong> <a href="map.html">Open the Map</a></p>
         </article>
       </div>
     </section>
@@ -1546,6 +1922,89 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       <h2 id="the-porch-light-is-on">The Porch Light Is On</h2>
       <p>You do not have to explore everything at once. Begin with one story, one character, or one quiet moment that feels like a good fit. Hawkins Hollow will still be here when you come back.</p>
     </section>`,
+      site,
+      nav,
+      `${site.domain}/${page.slug}.html`,
+      config,
+      banner
+    );
+  }
+
+  if (page.slug === 'map') {
+    return renderLayout(
+      page.title,
+      'A story map of Hawkins Hollow where families can wander by place and discover connected stories.',
+      `<section class="content-card" aria-labelledby="map-doorway">
+      <h2 id="map-doorway">Unfold the Map and Wander</h2>
+      <p><strong>Who this is for:</strong> Families who like to explore by place and follow curiosity one path at a time.</p>
+      <p><strong>What you can experience:</strong> Orchards, landmarks, and hand-drawn-feeling corners where stories quietly begin.</p>
+      <p><strong>Where to begin:</strong> <a href="#map-places">Open Places Around Hawkins Hollow and choose one stop</a></p>
+    </section>
+
+    <section class="content-card" aria-labelledby="map-intro">
+      <h2 id="map-intro">Come Wander Hawkins Hollow</h2>
+      <p>Every path leads somewhere special. Wander through orchards, barns, gardens, and quiet places where stories begin.</p>
+      <p>Choose a place and begin there. Children often start with a location, then discover stories, characters, and friendships along the way.</p>
+      <p><strong>Tip:</strong> Open any place and look for “Where would you like to wander next?” to keep exploring.</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="map-places">
+      <h2 id="map-places">Places Around Hawkins Hollow</h2>
+      <p class="search-hint">Loading environments and landmarks from the Hawkins Hollow memory...</p>
+      <div id="map-places-grid" class="map-grid" aria-live="polite"></div>
+    </section>
+
+    <script>
+      (function () {
+        var target = document.getElementById('map-places-grid');
+        if (!target) {
+          return;
+        }
+
+        function escapeHtml(value) {
+          return String(value)
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/\"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+        }
+
+        function renderMessage(message) {
+          target.innerHTML = '<p>' + escapeHtml(message) + '</p>';
+        }
+
+        fetch('generated/entity-index.json')
+          .then(function (response) { return response.json(); })
+          .then(function (payload) {
+            var byType = payload && payload.byType ? payload.byType : {};
+            var environments = Array.isArray(byType.environments) ? byType.environments : [];
+            var landmarks = Array.isArray(byType.landmarks) ? byType.landmarks : [];
+            var places = environments.concat(landmarks).sort(function (a, b) {
+              return String(a.name || a.title || a.id).localeCompare(String(b.name || b.title || b.id));
+            });
+
+            if (places.length === 0) {
+              renderMessage('No places are available yet.');
+              return;
+            }
+
+            target.innerHTML = places.map(function (place) {
+              var name = place.name || place.title || place.id || 'Unnamed Place';
+              var href = place.entityPageHref || place.href || '#';
+              var kind = place.type === 'environment' ? 'Place' : 'Landmark';
+              return '<a class="map-place-card" href="' + escapeHtml(href) + '">'
+                + '<p class="map-place-kind">' + escapeHtml(kind) + '</p>'
+                + '<h3>' + escapeHtml(name) + '</h3>'
+                + '<p>Open this location</p>'
+                + '</a>';
+            }).join('');
+          })
+          .catch(function () {
+            renderMessage('The map could not be loaded right now.');
+          });
+      })();
+    </script>`,
       site,
       nav,
       `${site.domain}/${page.slug}.html`,
@@ -1584,7 +2043,14 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
   return renderLayout(
     'Meet the Friends of Hawkins Hollow',
     'Every Hawkins Hollow story begins with someone worth knowing.',
-    `<section class="content-card" aria-labelledby="characters-introduction">
+    `<section class="content-card" aria-labelledby="characters-doorway">
+      <h2 id="characters-doorway">Meet a Neighbor First</h2>
+      <p><strong>Who this is for:</strong> Children and grown-ups looking for a familiar friend to begin with.</p>
+      <p><strong>What you can experience:</strong> Distinct voices, everyday personalities, and relationships that make the Hollow feel lived in.</p>
+      <p><strong>Where to begin:</strong> <a href="#characters-youll-meet">Choose one friend and spend a few minutes getting to know them</a></p>
+    </section>
+
+    <section class="content-card" aria-labelledby="characters-introduction">
       <h2 id="characters-introduction">Meet the Friends of Hawkins Hollow</h2>
       <p>Every Hawkins Hollow story begins with someone worth knowing.</p>
       <p>Some are adventurous. Some are quiet. Some ask questions. Some listen carefully. Some need encouragement. Some discover they can encourage someone else.</p>
@@ -1739,7 +2205,121 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   );
 }
 
-function renderUnderConstructionPage(site, nav, constructionData, config, banner) {
+function renderUnderConstructionPage(page, site, nav, constructionData, config, banner) {
+  if (page && page.slug === 'resources') {
+    return renderLayout(
+      'Family Resources',
+      'Gentle prompts and next steps that help stories continue after the last page.',
+      `<section class="content-card" aria-labelledby="resources-doorway">
+        <h2 id="resources-doorway">Open the Family Drawer</h2>
+        <p><strong>Who this is for:</strong> Families and caregivers who want practical, warm help after the story ends.</p>
+        <p><strong>What you can experience:</strong> Useful prompts, shared activities, and ready-to-use ideas you can try right away.</p>
+        <p><strong>Where to begin:</strong> <a href="#resources-paths">Choose one gentle next step that fits today</a></p>
+      </section>
+
+      <section class="content-card" aria-labelledby="resources-intro">
+        <h2 id="resources-intro">Family Resources</h2>
+        <p>Sometimes the best part of a story begins after the last page. These pathways help families keep the conversation going together.</p>
+      </section>
+
+      <section class="content-card" aria-labelledby="resources-paths">
+        <h2 id="resources-paths">Choose a Gentle Next Step</h2>
+        <div class="start-here-grid">
+          <article class="start-here-item">
+            <h3>Read Together</h3>
+            <p>Begin with a story, then choose one small question to discuss after reading.</p>
+            <a class="button" href="books.html">Browse Books</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Visit a Place</h3>
+            <p>Explore the map and pick one place to notice together before bedtime.</p>
+            <a class="button" href="map.html">Open the Map</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Meet a Friend</h3>
+            <p>Choose a character and talk about one quality your family appreciates.</p>
+            <a class="button" href="characters.html">Meet Characters</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Keep Exploring</h3>
+            <p>Use search to follow a name, a place, or a feeling through Hawkins Hollow.</p>
+            <a class="button" href="books.html#library-search">Open Search</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-card" aria-labelledby="resources-next">
+        <h2 id="resources-next">Where would you like to wander next?</h2>
+        <p><a class="button" href="index.html">Return to Welcome Home</a></p>
+      </section>`,
+      site,
+      nav,
+      `${site.domain}/resources.html`,
+      config,
+      banner
+    );
+  }
+
+  if (page && page.slug === 'community') {
+    return renderLayout(
+      'Community',
+      'A place for shared moments, kind conversations, and neighborly discovery.',
+      `<section class="content-card" aria-labelledby="community-doorway">
+        <h2 id="community-doorway">Step Onto the Porch</h2>
+        <p><strong>Who this is for:</strong> Visitors who want to feel connected through shared moments and neighborhood warmth.</p>
+        <p><strong>What you can experience:</strong> Friendships, place-based wandering, and simple invitations to join in with others.</p>
+        <p><strong>Where to begin:</strong> <a href="#community-paths">Choose one way to join in today</a></p>
+      </section>
+
+      <section class="content-card" aria-labelledby="community-intro">
+        <h2 id="community-intro">Community in Hawkins Hollow</h2>
+        <p>Hawkins Hollow grows through shared moments. Begin with one friendly path and see where it leads.</p>
+      </section>
+
+      <section class="content-card" aria-labelledby="community-paths">
+        <h2 id="community-paths">Ways to Join In</h2>
+        <div class="start-here-grid">
+          <article class="start-here-item">
+            <h3>Follow a Friendship</h3>
+            <p>Search for two friends and discover how their stories connect.</p>
+            <a class="button" href="books.html#library-search">Explore Friendships</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Wander Together</h3>
+            <p>Pick a place from the map and let each family member notice one detail.</p>
+            <a class="button" href="map.html">Visit a Place</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Meet Someone New</h3>
+            <p>Spend a few minutes with a character your family has not met yet.</p>
+            <a class="button" href="characters.html">Meet Characters</a>
+          </article>
+
+          <article class="start-here-item">
+            <h3>Take a Story Home</h3>
+            <p>When you find a story that feels right, save it for tonight's reading time.</p>
+            <a class="button" href="books.html">Browse Books</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="content-card" aria-labelledby="community-next">
+        <h2 id="community-next">Keep the porch light on</h2>
+        <p><a class="button" href="index.html">Return to Welcome Home</a></p>
+      </section>`,
+      site,
+      nav,
+      `${site.domain}/community.html`,
+      config,
+      banner
+    );
+  }
+
   return renderLayout(
     constructionData.title,
     constructionData.message,
@@ -1938,7 +2518,7 @@ function buildSite() {
     } else if (page.template === 'book-detail') {
       html = renderBookDetailPage(page, site, nav, booksData, config, banner);
     } else {
-      html = renderUnderConstructionPage(site, nav, constructionData, config, banner);
+      html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner);
     }
 
     writePage(page.slug === 'index' ? 'index.html' : `${page.slug}.html`, html);

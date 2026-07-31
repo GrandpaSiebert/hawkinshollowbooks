@@ -54,6 +54,25 @@ node scripts/preview-site.js
 
 Open http://localhost:8080/ in a browser.
 
+## Publish to GitHub Pages
+
+This repository deploys through GitHub Actions using `.github/workflows/deploy-pages.yml`.
+
+After you make changes, publish with one command from the project root:
+
+```bash
+npm run publish:pages
+```
+
+Optional custom commit message:
+
+```bash
+powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1 -Message "Publish summer update"
+```
+
+The publish script builds the site, commits any pending changes, and pushes to `origin/main`.
+GitHub Actions then deploys `build-recovery/` to Pages.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)
@@ -152,3 +171,20 @@ Any page that has not yet been fully built will render a friendly placeholder me
 ## Editorial review mode
 
 The generated site now exposes preview text from `data/site-config.json`. No new copy should be considered approved until it is reviewed and confirmed.
+
+## Experience and hospitality guidance
+
+Hawkins Hollow uses a dedicated experience and voice constitution:
+
+- See docs/Hawkins-Hollow-Promise.md for the Technical, Creative, Hospitality, and Stewardship constitutions.
+- See docs/Hawkins-Hollow-Voice.md for voice rules and seasonal writing standards.
+- Apply those documents to all copy, navigation, seasonal updates, and feature decisions.
+
+## Documentation map
+
+- docs/Architecture.md: system architecture and technical constitution
+- docs/Build-Pipeline.md: build and ingestion workflow
+- docs/Hawkins-Hollow-Promise.md: hospitality and experience constitution
+- docs/Hawkins-Hollow-Voice.md: writing and voice rules
+- docs/Contributor-Checklist.md: stewardship review checklist for contributors
+- docs/Foundational-Docs-Policy.md: change policy for stable guiding documents
