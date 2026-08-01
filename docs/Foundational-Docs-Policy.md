@@ -98,6 +98,10 @@ One Production Pain Rule:
 - Default response to infrastructure requests is: Not yet.
 - The response changes to yes only when production experience demonstrates measurable need.
 
+Governance Freeze Rule:
+
+- No new governance artifacts without a production incident, recurring family observation, or a superseding architectural decision.
+
 ## Documentation Growth Rule
 
 Do not add a new documentation file unless it clearly cannot be represented as a section in an existing authoritative document.

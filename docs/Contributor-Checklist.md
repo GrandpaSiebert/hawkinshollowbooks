@@ -293,6 +293,14 @@ Standing backlog note:
 - Default answer to infrastructure requests: Not yet.
 - Change to yes only when production experience demonstrates a measurable need.
 
+Before proposing a new feature, answer:
+
+- What production problem does this solve?
+- Which existing ADR or policy is insufficient?
+- What evidence supports making this change now?
+
+If these cannot be answered clearly, default to: Not yet.
+
 Prioritize in this order:
 
 - Eliminate visitor-facing dead ends.
