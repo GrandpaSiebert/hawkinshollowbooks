@@ -12,6 +12,31 @@ Generated from a Promise Audit of `build-recovery/` on 2026-08-01.
 - Placeholder or coming-soon signals detected by scan: 0
 - Library Complete status: Promise Audit pass complete; proceed to Internal QA
 
+## Current Phase Status
+
+- Library Complete: Green (Promise Audit passed)
+- Internal QA: Yellow (in progress)
+- Progressive Visitor Rollout: Waiting on QA completion
+
+## Internal QA Baseline (Automated)
+
+Baseline generated from `generated/internal-qa-baseline.json`:
+
+- Pages scanned: 293
+- Missing viewport tags: 0
+- Missing html `lang` attribute: 0
+- Images missing `alt`: 0
+- Missing local download targets: 0
+- Download-labeled links with `href="#"`: 0
+
+Manual QA still required:
+
+- Desktop walkthrough
+- Mobile walkthrough
+- Accessibility review (keyboard + screen-reader sanity pass)
+- Download verification by click path
+- Full-site experience walkthrough
+
 ## Promise-Centered Priority
 
 ### High Priority (Blocks Family Recognition and Promise Gate)
