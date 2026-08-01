@@ -5,6 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "node scripts/generate-site.js",
+    "library:manifest": "node scripts/build-manifest.js",
+    "library:verify": "node scripts/verify-library.js",
+    "library:publish": "node scripts/publish-library.js --apply",
+    "library:publish:dry-run": "node scripts/publish-library.js --dry-run",
     "preview": "node scripts/preview-site.js",
     "publish:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -214,6 +214,73 @@ function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
   };
 }
 
+function createLibraryIndexFromManifest(manifest) {
+  const records = Array.isArray(manifest && manifest.records) ? manifest.records : [];
+  const books = records
+    .filter((record) => record && (record.id || record.slug))
+    .map((record) => {
+      const files = (record.assets || [])
+        .map((asset) => asset && asset.key)
+        .filter((value) => typeof value === 'string' && value.length > 0);
+
+      const fileTypeCounts = new Map();
+      for (const filePath of files) {
+        const extension = path.extname(filePath).toLowerCase().replace(/^\./, '') || 'none';
+        fileTypeCounts.set(extension, (fileTypeCounts.get(extension) || 0) + 1);
+      }
+
+      return {
+        id: record.id || String(record.slug || '').toUpperCase(),
+        title: record.title || record.id || record.slug,
+        series: record.series || '',
+        seriesCode: record.seriesCode || '',
+        folder: `External/${record.series || 'Library'}`,
+        files,
+        fileTypes: Array.from(fileTypeCounts.entries())
+          .sort((a, b) => a[0].localeCompare(b[0]))
+          .map(([extension, count]) => ({ extension, count }))
+      };
+    })
+    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
+
+  return {
+    generatedAt: new Date().toISOString(),
+    libraryRoot: 'generated/manifest/manifest.json',
+    synthesized: true,
+    fromManifest: true,
+    summary: {
+      indexedBooks: books.length,
+      categories: [{ category: 'Books', fileCount: books.length }]
+    },
+    books
+  };
+}
+
+function readLibraryIndexFromManifest(siteRoot) {
+  const candidates = [
+    path.join(siteRoot, 'generated', 'manifest', 'manifest.json'),
+    path.join(siteRoot, 'generated', 'manifest.json')
+  ];
+
+  for (const filePath of candidates) {
+    if (!fs.existsSync(filePath)) {
+      continue;
+    }
+
+    try {
+      const manifest = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+      const index = createLibraryIndexFromManifest(manifest);
+      if ((index.books || []).length > 0) {
+        return index;
+      }
+    } catch (error) {
+      console.warn(`Manifest read failed at ${path.relative(siteRoot, filePath)}: ${error.message}`);
+    }
+  }
+
+  return null;
+}
+
 function writeMergedBookIndex(siteRoot, mergedBookIndex) {
   const outputPath = path.join(siteRoot, 'generated', 'merged-book-index.json');
   fs.writeFileSync(outputPath, `${JSON.stringify(mergedBookIndex, null, 2)}\n`, 'utf8');
@@ -2453,11 +2520,16 @@ function buildSite() {
   const libraryScan = readJson('generated/library-scan.json');
   const rawLibraryIndex = readJson('generated/library-index.json');
   const hasLibraryBooks = Boolean(rawLibraryIndex && Array.isArray(rawLibraryIndex.books) && rawLibraryIndex.books.length > 0);
+  const manifestLibraryIndex = readLibraryIndexFromManifest(root);
   const libraryIndex = hasLibraryBooks
     ? rawLibraryIndex
-    : synthesizeLibraryIndexFromBooksData(booksData, seriesData);
+    : (manifestLibraryIndex || synthesizeLibraryIndexFromBooksData(booksData, seriesData));
   if (!hasLibraryBooks) {
-    console.log(`Library folder unavailable in build environment. Using synthesized index from data/books.json (${libraryIndex.summary.indexedBooks} records).`);
+    if (manifestLibraryIndex) {
+      console.log(`Library folder unavailable in build environment. Using generated manifest fallback (${libraryIndex.summary.indexedBooks} records).`);
+    } else {
+      console.log(`Library folder unavailable in build environment. Using synthesized index from data/books.json (${libraryIndex.summary.indexedBooks} records).`);
+    }
   }
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }

@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hawkinshollowbooks.com/schemas/manifest.schema.json",
+  "title": "Hawkins Hollow Library Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "library",
+    "summary",
+    "records"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "library": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseUrl", "prefixes"],
+      "properties": {
+        "baseUrl": {
+          "type": "string",
+          "minLength": 1
+        },
+        "prefixes": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "books",
+            "covers",
+            "companionPacks",
+            "illustrations",
+            "characters",
+            "resources",
+            "manifest"
+          ],
+          "properties": {
+            "books": { "type": "string", "const": "books/" },
+            "covers": { "type": "string", "const": "covers/" },
+            "companionPacks": { "type": "string", "const": "companion-packs/" },
+            "illustrations": { "type": "string", "const": "illustrations/" },
+            "characters": { "type": "string", "const": "characters/" },
+            "resources": { "type": "string", "const": "resources/" },
+            "manifest": { "type": "string", "const": "manifest/" }
+          }
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["recordCount", "assetCount"],
+      "properties": {
+        "recordCount": { "type": "integer", "minimum": 0 },
+        "assetCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "records": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "slug",
+          "title",
+          "series",
+          "seriesCode",
+          "assets"
+        ],
+        "properties": {
+          "id": { "type": "string", "minLength": 1 },
+          "slug": { "type": "string", "minLength": 1 },
+          "title": { "type": "string", "minLength": 1 },
+          "series": { "type": "string" },
+          "seriesCode": { "type": "string" },
+          "assets": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["role", "key", "sourcePath", "url", "contentType", "sizeBytes", "sha256"],
+              "properties": {
+                "role": {
+                  "type": "string",
+                  "enum": [
+                    "book",
+                    "cover",
+                    "companion-pack",
+                    "illustration",
+                    "character",
+                    "resource",
+                    "other"
+                  ]
+                },
+                "key": { "type": "string", "minLength": 1 },
+                "sourcePath": { "type": "string", "minLength": 1 },
+                "url": { "type": "string", "minLength": 1 },
+                "contentType": { "type": "string", "minLength": 1 },
+                "sizeBytes": { "type": "integer", "minimum": 0 },
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
