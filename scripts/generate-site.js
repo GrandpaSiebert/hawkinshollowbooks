@@ -849,8 +849,44 @@ function getEntitiesForType(entityIndex, type) {
   return [];
 }
 
+function normalizeEntityLabel(value, fallback = '') {
+  let label = String(value || fallback || '').replace(/\s+/g, ' ').trim();
+  if (!label) {
+    return String(fallback || 'Entity');
+  }
+
+  const cardIndex = label.search(/\sCard\s/i);
+  if (cardIndex > 0) {
+    label = label.slice(0, cardIndex).trim();
+  }
+
+  const markerPatterns = [
+    /\sLandmark Identity:/i,
+    /\sEnvironment Identity:/i,
+    /\sRelationship Function:/i,
+    /\sStory Function:/i
+  ];
+  for (const pattern of markerPatterns) {
+    const markerIndex = label.search(pattern);
+    if (markerIndex > 0) {
+      label = label.slice(0, markerIndex).trim();
+    }
+  }
+
+  if (!label) {
+    label = String(fallback || 'Entity');
+  }
+
+  if (label.length > 120) {
+    label = `${label.slice(0, 117).trimEnd()}...`;
+  }
+
+  return label;
+}
+
 function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config) {
   const nodeId = `${entity.type}:${entity.id}`;
+  const entityLabel = normalizeEntityLabel(entity.name || entity.title || entity.id, entity.id);
   const nodeMap = new Map(((entityGraph && entityGraph.nodes) || []).map((node) => [node.id, node]));
   const node = nodeMap.get(nodeId) || null;
   const edges = ((entityGraph && entityGraph.edges) || []).filter(
@@ -884,7 +920,9 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       const isOutgoing = edge.from === nodeId;
       const otherNodeId = isOutgoing ? edge.to : edge.from;
       const otherNode = nodeMap.get(otherNodeId);
-      const label = otherNode ? `${otherNode.name} (${otherNode.entityType})` : otherNodeId;
+      const label = otherNode
+        ? `${normalizeEntityLabel(otherNode.name || otherNode.entityId, otherNode.entityId)} (${otherNode.entityType})`
+        : otherNodeId;
       const href = otherNode && otherNode.href ? `../../${otherNode.href}` : '';
       const link = href ? `<a href="${href}">${label}</a>` : label;
       const sourceDoc = edge.provenance && edge.provenance.sourceDocument
@@ -927,7 +965,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     }
     connectedCandidates.push({
       id: otherNode.entityId,
-      name: otherNode.name,
+      name: normalizeEntityLabel(otherNode.name || otherNode.entityId, otherNode.entityId),
       type: otherNode.entityType,
       entityPageHref: otherNode.href
     });
@@ -970,10 +1008,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     }).join('')}</ul>`;
 
   return renderLayout(
-    entity.name || entity.title || entity.id,
-    `Entity profile for ${entity.name || entity.title || entity.id}`,
+    entityLabel,
+    `Entity profile for ${entityLabel}`,
     `<section class="content-card">
-      <h1>${entity.name || entity.title || entity.id}</h1>
+      <h1>${entityLabel}</h1>
       ${identityRows.join('')}
     </section>
 
@@ -994,7 +1032,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
 
     <section class="content-card">
       <h2>Where would you like to wander next?</h2>
-      <p>People who explored ${entity.name || entity.title || entity.id} also wandered through:</p>
+      <p>People who explored ${entityLabel} also wandered through:</p>
       ${continueHtml}
     </section>
 

@@ -29,9 +29,20 @@ Baseline generated from `generated/internal-qa-baseline.json`:
 - Missing local download targets: 0
 - Download-labeled links with `href="#"`: 0
 
+## Internal QA Dashboard
+
+| QA Area | Status |
+| --- | --- |
+| Automated QA | Complete |
+| Navigation QA | Complete |
+| Visual QA | In Progress |
+| Story Journey QA | Ready |
+| Character Journey QA | Ready |
+| Experience QA | Ready |
+
 ## Manual Internal QA Sessions
 
-### Session 1 - Navigation
+### Walkthrough 1 - Can I get anywhere?
 
 Status: Complete
 
@@ -45,41 +56,54 @@ Evidence:
 - Internal links checked: 4421
 - Internal link failures: 3 (all known script-template artifacts already classified as non-visitor-facing noise)
 
-### Session 2 - Visual Review
+### Walkthrough 2 - Can I read comfortably?
 
-Status: Ready
+Status: In Progress
+
+Evidence (prep scan):
+
+- Pages scanned: 293
+- Long title candidates: 6 (down from 37 after label normalization)
+- Long H1 candidates: 10 (down from 41 after label normalization)
+- Image-heavy candidates: 1 (`characters.html`)
+
+Fix completed in this pass:
+
+- Normalized oversized entity display labels in universal entity pages so generated `<title>` and `<h1>` values remain readable.
 
 Scope:
 
 - Desktop pass for spacing, wrapping, image cropping, and typography consistency.
-- Mobile pass for responsive flow and readability.
+- Tablet and mobile pass for responsive flow and readability.
+- 200% zoom pass for readability and reflow behavior.
+- Spot-check long titles, long character names, and large galleries.
 
-### Session 3 - Story Experience
-
-Status: Ready
-
-Scope:
-
-- Read multiple full stories as a visitor.
-- Confirm pacing, clarity, and willingness to continue reading.
-
-### Session 4 - Character Experience
+### Walkthrough 3 - Does the world feel consistent?
 
 Status: Ready
 
 Scope:
 
-- Visit character pages for completeness and recognizability.
-- Confirm each page invites meaningful next exploration.
+- Review cross-page tone, color, and artwork consistency.
+- Confirm pages feel like one shared world.
 
-### Session 5 - Companion Experience
+### Walkthrough 4 - Can I complete a journey?
 
 Status: Ready
 
 Scope:
 
-- Walk full journey: Book -> Character -> Companion Pack -> Resource -> Back to Library.
-- Log any friction across cross-page transitions.
+- Validate complete visitor journeys across page types.
+- Capture friction points between transitions, not only within pages.
+
+### Walkthrough 5 - Would I stay?
+
+Status: Ready
+
+Scope:
+
+- Browse freely for 20 to 30 minutes with no checklist.
+- Record whether the experience invites continued exploration.
 
 ## Promise-Centered Priority
 
