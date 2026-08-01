@@ -939,7 +939,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       .filter((candidate) => candidate.id !== entity.id)
       .slice(0, 8);
   const continueHtml = continueExploring.length === 0
-    ? '<p>More entities of this type are coming soon.</p>'
+    ? '<p>More connected entities are still being mapped. For now, choose another nearby path from the map or search.</p>'
     : `<ul>${continueExploring.map((candidate) => {
       const href = candidate.entityPageHref || candidate.href || '';
       if (!href) {
@@ -1347,13 +1347,13 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
         .join(' ');
       const amazonLine = buttons || (amazon && amazon.url
         ? `<a href="${amazon.url}" target="_blank" rel="noopener noreferrer">View on Amazon</a>`
-        : 'Amazon listing not linked yet');
+        : 'Retail purchase links are not available in this release.');
       return `<article class="book-card">
           <h3>${book.title || book.id}</h3>
           <p><strong>ID:</strong> ${book.id}</p>
           <p><strong>Series:</strong> ${book.series || 'Unknown'}</p>
           <p><strong>Files Indexed:</strong> ${fileCount}</p>
-          <p>${pdf ? 'PDF discovered in Library' : 'PDF not discovered yet'}</p>
+          <p>${pdf ? 'PDF discovered in Library' : 'Reader PDF is not listed in the current Library index.'}</p>
           <p>${amazonLine}</p>
           <a class="button" href="${detailHref}">Open Book Details</a>
         </article>`;
@@ -1387,7 +1387,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup) {
         ${amazon.links && amazon.links.kindle ? `<a class="button" href="${amazon.links.kindle}" target="_blank" rel="noopener noreferrer">Buy Kindle</a>` : ''}
       </p>
       ${amazon.url ? `<p><a href="${amazon.url}" target="_blank" rel="noopener noreferrer">Primary Amazon Link</a></p>` : ''}`
-    : '<p><strong>Amazon Listing:</strong> No workbook match found for this book ID yet.</p>';
+    : '<p><strong>Amazon Listing:</strong> No workbook match found for this book ID in this release.</p>';
 
   const fileList = previewFiles
     .map((file) => `<li><code>${file}</code></li>`)
