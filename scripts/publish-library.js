@@ -7,6 +7,7 @@ const { verifyManifest } = require('./verify-library');
 const root = path.join(__dirname, '..');
 const statePath = path.join(root, 'generated', 'manifest', 'publish-state.json');
 const metadataOutputPath = path.join(root, 'generated', 'manifest', 'manifest.meta.json');
+const historyDir = path.join(root, 'generated', 'manifest', 'history');
 
 function parseArgs(argv) {
   const args = {
@@ -15,7 +16,8 @@ function parseArgs(argv) {
     output: path.join(root, 'generated', 'manifest', 'manifest.json'),
     manifestKey: process.env.LIBRARY_MANIFEST_KEY || 'manifest/manifest.json',
     metadataKey: process.env.LIBRARY_MANIFEST_META_KEY || 'manifest/manifest.meta.json',
-    verifyPublic: false
+    verifyPublic: false,
+    multipartThresholdMb: Number(process.env.LIBRARY_MULTIPART_THRESHOLD_MB || 64)
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -37,6 +39,9 @@ function parseArgs(argv) {
       i += 1;
     } else if (token === '--metadata-key' && argv[i + 1]) {
       args.metadataKey = String(argv[i + 1]).trim();
+      i += 1;
+    } else if (token === '--multipart-threshold-mb' && argv[i + 1]) {
+      args.multipartThresholdMb = Number(argv[i + 1]);
       i += 1;
     }
   }
@@ -177,17 +182,31 @@ function cacheControlForAsset(asset) {
 }
 
 function getR2Credentials() {
-  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.R2_ACCOUNT_ID || '';
-  const accessKeyId = process.env.R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || '';
-  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || '';
-  const bucket = process.env.R2_BUCKET || 'hawkins-hollow-library';
+  const localCredsPath = process.env.R2_CREDENTIALS_FILE
+    ? path.resolve(process.env.R2_CREDENTIALS_FILE)
+    : path.join(root, '.r2-credentials.local.json');
+
+  let fileCredentials = {};
+  if (fs.existsSync(localCredsPath)) {
+    try {
+      fileCredentials = JSON.parse(fs.readFileSync(localCredsPath, 'utf8'));
+    } catch (error) {
+      throw new Error(`Failed to parse local credentials file at ${localCredsPath}: ${error.message}`);
+    }
+  }
+
+  const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.R2_ACCOUNT_ID || fileCredentials.accountId || '';
+  const accessKeyId = process.env.R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || fileCredentials.accessKeyId || '';
+  const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || fileCredentials.secretAccessKey || '';
+  const bucket = process.env.R2_BUCKET || fileCredentials.bucket || 'hawkins-hollow-library';
 
   return {
     accountId,
     accessKeyId,
     secretAccessKey,
     bucket,
-    hasCredentials: Boolean(accountId && accessKeyId && secretAccessKey)
+    hasCredentials: Boolean(accountId && accessKeyId && secretAccessKey),
+    source: fileCredentials && Object.keys(fileCredentials).length > 0 ? 'env+local-file' : 'env-only'
   };
 }
 
@@ -279,25 +298,49 @@ function toAbsoluteSourcePath(sourcePath) {
   return path.join(root, 'Library', ...String(sourcePath || '').split('/'));
 }
 
-async function uploadAssetAndVerify(client, bucket, asset) {
+async function uploadAssetAndVerify(client, bucket, asset, options = {}) {
   const { PutObjectCommand } = require('@aws-sdk/client-s3');
+  const { Upload } = require('@aws-sdk/lib-storage');
 
   const sourcePath = toAbsoluteSourcePath(asset.sourcePath);
   if (!fs.existsSync(sourcePath)) {
     throw new Error(`Source file not found for upload: ${asset.sourcePath}`);
   }
 
-  const body = fs.readFileSync(sourcePath);
-  await client.send(new PutObjectCommand({
-    Bucket: bucket,
-    Key: asset.key,
-    Body: body,
-    ContentType: asset.contentType,
-    CacheControl: cacheControlForAsset(asset),
-    Metadata: {
-      sha256: asset.sha256
-    }
-  }));
+  const multipartThresholdBytes = Number(options.multipartThresholdBytes || 64 * 1024 * 1024);
+  const isMultipart = Number(asset.sizeBytes || 0) >= multipartThresholdBytes;
+
+  if (isMultipart) {
+    const uploader = new Upload({
+      client,
+      params: {
+        Bucket: bucket,
+        Key: asset.key,
+        Body: fs.createReadStream(sourcePath),
+        ContentType: asset.contentType,
+        CacheControl: cacheControlForAsset(asset),
+        Metadata: {
+          sha256: asset.sha256
+        }
+      },
+      queueSize: 4,
+      partSize: 8 * 1024 * 1024,
+      leavePartsOnError: false
+    });
+    await uploader.done();
+  } else {
+    const body = fs.readFileSync(sourcePath);
+    await client.send(new PutObjectCommand({
+      Bucket: bucket,
+      Key: asset.key,
+      Body: body,
+      ContentType: asset.contentType,
+      CacheControl: cacheControlForAsset(asset),
+      Metadata: {
+        sha256: asset.sha256
+      }
+    }));
+  }
 
   const verifyHead = await getRemoteHead(client, bucket, asset.key);
   if (!verifyHead) {
@@ -308,6 +351,45 @@ async function uploadAssetAndVerify(client, bucket, asset) {
   if (remoteSha !== asset.sha256 || remoteBytes !== Number(asset.sizeBytes || 0)) {
     throw new Error(`Upload verification failed (hash/size mismatch): ${asset.key}`);
   }
+}
+
+function formatBytes(bytes) {
+  const value = Number(bytes || 0);
+  if (value >= 1024 * 1024 * 1024) {
+    return `${(value / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+  }
+  if (value >= 1024 * 1024) {
+    return `${(value / (1024 * 1024)).toFixed(2)} MB`;
+  }
+  if (value >= 1024) {
+    return `${(value / 1024).toFixed(2)} KB`;
+  }
+  return `${value} B`;
+}
+
+function archiveHistoryArtifacts(manifestPath, metadataPath, manifestHash) {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  fs.mkdirSync(historyDir, { recursive: true });
+
+  const manifestArchivePath = path.join(historyDir, `manifest-${stamp}.json`);
+  const metadataArchivePath = path.join(historyDir, `manifest-meta-${stamp}.json`);
+
+  fs.copyFileSync(manifestPath, manifestArchivePath);
+  fs.copyFileSync(metadataPath, metadataArchivePath);
+
+  const receiptPath = path.join(historyDir, `publish-${stamp}.json`);
+  fs.writeFileSync(receiptPath, `${JSON.stringify({
+    archivedAt: new Date().toISOString(),
+    manifestHash,
+    manifestPath: path.relative(root, manifestArchivePath),
+    metadataPath: path.relative(root, metadataArchivePath)
+  }, null, 2)}\n`, 'utf8');
+
+  return {
+    manifestArchivePath,
+    metadataArchivePath,
+    receiptPath
+  };
 }
 
 function buildManifestMetadata(previousState, manifest, manifestHash) {
@@ -399,6 +481,8 @@ async function run(options = {}) {
   const recordDelta = diffRecordHashes(previousState.records || {}, recordHashes);
   const assetDelta = diffAssets(previousState.assets || {}, assetIndex);
   const uploadPlan = await buildUploadPlan(manifest, credentials);
+  const estimatedUploadBytes = (uploadPlan.filesToUpload || [])
+    .reduce((sum, asset) => sum + Number(asset.sizeBytes || 0), 0);
   const manifestText = fs.readFileSync(outputPath, 'utf8');
   const manifestHash = sha256Text(manifestText);
   const metadata = buildManifestMetadata(previousState, manifest, manifestHash);
@@ -412,6 +496,7 @@ async function run(options = {}) {
   console.log(`- Updated records: ${recordDelta.updatedRecords}`);
   console.log(`- Deleted records: ${recordDelta.deletedRecords}`);
   console.log(`- Files to upload: ${uploadPlan.filesToUpload.length}`);
+  console.log(`- Estimated upload: ${formatBytes(estimatedUploadBytes)} (${uploadPlan.filesToUpload.length} files)`);
   console.log(`- Deleted files: ${assetDelta.deleted.length}`);
   console.log(`- Manifest hash: ${manifestHash}`);
   console.log(`- Manifest output: ${path.relative(root, outputPath)}`);
@@ -427,6 +512,8 @@ async function run(options = {}) {
   } else {
     console.log('- Remote comparison: complete (sha256 metadata + size)');
   }
+  console.log(`- Credentials source: ${credentials.source}`);
+  console.log(`- Multipart threshold: ${options.multipartThresholdMb} MB`);
 
   if (options.mode !== 'apply') {
     console.log('Preview complete. No upload was attempted.');
@@ -441,7 +528,9 @@ async function run(options = {}) {
   console.log(`Applying publish to bucket: ${credentials.bucket}`);
 
   for (const asset of uploadPlan.filesToUpload) {
-    await uploadAssetAndVerify(client, credentials.bucket, asset);
+    await uploadAssetAndVerify(client, credentials.bucket, asset, {
+      multipartThresholdBytes: Number(options.multipartThresholdMb) * 1024 * 1024
+    });
   }
 
   console.log(`- Verified uploaded files: ${uploadPlan.filesToUpload.length}`);
@@ -464,6 +553,10 @@ async function run(options = {}) {
 
   console.log(`- Uploaded metadata: ${options.metadataKey}`);
   console.log(`- Uploaded manifest (last): ${options.manifestKey}`);
+
+  const archived = archiveHistoryArtifacts(outputPath, metadataOutputPath, manifestHash);
+  console.log(`- Archived manifest history: ${path.relative(root, archived.manifestArchivePath)}`);
+  console.log(`- Archived metadata history: ${path.relative(root, archived.metadataArchivePath)}`);
 
   const nextState = {
     generatedAt: new Date().toISOString(),

@@ -4,3 +4,7 @@ build-recovery/
 generated/
 .vscode/
 Library/
+.env
+.env.local
+.env.*.local
+.r2-credentials.local.json
