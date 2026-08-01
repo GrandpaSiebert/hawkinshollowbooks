@@ -868,7 +868,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     identityRows.push(`<p><strong>Source Document:</strong> <code>${entity.sourceDocument}</code></p>`);
   }
   if (entity.legacyHref) {
-    identityRows.push(`<p><a class="button" href="../../${entity.legacyHref}">Open Legacy Character Page</a></p>`);
+    const legacyTargetPath = path.join(buildDir, entity.legacyHref);
+    if (fs.existsSync(legacyTargetPath)) {
+      identityRows.push(`<p><a class="button" href="../../${entity.legacyHref}">Open Legacy Character Page</a></p>`);
+    }
   }
 
   const storyText = entity.canon && entity.canon.textExcerpt

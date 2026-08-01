@@ -7,36 +7,21 @@ Generated from a Promise Audit of `build-recovery/` on 2026-08-01.
 ## Current Readiness Snapshot
 
 - HTML pages scanned: 293
-- True missing internal destinations: 19
+- True missing internal destinations: 0
 - CTA binding failures (`href="#"` / empty): 0
-- Placeholder or coming-soon signals that affect promises: 2 pages
+- Placeholder or coming-soon signals detected by scan: 2 pages
 - Library Complete status: BLOCKED
 
 ## Promise-Centered Priority
 
 ### High Priority (Blocks Family Recognition and Promise Gate)
 
-| Page | Promise | Status | Missing | Priority |
-| --- | --- | --- | --- | --- |
-| entities/character/ara-aralynn-fox.html | Meet this character | Broken | characters/aralynn-fox.html missing | High |
-| entities/character/bax-baxter-badger.html | Meet this character | Broken | characters/baxter-badger.html missing | High |
-| entities/character/blain-blain-turtle.html | Meet this character | Broken | characters/blain-turtle.html missing | High |
-| entities/character/bra-brandon-rabbit.html | Meet this character | Broken | characters/brandon-rabbit.html missing | High |
-| entities/character/cal-callen-crow.html | Meet this character | Broken | characters/callen-crow.html missing | High |
-| entities/character/emm-emmitt-armadillo.html | Meet this character | Broken | characters/emmitt-armadillo.html missing | High |
-| entities/character/gar-garrett-hedgehog.html | Meet this character | Broken | characters/garrett-hedgehog.html missing | High |
-| entities/character/gma-grandma-siebert.html | Meet this character | Broken | characters/grandma-siebert.html missing | High |
-| entities/character/gpa-grandpa.html | Meet this character | Broken | characters/grandpa.html missing | High |
-| entities/character/har-harlie-mouse.html | Meet this character | Broken | characters/harlie-mouse.html missing | High |
-| entities/character/hay-haylee-prairie-dog.html | Meet this character | Broken | characters/haylee-prairie-dog.html missing | High |
-| entities/character/kayla-kayla-rabbit.html | Meet this character | Broken | characters/kayla-rabbit.html missing | High |
-| entities/character/lex-lex-hedgehog.html | Meet this character | Broken | characters/lex-hedgehog.html missing | High |
-| entities/character/lil-lillian-squirrel.html | Meet this character | Broken | characters/lillian-squirrel.html missing | High |
-| entities/character/mimi-mimi-hawkins.html | Meet this character | Broken | characters/mimi-hawkins.html missing | High |
-| entities/character/pop-pop-pop-farmer-hawkins.html | Meet this character | Broken | characters/pop-pop-farmer-hawkins.html missing | High |
-| entities/character/sky-skylin-crow.html | Meet this character | Broken | characters/skylin-crow.html missing | High |
-| entities/character/trinity-trinity-egret.html | Meet this character | Broken | characters/trinity-egret.html missing | High |
-| entities/character/zyl-zylar-squirrel.html | Meet this character | Broken | characters/zylar-squirrel.html missing | High |
+No open High priority items.
+
+Completed in this pass:
+
+- Removed 19 broken legacy character destination links by rendering the legacy button only when a destination file exists.
+- Rebuilt the site and re-ran Promise Audit to confirm true missing internal destinations are now zero.
 
 ### Medium Priority (Promise Clarity)
 
@@ -52,6 +37,12 @@ Generated from a Promise Audit of `build-recovery/` on 2026-08-01.
 | --- | --- | --- | --- | --- |
 | entities/resource/reading-order-reading-order.html | Learn more | Placeholder | "placeholder resource" text and "coming soon" copy still present | Medium |
 
+### Medium Priority (Scan Signals To Confirm)
+
+| Page | Promise | Status | Missing | Priority |
+| --- | --- | --- | --- | --- |
+| books.html | Read/Buy readiness messaging | Confirm | Scan flags "not discovered yet" and "not linked yet" wording; verify these are intentional and visitor-safe | Medium |
+
 ## Notes On Audit Noise (Not Action Items)
 
 These were detected by raw link scanning but are script-template strings, not real broken visitor links:
@@ -62,9 +53,9 @@ These were detected by raw link scanning but are script-template strings, not re
 
 ## Execution Sequence (Operational)
 
-1. Fix all 19 broken character destinations.
-2. Resolve or intentionally suppress incomplete book promises (HH-B-0006 and HH-E-0007).
-3. Replace placeholder content on the reading-order resource page.
+1. Resolve or intentionally suppress incomplete book promises (HH-B-0006 and HH-E-0007).
+2. Replace placeholder content on the reading-order resource page.
+3. Verify `books.html` readiness language for visitor-safe intent.
 4. Re-run Promise Audit and confirm:
    - 0 missing internal destinations.
    - 0 blocking placeholder promise pages.
