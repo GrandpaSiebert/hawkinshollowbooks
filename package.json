@@ -7,7 +7,9 @@
     "build": "node scripts/generate-site.js",
     "library:manifest": "node scripts/build-manifest.js",
     "library:verify": "node scripts/verify-library.js",
+    "library:preview": "node scripts/publish-library.js --preview",
     "library:publish": "node scripts/publish-library.js --apply",
+    "library:publish:verify-public": "node scripts/publish-library.js --apply --verify-public",
     "library:publish:dry-run": "node scripts/publish-library.js --dry-run",
     "preview": "node scripts/preview-site.js",
     "publish:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1",
@@ -18,6 +20,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.859.0",
     "adm-zip": "^0.6.0",
     "xlsx": "^0.18.5"
   }
