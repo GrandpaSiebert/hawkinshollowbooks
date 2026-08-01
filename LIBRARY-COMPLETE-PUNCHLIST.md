@@ -33,11 +33,12 @@ Baseline generated from `generated/internal-qa-baseline.json`:
 
 | QA Area | Status |
 | --- | --- |
+| Promise Audit | Complete |
 | Automated QA | Complete |
 | Session 1 Navigation | Complete |
 | Session 2 Visual | Complete |
-| Session 3 Story Journey | Ready |
-| Session 4 Character and Companion Journey | Ready |
+| Session 3 Story Experience | Ready |
+| Session 4 Character Journey | Ready |
 | Session 5 Experience | Ready |
 
 ## Manual Internal QA Sessions
@@ -90,13 +91,19 @@ Scope:
 - 200% zoom pass for readability and reflow behavior.
 - Spot-check long titles, long character names, and large galleries.
 
-### Walkthrough 3 - Do the stories pull me forward?
+### Walkthrough 3 - Story Experience (representative sample)
 
 Status: Ready
 
 Scope:
 
-- Read stories in a first-visit mindset (no developer lens).
+- Read a representative set in a first-visit mindset (no developer lens):
+   - One early Storybook
+   - One First Reader
+   - One Second Reader
+   - One Tender Times
+   - One Growing Together
+   - One Holiday Story
 - After each story, answer:
    - Did I naturally want to click something else?
    - Was the next step obvious?
