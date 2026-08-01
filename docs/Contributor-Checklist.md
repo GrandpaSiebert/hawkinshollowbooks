@@ -200,6 +200,62 @@ The sprint is complete when this condition is true:
 
 - A first-time visitor can spend fifteen enjoyable minutes in Hawkins Hollow without encountering a dead end, a broken promise, or uncertainty about where to go next.
 
+## Pre-Family Milestone: Library Complete
+
+Before inviting the first family session, this milestone must be true:
+
+- Every page can fulfill the promise it makes.
+
+If this is not true, First Ten Families is delayed.
+
+### Family Recognition Audit
+
+Before inviting families, confirm:
+
+- Every recurring character has a profile.
+- Every recurring family appears somewhere appropriate.
+- Every major series is represented.
+- Every cover displays correctly.
+- Every companion pack linked from a book exists.
+- No placeholder artwork remains.
+
+### Readiness Gate 1: Technical
+
+Everything works.
+
+- No broken links.
+- No missing files.
+- No unresolved internal routes.
+- Mobile layouts work on key journeys.
+- Downloads work.
+- Read and Learn More actions resolve correctly.
+
+### Readiness Gate 2: Content
+
+Everything promised exists.
+
+- Book pages have required assets.
+- Companion packs are present where promised.
+- Character pages exist and are populated.
+- Series pages are represented and navigable.
+- Resources are present and usable.
+- Any Coming Soon copy is intentional and time-bound.
+
+### Readiness Gate 3: Emotional
+
+Ask this before launch:
+
+- Does this feel like Hawkins Hollow?
+
+Run a short read-through and journey pass with this prompt:
+
+- If Grandma visited today, would she say, "Yes, this feels like us"?
+
+### First Visitor Rule
+
+- Internal final QA pass goes first.
+- Grandma is the first real family experience.
+
 ## Open the Gate Objective
 
 During this sprint, define success as removing reasons a first-time visitor would stop wandering.

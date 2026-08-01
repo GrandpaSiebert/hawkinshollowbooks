@@ -48,6 +48,11 @@ Working promise:
 
 This is a learning milestone, not a feature milestone.
 
+Prerequisite before Session 1:
+
+- Library Complete milestone is passed (technical, content, and emotional gates).
+- Every invited family path is free of broken promises, dead ends, and unresolved placeholders.
+
 Treat this milestone like a fixed study while it is in progress.
 
 - Do not redefine success criteria during the ten sessions.

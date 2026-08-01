@@ -7,3 +7,31 @@ About Hawkins Hollow | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
 Books | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
 Resources | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
 Community | ✔ | ✔ | ☐ | ☐ | ☐ | ☐
+
+Pre-Family Launch Gate: Library Complete
+=======================================
+
+Gate 1 - Technical
+- [ ] No broken links.
+- [ ] No missing files.
+- [ ] No unresolved internal routes.
+- [ ] Mobile key journeys verified.
+- [ ] Downloads verified.
+
+Gate 2 - Content
+- [ ] Every book page has required assets.
+- [ ] Every companion pack link resolves.
+- [ ] Every recurring character has a populated page.
+- [ ] Every major series is represented.
+- [ ] No unintentional placeholder text or art remains.
+
+Gate 3 - Emotional
+- [ ] Read-through answer is yes: "Does this feel like Hawkins Hollow?"
+- [ ] Grandma prompt answer is yes: "Yes, this feels like us."
+
+Family Recognition Audit
+- [ ] Every recurring character has a profile.
+- [ ] Every recurring family appears somewhere appropriate.
+- [ ] Every major series is represented.
+- [ ] Every cover displays correctly.
+- [ ] Every companion pack linked from a book exists.
