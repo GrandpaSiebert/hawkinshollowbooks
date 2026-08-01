@@ -92,6 +92,10 @@ Trusted Infrastructure has one job: it quietly works.
 
 Once a subsystem becomes dependable, the team focuses on product experience rather than continuous redesign of that subsystem.
 
+One Production Pain Rule:
+
+- No infrastructure feature is added unless it solves a real production problem that has actually occurred.
+
 ## Documentation Growth Rule
 
 Do not add a new documentation file unless it clearly cannot be represented as a section in an existing authoritative document.

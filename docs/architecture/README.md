@@ -41,3 +41,4 @@ When a decision changes:
 - ADR-004: Family learning framework.
 - ADR-005: Website and content separation.
 - ADR-006: Publishing engine as Trusted Infrastructure.
+- ADR-007: One Production Pain Rule.
