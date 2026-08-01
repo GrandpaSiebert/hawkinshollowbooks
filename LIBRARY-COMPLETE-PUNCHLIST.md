@@ -77,6 +77,12 @@ Validation checks completed:
 - Desktop + mobile visual sweep on key visitor pages: no horizontal overflow.
 - 200% zoom overflow check on core landing pages: no horizontal overflow.
 
+Exception review completed (remaining long label candidates):
+
+- Reviewed remaining title and heading outliers across desktop, tablet, mobile, and 200% zoom.
+- No clipped headings, no horizontal heading overflow, and no readability blockers found.
+- Remaining longer labels are descriptive by content and accepted as visitor-readable.
+
 Scope:
 
 - Desktop pass for spacing, wrapping, image cropping, and typography consistency.
