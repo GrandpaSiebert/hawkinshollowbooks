@@ -97,26 +97,27 @@ Status: Ready
 
 Scope:
 
-- Read a representative set in a first-visit mindset (no developer lens):
-   - One early Storybook
-   - One First Reader
-   - One Second Reader
-   - One Tender Times
-   - One Growing Together
-   - One Holiday Story
+- Read a representative set in a first-visit mindset (no developer lens) and intentionally jump formats:
+   - Storybook
+   - Second Reader
+   - Tender Times
+   - Holiday Story
+   - Growing Together
+   - First Reader
 - After each story, answer:
    - Did I naturally want to click something else?
    - Was the next step obvious?
    - Did anything interrupt the emotional flow?
    - Did I feel invited to keep exploring?
+- Treat positive findings as first-class evidence, not only problems.
 
 Session 3 lightweight log (not every observation becomes a task):
 
-| Page | Observation | Action? |
-| --- | --- | --- |
-| Story #1 | Wanted to learn more about Spencer afterward | No (desired behavior) |
-| Story #7 | Companion Pack button was not obvious enough | Yes |
-| Character page | Felt complete | No |
+| Story | Continue? | Why? | Action? |
+| --- | --- | --- | --- |
+| Spencer's Sound Trail | Yes | Wanted to learn more about Spencer afterward | None |
+| Aleea's Story Chair | Yes | Companion Pack felt like a natural next step | None |
+| Story X | Hesitated | Did not notice the next suggested action | Improve prominence |
 
 ### Walkthrough 4 - Can I complete a journey?
 
