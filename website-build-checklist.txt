@@ -29,9 +29,25 @@ Gate 3 - Emotional
 - [ ] Read-through answer is yes: "Does this feel like Hawkins Hollow?"
 - [ ] Grandma prompt answer is yes: "Yes, this feels like us."
 
+Gate 4 - Promise
+- [ ] Every page keeps the promise it makes to visitors.
+- [ ] Every Download Companion Pack action resolves to a valid file.
+- [ ] Every Meet this character action resolves to a represented character.
+- [ ] Every Read the story action resolves to available story content.
+- [ ] Every Learn more action resolves to meaningful follow-on content.
+- [ ] No empty promise CTAs remain.
+
 Family Recognition Audit
 - [ ] Every recurring character has a profile.
 - [ ] Every recurring family appears somewhere appropriate.
 - [ ] Every major series is represented.
 - [ ] Every cover displays correctly.
 - [ ] Every companion pack linked from a book exists.
+
+Progressive Visitor Sequence
+- [ ] Stage 0: Internal QA complete.
+- [ ] Stage 1: Grandma visit complete.
+- [ ] Stage 2: Immediate family visits complete.
+- [ ] Stage 3: Neighbor visits complete.
+- [ ] Stage 4: Facebook friend visits complete.
+- [ ] Stage 5: First Ten Families study start approved.

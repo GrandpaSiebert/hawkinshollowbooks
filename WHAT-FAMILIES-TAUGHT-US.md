@@ -51,7 +51,21 @@ This is a learning milestone, not a feature milestone.
 Prerequisite before Session 1:
 
 - Library Complete milestone is passed (technical, content, and emotional gates).
+- Library Complete Promise Gate is passed (every page keeps the promise it makes).
 - Every invited family path is free of broken promises, dead ends, and unresolved placeholders.
+
+Progressive invitation sequence before the First Ten Families study:
+
+1. Stage 0: Internal QA.
+2. Stage 1: Grandma.
+3. Stage 2: Immediate family.
+4. Stage 3: Neighbors.
+5. Stage 4: Facebook friends.
+6. Stage 5: First Ten Families.
+
+Intent:
+
+- By Stage 5, feedback should primarily reflect navigation comfort, emotional experience, and clarity, not unresolved technical defects.
 
 Treat this milestone like a fixed study while it is in progress.
 

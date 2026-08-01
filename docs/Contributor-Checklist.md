@@ -251,10 +251,38 @@ Run a short read-through and journey pass with this prompt:
 
 - If Grandma visited today, would she say, "Yes, this feels like us"?
 
+### Readiness Gate 4: Promise
+
+Ask this question for every page:
+
+- Does this page fully keep the promise it makes to the visitor?
+
+Examples:
+
+- If a page offers Download Companion Pack, the file downloads.
+- If a page offers Meet this character, the character is represented.
+- If a page offers Read the story, the story exists.
+- If a page offers Learn more, meaningful follow-on content exists.
+
+No empty promises.
+
 ### First Visitor Rule
 
 - Internal final QA pass goes first.
 - Grandma is the first real family experience.
+
+### Staged Invitation Sequence
+
+Use progressive audience stages before First Ten Families:
+
+1. Stage 0: Internal QA.
+2. Stage 1: Grandma.
+3. Stage 2: Immediate family.
+4. Stage 3: Neighbors.
+5. Stage 4: Facebook friends.
+6. Stage 5: First Ten Families study.
+
+By Stage 5, feedback should primarily be about comfort, clarity, and emotional experience rather than broken mechanics.
 
 ## Open the Gate Objective
 
