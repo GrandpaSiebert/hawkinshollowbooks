@@ -35,7 +35,7 @@ Baseline generated from `generated/internal-qa-baseline.json`:
 | --- | --- |
 | Automated QA | Complete |
 | Navigation QA | Complete |
-| Visual QA | In Progress |
+| Visual QA | Complete |
 | Story Journey QA | Ready |
 | Character Journey QA | Ready |
 | Experience QA | Ready |
@@ -58,7 +58,7 @@ Evidence:
 
 ### Walkthrough 2 - Can I read comfortably?
 
-Status: In Progress
+Status: Complete
 
 Evidence (prep scan):
 
@@ -70,6 +70,12 @@ Evidence (prep scan):
 Fix completed in this pass:
 
 - Normalized oversized entity display labels in universal entity pages so generated `<title>` and `<h1>` values remain readable.
+- Fixed small-screen header/navigation wrapping to remove horizontal overflow on core pages.
+
+Validation checks completed:
+
+- Desktop + mobile visual sweep on key visitor pages: no horizontal overflow.
+- 200% zoom overflow check on core landing pages: no horizontal overflow.
 
 Scope:
 
