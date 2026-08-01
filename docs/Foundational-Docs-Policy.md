@@ -49,6 +49,49 @@ Foundational documents should evolve intentionally.
 
 Stable principles. Flexible implementation.
 
+## Hawkins Hollow Operating Discipline
+
+### Phase 1 - Create
+
+Create in the environment that makes you productive.
+
+- Write stories.
+- Build companion packs.
+- Expand the Visual Canon.
+- Keep the Local Library authoritative.
+
+### Phase 2 - Publish
+
+Follow the publishing discipline:
+
+1. Preview.
+2. Review the integrity report.
+3. Publish.
+4. Verify.
+5. Archive.
+6. Celebrate milestones.
+
+No shortcuts.
+
+### Phase 3 - Learn
+
+Listen before changing.
+
+- Observe families.
+- Record observations.
+- Look for patterns.
+- Make one small improvement the evidence has earned.
+
+There is no standing step that says "redesign the architecture." Architecture changes require demonstrated production need.
+
+## Trusted Infrastructure Rule
+
+The publishing engine is designated Trusted Infrastructure.
+
+Trusted Infrastructure has one job: it quietly works.
+
+Once a subsystem becomes dependable, the team focuses on product experience rather than continuous redesign of that subsystem.
+
 ## Documentation Growth Rule
 
 Do not add a new documentation file unless it clearly cannot be represented as a section in an existing authoritative document.

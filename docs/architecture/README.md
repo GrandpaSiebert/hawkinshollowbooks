@@ -40,3 +40,4 @@ When a decision changes:
 - ADR-003: R2 mapping translation layer.
 - ADR-004: Family learning framework.
 - ADR-005: Website and content separation.
+- ADR-006: Publishing engine as Trusted Infrastructure.

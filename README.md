@@ -195,3 +195,4 @@ Hawkins Hollow uses a dedicated experience and voice constitution:
 - docs/Contributor-Checklist.md: stewardship review checklist for contributors
 - docs/Foundational-Docs-Policy.md: change policy for stable guiding documents
 - docs/architecture/README.md: ADR policy and architecture decision index
+- docs/architecture/ADR-006-publishing-engine-trusted-infrastructure.md: trusted infrastructure designation for publishing
