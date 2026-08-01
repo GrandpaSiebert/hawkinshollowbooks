@@ -16,6 +16,21 @@ Purpose:
 - Preserve recurring observations until patterns are clear.
 - Protect Hawkins Hollow's hospitality voice by learning from real visits.
 
+## Things Reality Taught Us
+
+Keep one running page section for direct learning statements from real sessions.
+
+Entry starters:
+
+- We expected...
+- Families showed...
+- We changed our understanding because...
+
+Guardrail:
+
+- Do not start entries with "We fixed" or "We improved".
+- Record what reality taught first; planning decisions happen later in separate work.
+
 Working promise:
 
 - Never change the site because of one session. Change it because of a pattern.
