@@ -194,3 +194,4 @@ Hawkins Hollow uses a dedicated experience and voice constitution:
 - docs/Hawkins-Hollow-Voice.md: writing and voice rules
 - docs/Contributor-Checklist.md: stewardship review checklist for contributors
 - docs/Foundational-Docs-Policy.md: change policy for stable guiding documents
+- docs/architecture/README.md: ADR policy and architecture decision index
