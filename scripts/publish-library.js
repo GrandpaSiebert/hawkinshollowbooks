@@ -14,6 +14,7 @@ function parseArgs(argv) {
     mode: 'preview',
     baseUrl: process.env.LIBRARY_BASE_URL || 'https://library.hawkinshollowbooks.com',
     output: path.join(root, 'generated', 'manifest', 'manifest.json'),
+    bucket: process.env.R2_BUCKET || 'hawkins-hollow-library',
     manifestKey: process.env.LIBRARY_MANIFEST_KEY || 'manifest/manifest.json',
     metadataKey: process.env.LIBRARY_MANIFEST_META_KEY || 'manifest/manifest.meta.json',
     verifyPublic: false,
@@ -39,6 +40,9 @@ function parseArgs(argv) {
       i += 1;
     } else if (token === '--metadata-key' && argv[i + 1]) {
       args.metadataKey = String(argv[i + 1]).trim();
+      i += 1;
+    } else if (token === '--bucket' && argv[i + 1]) {
+      args.bucket = String(argv[i + 1]).trim();
       i += 1;
     } else if (token === '--multipart-threshold-mb' && argv[i + 1]) {
       args.multipartThresholdMb = Number(argv[i + 1]);
@@ -181,7 +185,7 @@ function cacheControlForAsset(asset) {
   return 'public, max-age=604800, immutable';
 }
 
-function getR2Credentials() {
+function getR2Credentials(overrides = {}) {
   const localCredsPath = process.env.R2_CREDENTIALS_FILE
     ? path.resolve(process.env.R2_CREDENTIALS_FILE)
     : path.join(root, '.r2-credentials.local.json');
@@ -198,7 +202,7 @@ function getR2Credentials() {
   const accountId = process.env.CLOUDFLARE_ACCOUNT_ID || process.env.R2_ACCOUNT_ID || fileCredentials.accountId || '';
   const accessKeyId = process.env.R2_ACCESS_KEY_ID || process.env.AWS_ACCESS_KEY_ID || fileCredentials.accessKeyId || '';
   const secretAccessKey = process.env.R2_SECRET_ACCESS_KEY || process.env.AWS_SECRET_ACCESS_KEY || fileCredentials.secretAccessKey || '';
-  const bucket = process.env.R2_BUCKET || fileCredentials.bucket || 'hawkins-hollow-library';
+  const bucket = overrides.bucket || process.env.R2_BUCKET || fileCredentials.bucket || 'hawkins-hollow-library';
 
   return {
     accountId,
@@ -208,6 +212,13 @@ function getR2Credentials() {
     hasCredentials: Boolean(accountId && accessKeyId && secretAccessKey),
     source: fileCredentials && Object.keys(fileCredentials).length > 0 ? 'env+local-file' : 'env-only'
   };
+}
+
+function writePublishSummary(summary) {
+  fs.mkdirSync(path.dirname(metadataOutputPath), { recursive: true });
+  const summaryPath = path.join(path.dirname(metadataOutputPath), 'publish-summary.json');
+  fs.writeFileSync(summaryPath, `${JSON.stringify(summary, null, 2)}\n`, 'utf8');
+  return summaryPath;
 }
 
 function createR2Client(credentials) {
@@ -467,7 +478,7 @@ async function verifyPublicEndpoints(baseUrl, manifestKey, manifest) {
 }
 
 async function run(options = {}) {
-  const credentials = getR2Credentials();
+  const credentials = getR2Credentials({ bucket: options.bucket });
   const previousState = readPreviousState();
   const { manifest, outputPath } = buildManifest({
     baseUrl: options.baseUrl,
@@ -514,8 +525,25 @@ async function run(options = {}) {
   }
   console.log(`- Credentials source: ${credentials.source}`);
   console.log(`- Multipart threshold: ${options.multipartThresholdMb} MB`);
+  console.log(`- Target bucket: ${credentials.bucket}`);
+
+  const skippedCount = Math.max(0, Object.keys(assetIndex).length - uploadPlan.filesToUpload.length);
 
   if (options.mode !== 'apply') {
+    const previewSummary = {
+      mode: options.mode,
+      bucket: credentials.bucket,
+      generatedAt: new Date().toISOString(),
+      records: manifest.summary.recordCount,
+      assets: manifest.summary.assetCount,
+      uploaded: 0,
+      skipped: skippedCount,
+      failed: 0,
+      manifestSha256: manifestHash,
+      verification: 'PREVIEW'
+    };
+    const summaryPath = writePublishSummary(previewSummary);
+    console.log(`- Summary report: ${path.relative(root, summaryPath)}`);
     console.log('Preview complete. No upload was attempted.');
     return;
   }
@@ -527,13 +555,40 @@ async function run(options = {}) {
   const client = createR2Client(credentials);
   console.log(`Applying publish to bucket: ${credentials.bucket}`);
 
+  let uploadedCount = 0;
+  const failedUploads = [];
   for (const asset of uploadPlan.filesToUpload) {
-    await uploadAssetAndVerify(client, credentials.bucket, asset, {
-      multipartThresholdBytes: Number(options.multipartThresholdMb) * 1024 * 1024
-    });
+    try {
+      await uploadAssetAndVerify(client, credentials.bucket, asset, {
+        multipartThresholdBytes: Number(options.multipartThresholdMb) * 1024 * 1024
+      });
+      uploadedCount += 1;
+    } catch (error) {
+      failedUploads.push({ key: asset.key, reason: error.message });
+      break;
+    }
   }
 
-  console.log(`- Verified uploaded files: ${uploadPlan.filesToUpload.length}`);
+  console.log(`- Verified uploaded files: ${uploadedCount}`);
+
+  if (failedUploads.length > 0) {
+    const failedSummary = {
+      mode: options.mode,
+      bucket: credentials.bucket,
+      generatedAt: new Date().toISOString(),
+      records: manifest.summary.recordCount,
+      assets: manifest.summary.assetCount,
+      uploaded: uploadedCount,
+      skipped: skippedCount,
+      failed: failedUploads.length,
+      failedUploads,
+      manifestSha256: manifestHash,
+      verification: 'FAIL'
+    };
+    const summaryPath = writePublishSummary(failedSummary);
+    console.log(`- Summary report: ${path.relative(root, summaryPath)}`);
+    throw new Error(`Upload failed before manifest publish. Failed files: ${failedUploads.length}`);
+  }
 
   await uploadJsonObject(
     client,
@@ -583,6 +638,21 @@ async function run(options = {}) {
   } else {
     console.log('- Public endpoint checks: skipped (use --verify-public to enable)');
   }
+
+  const integritySummary = {
+    mode: options.mode,
+    bucket: credentials.bucket,
+    generatedAt: new Date().toISOString(),
+    records: manifest.summary.recordCount,
+    assets: manifest.summary.assetCount,
+    uploaded: uploadedCount,
+    skipped: skippedCount,
+    failed: 0,
+    manifestSha256: manifestHash,
+    verification: 'PASS'
+  };
+  const summaryPath = writePublishSummary(integritySummary);
+  console.log(`- Summary report: ${path.relative(root, summaryPath)}`);
 
   console.log('Publish complete.');
 }
