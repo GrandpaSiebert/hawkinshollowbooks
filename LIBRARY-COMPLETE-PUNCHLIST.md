@@ -29,13 +29,57 @@ Baseline generated from `generated/internal-qa-baseline.json`:
 - Missing local download targets: 0
 - Download-labeled links with `href="#"`: 0
 
-Manual QA still required:
+## Manual Internal QA Sessions
 
-- Desktop walkthrough
-- Mobile walkthrough
-- Accessibility review (keyboard + screen-reader sanity pass)
-- Download verification by click path
-- Full-site experience walkthrough
+### Session 1 - Navigation
+
+Status: Complete
+
+Evidence:
+
+- Pages scanned: 293
+- Pages missing site navigation: 0
+- Pages missing footer: 0
+- Header/navigation links checked: 2050
+- Navigation link resolution failures: 0
+- Internal links checked: 4421
+- Internal link failures: 3 (all known script-template artifacts already classified as non-visitor-facing noise)
+
+### Session 2 - Visual Review
+
+Status: Ready
+
+Scope:
+
+- Desktop pass for spacing, wrapping, image cropping, and typography consistency.
+- Mobile pass for responsive flow and readability.
+
+### Session 3 - Story Experience
+
+Status: Ready
+
+Scope:
+
+- Read multiple full stories as a visitor.
+- Confirm pacing, clarity, and willingness to continue reading.
+
+### Session 4 - Character Experience
+
+Status: Ready
+
+Scope:
+
+- Visit character pages for completeness and recognizability.
+- Confirm each page invites meaningful next exploration.
+
+### Session 5 - Companion Experience
+
+Status: Ready
+
+Scope:
+
+- Walk full journey: Book -> Character -> Companion Pack -> Resource -> Back to Library.
+- Log any friction across cross-page transitions.
 
 ## Promise-Centered Priority
 
