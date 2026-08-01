@@ -34,11 +34,11 @@ Baseline generated from `generated/internal-qa-baseline.json`:
 | QA Area | Status |
 | --- | --- |
 | Automated QA | Complete |
-| Navigation QA | Complete |
-| Visual QA | Complete |
-| Story Journey QA | Ready |
-| Character Journey QA | Ready |
-| Experience QA | Ready |
+| Session 1 Navigation | Complete |
+| Session 2 Visual | Complete |
+| Session 3 Story Journey | Ready |
+| Session 4 Character and Companion Journey | Ready |
+| Session 5 Experience | Ready |
 
 ## Manual Internal QA Sessions
 
@@ -90,14 +90,26 @@ Scope:
 - 200% zoom pass for readability and reflow behavior.
 - Spot-check long titles, long character names, and large galleries.
 
-### Walkthrough 3 - Does the world feel consistent?
+### Walkthrough 3 - Do the stories pull me forward?
 
 Status: Ready
 
 Scope:
 
-- Review cross-page tone, color, and artwork consistency.
-- Confirm pages feel like one shared world.
+- Read stories in a first-visit mindset (no developer lens).
+- After each story, answer:
+   - Did I naturally want to click something else?
+   - Was the next step obvious?
+   - Did anything interrupt the emotional flow?
+   - Did I feel invited to keep exploring?
+
+Session 3 lightweight log (not every observation becomes a task):
+
+| Page | Observation | Action? |
+| --- | --- | --- |
+| Story #1 | Wanted to learn more about Spencer afterward | No (desired behavior) |
+| Story #7 | Companion Pack button was not obvious enough | Yes |
+| Character page | Felt complete | No |
 
 ### Walkthrough 4 - Can I complete a journey?
 
