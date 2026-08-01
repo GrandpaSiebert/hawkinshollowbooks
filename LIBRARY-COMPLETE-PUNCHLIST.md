@@ -113,11 +113,15 @@ Scope:
 
 Session 3 lightweight log (not every observation becomes a task):
 
-| Story | Continue? | Why? | Action? |
-| --- | --- | --- | --- |
-| Spencer's Sound Trail | Yes | Wanted to learn more about Spencer afterward | None |
-| Aleea's Story Chair | Yes | Companion Pack felt like a natural next step | None |
-| Story X | Hesitated | Did not notice the next suggested action | Improve prominence |
+| Story | First Reaction | Continue? | Action? | Why? |
+| --- | --- | --- | --- | --- |
+| Spencer's Sound Trail | "I smiled." | Yes | None | I immediately wanted to meet Spencer. |
+| Holiday Story | "I wondered who Aleea was." | Yes | Character link more prominent? | I wanted an easier jump to her character page. |
+| Tender Times | "This felt comforting." | Yes | None | The story tone and artwork felt aligned. |
+
+Session 3 success metric:
+
+- Did the story naturally pull me into another part of Hawkins Hollow?
 
 ### Walkthrough 4 - Can I complete a journey?
 
