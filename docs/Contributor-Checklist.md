@@ -288,6 +288,11 @@ By Stage 5, feedback should primarily be about comfort, clarity, and emotional e
 
 During this sprint, define success as removing reasons a first-time visitor would stop wandering.
 
+Standing backlog note:
+
+- Default answer to infrastructure requests: Not yet.
+- Change to yes only when production experience demonstrates a measurable need.
+
 Prioritize in this order:
 
 - Eliminate visitor-facing dead ends.

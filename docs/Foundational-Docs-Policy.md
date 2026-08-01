@@ -95,6 +95,8 @@ Once a subsystem becomes dependable, the team focuses on product experience rath
 One Production Pain Rule:
 
 - No infrastructure feature is added unless it solves a real production problem that has actually occurred.
+- Default response to infrastructure requests is: Not yet.
+- The response changes to yes only when production experience demonstrates measurable need.
 
 ## Documentation Growth Rule
 
