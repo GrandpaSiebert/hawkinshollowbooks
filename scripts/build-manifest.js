@@ -6,11 +6,13 @@ const { writeLibraryArtifacts } = require('./library-scanner');
 const root = path.join(__dirname, '..');
 const DEFAULT_OUTPUT = path.join(root, 'generated', 'manifest', 'manifest.json');
 const DEFAULT_BASE_URL = 'https://library.hawkinshollowbooks.com';
+const DEFAULT_MAPPING_PATH = path.join(root, 'data', 'library-publish-mapping.json');
 
 function parseArgs(argv) {
   const args = {
     baseUrl: process.env.LIBRARY_BASE_URL || DEFAULT_BASE_URL,
     output: DEFAULT_OUTPUT,
+    mappingPath: process.env.LIBRARY_MAPPING_PATH || DEFAULT_MAPPING_PATH,
     quiet: false
   };
 
@@ -21,6 +23,9 @@ function parseArgs(argv) {
       i += 1;
     } else if (token === '--output' && argv[i + 1]) {
       args.output = path.resolve(argv[i + 1]);
+      i += 1;
+    } else if (token === '--mapping' && argv[i + 1]) {
+      args.mappingPath = path.resolve(argv[i + 1]);
       i += 1;
     } else if (token === '--quiet') {
       args.quiet = true;
@@ -88,40 +93,90 @@ function mimeTypeFromExtension(filePath) {
   }
 }
 
-function mapPrefixFromCategory(category, relativePath) {
-  const normalizedCategory = String(category || '').toLowerCase();
-  const firstSegment = ensurePosix(relativePath).split('/')[0].toLowerCase();
-
-  if (normalizedCategory === 'books' || firstSegment === 'books') {
-    return { role: 'book', prefix: 'books/' };
-  }
-  if (firstSegment === 'covers') {
-    return { role: 'cover', prefix: 'covers/' };
-  }
-  if (firstSegment === 'characters' || normalizedCategory === 'characters') {
-    return { role: 'character', prefix: 'characters/' };
-  }
-  if (firstSegment === 'illustrations') {
-    return { role: 'illustration', prefix: 'illustrations/' };
-  }
-  if (firstSegment === 'companion-packs' || firstSegment === 'companion_packs' || firstSegment === 'companion packs') {
-    return { role: 'companion-pack', prefix: 'companion-packs/' };
-  }
-  if (normalizedCategory === 'ribbons') {
-    return { role: 'resource', prefix: 'resources/' };
-  }
-  if (firstSegment === 'resources') {
-    return { role: 'resource', prefix: 'resources/' };
-  }
-
-  return { role: 'other', prefix: 'resources/' };
+function normalizePrefix(value) {
+  return ensurePosix(String(value || ''))
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '') + '/';
 }
 
-function toObjectKey(relativePath, category) {
+function defaultMappingConfig() {
+  return {
+    prefixes: {
+      books: 'books/',
+      covers: 'covers/',
+      companionPacks: 'companion-packs/',
+      illustrations: 'illustrations/',
+      characters: 'characters/',
+      resources: 'resources/',
+      manifest: 'manifest/'
+    },
+    rules: [
+      { localPrefixes: ['books/'], r2Prefix: 'books/', role: 'book' },
+      { localPrefixes: ['covers/'], r2Prefix: 'covers/', role: 'cover' },
+      { localPrefixes: ['companion packs/', 'companion-packs/', 'companion_packs/'], r2Prefix: 'companion-packs/', role: 'companion-pack' },
+      { localPrefixes: ['illustrations/'], r2Prefix: 'illustrations/', role: 'illustration' },
+      { localPrefixes: ['characters/'], r2Prefix: 'characters/', role: 'character' },
+      { localPrefixes: ['resources/', 'ribbons/'], r2Prefix: 'resources/', role: 'resource' }
+    ],
+    fallback: {
+      r2Prefix: 'resources/',
+      role: 'other'
+    }
+  };
+}
+
+function loadMappingConfig(mappingPath) {
+  if (!fs.existsSync(mappingPath)) {
+    return defaultMappingConfig();
+  }
+
+  const raw = JSON.parse(fs.readFileSync(mappingPath, 'utf8'));
+  const base = defaultMappingConfig();
+
+  const prefixes = Object.assign({}, base.prefixes, raw.prefixes || {});
+  const rules = Array.isArray(raw.rules) ? raw.rules : base.rules;
+  const fallback = Object.assign({}, base.fallback, raw.fallback || {});
+
+  return { prefixes, rules, fallback };
+}
+
+function resolveMapping(relativePath, category, mappingConfig) {
+  const normalizedPath = normalizePrefix(relativePath);
+  const normalizedCategory = normalizePrefix(category || '');
+  const rules = Array.isArray(mappingConfig.rules) ? mappingConfig.rules : [];
+
+  for (const rule of rules) {
+    const localPrefixes = Array.isArray(rule.localPrefixes) ? rule.localPrefixes : [];
+    for (const prefix of localPrefixes) {
+      const normalizedPrefix = normalizePrefix(prefix);
+      if (normalizedPath.startsWith(normalizedPrefix) || normalizedCategory === normalizedPrefix) {
+        return {
+          role: rule.role || 'other',
+          r2Prefix: normalizePrefix(rule.r2Prefix || mappingConfig.fallback.r2Prefix),
+          matchedPrefix: normalizedPrefix
+        };
+      }
+    }
+  }
+
+  return {
+    role: mappingConfig.fallback.role || 'other',
+    r2Prefix: normalizePrefix(mappingConfig.fallback.r2Prefix || 'resources/'),
+    matchedPrefix: ''
+  };
+}
+
+function toObjectKey(relativePath, category, mappingConfig) {
   const normalized = ensurePosix(relativePath);
+  const mapping = resolveMapping(normalized, category, mappingConfig);
   const parts = normalized.split('/').filter(Boolean);
-  const { prefix } = mapPrefixFromCategory(category, normalized);
-  const trimmed = parts.length > 1 ? parts.slice(1) : parts;
+  const matchedSegments = mapping.matchedPrefix
+    .split('/')
+    .filter(Boolean)
+    .length;
+  const trimmed = parts.length > matchedSegments ? parts.slice(matchedSegments) : parts;
   const sanitized = trimmed.map((segment, index) => {
     const isLast = index === trimmed.length - 1;
     if (!isLast) {
@@ -135,7 +190,8 @@ function toObjectKey(relativePath, category) {
     return safeExt ? `${safeBase}.${safeExt}` : safeBase;
   });
 
-  return `${prefix}${sanitized.join('/')}`;
+  const keyTail = sanitized.join('/');
+  return `${mapping.r2Prefix}${keyTail}`;
 }
 
 function hashFile(filePath) {
@@ -152,6 +208,8 @@ function findPreferredAsset(files, pattern) {
 function buildManifest(options = {}) {
   const baseUrl = String(options.baseUrl || DEFAULT_BASE_URL).replace(/\/+$/, '');
   const outputPath = path.resolve(options.output || DEFAULT_OUTPUT);
+  const mappingPath = path.resolve(options.mappingPath || DEFAULT_MAPPING_PATH);
+  const mappingConfig = loadMappingConfig(mappingPath);
   const result = writeLibraryArtifacts(root);
   const libraryIndex = JSON.parse(fs.readFileSync(result.indexPath, 'utf8'));
   const libraryScan = JSON.parse(fs.readFileSync(result.scanPath, 'utf8'));
@@ -173,8 +231,8 @@ function buildManifest(options = {}) {
           return null;
         }
 
-        const mapping = mapPrefixFromCategory(scanInfo.category, filePath);
-        const key = toObjectKey(filePath, scanInfo.category);
+        const mapping = resolveMapping(filePath, scanInfo.category, mappingConfig);
+        const key = toObjectKey(filePath, scanInfo.category, mappingConfig);
         return {
           role: mapping.role,
           key,
@@ -212,15 +270,7 @@ function buildManifest(options = {}) {
     generatedAt: new Date().toISOString(),
     library: {
       baseUrl,
-      prefixes: {
-        books: 'books/',
-        covers: 'covers/',
-        companionPacks: 'companion-packs/',
-        illustrations: 'illustrations/',
-        characters: 'characters/',
-        resources: 'resources/',
-        manifest: 'manifest/'
-      }
+      prefixes: mappingConfig.prefixes
     },
     summary: {
       recordCount: records.length,
@@ -234,6 +284,7 @@ function buildManifest(options = {}) {
 
   if (!options.quiet) {
     console.log(`Manifest generated at ${path.relative(root, outputPath)}.`);
+    console.log(`- Mapping: ${path.relative(root, mappingPath)}`);
     console.log(`- Records: ${manifest.summary.recordCount}`);
     console.log(`- Assets: ${manifest.summary.assetCount}`);
     console.log(`- Base URL: ${baseUrl}`);

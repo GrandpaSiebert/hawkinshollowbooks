@@ -42,13 +42,13 @@
             "manifest"
           ],
           "properties": {
-            "books": { "type": "string", "const": "books/" },
-            "covers": { "type": "string", "const": "covers/" },
-            "companionPacks": { "type": "string", "const": "companion-packs/" },
-            "illustrations": { "type": "string", "const": "illustrations/" },
-            "characters": { "type": "string", "const": "characters/" },
-            "resources": { "type": "string", "const": "resources/" },
-            "manifest": { "type": "string", "const": "manifest/" }
+            "books": { "type": "string", "pattern": "^.+/$" },
+            "covers": { "type": "string", "pattern": "^.+/$" },
+            "companionPacks": { "type": "string", "pattern": "^.+/$" },
+            "illustrations": { "type": "string", "pattern": "^.+/$" },
+            "characters": { "type": "string", "pattern": "^.+/$" },
+            "resources": { "type": "string", "pattern": "^.+/$" },
+            "manifest": { "type": "string", "pattern": "^.+/$" }
           }
         }
       }

@@ -1,0 +1,47 @@
+{
+  "prefixes": {
+    "books": "books/",
+    "covers": "covers/",
+    "companionPacks": "companion-packs/",
+    "illustrations": "illustrations/",
+    "characters": "characters/",
+    "resources": "resources/",
+    "manifest": "manifest/"
+  },
+  "rules": [
+    {
+      "localPrefixes": ["books/"],
+      "r2Prefix": "books/",
+      "role": "book"
+    },
+    {
+      "localPrefixes": ["covers/"],
+      "r2Prefix": "covers/",
+      "role": "cover"
+    },
+    {
+      "localPrefixes": ["companion packs/", "companion-packs/", "companion_packs/"],
+      "r2Prefix": "companion-packs/",
+      "role": "companion-pack"
+    },
+    {
+      "localPrefixes": ["illustrations/"],
+      "r2Prefix": "illustrations/",
+      "role": "illustration"
+    },
+    {
+      "localPrefixes": ["characters/"],
+      "r2Prefix": "characters/",
+      "role": "character"
+    },
+    {
+      "localPrefixes": ["resources/", "ribbons/"],
+      "r2Prefix": "resources/",
+      "role": "resource"
+    }
+  ],
+  "fallback": {
+    "r2Prefix": "resources/",
+    "role": "other"
+  }
+}
