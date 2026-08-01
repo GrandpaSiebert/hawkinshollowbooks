@@ -8,6 +8,12 @@ It now includes a Library Scanner that treats `Library/` as a content repository
 
 Use the JavaScript generator as the single source of truth. The Python script is intentionally deprecated and should not be used for new work.
 
+## Publishing principle
+
+The local `Library/` is the authoritative working environment. The publishing engine is responsible for adapting it to distribution targets (R2 object keys, manifests, and bucket-specific publish flows).
+
+Do not reorganize the local `Library/` to match cloud storage prefixes. Update `data/library-publish-mapping.json` when published key structure needs to change.
+
 ## Structure
 
 - `layouts/` shared page templates
