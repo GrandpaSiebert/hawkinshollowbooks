@@ -2957,61 +2957,41 @@ function getStorybookCardInvitation(book) {
   return invitationByTitle[title] || (book && book.description ? book.description : 'A gentle story waiting to be read.');
 }
 
-function getSeriesRecommendation(series, booksData) {
-  const seriesSlug = series && series.slug ? series.slug : 'storybooks';
-  const seriesBooks = (booksData.books || []).filter((book) => book.seriesSlug === seriesSlug);
+function getSeriesEditorial(series) {
   const editorial = series && series.editorial ? series.editorial : {};
-  const recommendedFirstBook = editorial && editorial.recommendedFirstBook ? String(editorial.recommendedFirstBook) : '';
-
-  const featuredBook = seriesBooks.find((book) => {
-    const canonicalId = book && book.identity && book.identity.canonicalId ? String(book.identity.canonicalId) : '';
-    const aliases = Array.isArray(book && book.identity && book.identity.legacyAliases) ? book.identity.legacyAliases : [];
-    return (
-      (book && book.slug && book.slug === recommendedFirstBook) ||
-      canonicalId === recommendedFirstBook ||
-      aliases.includes(recommendedFirstBook)
-    );
-  }) || seriesBooks[0] || null;
-
-  const remainingBooks = featuredBook
-    ? seriesBooks.filter((book) => book !== featuredBook).slice(0, 3)
-    : seriesBooks.slice(0, 3);
 
   return {
-    featuredBook,
-    remainingBooks,
     welcomeHeading: editorial && editorial.welcomeHeading ? editorial.welcomeHeading : 'A Good Place to Begin',
     welcomeText: editorial && editorial.welcomeText ? editorial.welcomeText : 'If this is your first visit to Hawkins Hollow, this story is a gentle place to begin.'
   };
 }
 
-function buildStorybookPreviewCards(booksData, series) {
+function getStorybooksForSeries(series, booksData) {
   const seriesSlug = series && series.slug ? series.slug : 'storybooks';
-  const storybooks = (booksData.books || []).filter((book) => book.seriesSlug === seriesSlug);
+
+  return (booksData.books || [])
+    .filter((book) => book.seriesSlug === seriesSlug)
+    .sort((a, b) => {
+      const aOrder = Number.isFinite(a && a.sortOrder) ? a.sortOrder : Number.MAX_SAFE_INTEGER;
+      const bOrder = Number.isFinite(b && b.sortOrder) ? b.sortOrder : Number.MAX_SAFE_INTEGER;
+      if (aOrder !== bOrder) {
+        return aOrder - bOrder;
+      }
+      return String(a && a.title ? a.title : '').localeCompare(String(b && b.title ? b.title : ''));
+    })
+    .slice(0, 4);
+}
+
+function buildStorybookPreviewCards(booksData, series) {
+  const storybooks = getStorybooksForSeries(series, booksData);
 
   if (!storybooks.length) {
     return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New Storybooks will appear here as the collection grows.</p></article>`;
   }
 
-  const { featuredBook, remainingBooks, welcomeHeading, welcomeText } = getSeriesRecommendation(series, booksData);
-  const featuredMarkup = featuredBook
-    ? `<section class="storybook-featured" aria-label="Today's story">
-        <div class="storybook-featured-media">
-          <img src="${toOutputAssetPath(featuredBook.coverImage)}" alt="Cover image for ${featuredBook.title}" loading="lazy" />
-        </div>
-        <div class="storybook-featured-copy">
-          <p class="eyebrow">${welcomeHeading}</p>
-          <h3 class="story-card-title">${featuredBook.title}</h3>
-          <p class="story-card-invitation">${getStorybookCardInvitation(featuredBook)}</p>
-          <p class="story-card-invitation story-card-welcome">${welcomeText}</p>
-          <a class="button" href="${getBookPageHref(featuredBook)}">Read this story</a>
-        </div>
-      </section>`
-    : '';
-
-  const remainingMarkup = remainingBooks.length
-    ? `<div class="storybook-remaining" aria-label="More stories">
-        ${remainingBooks
+  const { welcomeHeading, welcomeText } = getSeriesEditorial(series);
+  const cardsMarkup = `<div class="storybook-list" aria-label="Storybook recommendations">
+        ${storybooks
           .map(
             (book) => `<article class="book-card storybook-card">
               <div class="storybook-card-media">
@@ -3025,10 +3005,13 @@ function buildStorybookPreviewCards(booksData, series) {
             </article>`
           )
           .join('')}
-      </div>`
-    : '';
+      </div>`;
 
-  return `${featuredMarkup}${remainingMarkup}`;
+  return `<div class="storybook-editorial">
+      <p class="eyebrow">${welcomeHeading}</p>
+      <p class="story-card-invitation story-card-welcome">${welcomeText}</p>
+    </div>
+    ${cardsMarkup}`;
 }
 
 function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
@@ -3058,7 +3041,7 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
         <a class="button" href="storybook-series.html">Learn about the series</a>
         <a class="button" href="books.html">Browse the full library</a>
       </p>
-      <div class="storybook-shelf" aria-label="Featured Storybooks">
+      <div class="storybook-shelf" aria-label="Storybooks to read in any order">
         ${buildStorybookPreviewCards(booksData, series)}
       </div>
     </section>

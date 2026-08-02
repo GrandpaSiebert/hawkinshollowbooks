@@ -18,8 +18,9 @@ test('generator publishes the Storybook Shelf experience into the preview build 
   const html = fs.readFileSync(outputPath, 'utf8');
   assert.match(html, /Spencer’s First Friend/);
   assert.match(html, /Read this story/);
-  assert.match(html, /storybook-card/);
+  assert.match(html, /storybook-list/);
   assert.match(html, /If this is your first visit to Hawkins Hollow, this story is a gentle place to begin\./);
+  assert.doesNotMatch(html, /Today's story/);
   assert.doesNotMatch(html, /Canonical ID/);
   assert.doesNotMatch(html, /Public Title/);
 });
