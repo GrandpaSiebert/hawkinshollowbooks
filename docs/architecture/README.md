@@ -42,3 +42,9 @@ When a decision changes:
 - ADR-005: Website and content separation.
 - ADR-006: Publishing engine as Trusted Infrastructure.
 - ADR-007: One Production Pain Rule.
+- ADR-008: Authority-First Canon Governance.
+
+## Architecture Notes
+
+- world-model.md: constitutional ontology and ownership boundaries for canon, journeys, templates, and renderers.
+- canonical-asset-model.md: the stable contract for canonical IDs, production modes, public titles, and experience templates.

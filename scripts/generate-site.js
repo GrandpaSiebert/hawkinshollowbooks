@@ -57,7 +57,7 @@ function toSlug(value) {
 }
 
 function toBookPageSlug(book) {
-  const safeId = (book.id || 'unknown')
+  const safeId = getCanonicalBookId(book) || 'unknown'
     .toLowerCase()
     .replace(/\+/g, '-plus-')
     .replace(/[^a-z0-9-]+/g, '-')
@@ -74,6 +74,14 @@ function toBookPageSlug(book) {
 
 function getBookPageHref(book) {
   return `books/${toBookPageSlug(book)}.html`;
+}
+
+function getCanonicalBookId(book) {
+  return String((book && (book.code || book.id)) || '').trim();
+}
+
+function getBookPublicTitle(book) {
+  return String((book && (book.title || book.name)) || '').trim();
 }
 
 function getEntityPageHref(entityType, entityId, entityName = '') {
@@ -150,32 +158,6 @@ function createSearchIndex(libraryIndex, amazonLookup) {
   };
 }
 
-function createMergedBookIndex(libraryIndex, amazonLookup) {
-  const records = ((libraryIndex && libraryIndex.books) || []).map((book) => {
-    const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
-    return {
-      id: book.id,
-      title: book.title || book.id,
-      series: book.series || '',
-      seriesCode: book.seriesCode || '',
-      pageHref: getBookPageHref(book),
-      folder: book.folder || '',
-      files: book.files || [],
-      fileTypes: book.fileTypes || [],
-      amazon: amazon || null
-    };
-  });
-
-  return {
-    generatedAt: new Date().toISOString(),
-    summary: {
-      recordCount: records.length,
-      withAmazonDataCount: records.filter((record) => Boolean(record.amazon)).length
-    },
-    records
-  };
-}
-
 function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
   const seriesBySlug = new Map(((seriesData && seriesData.series) || [])
     .map((entry) => [String(entry.slug || '').toLowerCase(), entry.title || entry.slug || '']));
@@ -211,6 +193,32 @@ function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
       categories: [{ category: 'Books', fileCount: books.length }]
     },
     books
+  };
+}
+
+function createMergedBookIndex(libraryIndex, amazonLookup) {
+  const records = ((libraryIndex && libraryIndex.books) || []).map((book) => {
+    const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+    return {
+      id: book.id,
+      title: book.title || book.id,
+      series: book.series || '',
+      seriesCode: book.seriesCode || '',
+      pageHref: getBookPageHref(book),
+      folder: book.folder || '',
+      files: book.files || [],
+      fileTypes: book.fileTypes || [],
+      amazon: amazon || null
+    };
+  });
+
+  return {
+    generatedAt: new Date().toISOString(),
+    summary: {
+      recordCount: records.length,
+      withAmazonDataCount: records.filter((record) => Boolean(record.amazon)).length
+    },
+    records
   };
 }
 
@@ -285,6 +293,262 @@ function writeMergedBookIndex(siteRoot, mergedBookIndex) {
   const outputPath = path.join(siteRoot, 'generated', 'merged-book-index.json');
   fs.writeFileSync(outputPath, `${JSON.stringify(mergedBookIndex, null, 2)}\n`, 'utf8');
   return outputPath;
+}
+
+const experienceTemplates = {
+  default: 'Character Experience',
+  quietExplorer: 'Quiet Explorer',
+  welcomingGuide: 'Welcoming Guide',
+  tinyDiscoverer: 'Tiny Discoverer',
+  memoryKeeper: 'Memory Keeper',
+  gentleListener: 'Gentle Listener',
+  curiousHelper: 'Curious Helper',
+  communityBuilder: 'Community Builder',
+  steadyCompanion: 'Steady Companion'
+};
+
+const characterExperienceProfiles = {
+  spe: {
+    templateKey: 'quietExplorer',
+    visitorFeeling: 'listened to, thoughtful, unhurried, curious',
+    arrivalHeading: 'Welcome to Spencer’s quiet corner',
+    arrivalBody: 'Spencer rewards patience. This is a place to think before you choose, notice before you speak, and move at the speed of curiosity.',
+    storyHeading: 'Spend a few quiet minutes with Spencer',
+    friendHeading: 'Meet the people Spencer listens to',
+    placeHeading: 'Walk somewhere Spencer would notice',
+    discoveryHeading: 'Notice a small detail Spencer would not miss',
+    discoveryLine: 'Spencer tends to find the little clue that changes how the whole moment feels.',
+    nextHeading: 'Where would you like to wander next?',
+    nextLine: 'Try a calmer path, a familiar friend, or a place that invites a slower look.'
+  },
+  ali: {
+    templateKey: 'welcomingGuide',
+    visitorFeeling: 'welcomed, hopeful, encouraged, included',
+    arrivalHeading: 'Welcome to Alice’s welcoming world',
+    arrivalBody: 'Alice tends to open the door, make room, and help the next good thing feel possible.',
+    storyHeading: 'Spend a hopeful moment with Alice',
+    friendHeading: 'Meet the people Alice would invite in',
+    placeHeading: 'Walk somewhere Alice would open up for you',
+    discoveryHeading: 'Notice a small discovery Alice would celebrate',
+    discoveryLine: 'Alice keeps an eye out for the moment when belonging becomes visible.',
+    nextHeading: 'Where would you like to go after a warm welcome?',
+    nextLine: 'Choose a path that feels open, gentle, or just a little braver than before.'
+  },
+  ben: {
+    templateKey: 'tinyDiscoverer',
+    visitorFeeling: 'small, delighted, close to the ground, playful',
+    arrivalHeading: 'Welcome to Bentley’s low-to-the-ground world',
+    arrivalBody: 'Bentley’s visit is full of tiny victories, close-up wonders, and the kind of delight you only notice when you crouch down.',
+    storyHeading: 'Spend a tiny moment with Bentley',
+    friendHeading: 'Meet the friends Bentley would point out',
+    placeHeading: 'Walk somewhere small and surprising',
+    discoveryHeading: 'Notice something tiny',
+    discoveryLine: 'Bentley makes room for the detail that seems small until it turns into the whole story.',
+    nextHeading: 'What tiny wonder would you like to find next?',
+    nextLine: 'Follow the smallest clue, the softest movement, or the happiest little success.'
+  },
+  gpa: {
+    templateKey: 'memoryKeeper',
+    visitorFeeling: 'slow, comfortable, reflective, safe',
+    arrivalHeading: 'Welcome to Grandpa’s slow afternoon',
+    arrivalBody: 'Grandpa does not rush the visitor. He makes room for stories, pauses, memories, and a place to sit awhile.',
+    storyHeading: 'Spend some time with Grandpa',
+    friendHeading: 'Meet the people Grandpa remembers well',
+    placeHeading: 'Walk somewhere Grandpa would point out a bench',
+    discoveryHeading: 'Notice a memory Grandpa would tell again',
+    discoveryLine: 'Grandpa notices the kind of detail that lingers long after the visit ends.',
+    nextHeading: 'Where would you like to rest next?',
+    nextLine: 'Choose a story, a place, or a quiet stop that gives the visit room to breathe.'
+  }
+};
+
+function getCharacterExperienceProfile(character) {
+  const characterName = String(character && (character.name || character.slug || character.code) || 'This friend').trim();
+  const firstName = characterName.split(' ')[0];
+  const key = String(character && character.code ? character.code : character && character.slug ? character.slug : '').toLowerCase();
+  return characterExperienceProfiles[key] || {
+    templateKey: 'default',
+    visitorFeeling: 'curious, comfortable, gently invited',
+    arrivalHeading: `Welcome to ${firstName}’s world`,
+    arrivalBody: character.description || `${characterName} is part of the welcoming community that makes Hawkins Hollow feel like home.`,
+    storyHeading: `Spend a little time with ${firstName}`,
+    friendHeading: `Meet the people ${firstName} knows`,
+    placeHeading: `Walk somewhere with ${firstName}`,
+    discoveryHeading: 'Notice something small',
+    discoveryLine: `${firstName} often points visitors toward the smallest detail with the biggest heart.`,
+    nextHeading: 'Where would you like to wander next?',
+    nextLine: 'Choose the next stop that feels easiest to step into.'
+  };
+}
+
+function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex) {
+  const allCharacters = (charactersData && charactersData.characters) || [];
+  const books = (booksData && booksData.books) || [];
+  const graphCharacters = (entityIndex && entityIndex.byType && entityIndex.byType.characters) || [];
+  const graphEnvironments = (entityIndex && entityIndex.byType && entityIndex.byType.environments) || [];
+  const graphLandmarks = (entityIndex && entityIndex.byType && entityIndex.byType.landmarks) || [];
+  const profile = getCharacterExperienceProfile(character);
+
+  const matchedGraphCharacter = graphCharacters.find((entry) => {
+    const entryId = String(entry.id || '').toLowerCase();
+    const entrySlug = String(entry.slug || '').toLowerCase();
+    return entryId === String(character.code || '').toLowerCase()
+      || entrySlug === String(character.slug || '').toLowerCase();
+  }) || null;
+
+  const mentions = matchedGraphCharacter && matchedGraphCharacter.canon && matchedGraphCharacter.canon.mentions
+    ? matchedGraphCharacter.canon.mentions
+    : { characters: [], environments: [], landmarks: [] };
+
+  const selfName = String(character.name || '').toLowerCase();
+  const relatedPeople = (mentions.characters || [])
+    .filter((name) => String(name || '').trim().length > 0)
+    .filter((name) => String(name).toLowerCase() !== selfName)
+    .map((name) => {
+      const matched = allCharacters.find((entry) => String(entry.name || '').toLowerCase() === String(name).toLowerCase());
+      return matched
+        ? { name: matched.name, href: `${matched.slug}.html` }
+        : { name, href: '' };
+    })
+    .slice(0, 6);
+
+  const placeLookup = new Map();
+  for (const place of [...graphEnvironments, ...graphLandmarks]) {
+    const key = String(place.name || '').toLowerCase();
+    if (!placeLookup.has(key)) {
+      placeLookup.set(key, place);
+    }
+  }
+
+  const relatedPlaces = [...(mentions.environments || []), ...(mentions.landmarks || [])]
+    .filter((name) => String(name || '').trim().length > 0)
+    .map((name) => {
+      const matched = placeLookup.get(String(name).toLowerCase());
+      if (matched) {
+        const href = matched.entityPageHref || matched.href || '';
+        return { name: matched.name || name, href: href ? `../${href}` : '' };
+      }
+      return { name, href: '' };
+    })
+    .slice(0, 6);
+
+  const firstName = String(character.name || '').split(' ')[0].toLowerCase();
+  const relatedStories = books
+    .filter((book) => (Array.isArray(book.characters) ? book.characters.join(' ') : String(book.characters || '')).toLowerCase().includes(firstName)
+      || String(book.title || '').toLowerCase().includes(firstName))
+    .slice(0, 3)
+    .map((book) => ({
+      title: book.title,
+      href: getBookPageHref(book),
+      series: book.series || book.seriesSlug || 'Hawkins Hollow',
+      coverImage: String(book.coverImage || '').replace(/^\//, '')
+    }));
+
+  const fallbackStories = books.slice(0, 3).map((book) => ({
+    title: book.title,
+    href: getBookPageHref(book),
+    series: book.series || book.seriesSlug || 'Hawkins Hollow',
+    coverImage: String(book.coverImage || '').replace(/^\//, '')
+  }));
+
+  const featuredStories = relatedStories.length > 0 ? relatedStories : fallbackStories;
+
+  return {
+    canonicalId: getCanonicalBookId({ code: character.code, id: character.code }),
+    mode: profile.templateKey,
+    series: 'characters',
+    character,
+    experienceType: profile.templateKey,
+    visitorFeeling: profile.visitorFeeling,
+    profile,
+    relatedPeople,
+    relatedPlaces,
+    relatedStories,
+    sourceDocument: matchedGraphCharacter && matchedGraphCharacter.canon ? matchedGraphCharacter.canon.sourceDocument : null,
+    description: character.description || '',
+    heroImage: character.heroImage || ''
+  };
+}
+
+// Experience templates transform content objects into visitor-centered journeys.
+function renderCharacterExperiencePage(experience, site, nav, config) {
+  const character = experience.character;
+  const profile = experience.profile;
+  const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
+  const characterFirstName = characterName.split(' ')[0];
+  const relatedStoryCards = experience.relatedStories
+    .map((story) => {
+      const coverImage = story.coverImage
+        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" />`
+        : '';
+      return `<article class="book-card">
+        ${coverImage}
+        <h3>${story.title}</h3>
+        <p><strong>Series:</strong> ${story.series}</p>
+        <p><a class="button" href="../${story.href}">Read this story</a></p>
+      </article>`;
+    })
+    .join('');
+
+  const relatedPeopleLinks = experience.relatedPeople.length > 0
+    ? `<ul>${experience.relatedPeople.map((person) => (person.href ? `<li><a href="${person.href}">${person.name}</a></li>` : `<li>${person.name}</li>`)).join('')}</ul>`
+    : '<p>More friendships will appear here as the Hollow keeps growing.</p>';
+
+  const relatedPlaceLinks = experience.relatedPlaces.length > 0
+    ? `<ul>${experience.relatedPlaces.map((place) => (place.href ? `<li><a href="${place.href}">${place.name}</a></li>` : `<li>${place.name}</li>`)).join('')}</ul>`
+    : '<p>Favorite places will be added as new memories are shared.</p>';
+
+  const delightFact = experience.sourceDocument
+    ? `From the Hawkins Hollow memory: ${experience.sourceDocument.split('/').pop()}`
+    : `${character.name.split(' ')[0]} notices the quiet thing that makes the visit feel real.`;
+
+  return renderLayout(
+    character.name,
+    experience.visitorFeeling,
+    `<section class="content-card" aria-labelledby="character-arrival">
+      <img class="character-hero-full" src="../${experience.heroImage.replace(/^\//, '')}" alt="${character.name}" width="640" height="640" />
+      <h1 id="character-arrival">${profile.arrivalHeading}</h1>
+      <p>${profile.arrivalBody}</p>
+      <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
+      <p><a class="button" href="../characters.html">Meet more friends</a></p>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-together">
+      <h2 id="character-together">${profile.storyHeading}</h2>
+      <div class="card-grid">${relatedStoryCards}</div>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-people">
+      <h2 id="character-people">${profile.friendHeading}</h2>
+      ${relatedPeopleLinks}
+    </section>
+
+    <section class="content-card" aria-labelledby="character-wander">
+      <h2 id="character-wander">${profile.placeHeading}</h2>
+      ${relatedPlaceLinks}
+    </section>
+
+    <section class="content-card" aria-labelledby="character-discovery">
+      <h2 id="character-discovery">${profile.discoveryHeading}</h2>
+      <p>${profile.discoveryLine}</p>
+      <p>${delightFact}</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-next">
+      <h2 id="character-next">${profile.nextHeading}</h2>
+      <p>${profile.nextLine}</p>
+      <p>
+        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../map.html">Visit a place</a>
+        <a class="button" href="../community.html">Join the community</a>
+      </p>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/characters/${character.slug}.html`,
+    config,
+    null
+  );
 }
 
 function createEntityIndex(
@@ -1349,7 +1613,7 @@ function renderSeriesDoorwayFromLibraryIndex(libraryIndex, seriesName, audienceT
   const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName);
   const starter = books[0] || null;
   const starterLine = starter
-    ? `<p><strong>Start with:</strong> <a href="${getBookPageHref(starter)}">${starter.title || starter.id}</a></p>`
+    ? `<p><strong>Start with:</strong> <a href="${getBookPageHref(starter)}">${getBookPublicTitle(starter) || getCanonicalBookId(starter)}</a></p>`
     : '<p><strong>Start with:</strong> <a href="#library-search">Use search to find a story in this collection.</a></p>';
   const invitationTitle = invitationLabel || "When you're finished";
   const reassuranceLine = reassuranceText
@@ -1386,9 +1650,12 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
       const amazonLine = buttons || (amazon && amazon.url
         ? `<a href="${amazon.url}" target="_blank" rel="noopener noreferrer">View on Amazon</a>`
         : 'Retail purchase links are not available in this release.');
+      const canonicalId = getCanonicalBookId(book);
+        const publicTitle = getBookPublicTitle(book) || canonicalId;
       return `<article class="book-card">
-          <h3>${book.title || book.id}</h3>
-          <p><strong>ID:</strong> ${book.id}</p>
+          <h3>${publicTitle}</h3>
+          <p><strong>Canonical ID:</strong> ${canonicalId}</p>
+          <p><strong>Public Title:</strong> ${publicTitle}</p>
           <p><strong>Series:</strong> ${book.series || 'Unknown'}</p>
           <p><strong>Files Indexed:</strong> ${fileCount}</p>
           <p>${pdf ? 'PDF discovered in Library' : 'Reader PDF is not listed in the current Library index.'}</p>
@@ -1469,8 +1736,8 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup) {
   const jsonLdObject = {
     '@context': 'https://schema.org',
     '@type': 'Book',
-    name: book.title || book.id,
-    identifier: book.id,
+    name: getBookPublicTitle(book) || getCanonicalBookId(book),
+    identifier: getCanonicalBookId(book),
     url: `${site.domain}/${detailPath}`,
     inLanguage: 'en',
     bookEdition: amazon && amazon.edition ? amazon.edition : undefined,
@@ -1486,14 +1753,15 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup) {
   const jsonLd = JSON.stringify(jsonLdObject, null, 2);
 
   return renderLayout(
-    `${book.title || book.id}`,
-    `Library record ${book.id}`,
+    `${getBookPublicTitle(book) || getCanonicalBookId(book)}`,
+    `Library record ${getCanonicalBookId(book)}`,
     `<section class="content-card">
       <p class="eyebrow">Library Record</p>
-      <h1>${book.title || book.id}</h1>
-      <p><strong>ID:</strong> ${book.id}</p>
+      <h1>${getBookPublicTitle(book) || getCanonicalBookId(book)}</h1>
+      <p><strong>Canonical ID:</strong> ${getCanonicalBookId(book)}</p>
+      <p><strong>Public Title:</strong> ${getBookPublicTitle(book) || getCanonicalBookId(book)}</p>
       <p><strong>Series:</strong> ${book.series || 'Unknown'}</p>
-      <p><strong>Series Code:</strong> ${book.seriesCode || 'Unknown'}</p>
+      <p><strong>Series / Production Mode:</strong> ${book.seriesCode || 'Unknown'}</p>
       <p><strong>Folder:</strong> <code>${book.folder || 'Unknown'}</code></p>
       <p><strong>Indexed File Types:</strong> ${fileTypeSummary}</p>
       <p><strong>Total Files Indexed:</strong> ${files.length}</p>
@@ -2232,15 +2500,83 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
   );
 }
 
-function renderCharacterDetailPage(character, site, nav, config) {
+// Experience templates transform content objects into visitor-centered journeys.
+function renderCharacterExperiencePage(experience, site, nav, config) {
+  const character = experience.character;
+  const profile = experience.profile;
+  const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
+  const characterFirstName = characterName.split(' ')[0];
+
+  const relatedStoryCards = (experience.relatedStories || [])
+    .map((story) => {
+      const coverImage = story.coverImage
+        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" />`
+        : '';
+      return `<article class="book-card">
+        ${coverImage}
+        <h3>${story.title}</h3>
+        <p><strong>Series:</strong> ${story.series}</p>
+        <p><a class="button" href="../${story.href}">Read this story</a></p>
+      </article>`;
+    })
+    .join('');
+
+  const relatedPeopleLinks = (experience.relatedPeople || []).length > 0
+    ? `<ul>${experience.relatedPeople.map((person) => (person.href ? `<li><a href="${person.href}">${person.name}</a></li>` : `<li>${person.name}</li>`)).join('')}</ul>`
+    : '<p>More friendships will appear here as the Hollow keeps growing.</p>';
+
+  const relatedPlaceLinks = (experience.relatedPlaces || []).length > 0
+    ? `<ul>${experience.relatedPlaces.map((place) => (place.href ? `<li><a href="${place.href}">${place.name}</a></li>` : `<li>${place.name}</li>`)).join('')}</ul>`
+    : '<p>Favorite places will be added as new memories are shared.</p>';
+
+  const delightFact = experience.sourceDocument
+    ? `From the Hawkins Hollow memory: ${experience.sourceDocument.split('/').pop()}`
+    : `${characterFirstName} is one of the neighbors children often return to when they want a familiar friend.`;
+
+  const warmDescription = experience.description
+    ? experience.description
+    : `${characterName} is part of the welcoming community that makes Hawkins Hollow feel like home.`;
+
   return renderLayout(
-    character.name,
-    character.description,
-    `<section class="content-card">
-      <img class="character-hero-full" src="../${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="640" height="640" />
-      <h1>${character.name}</h1>
-      <p>${character.description}</p>
-      <p><a href="../characters.html">Back to Meet the Friends of Hawkins Hollow</a></p>
+    character.name || characterName,
+    warmDescription,
+    `<section class="content-card" aria-labelledby="character-arrival">
+      <img class="character-hero-full" src="../${experience.heroImage.replace(/^\//, '')}" alt="${character.name || characterName}" width="640" height="640" />
+      <h1 id="character-arrival">${profile.arrivalHeading}</h1>
+      <p>${profile.arrivalBody}</p>
+      <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
+      <p><a class="button" href="../characters.html">Meet more friends</a></p>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-together">
+      <h2 id="character-together">${profile.storyHeading}</h2>
+      <div class="card-grid">${relatedStoryCards}</div>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-people">
+      <h2 id="character-people">${profile.friendHeading}</h2>
+      ${relatedPeopleLinks}
+    </section>
+
+    <section class="content-card" aria-labelledby="character-wander">
+      <h2 id="character-wander">${profile.placeHeading}</h2>
+      ${relatedPlaceLinks}
+    </section>
+
+    <section class="content-card" aria-labelledby="character-discovery">
+      <h2 id="character-discovery">${profile.discoveryHeading}</h2>
+      <p>${profile.discoveryLine}</p>
+      <p>${delightFact}</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="character-next">
+      <h2 id="character-next">${profile.nextHeading}</h2>
+      <p>${profile.nextLine}</p>
+      <p>
+        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../map.html">Visit a place</a>
+        <a class="button" href="../community.html">Join the community</a>
+      </p>
     </section>`,
     site,
     nav,
@@ -2333,14 +2669,18 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
 
 function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   const book = booksData.books.find((entry) => entry.slug === page.bookSlug);
+  const canonicalId = getCanonicalBookId(book);
+  const publicTitle = getBookPublicTitle(book) || canonicalId;
   return renderLayout(
-    book.title,
-    book.description,
+    publicTitle,
+    canonicalId,
     `<section class="content-card">
-      <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" />
+      <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${publicTitle}" />
       <h2>About this book</h2>
       ${book.description ? `<p>${book.description}</p>` : ''}
-      <p><strong>Series:</strong> ${book.seriesSlug}</p>
+      <p><strong>Canonical ID:</strong> ${canonicalId}</p>
+      <p><strong>Public Title:</strong> ${publicTitle}</p>
+      <p><strong>Production Mode:</strong> ${book.seriesSlug}</p>
       <a class="button" href="books.html">Back to books</a>
     </section>`,
     site,
@@ -2686,9 +3026,10 @@ function buildSite() {
     .filter((character) => character.featured === true)
     .sort((a, b) => a.sortOrder - b.sortOrder);
   for (const character of featuredCharacters) {
+    const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex);
     writePage(
       path.join('characters', `${character.slug}.html`),
-      renderCharacterDetailPage(character, site, nav, config)
+      renderCharacterExperiencePage(experienceAsset, site, nav, config)
     );
   }
 
