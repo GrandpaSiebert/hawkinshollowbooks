@@ -250,10 +250,149 @@ h2 {
 }
 
 .book-card {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 1rem;
-  background: var(--surface);
+  padding: 0;
+  background: transparent;
+}
+
+.storybook-shelf {
+  display: grid;
+  gap: 0.95rem;
+  margin-top: 0.75rem;
+}
+
+.storybook-featured {
+  display: grid;
+  grid-template-columns: 1fr minmax(84px, 112px);
+  gap: 0.75rem;
+  align-items: start;
+  padding: 0.15rem 0 0.55rem;
+}
+
+.storybook-featured-copy {
+  grid-column: 1;
+  min-width: 0;
+}
+
+.storybook-featured-media {
+  grid-column: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.storybook-featured-media img {
+  display: block;
+  width: 100%;
+  max-width: 112px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 2px;
+  background: transparent;
+}
+
+.storybook-featured-copy h3 {
+  margin-top: 0;
+  margin-bottom: 0.2rem;
+  color: var(--accent);
+  font-size: 1.45rem;
+  line-height: 1.2;
+}
+
+.storybook-featured-copy p {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+}
+
+.story-card-invitation {
+  color: var(--domain);
+}
+
+.story-card-welcome {
+  font-size: 0.98rem;
+}
+
+.storybook-featured .button {
+  margin-top: 0;
+  padding: 0.5rem 0.8rem;
+}
+
+.storybook-remaining {
+  display: grid;
+  gap: 0.6rem;
+  padding-top: 0.15rem;
+}
+
+.storybook-card {
+  display: grid;
+  grid-template-columns: 1fr minmax(68px, 88px);
+  gap: 0.65rem;
+  align-items: start;
+  padding: 0.1rem 0 0.45rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
+.storybook-card-media {
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.storybook-card-media img {
+  display: block;
+  width: 100%;
+  max-width: 88px;
+  height: auto;
+  object-fit: contain;
+  border-radius: 1px;
+  box-shadow: none;
+  background: transparent;
+}
+
+.storybook-card-copy {
+  padding-top: 0.1rem;
+}
+
+.storybook-card-copy h3 {
+  margin-top: 0;
+  margin-bottom: 0.15rem;
+  color: var(--accent);
+  font-size: 1.12rem;
+  line-height: 1.28;
+}
+
+.storybook-card-copy p {
+  margin-top: 0;
+  margin-bottom: 0.45rem;
+}
+
+.storybook-card .button {
+  margin-top: 0;
+  padding: 0.5rem 0.8rem;
+}
+
+@media (max-width: 640px) {
+  .storybook-featured {
+    grid-template-columns: 1fr minmax(72px, 84px);
+    gap: 0.6rem;
+  }
+
+  .storybook-featured-media {
+    justify-content: flex-end;
+  }
+
+  .storybook-featured-media img {
+    max-width: 84px;
+  }
+
+  .storybook-card {
+    grid-template-columns: 1fr minmax(62px, 74px);
+    gap: 0.55rem;
+  }
+
+  .storybook-card-media img {
+    max-width: 74px;
+  }
 }
 
 .search-input {

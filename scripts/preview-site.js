@@ -19,8 +19,20 @@ const mimeTypes = {
 };
 
 const server = http.createServer((req, res) => {
-  const requestPath = req.url === '/' ? '/index.html' : req.url;
-  const safePath = path.normalize(requestPath).replace(/^\/+/, '');
+  const requestUrl = req.url || '/';
+  const urlPath = requestUrl.split('?')[0].split('#')[0];
+  const requestPath = urlPath === '/' ? '/index.html' : urlPath;
+  let decodedPath;
+
+  try {
+    decodedPath = decodeURIComponent(requestPath);
+  } catch (error) {
+    res.writeHead(400);
+    res.end('Bad request');
+    return;
+  }
+
+  const safePath = path.normalize(decodedPath).replace(/^\/+/, '');
   const filePath = path.join(root, safePath);
 
   if (!filePath.startsWith(root)) {

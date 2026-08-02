@@ -2957,25 +2957,78 @@ function getStorybookCardInvitation(book) {
   return invitationByTitle[title] || (book && book.description ? book.description : 'A gentle story waiting to be read.');
 }
 
-function buildStorybookPreviewCards(booksData) {
-  const storybooks = (booksData.books || [])
-    .filter((book) => book.seriesSlug === 'storybooks')
-    .slice(0, 4);
+function getSeriesRecommendation(series, booksData) {
+  const seriesSlug = series && series.slug ? series.slug : 'storybooks';
+  const seriesBooks = (booksData.books || []).filter((book) => book.seriesSlug === seriesSlug);
+  const editorial = series && series.editorial ? series.editorial : {};
+  const recommendedFirstBook = editorial && editorial.recommendedFirstBook ? String(editorial.recommendedFirstBook) : '';
+
+  const featuredBook = seriesBooks.find((book) => {
+    const canonicalId = book && book.identity && book.identity.canonicalId ? String(book.identity.canonicalId) : '';
+    const aliases = Array.isArray(book && book.identity && book.identity.legacyAliases) ? book.identity.legacyAliases : [];
+    return (
+      (book && book.slug && book.slug === recommendedFirstBook) ||
+      canonicalId === recommendedFirstBook ||
+      aliases.includes(recommendedFirstBook)
+    );
+  }) || seriesBooks[0] || null;
+
+  const remainingBooks = featuredBook
+    ? seriesBooks.filter((book) => book !== featuredBook).slice(0, 3)
+    : seriesBooks.slice(0, 3);
+
+  return {
+    featuredBook,
+    remainingBooks,
+    welcomeHeading: editorial && editorial.welcomeHeading ? editorial.welcomeHeading : 'A Good Place to Begin',
+    welcomeText: editorial && editorial.welcomeText ? editorial.welcomeText : 'If this is your first visit to Hawkins Hollow, this story is a gentle place to begin.'
+  };
+}
+
+function buildStorybookPreviewCards(booksData, series) {
+  const seriesSlug = series && series.slug ? series.slug : 'storybooks';
+  const storybooks = (booksData.books || []).filter((book) => book.seriesSlug === seriesSlug);
 
   if (!storybooks.length) {
     return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New Storybooks will appear here as the collection grows.</p></article>`;
   }
 
-  return storybooks
-    .map(
-      (book) => `<article class="book-card">
-        <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
-        <h3 class="story-card-title">${book.title}</h3>
-        <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
-        <a class="button" href="${getBookPageHref(book)}">Read this story</a>
-      </article>`
-    )
-    .join('');
+  const { featuredBook, remainingBooks, welcomeHeading, welcomeText } = getSeriesRecommendation(series, booksData);
+  const featuredMarkup = featuredBook
+    ? `<section class="storybook-featured" aria-label="Today's story">
+        <div class="storybook-featured-media">
+          <img src="${toOutputAssetPath(featuredBook.coverImage)}" alt="Cover image for ${featuredBook.title}" loading="lazy" />
+        </div>
+        <div class="storybook-featured-copy">
+          <p class="eyebrow">${welcomeHeading}</p>
+          <h3 class="story-card-title">${featuredBook.title}</h3>
+          <p class="story-card-invitation">${getStorybookCardInvitation(featuredBook)}</p>
+          <p class="story-card-invitation story-card-welcome">${welcomeText}</p>
+          <a class="button" href="${getBookPageHref(featuredBook)}">Read this story</a>
+        </div>
+      </section>`
+    : '';
+
+  const remainingMarkup = remainingBooks.length
+    ? `<div class="storybook-remaining" aria-label="More stories">
+        ${remainingBooks
+          .map(
+            (book) => `<article class="book-card storybook-card">
+              <div class="storybook-card-media">
+                <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
+              </div>
+              <div class="storybook-card-copy">
+                <h3 class="story-card-title">${book.title}</h3>
+                <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
+                <a class="button" href="${getBookPageHref(book)}">Read this story</a>
+              </div>
+            </article>`
+          )
+          .join('')}
+      </div>`
+    : '';
+
+  return `${featuredMarkup}${remainingMarkup}`;
 }
 
 function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
@@ -3005,8 +3058,8 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
         <a class="button" href="storybook-series.html">Learn about the series</a>
         <a class="button" href="books.html">Browse the full library</a>
       </p>
-      <div class="card-grid" aria-label="Featured Storybooks">
-        ${buildStorybookPreviewCards(booksData)}
+      <div class="storybook-shelf" aria-label="Featured Storybooks">
+        ${buildStorybookPreviewCards(booksData, series)}
       </div>
     </section>
 
