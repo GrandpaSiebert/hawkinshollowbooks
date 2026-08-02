@@ -6,7 +6,7 @@ This document describes how Hawkins Hollow is built.
 
 Hawkins Hollow is built as a canonical-source, artifact-driven static platform.
 
-The domain constitution is documented in docs/architecture/world-model.md, with field-level identity and production contracts in docs/architecture/canonical-asset-model.md.
+The domain constitution is documented in docs/architecture/world-model.md, with field-level identity and production contracts in docs/architecture/canonical-asset-model.md, explicit canonical identity enforcement in docs/architecture/canonical-id-contract.md, authority ownership/source resolution in docs/architecture/canonical-authority-registry.md, Golden Record freeze-before-scale guidance in docs/architecture/canonical-reference-pattern.md, and story-first visitor journey guidance in docs/architecture/book-experience-pattern.md.
 
 1. Source content is treated as authoritative.
 2. Build/import steps produce typed generated artifacts.
@@ -44,11 +44,44 @@ The domain constitution is documented in docs/architecture/world-model.md, with 
 - Relationship provenance is preserved on graph edges.
 - Build pipelines generate repeatable artifacts.
 
+## Experience Guardrail
+
+The page should introduce the visitor to the story, not the story to the database.
+
+Companion questions for implementation decisions:
+
+- Where does this belong?
+- What does the visitor need to feel first?
+
+Visitor-purpose compass:
+
+- Does this help someone leave Hawkins Hollow a little better than they arrived?
+
+## Stewardship And Hospitality
+
+Hawkins Hollow is built on two parallel responsibilities:
+
+- Stewardship asks: Where does this belong?
+- Hospitality asks: What does the visitor need to feel first?
+
+These questions prevent different forms of drift.
+
+- Stewardship protects world integrity: truth, authority, identity, relationships, and validation.
+- Hospitality protects visitor experience: welcome, curiosity, discovery, connection, and continuation.
+
+Neither path is optional, and neither path replaces the other.
+
+The destination is not the website itself, and not metadata visibility.
+
+The destination is the feeling someone carries away after spending time in Hawkins Hollow.
+
 ## Runtime Outputs
 
 - build-recovery contains generated site pages.
 - Universal entity pages are generated under build-recovery/entities.
 - Visitor search reads generated/search-index.json and graph context.
+
+For operational details about how the generator writes output and where to verify built pages, see docs/Build-Pipeline.md. Architecture documents the model and responsibilities; build documentation documents the current runtime behavior.
 
 ## Change Policy
 

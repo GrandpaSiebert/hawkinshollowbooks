@@ -1,89 +1,1334 @@
 {
   "books": [
-    { "slug": "spencers-first-friend", "code": "SB001", "title": "Spencer’s First Friend", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB001 Spencer’s First Friend Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "the-sharing-acorn", "code": "SB002", "title": "The Sharing Acorn", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB002 The Sharing Acorn Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "alices-underground-party", "code": "SB003", "title": "Alice's Underground Party", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB003 Alice's Underground Party Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "when-callen-said-sorry", "code": "SB004", "title": "When Callen Said Sorry", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB004 When Callen Said Sorry Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "the-new-animals-in-the-hollow", "code": "SB005", "title": "The New Animals in the Hollow", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB005 The New Animals in the Hollow Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "taking-turns-at-the-pond", "code": "SB006", "title": "Taking Turns at the Pond", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB006 Taking Turns at the Pond Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-    { "slug": "callens-new-baby-brother", "code": "SB007", "title": "Callen's New Baby Brother", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB007 Callen's New Baby Brother Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 7 },
-    { "slug": "aralynn-foxs-promise", "code": "SB008", "title": "Aralynn Fox's Promise", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB008 Aralynn Fox's Promise Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 8 },
-    { "slug": "the-thank-you-trail", "code": "SB009", "title": "The Thank You Trail", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB009 The Thank You Trail Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 9 },
-    { "slug": "aralynn-fox-feels-left-out", "code": "SB010", "title": "Aralynn Fox Feels Left Out", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB010 Aralynn Fox Feels Left Out Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 10 },
-    { "slug": "brandons-listening-ears", "code": "SB011", "title": "Brandon's Listening Ears", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB011 Brandon's Listening Ears Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 11 },
-    { "slug": "the-forgiveness-garden", "code": "SB012", "title": "The Forgiveness Garden", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB012 The Forgiveness Garden Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 12 },
-    { "slug": "standing-up-for-spencer", "code": "SB013", "title": "Standing Up for Spencer", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB013 Standing Up for Spencer Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 13 },
-    { "slug": "the-compliment-chain", "code": "SB014", "title": "The Compliment Chain", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB014 The Compliment Chain Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 14 },
-    { "slug": "austins-quiet-day", "code": "SB015", "title": "Austin's Quiet Day", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB015 Austin's Quiet Day Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 15 },
-    { "slug": "when-aralynn-fox-told-the-truth", "code": "SB016", "title": "When Aralynn Fox Told the Truth", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB016 When Aralynn Fox Told the Truth Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 16 },
-    { "slug": "lex-learns-to-wait", "code": "SB017", "title": "Lex Learns to Wait", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB017 Lex Learns to Wait Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 17 },
-    { "slug": "the-secret-keeper", "code": "SB018", "title": "The Secret Keeper", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB018 The Secret Keeper Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 18 },
-    { "slug": "playing-fair-at-the-fair", "code": "SB019", "title": "Playing Fair at the Fair", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB019 Playing Fair at the Fair Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 19 },
-    { "slug": "the-helping-paws-club", "code": "SB020", "title": "The Helping Paws Club", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB020 The Helping Paws Club Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 20 },
-    { "slug": "the-berry-basket-truth", "code": "SB021", "title": "The Berry Basket Truth", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB021 The Berry Basket Truth Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 21 },
-    { "slug": "the-kindness-competition", "code": "SB022", "title": "The Kindness Competition", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB022 The Kindness Competition Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 22 },
-    { "slug": "callens-gossip-problem", "code": "SB023", "title": "Callen’s Gossip Problem", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB023 Callen’s Gossip Problem Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 23 },
-    { "slug": "the-buddy-system", "code": "SB024", "title": "The Buddy System", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB024 The Buddy System Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 24 },
-    { "slug": "respecting-differences", "code": "SB025", "title": "Respecting Differences", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB025 Respecting Differences Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 25 },
-    { "slug": "the-friendship-recipe", "code": "SB026", "title": "The Friendship Recipe", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB026 The Friendship Recipe Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 26 },
-    { "slug": "spencers-big-feelings", "code": "SB027", "title": "Spencer’s Big Feelings", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB027 Spencer’s Big Feelings Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 27 },
-    { "slug": "the-angry-hedgehog", "code": "SB028", "title": "The Angry Hedgehog", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB028 The Angry Hedgehog Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 28 },
-    { "slug": "brandons-wiggly-worries", "code": "SB029", "title": "Brandon’s Wiggly Worries", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB029 Brandon’s Wiggly Worries Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 29 },
-    { "slug": "callens-jealous-feathers", "code": "SB030", "title": "Callen’s Jealous Feathers", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB030 Callen’s Jealous Feathers Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 30 },
-    { "slug": "the-sad-day", "code": "SB031", "title": "The Sad Day", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB031 The Sad Day Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 31 },
-    { "slug": "alice-mole-feels-left-out", "code": "SB032", "title": "Alice Mole Feels Left Out", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB032 Alice Mole Feels Left Out Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 32 },
-    { "slug": "the-excitement-overflow", "code": "SB033", "title": "The Excitement Overflow", "seriesSlug": "storybooks", "coverImage": "/assets/covers/Storybooks/SB033 The Excitement Overflow Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 33 },
-
-    { "slug": "spencers-sound-trail", "code": "FR001", "title": "Spencer's Sound Trail", "seriesSlug": "first-readers", "coverImage": "/assets/covers/First Readers/FR001 Spencer's Sound Trail Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "the-vowel-mystery", "code": "FR002", "title": "The Vowel Mystery", "seriesSlug": "first-readers", "coverImage": "/assets/covers/First Readers/FR002 The Vowel Mystery Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "austin-turtle-and-the-sight-word-challenge", "code": "FR003", "title": "Austin Turtle and the Sight Word Challenge", "seriesSlug": "first-readers", "coverImage": "/assets/covers/First Readers/FR003 Austin Turtle and the Sight Word Challenge Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "the-hollow-rhyme-day", "code": "FR004", "title": "The Hollow Rhyme Day", "seriesSlug": "first-readers", "coverImage": "/assets/covers/First Readers/FR004 The Hollow Rhyme Day Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "aralynn-foxs-word-family-discovery", "code": "FR005", "title": "Aralynn Fox’s Word Family Discovery", "seriesSlug": "first-readers", "coverImage": "/assets/covers/First Readers/FR005 Aralynn Fox’s Word Family Discovery Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-
-    { "slug": "the-summary-mystery", "code": "SR001", "title": "The Summary Mystery", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR001 The Summary Mystery Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "aralynn-foxs-five-minute-clock-discovery", "code": "SR002", "title": "Aralynn Fox's Five-Minute Clock Discovery", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR002 Aralynn Fox's Five-Minute Clock Discovery Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "austin-turtles-alphabetical-trail", "code": "SR003", "title": "Austin Turtle’s Alphabetical Trail", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR003 Austin Turtle’s Alphabetical Trail Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "spencer-and-the-peace-talk-challenge", "code": "SR004", "title": "Spencer and the Peace Talk Challenge", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR004 Spencer and the Peace Talk Challenge Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "aralynn-foxs-rights-trail", "code": "SR005", "title": "Aralynn Fox’s Rights Trail", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR005 Aralynn Fox’s Rights Trail Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "bentleys-first-week-in-the-nest", "code": "SR006", "title": "Bentley's First Week in the Nest", "seriesSlug": "second-readers", "coverImage": "/assets/covers/Second Readers/SR006 Bentley's First Week in the Nest Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-
-    { "slug": "the-healthy-heart-walk", "code": "GT001", "title": "The Healthy Heart Walk", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT001 The Healthy Heart Walk Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "brandon-rabbits-make-believe-farm", "code": "GT002", "title": "Brandon Rabbit's Make-Believe Farm", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT002 Brandon Rabbit's Make-Believe Farm Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "callen-crows-leadership", "code": "GT003", "title": "Callen Crow’s Leadership", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT003 Callen Crow’s Leadership Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "the-birthday-surprise", "code": "GT004", "title": "The Birthday Surprise", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT004 The Birthday Surprise Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "brandon-rabbits-garden-helpers", "code": "GT005", "title": "Brandon Rabbit’s Garden Helpers", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT005 Brandon Rabbit’s Garden Helpers Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "the-community-garden", "code": "GT006", "title": "The Community Garden", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT006 The Community Garden Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-    { "slug": "callen-crows-lost-feather", "code": "GT007", "title": "Callen Crow’s Lost Feather", "seriesSlug": "growing-together", "coverImage": "/assets/covers/Growing Together/GT007 Callen Crow’s Lost Feather Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 7 },
-
-    { "slug": "alice-mole-and-the-anniversary-star-wish", "code": "TT001", "title": "Alice Mole and the Anniversary Star Wish", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT001 Alice Mole and the Anniversary Star Wish Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "callen-crow-and-the-night-of-many-feelings", "code": "TT002", "title": "Callen Crow and the Night of Many Feelings", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT002 Callen Crow and the Night of Many Feelings Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "alice-mole-and-the-new-family-picnic", "code": "TT003", "title": "Alice Mole and the New Family Picnic", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT003 Alice Mole and the New Family Picnic Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "baby-bentley-and-the-small-invitation", "code": "TT004", "title": "Baby Bentley and the Small Invitation", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT004 Baby Bentley and the Small Invitation Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "brandon-rabbit-and-the-long-goodbye-lantern", "code": "TT005", "title": "Brandon Rabbit and the Long Goodbye Lantern", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT005 Brandon Rabbit and the Long Goodbye Lantern Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "aralynn-fox-and-the-hard-news-raincloud", "code": "TT006", "title": "Aralynn Fox and the Hard News Raincloud", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT006 Aralynn Fox and the Hard News Raincloud Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-    { "slug": "asher-and-the-goodbye-song", "code": "TT007", "title": "Asher and the Goodbye Song", "seriesSlug": "tender-times", "coverImage": "/assets/covers/Tender Times/TT007 Asher and the Goodbye Song Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 7 },
-
-    { "slug": "aydin-and-albert-einsteins-map", "code": "HR001", "title": "Aydin and Albert Einstein’s Map", "seriesSlug": "hero-play-poems", "coverImage": "/assets/covers/Hero Play Poems/HR001 Aydin and Albert Einstein’s Map Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "emmitt-and-martin-luther-king-jrs-promise", "code": "HR002", "title": "Emmitt and Martin Luther King Jr.’s Promise", "seriesSlug": "hero-play-poems", "coverImage": "/assets/covers/Hero Play Poems/HR002 Emmitt and Martin Luther King Jr.’s Promise Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "aydin-and-davy-crocketts-map", "code": "HR003", "title": "Aydin and Davy Crockett’s Map", "seriesSlug": "hero-play-poems", "coverImage": "/assets/covers/Hero Play Poems/HR003 Aydin and Davy Crockett’s Map Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-
-    { "slug": "spencer-washes-up-before-snack", "code": "BT001", "title": "Spencer Washes Up before Snack", "seriesSlug": "basic-training", "coverImage": "/assets/covers/Basic Training/BT001 Spencer Washes Up before Snack Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "lex-and-the-waiting-coat-hook", "code": "BT002", "title": "Lex and the Waiting Coat Hook", "seriesSlug": "basic-training", "coverImage": "/assets/covers/Basic Training/BT002 Lex and the Waiting Coat Hook Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "brandons-muddy-boots", "code": "BT003", "title": "Brandon’s Muddy Boots", "seriesSlug": "basic-training", "coverImage": "/assets/covers/Basic Training/BT003 Brandon’s Muddy Boots Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-
-    { "slug": "spencers-grumpy-wake-up", "code": "BL001", "title": "Spencer's Grumpy Wake-Up", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL001 Spencer's Grumpy Wake-Up Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "lexs-trying-again-after-a-mistake", "code": "BL002", "title": "Lex's Trying Again After a Mistake", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL002 Lex's Trying Again After a Mistake Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "spencers-not-wanting-to-share-the-lead", "code": "BL003", "title": "Spencer's Not Wanting to Share the Lead", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL003 Spencer's Not Wanting to Share the Lead Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "aralynn-foxs-my-body-belongs-to-me", "code": "BL004", "title": "Aralynn Fox’s My Body Belongs to Me", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL004 Aralynn Fox’s My Body Belongs to Me Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "callen-crows-first-train-ride-dream", "code": "BL005", "title": "Callen Crow's First Train Ride Dream", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL005 Callen Crow's First Train Ride Dream Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "lexs-first-drop-off-tears", "code": "BL006", "title": "Lex's First Drop-Off Tears", "seriesSlug": "bedtime-library", "coverImage": "/assets/covers/Bedtime Library/BL006 Lex's First Drop-Off Tears Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-
-    { "slug": "austin-turtles-independence-day-quilt-square", "code": "HSP001", "title": "Austin Turtle’s Independence Day Quilt Square", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP001 Austin Turtle’s Independence Day Quilt Square Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 1 },
-    { "slug": "aleeas-independence-day-paper-star", "code": "HSP002", "title": "Aleea’s Independence Day Paper Star", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP002 Aleea’s Independence Day Paper Star Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 2 },
-    { "slug": "baby-bentleys-friendship-day-painted-pebble", "code": "HSP003", "title": "Baby Bentley’s Friendship Day Painted Pebble", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP003 Baby Bentley’s Friendship Day Painted Pebble Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 3 },
-    { "slug": "aralynn-foxs-friendship-day-kindness-circle", "code": "HSP004", "title": "Aralynn Fox’s Friendship Day Kindness Circle", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP004 Aralynn Fox’s Friendship Day Kindness Circle Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 4 },
-    { "slug": "callen-crows-labor-day-helping-hands-morning", "code": "HSP005", "title": "Callen Crow's Labor Day Helping Hands Morning", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP005 Callen Crow's Labor Day Helping Hands Morning Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 5 },
-    { "slug": "aydins-labor-day-worker-thank-you", "code": "HSP006", "title": "Aydin’s Labor Day Worker Thank-You", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP006 Aydin’s Labor Day Worker Thank-You Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 6 },
-    { "slug": "aleeas-grandparents-day-story-chair-welcome-sign", "code": "HSP007", "title": "Aleea’s Grandparents Day Story Chair Welcome Sign", "seriesSlug": "holiday-story-poems", "coverImage": "/assets/covers/Holiday Story Poems/HSP007 Aleea’s Grandparents Day Story Chair Welcome Sign Cover.png", "description": "", "summary": "", "characters": [], "published": false, "sortOrder": 7 }
+    {
+      "slug": "spencers-first-friend",
+      "identity": {
+        "canonicalId": "HH-A-0001",
+        "legacyAliases": [
+          "SB001"
+        ]
+      },
+      "title": "Spencer’s First Friend",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB001 Spencer’s First Friend Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "the-sharing-acorn",
+      "identity": {
+        "canonicalId": "HH-A-0002",
+        "legacyAliases": [
+          "SB002"
+        ]
+      },
+      "title": "The Sharing Acorn",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB002 The Sharing Acorn Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "alices-underground-party",
+      "identity": {
+        "canonicalId": "HH-A-0003",
+        "legacyAliases": [
+          "SB003"
+        ]
+      },
+      "title": "Alice's Underground Party",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB003 Alice's Underground Party Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "when-callen-said-sorry",
+      "identity": {
+        "canonicalId": "HH-A-0004",
+        "legacyAliases": [
+          "SB004"
+        ]
+      },
+      "title": "When Callen Said Sorry",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB004 When Callen Said Sorry Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "the-new-animals-in-the-hollow",
+      "identity": {
+        "canonicalId": "HH-A-0005",
+        "legacyAliases": [
+          "SB005"
+        ]
+      },
+      "title": "The New Animals in the Hollow",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB005 The New Animals in the Hollow Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "taking-turns-at-the-pond",
+      "identity": {
+        "canonicalId": "HH-A-0006",
+        "legacyAliases": [
+          "SB006"
+        ]
+      },
+      "title": "Taking Turns at the Pond",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB006 Taking Turns at the Pond Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "callens-new-baby-brother",
+      "identity": {
+        "canonicalId": "HH-A-0007",
+        "legacyAliases": [
+          "SB007"
+        ]
+      },
+      "title": "Callen's New Baby Brother",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB007 Callen's New Baby Brother Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 7
+    },
+    {
+      "slug": "aralynn-foxs-promise",
+      "identity": {
+        "canonicalId": "HH-A-0008",
+        "legacyAliases": [
+          "SB008"
+        ]
+      },
+      "title": "Aralynn Fox's Promise",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB008 Aralynn Fox's Promise Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 8
+    },
+    {
+      "slug": "the-thank-you-trail",
+      "identity": {
+        "canonicalId": "HH-A-0009",
+        "legacyAliases": [
+          "SB009"
+        ]
+      },
+      "title": "The Thank You Trail",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB009 The Thank You Trail Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 9
+    },
+    {
+      "slug": "aralynn-fox-feels-left-out",
+      "identity": {
+        "canonicalId": "HH-A-0010",
+        "legacyAliases": [
+          "SB010"
+        ]
+      },
+      "title": "Aralynn Fox Feels Left Out",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB010 Aralynn Fox Feels Left Out Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 10
+    },
+    {
+      "slug": "brandons-listening-ears",
+      "identity": {
+        "canonicalId": "HH-A-0011",
+        "legacyAliases": [
+          "SB011"
+        ]
+      },
+      "title": "Brandon's Listening Ears",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB011 Brandon's Listening Ears Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 11
+    },
+    {
+      "slug": "the-forgiveness-garden",
+      "identity": {
+        "canonicalId": "HH-A-0012",
+        "legacyAliases": [
+          "SB012"
+        ]
+      },
+      "title": "The Forgiveness Garden",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB012 The Forgiveness Garden Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 12
+    },
+    {
+      "slug": "standing-up-for-spencer",
+      "identity": {
+        "canonicalId": "HH-A-0013",
+        "legacyAliases": [
+          "SB013"
+        ]
+      },
+      "title": "Standing Up for Spencer",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB013 Standing Up for Spencer Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [
+        "HH-CHR-0002",
+        "HH-CHR-0015",
+        "HH-CHR-0001"
+      ],
+      "environments": [
+        "ENV-0010",
+        "ENV-0028",
+        "ENV-0023"
+      ],
+      "relatedBooks": [
+        "HH-A-0012",
+        "HH-E-0001"
+      ],
+      "published": false,
+      "sortOrder": 13
+    },
+    {
+      "slug": "the-compliment-chain",
+      "identity": {
+        "canonicalId": "HH-A-0014",
+        "legacyAliases": [
+          "SB014"
+        ]
+      },
+      "title": "The Compliment Chain",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB014 The Compliment Chain Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 14
+    },
+    {
+      "slug": "austins-quiet-day",
+      "identity": {
+        "canonicalId": "HH-A-0015",
+        "legacyAliases": [
+          "SB015"
+        ]
+      },
+      "title": "Austin's Quiet Day",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB015 Austin's Quiet Day Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 15
+    },
+    {
+      "slug": "when-aralynn-fox-told-the-truth",
+      "identity": {
+        "canonicalId": "HH-A-0016",
+        "legacyAliases": [
+          "SB016"
+        ]
+      },
+      "title": "When Aralynn Fox Told the Truth",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB016 When Aralynn Fox Told the Truth Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 16
+    },
+    {
+      "slug": "lex-learns-to-wait",
+      "identity": {
+        "canonicalId": "HH-A-0017",
+        "legacyAliases": [
+          "SB017"
+        ]
+      },
+      "title": "Lex Learns to Wait",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB017 Lex Learns to Wait Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 17
+    },
+    {
+      "slug": "the-secret-keeper",
+      "identity": {
+        "canonicalId": "HH-A-0018",
+        "legacyAliases": [
+          "SB018"
+        ]
+      },
+      "title": "The Secret Keeper",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB018 The Secret Keeper Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 18
+    },
+    {
+      "slug": "playing-fair-at-the-fair",
+      "identity": {
+        "canonicalId": "HH-A-0019",
+        "legacyAliases": [
+          "SB019"
+        ]
+      },
+      "title": "Playing Fair at the Fair",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB019 Playing Fair at the Fair Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 19
+    },
+    {
+      "slug": "the-helping-paws-club",
+      "identity": {
+        "canonicalId": "HH-A-0020",
+        "legacyAliases": [
+          "SB020"
+        ]
+      },
+      "title": "The Helping Paws Club",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB020 The Helping Paws Club Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 20
+    },
+    {
+      "slug": "the-berry-basket-truth",
+      "identity": {
+        "canonicalId": "HH-A-0021",
+        "legacyAliases": [
+          "SB021"
+        ]
+      },
+      "title": "The Berry Basket Truth",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB021 The Berry Basket Truth Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 21
+    },
+    {
+      "slug": "the-kindness-competition",
+      "identity": {
+        "canonicalId": "HH-A-0022",
+        "legacyAliases": [
+          "SB022"
+        ]
+      },
+      "title": "The Kindness Competition",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB022 The Kindness Competition Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 22
+    },
+    {
+      "slug": "callens-gossip-problem",
+      "identity": {
+        "canonicalId": "HH-A-0023",
+        "legacyAliases": [
+          "SB023"
+        ]
+      },
+      "title": "Callen’s Gossip Problem",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB023 Callen’s Gossip Problem Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 23
+    },
+    {
+      "slug": "the-buddy-system",
+      "identity": {
+        "canonicalId": "HH-A-0024",
+        "legacyAliases": [
+          "SB024"
+        ]
+      },
+      "title": "The Buddy System",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB024 The Buddy System Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 24
+    },
+    {
+      "slug": "respecting-differences",
+      "identity": {
+        "canonicalId": "HH-A-0025",
+        "legacyAliases": [
+          "SB025"
+        ]
+      },
+      "title": "Respecting Differences",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB025 Respecting Differences Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 25
+    },
+    {
+      "slug": "the-friendship-recipe",
+      "identity": {
+        "canonicalId": "HH-A-0026",
+        "legacyAliases": [
+          "SB026"
+        ]
+      },
+      "title": "The Friendship Recipe",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB026 The Friendship Recipe Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 26
+    },
+    {
+      "slug": "spencers-big-feelings",
+      "identity": {
+        "canonicalId": "HH-A-0027",
+        "legacyAliases": [
+          "SB027"
+        ]
+      },
+      "title": "Spencer’s Big Feelings",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB027 Spencer’s Big Feelings Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 27
+    },
+    {
+      "slug": "the-angry-hedgehog",
+      "identity": {
+        "canonicalId": "HH-A-0028",
+        "legacyAliases": [
+          "SB028"
+        ]
+      },
+      "title": "The Angry Hedgehog",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB028 The Angry Hedgehog Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 28
+    },
+    {
+      "slug": "brandons-wiggly-worries",
+      "identity": {
+        "canonicalId": "HH-A-0029",
+        "legacyAliases": [
+          "SB029"
+        ]
+      },
+      "title": "Brandon’s Wiggly Worries",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB029 Brandon’s Wiggly Worries Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 29
+    },
+    {
+      "slug": "callens-jealous-feathers",
+      "identity": {
+        "canonicalId": "HH-A-0030",
+        "legacyAliases": [
+          "SB030"
+        ]
+      },
+      "title": "Callen’s Jealous Feathers",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB030 Callen’s Jealous Feathers Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 30
+    },
+    {
+      "slug": "the-sad-day",
+      "identity": {
+        "canonicalId": "HH-A-0031",
+        "legacyAliases": [
+          "SB031"
+        ]
+      },
+      "title": "The Sad Day",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB031 The Sad Day Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 31
+    },
+    {
+      "slug": "alice-mole-feels-left-out",
+      "identity": {
+        "canonicalId": "HH-A-0032",
+        "legacyAliases": [
+          "SB032"
+        ]
+      },
+      "title": "Alice Mole Feels Left Out",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB032 Alice Mole Feels Left Out Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 32
+    },
+    {
+      "slug": "the-excitement-overflow",
+      "identity": {
+        "canonicalId": "HH-A-0033",
+        "legacyAliases": [
+          "SB033"
+        ]
+      },
+      "title": "The Excitement Overflow",
+      "seriesSlug": "storybooks",
+      "coverImage": "/assets/covers/Storybooks/SB033 The Excitement Overflow Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 33
+    },
+    {
+      "slug": "spencers-sound-trail",
+      "identity": {
+        "canonicalId": "HH-B-0001",
+        "legacyAliases": [
+          "FR001"
+        ]
+      },
+      "title": "Spencer's Sound Trail",
+      "seriesSlug": "first-readers",
+      "coverImage": "/assets/covers/First Readers/FR001 Spencer's Sound Trail Cover.png",
+      "description": "A gentle First Reader about discovering that careful listening can lead to unexpected adventures.",
+      "summary": "Spencer notices sounds that other people hurry past. On today's walk through Hawkins Hollow, one quiet sound leads him on a journey of curiosity, courage, and discovery.",
+      "characters": [
+        "HH-CHR-0002",
+        "HH-CHR-0001"
+      ],
+      "environments": [
+        "ENV-0028",
+        "ENV-0023",
+        "ENV-0010"
+      ],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "the-vowel-mystery",
+      "identity": {
+        "canonicalId": "HH-B-0002",
+        "legacyAliases": [
+          "FR002"
+        ]
+      },
+      "title": "The Vowel Mystery",
+      "seriesSlug": "first-readers",
+      "coverImage": "/assets/covers/First Readers/FR002 The Vowel Mystery Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "austin-turtle-and-the-sight-word-challenge",
+      "identity": {
+        "canonicalId": "HH-B-0003",
+        "legacyAliases": [
+          "FR003"
+        ]
+      },
+      "title": "Austin Turtle and the Sight Word Challenge",
+      "seriesSlug": "first-readers",
+      "coverImage": "/assets/covers/First Readers/FR003 Austin Turtle and the Sight Word Challenge Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "the-hollow-rhyme-day",
+      "identity": {
+        "canonicalId": "HH-B-0004",
+        "legacyAliases": [
+          "FR004"
+        ]
+      },
+      "title": "The Hollow Rhyme Day",
+      "seriesSlug": "first-readers",
+      "coverImage": "/assets/covers/First Readers/FR004 The Hollow Rhyme Day Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "aralynn-foxs-word-family-discovery",
+      "identity": {
+        "canonicalId": "HH-B-0005",
+        "legacyAliases": [
+          "FR005"
+        ]
+      },
+      "title": "Aralynn Fox’s Word Family Discovery",
+      "seriesSlug": "first-readers",
+      "coverImage": "/assets/covers/First Readers/FR005 Aralynn Fox’s Word Family Discovery Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "the-summary-mystery",
+      "identity": {
+        "canonicalId": "HH-C-0001",
+        "legacyAliases": [
+          "SR001"
+        ]
+      },
+      "title": "The Summary Mystery",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR001 The Summary Mystery Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "aralynn-foxs-five-minute-clock-discovery",
+      "identity": {
+        "canonicalId": "HH-C-0002",
+        "legacyAliases": [
+          "SR002"
+        ]
+      },
+      "title": "Aralynn Fox's Five-Minute Clock Discovery",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR002 Aralynn Fox's Five-Minute Clock Discovery Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "austin-turtles-alphabetical-trail",
+      "identity": {
+        "canonicalId": "HH-C-0003",
+        "legacyAliases": [
+          "SR003"
+        ]
+      },
+      "title": "Austin Turtle’s Alphabetical Trail",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR003 Austin Turtle’s Alphabetical Trail Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "spencer-and-the-peace-talk-challenge",
+      "identity": {
+        "canonicalId": "HH-C-0004",
+        "legacyAliases": [
+          "SR004"
+        ]
+      },
+      "title": "Spencer and the Peace Talk Challenge",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR004 Spencer and the Peace Talk Challenge Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "aralynn-foxs-rights-trail",
+      "identity": {
+        "canonicalId": "HH-C-0005",
+        "legacyAliases": [
+          "SR005"
+        ]
+      },
+      "title": "Aralynn Fox’s Rights Trail",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR005 Aralynn Fox’s Rights Trail Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "bentleys-first-week-in-the-nest",
+      "identity": {
+        "canonicalId": "HH-C-0006",
+        "legacyAliases": [
+          "SR006"
+        ]
+      },
+      "title": "Bentley's First Week in the Nest",
+      "seriesSlug": "second-readers",
+      "coverImage": "/assets/covers/Second Readers/SR006 Bentley's First Week in the Nest Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "the-healthy-heart-walk",
+      "identity": {
+        "canonicalId": "HH-D-0001",
+        "legacyAliases": [
+          "GT001"
+        ]
+      },
+      "title": "The Healthy Heart Walk",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT001 The Healthy Heart Walk Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "brandon-rabbits-make-believe-farm",
+      "identity": {
+        "canonicalId": "HH-D-0002",
+        "legacyAliases": [
+          "GT002"
+        ]
+      },
+      "title": "Brandon Rabbit's Make-Believe Farm",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT002 Brandon Rabbit's Make-Believe Farm Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "callen-crows-leadership",
+      "identity": {
+        "canonicalId": "HH-D-0003",
+        "legacyAliases": [
+          "GT003"
+        ]
+      },
+      "title": "Callen Crow’s Leadership",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT003 Callen Crow’s Leadership Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "the-birthday-surprise",
+      "identity": {
+        "canonicalId": "HH-D-0004",
+        "legacyAliases": [
+          "GT004"
+        ]
+      },
+      "title": "The Birthday Surprise",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT004 The Birthday Surprise Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "brandon-rabbits-garden-helpers",
+      "identity": {
+        "canonicalId": "HH-D-0005",
+        "legacyAliases": [
+          "GT005"
+        ]
+      },
+      "title": "Brandon Rabbit’s Garden Helpers",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT005 Brandon Rabbit’s Garden Helpers Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "the-community-garden",
+      "identity": {
+        "canonicalId": "HH-D-0006",
+        "legacyAliases": [
+          "GT006"
+        ]
+      },
+      "title": "The Community Garden",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT006 The Community Garden Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "callen-crows-lost-feather",
+      "identity": {
+        "canonicalId": "HH-D-0007",
+        "legacyAliases": [
+          "GT007"
+        ]
+      },
+      "title": "Callen Crow’s Lost Feather",
+      "seriesSlug": "growing-together",
+      "coverImage": "/assets/covers/Growing Together/GT007 Callen Crow’s Lost Feather Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 7
+    },
+    {
+      "slug": "alice-mole-and-the-anniversary-star-wish",
+      "identity": {
+        "canonicalId": "HH-E-0001",
+        "legacyAliases": [
+          "TT001"
+        ]
+      },
+      "title": "Alice Mole and the Anniversary Star Wish",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT001 Alice Mole and the Anniversary Star Wish Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "callen-crow-and-the-night-of-many-feelings",
+      "identity": {
+        "canonicalId": "HH-E-0002",
+        "legacyAliases": [
+          "TT002"
+        ]
+      },
+      "title": "Callen Crow and the Night of Many Feelings",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT002 Callen Crow and the Night of Many Feelings Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "alice-mole-and-the-new-family-picnic",
+      "identity": {
+        "canonicalId": "HH-E-0003",
+        "legacyAliases": [
+          "TT003"
+        ]
+      },
+      "title": "Alice Mole and the New Family Picnic",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT003 Alice Mole and the New Family Picnic Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "baby-bentley-and-the-small-invitation",
+      "identity": {
+        "canonicalId": "HH-E-0004",
+        "legacyAliases": [
+          "TT004"
+        ]
+      },
+      "title": "Baby Bentley and the Small Invitation",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT004 Baby Bentley and the Small Invitation Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "brandon-rabbit-and-the-long-goodbye-lantern",
+      "identity": {
+        "canonicalId": "HH-E-0005",
+        "legacyAliases": [
+          "TT005"
+        ]
+      },
+      "title": "Brandon Rabbit and the Long Goodbye Lantern",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT005 Brandon Rabbit and the Long Goodbye Lantern Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "aralynn-fox-and-the-hard-news-raincloud",
+      "identity": {
+        "canonicalId": "HH-E-0006",
+        "legacyAliases": [
+          "TT006"
+        ]
+      },
+      "title": "Aralynn Fox and the Hard News Raincloud",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT006 Aralynn Fox and the Hard News Raincloud Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "asher-and-the-goodbye-song",
+      "identity": {
+        "canonicalId": "HH-E-0007",
+        "legacyAliases": [
+          "TT007"
+        ]
+      },
+      "title": "Asher and the Goodbye Song",
+      "seriesSlug": "tender-times",
+      "coverImage": "/assets/covers/Tender Times/TT007 Asher and the Goodbye Song Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 7
+    },
+    {
+      "slug": "aydin-and-albert-einsteins-map",
+      "identity": {
+        "canonicalId": "HH-F-0001",
+        "legacyAliases": [
+          "HR001"
+        ]
+      },
+      "title": "Aydin and Albert Einstein’s Map",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR001 Aydin and Albert Einstein’s Map Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "emmitt-and-martin-luther-king-jrs-promise",
+      "identity": {
+        "canonicalId": "HH-F-0002",
+        "legacyAliases": [
+          "HR002"
+        ]
+      },
+      "title": "Emmitt and Martin Luther King Jr.’s Promise",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR002 Emmitt and Martin Luther King Jr.’s Promise Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "aydin-and-davy-crocketts-map",
+      "identity": {
+        "canonicalId": "HH-F-0003",
+        "legacyAliases": [
+          "HR003"
+        ]
+      },
+      "title": "Aydin and Davy Crockett’s Map",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR003 Aydin and Davy Crockett’s Map Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "spencer-washes-up-before-snack",
+      "identity": {
+        "canonicalId": "HH-G-0001",
+        "legacyAliases": [
+          "BT001"
+        ]
+      },
+      "title": "Spencer Washes Up before Snack",
+      "seriesSlug": "basic-training",
+      "coverImage": "/assets/covers/Basic Training/BT001 Spencer Washes Up before Snack Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "lex-and-the-waiting-coat-hook",
+      "identity": {
+        "canonicalId": "HH-G-0002",
+        "legacyAliases": [
+          "BT002"
+        ]
+      },
+      "title": "Lex and the Waiting Coat Hook",
+      "seriesSlug": "basic-training",
+      "coverImage": "/assets/covers/Basic Training/BT002 Lex and the Waiting Coat Hook Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "brandons-muddy-boots",
+      "identity": {
+        "canonicalId": "HH-G-0003",
+        "legacyAliases": [
+          "BT003"
+        ]
+      },
+      "title": "Brandon’s Muddy Boots",
+      "seriesSlug": "basic-training",
+      "coverImage": "/assets/covers/Basic Training/BT003 Brandon’s Muddy Boots Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "spencers-grumpy-wake-up",
+      "identity": {
+        "canonicalId": "HH-H-0001",
+        "legacyAliases": [
+          "BL001"
+        ]
+      },
+      "title": "Spencer's Grumpy Wake-Up",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL001 Spencer's Grumpy Wake-Up Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "lexs-trying-again-after-a-mistake",
+      "identity": {
+        "canonicalId": "HH-H-0002",
+        "legacyAliases": [
+          "BL002"
+        ]
+      },
+      "title": "Lex's Trying Again After a Mistake",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL002 Lex's Trying Again After a Mistake Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "spencers-not-wanting-to-share-the-lead",
+      "identity": {
+        "canonicalId": "HH-H-0003",
+        "legacyAliases": [
+          "BL003"
+        ]
+      },
+      "title": "Spencer's Not Wanting to Share the Lead",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL003 Spencer's Not Wanting to Share the Lead Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "aralynn-foxs-my-body-belongs-to-me",
+      "identity": {
+        "canonicalId": "HH-H-0004",
+        "legacyAliases": [
+          "BL004"
+        ]
+      },
+      "title": "Aralynn Fox’s My Body Belongs to Me",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL004 Aralynn Fox’s My Body Belongs to Me Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "callen-crows-first-train-ride-dream",
+      "identity": {
+        "canonicalId": "HH-H-0005",
+        "legacyAliases": [
+          "BL005"
+        ]
+      },
+      "title": "Callen Crow's First Train Ride Dream",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL005 Callen Crow's First Train Ride Dream Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "lexs-first-drop-off-tears",
+      "identity": {
+        "canonicalId": "HH-H-0006",
+        "legacyAliases": [
+          "BL006"
+        ]
+      },
+      "title": "Lex's First Drop-Off Tears",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL006 Lex's First Drop-Off Tears Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "austin-turtles-independence-day-quilt-square",
+      "identity": {
+        "canonicalId": "HH-I-0001",
+        "legacyAliases": [
+          "HSP001"
+        ]
+      },
+      "title": "Austin Turtle’s Independence Day Quilt Square",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP001 Austin Turtle’s Independence Day Quilt Square Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "aleeas-independence-day-paper-star",
+      "identity": {
+        "canonicalId": "HH-I-0002",
+        "legacyAliases": [
+          "HSP002"
+        ]
+      },
+      "title": "Aleea’s Independence Day Paper Star",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP002 Aleea’s Independence Day Paper Star Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "baby-bentleys-friendship-day-painted-pebble",
+      "identity": {
+        "canonicalId": "HH-I-0003",
+        "legacyAliases": [
+          "HSP003"
+        ]
+      },
+      "title": "Baby Bentley’s Friendship Day Painted Pebble",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP003 Baby Bentley’s Friendship Day Painted Pebble Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "aralynn-foxs-friendship-day-kindness-circle",
+      "identity": {
+        "canonicalId": "HH-I-0004",
+        "legacyAliases": [
+          "HSP004"
+        ]
+      },
+      "title": "Aralynn Fox’s Friendship Day Kindness Circle",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP004 Aralynn Fox’s Friendship Day Kindness Circle Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "callen-crows-labor-day-helping-hands-morning",
+      "identity": {
+        "canonicalId": "HH-I-0005",
+        "legacyAliases": [
+          "HSP005"
+        ]
+      },
+      "title": "Callen Crow's Labor Day Helping Hands Morning",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP005 Callen Crow's Labor Day Helping Hands Morning Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "aydins-labor-day-worker-thank-you",
+      "identity": {
+        "canonicalId": "HH-I-0006",
+        "legacyAliases": [
+          "HSP006"
+        ]
+      },
+      "title": "Aydin’s Labor Day Worker Thank-You",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP006 Aydin’s Labor Day Worker Thank-You Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "aleeas-grandparents-day-story-chair-welcome-sign",
+      "identity": {
+        "canonicalId": "HH-I-0007",
+        "legacyAliases": [
+          "HSP007"
+        ]
+      },
+      "title": "Aleea’s Grandparents Day Story Chair Welcome Sign",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP007 Aleea’s Grandparents Day Story Chair Welcome Sign Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 7
+    }
   ]
 }

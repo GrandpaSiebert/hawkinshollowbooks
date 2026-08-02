@@ -48,3 +48,7 @@ When a decision changes:
 
 - world-model.md: constitutional ontology and ownership boundaries for canon, journeys, templates, and renderers.
 - canonical-asset-model.md: the stable contract for canonical IDs, production modes, public titles, and experience templates.
+- canonical-id-contract.md: explicit canonical identity format, authority boundaries, reference rules, migration policy, and validator enforcement layers.
+- canonical-authority-registry.md: canonical authority ownership map (who owns truth) and active source resolution contract (where truth is currently read).
+- canonical-reference-pattern.md: one-page Golden Record Authoring Guide; defines the Canonical Reference Pattern and freeze-before-scale rule.
+- book-experience-pattern.md: visitor-experience design principle for book pages; story-first page intent and litmus test guardrail.

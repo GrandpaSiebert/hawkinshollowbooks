@@ -1,0 +1,33 @@
+{
+  "version": 1,
+  "entities": {
+    "books": {
+      "canonicalAuthority": "Book Model",
+      "canonicalSource": "data/books.json",
+      "canonicalPath": "books",
+      "compatibilitySource": null,
+      "compatibilityPath": null
+    },
+    "characters": {
+      "canonicalAuthority": "Character Canon",
+      "canonicalSource": "data/characters.json",
+      "canonicalPath": "characters",
+      "compatibilitySource": null,
+      "compatibilityPath": null
+    },
+    "environments": {
+      "canonicalAuthority": "World Canon",
+      "canonicalSource": "generated/world-canon-index.json",
+      "canonicalPath": "byType.environments",
+      "compatibilitySource": "data/environments.json",
+      "compatibilityPath": "environments"
+    },
+    "relationships": {
+      "canonicalAuthority": "World Canon",
+      "canonicalSource": "generated/world-canon-index.json",
+      "canonicalPath": "byType.relationships",
+      "compatibilitySource": "data/relationships.json",
+      "compatibilityPath": "relationships"
+    }
+  }
+}

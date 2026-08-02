@@ -70,9 +70,8 @@
     {
       "slug": "storybook-shelf",
       "title": "Storybook Shelf",
-      "template": "legacy",
-      "status": "legacy",
-      "legacyReference": { "type": "series", "slug": "storybook-shelf" },
+      "template": "series",
+      "seriesSlug": "storybooks",
       "navigation": false,
       "order": 70,
       "published": true
@@ -80,9 +79,8 @@
     {
       "slug": "storybook-series",
       "title": "Storybook Series",
-      "template": "legacy",
-      "status": "legacy",
-      "legacyReference": { "type": "series", "slug": "storybook-series" },
+      "template": "series",
+      "seriesSlug": "storybooks",
       "navigation": false,
       "order": 80,
       "published": true

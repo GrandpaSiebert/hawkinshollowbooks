@@ -10,6 +10,61 @@ Every completed task should make Hawkins Hollow feel a little more welcoming, a 
 
 If it does not, ask whether it belongs in this release.
 
+Every technical decision should make it easier for someone to feel welcome in Hawkins Hollow.
+
+## Before You Build
+
+Before adding a feature, ask:
+
+- [ ] Where does this belong?
+- [ ] What does the visitor need to feel first?
+- [ ] Am I changing world truth or presentation?
+- [ ] Does this follow an existing pattern?
+- [ ] If I remove this feature, does Hawkins Hollow become less welcoming?
+- [ ] After 30 seconds, what will the visitor remember?
+
+These are stewardship questions, not implementation questions.
+
+## Visitor Improvement Loop
+
+Use this loop for page redesigns and visitor-facing changes:
+
+1. Choose one visitor-facing improvement.
+2. Ask the two stewardship questions.
+3. Build the smallest change that answers those questions.
+4. Run the 30-second memory check.
+5. Keep only what increases welcome, curiosity, or continuation.
+
+Discipline rule:
+
+- Every Visitor Improvement Loop changes exactly one thing well.
+
+Pass examples:
+
+- Pass 1: First screen introduction
+- Pass 2: Character section
+- Pass 3: Places section
+- Pass 4: Continue the journey
+- Pass 5: Technical information placement
+
+30-second memory check prompts:
+
+- What do I remember?
+- What do I want to do next?
+- Did I feel welcomed into Hawkins Hollow?
+
+Evaluation rule:
+
+- Welcome: Does the visitor feel invited?
+- Curiosity: Does the visitor want to learn more?
+- Continuation: Does the visitor naturally know where to go next?
+
+If a change does not improve at least one of these, it likely does not belong.
+
+After each completed pass, record one concise entry in docs/Visitor-Improvement-Log.md using the fixed format.
+
+When writing the evidence, keep the focus on the visitor experience rather than the implementation. Describe what the visitor encountered, remembered, or noticed. Do not replace a visitor-facing record with a technical change log.
+
 ## Stewardship Checks
 
 - Does this preserve the Canon as the source of truth?
@@ -64,6 +119,28 @@ If the answer is yes, move it to the top of the queue.
 ## Daily Standup: Today's Visitor
 
 Begin each standup by choosing one visitor profile for the day.
+
+This work is not about checking boxes. It is about caring for a place well enough that visitors feel it.
+
+## Stewardship Milestone Note
+
+The current project rhythm is now a repeatable stewardship loop:
+
+1. Identify one visitor-facing opportunity.
+2. Make one small improvement.
+3. Rebuild and verify.
+4. Observe.
+5. Record the learned judgment.
+
+Use this rhythm as the default way to improve the site. It is stronger than isolated page edits because it creates a durable record of how Hawkins Hollow is becoming more welcoming over time.
+
+Operating rule:
+
+- Changes to the architecture should normally be driven by evidence from visitor-facing implementation.
+- If a proposed change does not change what a visitor sees, understands, or feels, it is not the default priority.
+- Architecture and documentation still matter, but they should earn attention by enabling a better visitor experience or by solving a real problem that implementation exposed.
+- When a visitor-facing problem appears, start with the smallest implementation that could improve the experience, observe whether it worked, and record what was learned.
+- When the work exposes a genuine weakness, return to architecture or documentation with that evidence rather than as a default reflex.
 
 Today we are helping:
 

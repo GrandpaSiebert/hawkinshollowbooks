@@ -6,6 +6,7 @@ This policy protects the stable identity anchors of Hawkins Hollow while allowin
 
 The following documents are foundational:
 
+- docs/Repository-Preface.md
 - docs/Architecture.md
 - docs/Build-Pipeline.md
 - docs/Hawkins-Hollow-Promise.md
@@ -111,3 +112,14 @@ Before creating a new document, explain:
 1. Why an existing document is insufficient.
 2. Which audience or responsibility the new document uniquely serves.
 3. How overlap with existing docs will be prevented.
+
+## Responsibility-Based Documentation Rule
+
+Documentation should be organized by responsibility, not by topic alone.
+
+- Constitutional and architectural intent belongs in the foundational architecture documents.
+- Day-to-day practice belongs in the contributor guidance.
+- Build behavior and generated-output expectations belong in the build pipeline documentation.
+- Visitor-facing learning belongs in the visitor improvement log.
+
+This keeps each document legible to the people who need it and prevents the same fact from being re-embedded in multiple places without a clear purpose.

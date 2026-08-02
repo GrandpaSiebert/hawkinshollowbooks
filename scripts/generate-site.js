@@ -7,6 +7,10 @@ const { writeWorldCanonArtifacts } = require('./world-canon-import');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
+const previewBuildDir = path.join(root, 'build');
+const outputDirs = [buildDir, previewBuildDir];
+const authorityRegistryPath = path.join(root, 'data', 'canonical-authority-registry.json');
+const sourceRegistryPath = path.join(root, 'data', 'canonical-source-registry.json');
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -27,6 +31,170 @@ function copyDir(srcDir, destDir) {
 
 function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
+}
+
+function getDefaultCanonicalAuthorityRegistry() {
+  return {
+    version: 1,
+    entities: {
+      books: {
+        canonicalAuthority: 'Book Model',
+        canonicalSource: 'data/books.json',
+        canonicalPath: 'books',
+        compatibilitySource: null,
+        compatibilityPath: null
+      },
+      characters: {
+        canonicalAuthority: 'Character Canon',
+        canonicalSource: 'data/characters.json',
+        canonicalPath: 'characters',
+        compatibilitySource: null,
+        compatibilityPath: null
+      },
+      environments: {
+        canonicalAuthority: 'World Canon',
+        canonicalSource: 'generated/world-canon-index.json',
+        canonicalPath: 'byType.environments',
+        compatibilitySource: 'data/environments.json',
+        compatibilityPath: 'environments'
+      },
+      relationships: {
+        canonicalAuthority: 'World Canon',
+        canonicalSource: 'generated/world-canon-index.json',
+        canonicalPath: 'byType.relationships',
+        compatibilitySource: 'data/relationships.json',
+        compatibilityPath: 'relationships'
+      }
+    }
+  };
+}
+
+function loadCanonicalAuthorityRegistry() {
+  const registryPath = fs.existsSync(authorityRegistryPath)
+    ? authorityRegistryPath
+    : sourceRegistryPath;
+
+  if (!fs.existsSync(registryPath)) {
+    return getDefaultCanonicalAuthorityRegistry();
+  }
+
+  try {
+    const parsed = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
+    if (!parsed || typeof parsed !== 'object' || !parsed.entities) {
+      return getDefaultCanonicalAuthorityRegistry();
+    }
+    return parsed;
+  } catch {
+    return getDefaultCanonicalAuthorityRegistry();
+  }
+}
+
+function projectLegacySourceRegistry(authorityRegistry) {
+  const entities = authorityRegistry && authorityRegistry.entities ? authorityRegistry.entities : {};
+  const projectedEntities = {};
+
+  for (const [entityKey, config] of Object.entries(entities)) {
+    projectedEntities[entityKey] = {
+      canonicalAuthority: config && config.canonicalAuthority ? config.canonicalAuthority : 'Unspecified Authority',
+      canonicalSource: config && config.canonicalSource ? config.canonicalSource : '',
+      canonicalPath: config && config.canonicalPath ? config.canonicalPath : '',
+      compatibilitySource: Object.prototype.hasOwnProperty.call(config || {}, 'compatibilitySource')
+        ? config.compatibilitySource
+        : null,
+      compatibilityPath: Object.prototype.hasOwnProperty.call(config || {}, 'compatibilityPath')
+        ? config.compatibilityPath
+        : null
+    };
+  }
+
+  return {
+    version: authorityRegistry && authorityRegistry.version ? authorityRegistry.version : 1,
+    deprecated: true,
+    projectionOf: 'data/canonical-authority-registry.json',
+    entities: projectedEntities
+  };
+}
+
+function writeLegacySourceRegistryProjection(authorityRegistry) {
+  const projected = projectLegacySourceRegistry(authorityRegistry);
+  const nextText = `${JSON.stringify(projected, null, 2)}\n`;
+  const currentText = fs.existsSync(sourceRegistryPath)
+    ? fs.readFileSync(sourceRegistryPath, 'utf8')
+    : null;
+
+  if (currentText === nextText) {
+    return false;
+  }
+
+  fs.writeFileSync(sourceRegistryPath, nextText, 'utf8');
+  return true;
+}
+
+function getRegistryEntityConfig(authorityRegistry, entityKey) {
+  const defaults = getDefaultCanonicalAuthorityRegistry().entities[entityKey] || {};
+  const configured = authorityRegistry && authorityRegistry.entities && authorityRegistry.entities[entityKey]
+    ? authorityRegistry.entities[entityKey]
+    : {};
+
+  return {
+    canonicalAuthority: configured.canonicalAuthority || defaults.canonicalAuthority || 'Unspecified Authority',
+    canonicalSource: configured.canonicalSource || defaults.canonicalSource || '',
+    canonicalPath: configured.canonicalPath || defaults.canonicalPath || '',
+    compatibilitySource: Object.prototype.hasOwnProperty.call(configured, 'compatibilitySource')
+      ? configured.compatibilitySource
+      : defaults.compatibilitySource,
+    compatibilityPath: Object.prototype.hasOwnProperty.call(configured, 'compatibilityPath')
+      ? configured.compatibilityPath
+      : defaults.compatibilityPath
+  };
+}
+
+function resolvePathValue(sourceObject, sourcePath) {
+  if (!sourcePath) {
+    return sourceObject;
+  }
+
+  return String(sourcePath)
+    .split('.')
+    .filter((token) => token.length > 0)
+    .reduce((current, token) => {
+      if (!current || typeof current !== 'object') {
+        return null;
+      }
+      return current[token];
+    }, sourceObject);
+}
+
+function selectEntitySourceRecords(entityKey, authorityRegistry, sourceObjectsByFile) {
+  const config = getRegistryEntityConfig(authorityRegistry, entityKey);
+
+  const canonicalObject = sourceObjectsByFile[config.canonicalSource] || null;
+  const canonicalRecords = resolvePathValue(canonicalObject, config.canonicalPath);
+  if (Array.isArray(canonicalRecords) && canonicalRecords.length > 0) {
+    return {
+      records: canonicalRecords,
+      authority: config.canonicalAuthority,
+      activeSource: `${config.canonicalSource} (${config.canonicalPath})`
+    };
+  }
+
+  if (config.compatibilitySource && config.compatibilityPath) {
+    const compatibilityObject = sourceObjectsByFile[config.compatibilitySource] || null;
+    const compatibilityRecords = resolvePathValue(compatibilityObject, config.compatibilityPath);
+    if (Array.isArray(compatibilityRecords) && compatibilityRecords.length > 0) {
+      return {
+        records: compatibilityRecords,
+        authority: config.canonicalAuthority,
+        activeSource: `${config.compatibilitySource} (${config.compatibilityPath})`
+      };
+    }
+  }
+
+  return {
+    records: Array.isArray(canonicalRecords) ? canonicalRecords : [],
+    authority: config.canonicalAuthority,
+    activeSource: `${config.canonicalSource} (${config.canonicalPath})`
+  };
 }
 
 function toOutputAssetPath(assetPath, pathPrefix = '') {
@@ -77,7 +245,16 @@ function getBookPageHref(book) {
 }
 
 function getCanonicalBookId(book) {
-  return String((book && (book.code || book.id)) || '').trim();
+  return String((book && ((book.identity && book.identity.canonicalId) || book.canonicalId || book.code || book.id)) || '').trim();
+}
+
+function getBookLegacyAliases(book) {
+  const aliases = book && book.identity && Array.isArray(book.identity.legacyAliases)
+    ? book.identity.legacyAliases
+    : [];
+  return aliases
+    .map((value) => String(value || '').trim())
+    .filter((value) => value.length > 0);
 }
 
 function getBookPublicTitle(book) {
@@ -163,11 +340,11 @@ function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
     .map((entry) => [String(entry.slug || '').toLowerCase(), entry.title || entry.slug || '']));
 
   const books = ((booksData && booksData.books) || [])
-    .filter((book) => Boolean(book && (book.code || book.slug)))
+    .filter((book) => Boolean(book && (getCanonicalBookId(book) || book.slug)))
     .map((book) => {
       const seriesSlug = String(book.seriesSlug || '').toLowerCase();
       const seriesTitle = seriesBySlug.get(seriesSlug) || book.seriesSlug || '';
-      const id = book.code || String(book.slug || '').toUpperCase();
+      const id = getCanonicalBookId(book) || String(book.slug || '').toUpperCase();
       const cover = (book.coverImage || '').replace(/^\//, '');
       const files = cover ? [cover] : [];
       return {
@@ -510,7 +687,11 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
       <h1 id="character-arrival">${profile.arrivalHeading}</h1>
       <p>${profile.arrivalBody}</p>
       <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
-      <p><a class="button" href="../characters.html">Meet more friends</a></p>
+      <p><strong>Where to go next:</strong> Continue from the story you just read and choose the next place, person, or memory to follow.</p>
+      <p>
+        <a class="button" href="../books.html">Read another story</a>
+        <a class="button" href="../characters.html">Meet more friends</a>
+      </p>
     </section>
 
     <section class="content-card" aria-labelledby="character-together">
@@ -560,7 +741,8 @@ function createEntityIndex(
   environmentsData,
   landmarksData,
   resourcesData,
-  libraryScan
+  libraryScan,
+  authorityRegistry
 ) {
   const files = (libraryScan && libraryScan.files) || [];
   const sourceDocumentsByType = {
@@ -645,7 +827,23 @@ function createEntityIndex(
     };
   });
 
-  const relationshipFallback = ((relationshipsData && relationshipsData.relationships) || []).map((relationship, index) => ({
+  const relationshipRecordsFromData = (relationshipsData && relationshipsData.relationships) || [];
+  const environmentRecordsFromData = (environmentsData && environmentsData.environments) || [];
+  const worldCanonRelationships = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || [];
+  const worldCanonEnvironments = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || [];
+
+  const sourceObjectsByFile = {
+    'generated/world-canon-index.json': worldCanonIndex || {},
+    'data/relationships.json': { relationships: relationshipRecordsFromData },
+    'data/environments.json': { environments: environmentRecordsFromData },
+    'data/books.json': {},
+    'data/characters.json': {}
+  };
+
+  const selectedRelationshipSource = selectEntitySourceRecords('relationships', authorityRegistry, sourceObjectsByFile);
+  const selectedEnvironmentSource = selectEntitySourceRecords('environments', authorityRegistry, sourceObjectsByFile);
+
+  const relationshipFallback = relationshipRecordsFromData.map((relationship, index) => ({
     type: 'relationship',
     id: relationship.id || relationship.slug || `relationship-${index + 1}`,
     name: relationship.name || relationship.title || relationship.slug || `Relationship ${index + 1}`,
@@ -661,16 +859,18 @@ function createEntityIndex(
     ),
     ...relationship
   }));
-  const canonRelationships = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || [])
+  const canonRelationships = worldCanonRelationships
     .map((relationship) => ({
       ...relationship,
       type: 'relationship',
       href: getEntityPageHref('relationship', relationship.id, relationship.name),
       entityPageHref: getEntityPageHref('relationship', relationship.id, relationship.name)
     }));
-  const relationships = canonRelationships.length > 0 ? canonRelationships : relationshipFallback;
+  const relationships = selectedRelationshipSource.activeSource.startsWith('generated/world-canon-index.json')
+    ? canonRelationships
+    : relationshipFallback;
 
-  const environmentFallback = ((environmentsData && environmentsData.environments) || []).map((environment, index) => ({
+  const environmentFallback = environmentRecordsFromData.map((environment, index) => ({
     type: 'environment',
     id: environment.id || environment.slug || `environment-${index + 1}`,
     name: environment.name || environment.title || environment.slug || `Environment ${index + 1}`,
@@ -686,14 +886,16 @@ function createEntityIndex(
     ),
     ...environment
   }));
-  const canonEnvironments = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || [])
+  const canonEnvironments = worldCanonEnvironments
     .map((environment) => ({
       ...environment,
       type: 'environment',
       href: getEntityPageHref('environment', environment.id, environment.name),
       entityPageHref: getEntityPageHref('environment', environment.id, environment.name)
     }));
-  const environments = canonEnvironments.length > 0 ? canonEnvironments : environmentFallback;
+  const environments = selectedEnvironmentSource.activeSource.startsWith('generated/world-canon-index.json')
+    ? canonEnvironments
+    : environmentFallback;
 
   const landmarkFallback = ((landmarksData && landmarksData.landmarks) || []).map((landmark, index) => ({
     type: 'landmark',
@@ -763,6 +965,16 @@ function createEntityIndex(
         landmarks: landmarks.length,
         activities: activities.length,
         resources: resources.length
+      }
+    },
+    canonicalAuthoritySelection: {
+      relationships: {
+        authority: selectedRelationshipSource.authority,
+        source: selectedRelationshipSource.activeSource
+      },
+      environments: {
+        authority: selectedEnvironmentSource.authority,
+        source: selectedEnvironmentSource.activeSource
       }
     },
     sourceDocumentsByType,
@@ -1240,6 +1452,25 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     : getEntitiesForType(entityIndex, entity.type)
       .filter((candidate) => candidate.id !== entity.id)
       .slice(0, 8);
+
+  const primaryContinuation = connectedCandidates.find((candidate) => candidate.type === 'book')
+    || connectedCandidates.find((candidate) => candidate.type === 'character')
+    || connectedCandidates.find((candidate) => candidate.type === 'environment' || candidate.type === 'landmark')
+    || continueExploring[0] || null;
+
+  const isPlaceLikeEntity = entity.type === 'environment' || entity.type === 'landmark';
+  const continuationHeading = isPlaceLikeEntity
+    ? 'Follow this place into the next part of the story'
+    : 'Where would you like to wander next?';
+  const continuationIntro = isPlaceLikeEntity
+    ? (primaryContinuation
+      ? `This place feels most alive when you follow ${primaryContinuation.name}.`
+      : 'This place opens naturally into the next story, person, or memory around Hawkins Hollow.')
+    : `People who explored ${entityLabel} also wandered through:`;
+  const primaryContinuationButton = primaryContinuation && primaryContinuation.entityPageHref
+    ? `<p><a class="button" href="../../${primaryContinuation.entityPageHref}">Continue with ${primaryContinuation.name}</a></p>`
+    : '';
+
   const continueHtml = continueExploring.length === 0
     ? '<p>More connected entities are still being mapped. For now, choose another nearby path from the map or search.</p>'
     : `<ul>${continueExploring.map((candidate) => {
@@ -1295,8 +1526,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     </section>
 
     <section class="content-card">
-      <h2>Where would you like to wander next?</h2>
-      <p>People who explored ${entityLabel} also wandered through:</p>
+      <h2>${continuationHeading}</h2>
+      <p>${continuationIntro}</p>
+      ${primaryContinuationButton}
+      <p>${isPlaceLikeEntity ? 'Or choose another nearby path:' : 'Nearby paths:'}</p>
       ${continueHtml}
     </section>
 
@@ -1666,11 +1899,16 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
     .join('')}</div>`;
 }
 
-function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup) {
+function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, experienceContext = {}) {
   const detailPath = getBookPageHref(book);
+  const canonicalId = getCanonicalBookId(book);
   const files = (book.files || []).sort();
   const previewFiles = files.slice(0, 20);
   const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+  const bookModelByCanonicalId = experienceContext.bookModelByCanonicalId || new Map();
+  const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
+  const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
+  const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
   const fileTypeSummary = ((book.fileTypes || [])
     .map((item) => `${item.extension.toUpperCase()}: ${item.count}`)
     .join(' | ')) || 'No file type data';
@@ -1752,31 +1990,112 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup) {
   };
   const jsonLd = JSON.stringify(jsonLdObject, null, 2);
 
-  return renderLayout(
-    `${getBookPublicTitle(book) || getCanonicalBookId(book)}`,
-    `Library record ${getCanonicalBookId(book)}`,
-    `<section class="content-card">
-      <p class="eyebrow">Library Record</p>
-      <h1>${getBookPublicTitle(book) || getCanonicalBookId(book)}</h1>
-      <p><strong>Canonical ID:</strong> ${getCanonicalBookId(book)}</p>
-      <p><strong>Public Title:</strong> ${getBookPublicTitle(book) || getCanonicalBookId(book)}</p>
-      <p><strong>Series:</strong> ${book.series || 'Unknown'}</p>
-      <p><strong>Series / Production Mode:</strong> ${book.seriesCode || 'Unknown'}</p>
-      <p><strong>Folder:</strong> <code>${book.folder || 'Unknown'}</code></p>
-      <p><strong>Indexed File Types:</strong> ${fileTypeSummary}</p>
-      <p><strong>Total Files Indexed:</strong> ${files.length}</p>
-      ${amazonBlock}
+  const experienceCharacters = Array.isArray(experienceBook && experienceBook.characters)
+    ? experienceBook.characters
+    : [];
+  const experienceEnvironments = Array.isArray(experienceBook && experienceBook.environments)
+    ? experienceBook.environments
+    : [];
+  const resolvedCharacter = experienceCharacters
+    .map((characterId) => characterByCanonicalId.get(String(characterId || '').toUpperCase()))
+    .find((character) => Boolean(character)) || null;
+  const resolvedEnvironment = experienceEnvironments
+    .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
+    .find((environment) => Boolean(environment)) || null;
+  const synopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
+  const invitationText = String((experienceBook && experienceBook.description) || '').trim();
+  const characterList = experienceCharacters
+    .map((characterId) => {
+      const character = characterByCanonicalId.get(String(characterId || '').toUpperCase());
+      if (!character) {
+        return '';
+      }
+      return `<li><a href="../characters/${character.slug}.html">${character.name}</a></li>`;
+    })
+    .filter((value) => Boolean(value))
+    .join('');
+  const environmentList = experienceEnvironments
+    .map((environmentId) => {
+      const environment = environmentByCanonicalId.get(String(environmentId || '').toUpperCase());
+      if (!environment) {
+        return '';
+      }
+      return `<li><a href="../${getEntityPageHref('environment', environment.id, environment.name)}">${environment.name}</a></li>`;
+    })
+    .filter((value) => Boolean(value))
+    .join('');
+
+  const isSpencerExperiencePass = canonicalId.toUpperCase() === 'HH-B-0001';
+  const experienceIntroCard = isSpencerExperiencePass
+    ? `<section class="content-card" aria-labelledby="story-introduction">
+      <h2 id="story-introduction">Welcome. Let us introduce you to Spencer.</h2>
+      ${invitationText ? `<p><em>${invitationText}</em></p>` : ''}
+      ${synopsisText ? `<p>${synopsisText}</p>` : ''}
+      <p><strong>You'll meet</strong></p>
+      <ul>${characterList || '<li>Spencer Field Mouse</li><li>Alice Mole</li>'}</ul>
+      <p><strong>You'll visit</strong></p>
+      <ul>${environmentList || '<li>Story Stump</li><li>Pond Edge</li><li>Farmhouse Porch</li>'}</ul>
+      <p><strong>Perfect for</strong></p>
+      <p>Beginning readers who enjoy gentle adventures, kind friendships, and stories that celebrate curiosity.</p>
+      <p><strong>Where to go next</strong></p>
+      <p>Keep following the Storybooks path by meeting Spencer again, visiting a familiar place, or choosing another story.</p>
       <p>
-        <a class="button" href="../books.html">Back to Books</a>
+        <a class="button" href="../storybook-shelf.html">Return to the Storybook Shelf</a>
+        <a class="button" href="../characters/spencer-field-mouse.html">Meet Spencer</a>
+        <a class="button" href="../${getEntityPageHref('environment', 'ENV-0028', 'Story Stump')}">Explore the Story Stump</a>
+        <a class="button" href="../books.html">Browse more stories</a>
       </p>
-    </section>
+    </section>`
+    : '';
 
-    <section class="content-card">
-      <h2>Discovered Files</h2>
-      <p>Showing the first ${previewFiles.length} of ${files.length} files from the Library scan.</p>
-      <ul>${fileList}</ul>
-    </section>
+  const isStorybookLike = String(book && book.series || '').toLowerCase().includes('storybook') || String((book && book.seriesCode) || '').toUpperCase() === 'A';
+  const continuationHeading = resolvedCharacter
+    ? `Meet ${resolvedCharacter.name}`
+    : resolvedEnvironment
+      ? `Visit ${resolvedEnvironment.name}`
+      : (isStorybookLike ? 'Continue the story' : 'Continue exploring');
+  const continuationMessage = resolvedCharacter
+    ? `This is the next place to turn when you want to know more about the curious heart of this story.`
+    : resolvedEnvironment
+      ? `This place helps the story feel more real, and it often opens the door to the next chapter of the adventure.`
+      : 'This next step keeps the story feeling alive after the final page.';
+  const continuationPrimaryLink = resolvedCharacter
+    ? `<a class="button" href="../characters/${resolvedCharacter.slug}.html">Learn more about ${resolvedCharacter.name}</a>`
+    : resolvedEnvironment
+      ? `<a class="button" href="../${getEntityPageHref('environment', resolvedEnvironment.id, resolvedEnvironment.name)}">Step into ${resolvedEnvironment.name}</a>`
+      : `<a class="button" href="../storybook-shelf.html">Return to the Storybook Shelf</a>`;
+  const continuationSecondaryLinks = `${resolvedCharacter ? `<a class="button" href="../characters.html">Meet more friends</a>` : ''}${resolvedEnvironment ? ` <a class="button" href="../map.html">Open the map</a>` : ''}${isStorybookLike ? ` <a class="button" href="../storybook-shelf.html">Return to the Storybook Shelf</a>` : ' <a class="button" href="../books.html">Browse more stories</a>'}`.trim();
+  const continuationCard = `<section class="content-card" aria-labelledby="story-continue">
+      <h2 id="story-continue">${continuationHeading}</h2>
+      <p>${continuationMessage}</p>
+      <p>${continuationPrimaryLink}</p>
+      <p>${continuationSecondaryLinks ? `<strong>Also:</strong> ${continuationSecondaryLinks}</p>` : ''}
+    </section>`;
 
+  const pageDescription = isSpencerExperiencePass
+    ? (invitationText || `A gentle Storybook about discovering how even the smallest friendship can change a day.`)
+    : `A story invitation for ${getBookPublicTitle(book) || canonicalId}`;
+
+  const storyIntroLead = (invitationText || synopsisText || 'A gentle Storybook about discovering how even the smallest friendship can change a day.').trim();
+  const storyIntroBody = synopsisText || 'This story invites a child and a caring grown-up to settle in together and begin.';
+  const isSpencerBook = String(getBookPublicTitle(book) || canonicalId).toLowerCase().includes('spencer');
+  const storyActionLabel = resolvedCharacter ? `Meet ${resolvedCharacter.name}` : isSpencerBook ? 'Meet Spencer' : 'Meet the characters';
+  const storyActionHref = resolvedCharacter ? `../characters/${resolvedCharacter.slug}.html` : isSpencerBook ? '../characters/spencer-field-mouse.html' : '../characters.html';
+  const storyIntroCard = `<section class="content-card" aria-labelledby="story-intro-heading">
+      <p class="eyebrow">Storybook</p>
+      <h2 id="story-intro-heading">${getBookPublicTitle(book) || canonicalId}</h2>
+      <p class="story-intro-lead"><em>${storyIntroLead}</em></p>
+      <p>${storyIntroBody}</p>
+      <p>
+        <a class="button" href="../storybook-shelf.html">Read this story</a>
+        <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
+      </p>
+    </section>`;
+
+  return renderLayout(
+    `${getBookPublicTitle(book) || canonicalId}`,
+    pageDescription,
+    `${experienceIntroCard}${storyIntroCard}${continuationCard}
     <script type="application/ld+json">${jsonLd}</script>`,
     site,
     nav,
@@ -1897,6 +2216,32 @@ function renderLandingPage(page, site, nav, config, banner) {
           <p>Wander seasonal moments, gatherings, and neighborhood traditions.</p>
         </a>
       </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="series-spotlight">
+      <p class="eyebrow">Choose a shelf</p>
+      <h2 id="series-spotlight">There is a path for different kinds of visits</h2>
+      <p>Some families want shared stories, some want early reading practice, and some want a calm bedtime path. These are the most welcoming entry points.</p>
+      <div class="start-here-grid">
+        <article class="start-here-item">
+          <h3>Storybooks</h3>
+          <p>Gentle shared stories for children and grown-ups to read together.</p>
+          <p><a class="button" href="storybook-shelf.html">Begin with Storybooks</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>First Readers</h3>
+          <p>Shorter, simpler stories for early reading practice.</p>
+          <p><a class="button" href="books.html#series-first-readers">Open First Readers</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Bedtime Library</h3>
+          <p>A calm path for winding down with gentle stories at the end of the day.</p>
+          <p><a class="button" href="books.html#series-bedtime-library">Try Bedtime Library</a></p>
+        </article>
+      </div>
+      <p><a href="books.html">See the full collection of series</a></p>
     </section>
 
     <section class="content-card" aria-labelledby="act-three">
@@ -2197,6 +2542,15 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       `<section class="content-card" aria-labelledby="books-introduction">
       <h2 id="books-introduction">Books</h2>
       <p>Every Hawkins Hollow story belongs somewhere in a larger journey. Some books are perfect for bedtime, some help beginning readers gain confidence, and others offer comfort during difficult moments. Browse the collections below and discover the stories that fit your family best.</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="books-doorway">
+      <h2 id="books-doorway">Where to begin</h2>
+      <p>If this is your first visit, you do not need to choose everything at once. Start with the path that fits your moment.</p>
+      <p>
+        <a class="button" href="storybook-shelf.html">Start with Storybooks</a>
+        <a class="button" href="books.html#series-bedtime-library">Try Bedtime Library</a>
+      </p>
     </section>
 
     <section class="content-card" aria-labelledby="books-series">
@@ -2545,7 +2899,11 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
       <h1 id="character-arrival">${profile.arrivalHeading}</h1>
       <p>${profile.arrivalBody}</p>
       <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
-      <p><a class="button" href="../characters.html">Meet more friends</a></p>
+      <p><strong>Where to go next:</strong> Continue from the story you just read and choose the next place, person, or memory to follow.</p>
+      <p>
+        <a class="button" href="../books.html">Read another story</a>
+        <a class="button" href="../characters.html">Meet more friends</a>
+      </p>
     </section>
 
     <section class="content-card" aria-labelledby="character-together">
@@ -2587,6 +2945,39 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
   );
 }
 
+function getStorybookCardInvitation(book) {
+  const title = String(book && book.title ? book.title : '').trim();
+  const invitationByTitle = {
+    'Spencer’s First Friend': 'Meet Spencer and discover how a small friendship can begin.',
+    'The Sharing Acorn': 'Follow a simple gift and the kindness it inspires.',
+    "Alice's Underground Party": 'Step into a moonlit gathering and a merry little adventure.',
+    'When Callen Said Sorry': 'Watch a hard moment soften into a thoughtful apology.'
+  };
+
+  return invitationByTitle[title] || (book && book.description ? book.description : 'A gentle story waiting to be read.');
+}
+
+function buildStorybookPreviewCards(booksData) {
+  const storybooks = (booksData.books || [])
+    .filter((book) => book.seriesSlug === 'storybooks')
+    .slice(0, 4);
+
+  if (!storybooks.length) {
+    return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New Storybooks will appear here as the collection grows.</p></article>`;
+  }
+
+  return storybooks
+    .map(
+      (book) => `<article class="book-card">
+        <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
+        <h3 class="story-card-title">${book.title}</h3>
+        <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
+        <a class="button" href="${getBookPageHref(book)}">Read this story</a>
+      </article>`
+    )
+    .join('');
+}
+
 function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
   const series = seriesData.series.find((entry) => entry.slug === page.seriesSlug);
 
@@ -2608,23 +2999,21 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
 
     <section class="content-card" aria-labelledby="the-shelf-is-growing">
       <h2 id="the-shelf-is-growing">The Shelf Is Growing</h2>
-      <p>Individual story listings, book covers, descriptions, and purchase links will be added here as the Hawkins Hollow website continues to grow.</p>
-      <p>For now, visitors may learn more about the Storybook Series and explore the rest of Hawkins Hollow.</p>
+      <p>These stories are designed to be read together, one gentle page at a time.</p>
+      <p>Begin with one that feels right for today, then let the next story find you.</p>
       <p>
-        <a class="button" href="storybook-series.html">About the Storybook Series</a>
-        <a class="button" href="books.html">Explore All Book Series</a>
+        <a class="button" href="storybook-series.html">Learn about the series</a>
+        <a class="button" href="books.html">Browse the full library</a>
       </p>
-      <div class="card-grid" aria-label="Future story listings">
-        <article class="book-card">
-          <h3>Shelf Space Ready for New Stories</h3>
-          <p class="placeholder">Future story listings will appear here as new books are added.</p>
-        </article>
+      <div class="card-grid" aria-label="Featured Storybooks">
+        ${buildStorybookPreviewCards(booksData)}
       </div>
     </section>
 
     <section class="content-card" aria-labelledby="choose-the-story-that-feels-right">
       <h2 id="choose-the-story-that-feels-right">Choose the Story That Feels Right</h2>
       <p>There is no required reading order in Hawkins Hollow. Begin with one story that catches your attention, share it at your own pace, and return whenever the porch light calls you back.</p>
+      <p><a class="button" href="books.html">See the wider collection of series</a></p>
     </section>`,
       site,
       nav,
@@ -2640,9 +3029,9 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
       (book) => `<article class="book-card">
         <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
         <h3>${book.title}</h3>
-        <p><strong>Code:</strong> ${book.code}</p>
-        ${book.description ? `<p>${book.description}</p>` : ''}
-        <a class="button" href="${book.slug}.html">Read more</a>
+        ${book.description ? `<p>${book.description}</p>` : '<p>A gentle story waiting to be read.</p>'}
+        <p class="placeholder">A welcoming next step in the Storybooks path.</p>
+        <a class="button" href="${getBookPageHref(book)}">Read this story</a>
       </article>`
     )
     .join('');
@@ -2667,22 +3056,75 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
   );
 }
 
+function buildRelatedStorybookCards(booksData, currentBookSlug) {
+  const relatedBooks = (booksData.books || [])
+    .filter((book) => book.seriesSlug === 'storybooks' && book.slug !== currentBookSlug)
+    .slice(0, 3);
+
+  if (!relatedBooks.length) {
+    return '<p class="placeholder">More stories will appear here as the shelf grows.</p>';
+  }
+
+  return relatedBooks
+    .map(
+      (book) => `<article class="book-card">
+        <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
+        <h3>${book.title}</h3>
+        <p>${book.description ? book.description : 'A gentle story waiting to be read.'}</p>
+        <a class="button" href="${book.slug}.html">Read this story</a>
+      </article>`
+    )
+    .join('');
+}
+
 function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   const book = booksData.books.find((entry) => entry.slug === page.bookSlug);
   const canonicalId = getCanonicalBookId(book);
   const publicTitle = getBookPublicTitle(book) || canonicalId;
+  const isStorybook = book && book.seriesSlug === 'storybooks';
+  const seriesLabel = isStorybook ? 'Storybook' : 'Book';
+  const relatedCards = buildRelatedStorybookCards(booksData, book.slug);
+  const storyCharacters = Array.isArray(book && book.characters) ? book.characters : [];
+  const storyEnvironments = Array.isArray(book && book.environments) ? book.environments : [];
+  const characterAnchor = storyCharacters.length > 0
+    ? `<a class="button" href="characters/${String(storyCharacters[0]).toLowerCase() === 'hh-chr-0002' ? 'spencer-field-mouse.html' : 'characters.html'}">Meet the character</a>`
+    : '';
+  const environmentAnchor = storyEnvironments.length > 0
+    ? `<a class="button" href="${storyEnvironments[0] === 'ENV-0028' ? 'entities/environment/env-0028-story-stump.html' : 'map.html'}">Visit the place</a>`
+    : '';
+  const primaryContinuation = characterAnchor || environmentAnchor
+    ? `<p><strong>Continue with:</strong> ${characterAnchor && environmentAnchor ? `${characterAnchor} ${environmentAnchor}` : characterAnchor || environmentAnchor}</p>`
+    : '';
+
   return renderLayout(
     publicTitle,
     canonicalId,
     `<section class="content-card">
+      <p class="eyebrow">${seriesLabel}</p>
+      <h2>${publicTitle}</h2>
       <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${publicTitle}" />
-      <h2>About this book</h2>
-      ${book.description ? `<p>${book.description}</p>` : ''}
-      <p><strong>Canonical ID:</strong> ${canonicalId}</p>
-      <p><strong>Public Title:</strong> ${publicTitle}</p>
-      <p><strong>Production Mode:</strong> ${book.seriesSlug}</p>
-      <a class="button" href="books.html">Back to books</a>
-    </section>`,
+      ${book.description ? `<p>${book.description}</p>` : '<p>A gentle story waiting to be read.</p>'}
+      <p><strong>Series:</strong> ${book.seriesSlug || 'Hawkins Hollow'}</p>
+      <p>
+        ${isStorybook ? '<a class="button" href="storybook-shelf.html">Return to the Storybook Shelf</a>' : '<a class="button" href="books.html">Back to books</a>'}
+        <a class="button" href="books.html">Browse the wider library</a>
+      </p>
+    </section>
+
+    <section class="content-card" aria-labelledby="story-next-step">
+      <h2 id="story-next-step">Choose your next step</h2>
+      <p>${isStorybook ? 'A story like this often leads naturally to one of the people or places that made it feel real.' : 'Continue exploring the wider Hawkins Hollow library.'}</p>
+      ${primaryContinuation}
+      <p>
+        <a class="button" href="${isStorybook ? 'storybook-shelf.html' : 'books.html'}">${isStorybook ? 'Return to the Storybook Shelf' : 'View the books page'}</a>
+        <a class="button" href="books.html">Browse more stories</a>
+      </p>
+    </section>
+
+    ${isStorybook ? `<section class="content-card" aria-labelledby="more-storybooks">
+      <h2 id="more-storybooks">More stories in this world</h2>
+      <div class="card-grid">${relatedCards}</div>
+    </section>` : ''}`,
     site,
     nav,
     `${site.domain}/${page.slug}.html`,
@@ -2869,10 +3311,31 @@ function getReferenceIssue(page, seriesData, booksData) {
   return null;
 }
 
-function writePage(fileName, html) {
-  const outputPath = path.join(buildDir, fileName);
+function writePage(fileName, html, outputDir = buildDir) {
+  const outputPath = path.join(outputDir, fileName);
   ensureDir(path.dirname(outputPath));
   fs.writeFileSync(outputPath, html, 'utf8');
+}
+
+function writePageToOutputs(fileName, html) {
+  outputDirs.forEach((outputDir) => writePage(fileName, html, outputDir));
+}
+
+function copyStaticSiteAssets(outputDir) {
+  fs.copyFileSync(path.join(root, 'styles.css'), path.join(outputDir, 'styles.css'));
+  if (fs.existsSync(path.join(root, 'assets'))) {
+    copyDir(path.join(root, 'assets'), path.join(outputDir, 'assets'));
+  }
+  if (fs.existsSync(path.join(root, 'generated'))) {
+    copyDir(path.join(root, 'generated'), path.join(outputDir, 'generated'));
+  }
+  ensureDir(path.join(outputDir, 'images'));
+  if (!fs.existsSync(path.join(outputDir, 'images', 'placeholder-banner.jpg'))) {
+    fs.writeFileSync(path.join(outputDir, 'images', 'placeholder-banner.jpg'), 'placeholder-banner');
+  }
+  if (!fs.existsSync(path.join(outputDir, 'images', 'placeholder-cover.jpg'))) {
+    fs.writeFileSync(path.join(outputDir, 'images', 'placeholder-cover.jpg'), 'placeholder-cover');
+  }
 }
 
 function buildSite() {
@@ -2898,6 +3361,11 @@ function buildSite() {
   const constructionData = readJson('data/under-construction.json');
   const config = readJson('data/site-config.json');
   const banners = readJson('data/banners.json');
+  const authorityRegistry = loadCanonicalAuthorityRegistry();
+  const updatedSourceProjection = writeLegacySourceRegistryProjection(authorityRegistry);
+  if (updatedSourceProjection) {
+    console.log('Updated deprecated source registry projection from canonical-authority-registry.json.');
+  }
   const libraryScan = readJson('generated/library-scan.json');
   const rawLibraryIndex = readJson('generated/library-index.json');
   const hasLibraryBooks = Boolean(rawLibraryIndex && Array.isArray(rawLibraryIndex.books) && rawLibraryIndex.books.length > 0);
@@ -2935,7 +3403,8 @@ function buildSite() {
     environmentsData,
     landmarksData,
     resourcesData,
-    libraryScan
+    libraryScan,
+    authorityRegistry
   );
   const entityIndexPath = writeEntityIndex(root, entityIndex);
   const entityGraph = createEntityGraph(entityIndex);
@@ -2953,6 +3422,13 @@ function buildSite() {
     `World canon index updated: ${worldCanonArtifacts.summary.totalRecords} records (relationships ${worldCanonArtifacts.summary.relationships}, environments ${worldCanonArtifacts.summary.environments}, landmarks ${worldCanonArtifacts.summary.landmarks}).`
   );
   console.log(`Entity index updated: ${entityIndex.summary.totalEntities} entities.`);
+  if (entityIndex.canonicalAuthoritySelection) {
+    const relationshipAuthority = entityIndex.canonicalAuthoritySelection.relationships;
+    const environmentAuthority = entityIndex.canonicalAuthoritySelection.environments;
+    console.log(
+      `Canonical authority selection: relationships -> ${relationshipAuthority.authority} via ${relationshipAuthority.source}; environments -> ${environmentAuthority.authority} via ${environmentAuthority.source}.`
+    );
+  }
   console.log(
     `Entity graph updated: ${entityGraph.summary.nodeCount} nodes, ${entityGraph.summary.edgeCount} edges (${entityGraph.summary.unresolvedMentionCount} unresolved mentions).`
   );
@@ -2983,21 +3459,8 @@ function buildSite() {
     }
   }
 
-  ensureDir(buildDir);
-  fs.copyFileSync(path.join(root, 'styles.css'), path.join(buildDir, 'styles.css'));
-  if (fs.existsSync(path.join(root, 'assets'))) {
-    copyDir(path.join(root, 'assets'), path.join(buildDir, 'assets'));
-  }
-  if (fs.existsSync(path.join(root, 'generated'))) {
-    copyDir(path.join(root, 'generated'), path.join(buildDir, 'generated'));
-  }
-  ensureDir(path.join(buildDir, 'images'));
-  if (!fs.existsSync(path.join(buildDir, 'images', 'placeholder-banner.jpg'))) {
-    fs.writeFileSync(path.join(buildDir, 'images', 'placeholder-banner.jpg'), 'placeholder-banner');
-  }
-  if (!fs.existsSync(path.join(buildDir, 'images', 'placeholder-cover.jpg'))) {
-    fs.writeFileSync(path.join(buildDir, 'images', 'placeholder-cover.jpg'), 'placeholder-cover');
-  }
+  outputDirs.forEach((outputDir) => ensureDir(outputDir));
+  outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
 
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
@@ -3019,7 +3482,7 @@ function buildSite() {
       html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner);
     }
 
-    writePage(page.slug === 'index' ? 'index.html' : `${page.slug}.html`, html);
+    writePageToOutputs(page.slug === 'index' ? 'index.html' : `${page.slug}.html`, html);
   }
 
   const featuredCharacters = charactersData.characters
@@ -3027,15 +3490,37 @@ function buildSite() {
     .sort((a, b) => a.sortOrder - b.sortOrder);
   for (const character of featuredCharacters) {
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex);
-    writePage(
+    writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(experienceAsset, site, nav, config)
     );
   }
 
   const indexedBooks = (libraryIndex.books || []).slice().sort((a, b) => a.id.localeCompare(b.id));
+  const bookModelByCanonicalId = new Map(
+    (booksData.books || [])
+      .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const characterByCanonicalId = new Map(
+    (charactersData.characters || [])
+      .map((character) => [String(((character.identity && character.identity.canonicalId) || '').trim()).toUpperCase(), character])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const environmentByCanonicalId = new Map(
+    (((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || []))
+      .map((environment) => [String(environment.id || '').trim().toUpperCase(), environment])
+      .filter((entry) => Boolean(entry[0]))
+  );
   for (const book of indexedBooks) {
-    writePage(getBookPageHref(book), renderIndexedBookDetailPage(book, site, nav, config, amazonLookup));
+    writePageToOutputs(
+      getBookPageHref(book),
+      renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
+        bookModelByCanonicalId,
+        characterByCanonicalId,
+        environmentByCanonicalId
+      })
+    );
   }
 
   const allEntities = (entityIndex.entities || []).slice().sort((a, b) => {
@@ -3046,7 +3531,7 @@ function buildSite() {
   });
   for (const entity of allEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
-    writePage(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config));
+    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config));
   }
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);

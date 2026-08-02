@@ -1,8 +1,10 @@
 # Hawkins Hollow Books Static Site Generator
 
-This project is a small static-site generator that uses shared layouts, reusable components, and separate JSON data files.
+## New to Hawkins Hollow?
 
-It now includes a Library Scanner that treats `Library/` as a content repository and generates machine-readable indexes under `generated/`.
+Before exploring the repository, start with the [docs/Repository-Preface.md](docs/Repository-Preface.md) document. It explains the purpose of the project and the role each document plays in preserving it.
+
+This repository is a small static-site generator that uses shared layouts, reusable components, and separate JSON data files. It also includes a Library Scanner that treats `Library/` as a content repository and generates machine-readable indexes under `generated/`.
 
 ## Authoritative build system
 
@@ -188,11 +190,13 @@ Hawkins Hollow uses a dedicated experience and voice constitution:
 
 ## Documentation map
 
+- docs/Repository-Preface.md: introduction to the project’s character, purpose, and documentation ecosystem
 - docs/Architecture.md: system architecture and technical constitution
 - docs/Build-Pipeline.md: build and ingestion workflow
 - docs/Hawkins-Hollow-Promise.md: hospitality and experience constitution
 - docs/Hawkins-Hollow-Voice.md: writing and voice rules
 - docs/Contributor-Checklist.md: stewardship review checklist for contributors
+- docs/Visitor-Improvement-Log.md: pass-by-pass evidence log for Visitor Improvement Loop outcomes
 - docs/Foundational-Docs-Policy.md: change policy for stable guiding documents
 - docs/architecture/README.md: ADR policy and architecture decision index
 - docs/architecture/ADR-006-publishing-engine-trusted-infrastructure.md: trusted infrastructure designation for publishing

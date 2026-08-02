@@ -40,6 +40,14 @@ A successful build should report updated counts for:
 - entity index entities
 - entity graph nodes/edges
 
+## Output Directory Note
+
+The current generator writes static output to the recovery build directory instead of the main build folder:
+
+- build-recovery/
+
+This is an implementation detail of the current build pipeline and is useful when verifying generated pages locally. The visitor-facing VIP log should continue to describe only the experience change, not the build output path.
+
 ## Local Preview
 
 node scripts/preview-site.js
