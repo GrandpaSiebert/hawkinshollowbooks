@@ -1952,6 +1952,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       ? placeNeighborCandidates
       : connectedCandidates.filter((candidate) => candidate.type === 'character');
     const previewNeighbors = allNeighborCandidates.slice(0, 4);
+    const hasMoreNeighborsThanPreview = allNeighborCandidates.length > previewNeighbors.length;
 
     const storyCandidates = connectedCandidates.filter((candidate) => candidate.type === 'book');
     const previewStories = storyCandidates.slice(0, 3);
@@ -1970,6 +1971,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       }));
     const allNearbyPlaces = nearbyCandidates.length > 0 ? nearbyCandidates : nearbyFallback;
     const previewNearby = allNearbyPlaces.slice(0, 4);
+    const hasMoreNearbyThanPreview = allNearbyPlaces.length > previewNearby.length;
+    const additionalNearbyPlaces = hasMoreNearbyThanPreview
+      ? allNearbyPlaces.slice(previewNearby.length)
+      : [];
 
     const neighborCards = previewNeighbors.length === 0
       ? '<p>More regular neighbors will appear here as this place keeps welcoming visitors.</p>'
@@ -2051,8 +2056,8 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       }).join('')}</ul>`
       : '<p>More regular neighbors are still being mapped.</p>';
 
-    const fullNearbyList = allNearbyPlaces.length > 0
-      ? `<ul>${allNearbyPlaces.map((candidate) => {
+    const fullNearbyList = additionalNearbyPlaces.length > 0
+      ? `<ul>${additionalNearbyPlaces.map((candidate) => {
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         const label = normalizeEntityLabel(candidate.name || candidate.id, candidate.id);
         return `<li>${href ? `<a href="${href}">${label}</a>` : label}</li>`;
@@ -2081,7 +2086,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       <section class="content-card" aria-labelledby="place-neighbors">
         <h2 id="place-neighbors">Meet the neighbors you'll often find here</h2>
         ${neighborCards}
-        ${allNeighborCandidates.length > 4 ? `<p class="section-continue"><a class="button" href="#place-all-neighbors">Find everyone who spends time at ${placeName} &rarr;</a></p>` : ''}
+        ${hasMoreNeighborsThanPreview ? `<p class="section-continue"><a class="button" href="#place-all-neighbors">Find everyone who spends time at ${placeName} &rarr;</a></p>` : ''}
       </section>
 
       <section class="content-card" aria-labelledby="place-stories">
@@ -2092,7 +2097,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       <section class="content-card" aria-labelledby="place-nearby">
         <h2 id="place-nearby">Nearby places to wander next</h2>
         ${nearbyCards}
-        ${allNearbyPlaces.length > 4 ? '<p class="section-continue"><a class="button" href="#place-all-nearby">Explore more places nearby &rarr;</a></p>' : ''}
+        ${hasMoreNearbyThanPreview ? '<p class="section-continue"><a class="button" href="#place-all-nearby">Explore more places nearby &rarr;</a></p>' : ''}
       </section>
 
       <section class="content-card" aria-labelledby="place-special">
@@ -2100,15 +2105,15 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         <ul>${specialList.map((item) => `<li>${item}</li>`).join('')}</ul>
       </section>
 
-      <section id="place-all-neighbors" class="content-card" aria-labelledby="place-all-neighbors-heading">
+      ${hasMoreNeighborsThanPreview ? `<section id="place-all-neighbors" class="content-card" aria-labelledby="place-all-neighbors-heading">
         <h2 id="place-all-neighbors-heading">Everyone who spends time at ${placeName}</h2>
         ${fullNeighborList}
-      </section>
+      </section>` : ''}
 
-      <section id="place-all-nearby" class="content-card" aria-labelledby="place-all-nearby-heading">
+      ${hasMoreNearbyThanPreview ? `<section id="place-all-nearby" class="content-card" aria-labelledby="place-all-nearby-heading">
         <h2 id="place-all-nearby-heading">More places nearby</h2>
         ${fullNearbyList}
-      </section>
+      </section>` : ''}
 
       <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
         <h2>Developer Provenance Panel</h2>
