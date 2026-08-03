@@ -38,6 +38,15 @@ function readJson(relativePath) {
   return JSON.parse(fs.readFileSync(path.join(root, relativePath), 'utf8'));
 }
 
+function readJsonIfExists(relativePath) {
+  const filePath = path.join(root, relativePath);
+  if (!fs.existsSync(filePath)) {
+    return null;
+  }
+
+  return JSON.parse(fs.readFileSync(filePath, 'utf8'));
+}
+
 function getDefaultCanonicalAuthorityRegistry() {
   return {
     version: 1,
@@ -1098,6 +1107,7 @@ function createEntityIndex(
   charactersData,
   characterCanonIndex,
   worldCanonIndex,
+  fallbackWorldCanonIndex,
   relationshipsData,
   environmentsData,
   landmarksData,
@@ -1190,11 +1200,29 @@ function createEntityIndex(
 
   const relationshipRecordsFromData = (relationshipsData && relationshipsData.relationships) || [];
   const environmentRecordsFromData = (environmentsData && environmentsData.environments) || [];
-  const worldCanonRelationships = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || [];
-  const worldCanonEnvironments = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || [];
+  const fallbackWorldCanonRelationships = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.relationships) || [];
+  const fallbackWorldCanonEnvironments = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.environments) || [];
+  const fallbackWorldCanonLandmarks = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.landmarks) || [];
+  const worldCanonRelationships = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || []).length > 0
+    ? worldCanonIndex.byType.relationships
+    : fallbackWorldCanonRelationships;
+  const worldCanonEnvironments = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || []).length > 0
+    ? worldCanonIndex.byType.environments
+    : fallbackWorldCanonEnvironments;
+  const worldCanonLandmarks = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.landmarks) || []).length > 0
+    ? worldCanonIndex.byType.landmarks
+    : fallbackWorldCanonLandmarks;
+  const effectiveWorldCanonIndex = {
+    ...(worldCanonIndex || {}),
+    byType: {
+      relationships: worldCanonRelationships,
+      environments: worldCanonEnvironments,
+      landmarks: worldCanonLandmarks
+    }
+  };
 
   const sourceObjectsByFile = {
-    'generated/world-canon-index.json': worldCanonIndex || {},
+    'generated/world-canon-index.json': effectiveWorldCanonIndex,
     'data/relationships.json': { relationships: relationshipRecordsFromData },
     'data/environments.json': { environments: environmentRecordsFromData },
     'data/books.json': {},
@@ -1274,7 +1302,7 @@ function createEntityIndex(
     ),
     ...landmark
   }));
-  const canonLandmarks = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.landmarks) || [])
+  const canonLandmarks = worldCanonLandmarks
     .map((landmark) => ({
       ...landmark,
       type: 'landmark',
@@ -4511,11 +4539,13 @@ function buildSite() {
   const characterCanonIndex = readJson('generated/character-canon-index.json');
   const worldCanonArtifacts = writeWorldCanonArtifacts(root, charactersData, libraryScan);
   const worldCanonIndex = readJson('generated/world-canon-index.json');
+  const fallbackWorldCanonIndex = readJsonIfExists('data/world-canon-fallback.json');
   const entityIndex = createEntityIndex(
     mergedBookIndex,
     charactersData,
     characterCanonIndex,
     worldCanonIndex,
+    fallbackWorldCanonIndex,
     relationshipsData,
     environmentsData,
     landmarksData,
