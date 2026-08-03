@@ -25,7 +25,7 @@
           "Ali"
         ]
       },
-      "code": "Ali",
+        "name": "Kaydence Chipmunk",
       "name": "Alice Mole",
       "heroImage": "/assets/characters/individuals/Ali-HP-V001.png",
       "description": "A thoughtful friend who often discovers answers by listening.",
@@ -66,7 +66,7 @@
       "sortOrder": 30
     },
     {
-      "slug": "kaydence-owl",
+      "slug": "kaydence-chipmunk",
       "identity": {
         "canonicalId": "HH-CHR-0004",
         "legacyAliases": [
@@ -74,7 +74,7 @@
         ]
       },
       "code": "Kay",
-      "name": "Kaydence Owl",
+      "name": "Kaydence Chipmunk",
       "heroImage": "/assets/characters/individuals/Kay-HP-V001.png",
       "description": "A careful, bright-eyed friend who turns questions into discoveries and helps others feel brave enough to ask their own.",
       "neighborhood": {
@@ -140,7 +140,7 @@
       "description": "A steady, patient friend who reminds everyone that quiet courage and small steps can still lead somewhere wonderful.",
       "neighborhood": {
         "relatedCharacterSlugs": [
-          "kaydence-owl",
+          "kaydence-chipmunk",
           "brandon-rabbit",
           "callen-crow"
         ],
@@ -246,7 +246,7 @@
         "relatedCharacterSlugs": [
           "callen-crow",
           "austin-turtle",
-          "kaydence-owl"
+          "kaydence-chipmunk"
         ],
         "relatedPlaceNames": [
           "Community Garden",
