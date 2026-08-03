@@ -1727,7 +1727,7 @@ function normalizeEntityLabel(value, fallback = '') {
   return label;
 }
 
-function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config) {
+function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners) {
   const nodeId = `${entity.type}:${entity.id}`;
   const entityLabel = normalizeEntityLabel(entity.name || entity.title || entity.id, entity.id);
   const nodeMap = new Map(((entityGraph && entityGraph.nodes) || []).map((node) => [node.id, node]));
@@ -1927,6 +1927,13 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     }).join('')}</ul>`;
 
   if (isPlaceLikeEntity) {
+    const placeBanner = (banners && (banners.places || banners.map)) || {
+      title: 'Meet the Places of Hawkins Hollow',
+      subtitle: 'Every path in Hawkins Hollow leads to a place worth knowing.',
+      bannerId: '021',
+      image: 'assets/banners/021 Hawkins Hollow Places Ribbon.png',
+      alt: 'Places ribbon welcoming visitors into the neighborhoods, paths, and gathering spots of Hawkins Hollow.'
+    };
     const placeName = entityLabel;
     const placeArtwork = getPlaceArtworkPathByName(placeName, entity.type === 'landmark' ? 'Landmark' : 'Place');
     const placeStorySource = String(storyText || '').replace(/^.*?Environment Identity:\s*/i, '');
@@ -2128,7 +2135,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       nav,
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
-      null,
+      placeBanner,
       '../../'
     );
   }
@@ -4648,7 +4655,7 @@ function buildSite() {
   });
   for (const entity of allEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
-    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config));
+    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners));
   }
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);

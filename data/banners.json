@@ -27,6 +27,20 @@
     "image": "assets/banners/016 Hawkins Hollow Explore Ribbon.png",
     "alt": "Books banner welcoming visitors to the Hawkins Hollow book collections."
   },
+  "places": {
+    "title": "Meet the Places of Hawkins Hollow",
+    "subtitle": "Every path in Hawkins Hollow leads to a place worth knowing.",
+    "bannerId": "021",
+    "image": "assets/banners/021 Hawkins Hollow Places Ribbon.png",
+    "alt": "Places ribbon welcoming visitors into the neighborhoods, paths, and gathering spots of Hawkins Hollow."
+  },
+  "map": {
+    "title": "Come Wander Hawkins Hollow",
+    "subtitle": "Choose a familiar path and see where the neighborhood introduces you next.",
+    "bannerId": "021",
+    "image": "assets/banners/021 Hawkins Hollow Places Ribbon.png",
+    "alt": "Places ribbon for the Hawkins Hollow map and environment pages."
+  },
   "resources": {
     "title": "Resources",
     "subtitle": "Free child resources for families and classrooms.",
