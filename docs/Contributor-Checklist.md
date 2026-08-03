@@ -16,12 +16,18 @@ Every technical decision should make it easier for someone to feel welcome in Ha
 
 Before adding a feature, ask:
 
+- [ ] After meaningful production work or a Spider walk, complete the Weekly Walk Review before planning the next improvement.
+- [ ] Does this help one neighbor naturally introduce another part of Hawkins Hollow?
 - [ ] Where does this belong?
 - [ ] What does the visitor need to feel first?
 - [ ] Am I changing world truth or presentation?
 - [ ] Does this follow an existing pattern?
 - [ ] If I remove this feature, does Hawkins Hollow become less welcoming?
 - [ ] After 30 seconds, what will the visitor remember?
+- [ ] Am I rotating a window, or changing world truth?
+- [ ] Will this make a returning visitor feel more familiar with this neighbor?
+- [ ] Does this belong on a front porch (curated) or a living room (complete)?
+- [ ] Does each click feel like continuing the same visit?
 
 These are stewardship questions, not implementation questions.
 
@@ -89,6 +95,22 @@ If any answer is no, the work is not finished yet.
 - Are choices meaningful and easy to understand?
 - Is commerce presented as a continuation of belonging, not an interruption?
 - Does the copy speak with visitors, not at them?
+- Does discovery deepen familiarity rather than replace it?
+- Do recurring neighbors still feel recognizably the same?
+- Does context remain persistent even when navigation changes?
+
+## Continuity Brake
+
+Use this brake whenever someone proposes a more dynamic page behavior.
+
+Question:
+
+- Does this reveal another part of the same neighbor, or make the neighbor feel different?
+
+Ship rule:
+
+- If it reveals another part of the same neighbor, continue.
+- If it makes the neighbor feel different, do not ship.
 
 ## Voice Checks
 

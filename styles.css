@@ -296,6 +296,10 @@ h2 {
   border: 1px solid var(--border);
 }
 
+.character-story-thumb-placeholder.place-thumb {
+  background: linear-gradient(180deg, #f1f5ec 0%, #e3ecd8 100%);
+}
+
 .character-story-copy h3 {
   margin: 0;
   color: var(--accent);
@@ -312,6 +316,42 @@ h2 {
   font-weight: 600;
   text-decoration-thickness: 2px;
   text-underline-offset: 2px;
+}
+
+.section-continue {
+  margin: 0.85rem 0 0;
+}
+
+.character-neighbor-list {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 0.65rem;
+}
+
+.character-neighbor-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  padding: 0.65rem 0.75rem;
+}
+
+.character-neighbor-tag {
+  margin: 0;
+  color: var(--domain);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.78rem;
+}
+
+.character-neighbor-card h3 {
+  margin: 0.28rem 0 0;
+  color: var(--accent);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.character-neighbor-card p {
+  margin: 0.3rem 0 0;
 }
 
 .story-metadata-line {
@@ -444,6 +484,10 @@ h2 {
 
   .character-story-copy h3 {
     font-size: 0.98rem;
+  }
+
+  .character-neighbor-card {
+    padding: 0.6rem 0.65rem;
   }
 
   .story-metadata-line {
@@ -650,6 +694,10 @@ h2 {
   }
 
   .character-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .character-neighbor-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }

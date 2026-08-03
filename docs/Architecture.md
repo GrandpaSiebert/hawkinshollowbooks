@@ -2,6 +2,10 @@
 
 This document describes how Hawkins Hollow is built.
 
+Working definition:
+
+- Hawkins Hollow is a community that introduces itself, one neighbor at a time.
+
 ## Core Model
 
 Hawkins Hollow is built as a canonical-source, artifact-driven static platform.
@@ -12,6 +16,15 @@ The domain constitution is documented in docs/architecture/world-model.md, with 
 2. Build/import steps produce typed generated artifacts.
 3. Pages and search experiences are generated from those artifacts.
 4. The website generator is one consumer of canon, alongside book/publishing pipelines and future outputs.
+
+## Responsibility Layers
+
+Each layer protects one responsibility.
+
+- Canon Layer: What is true? Protect identity. Never drift.
+- Introduction Layer: What should this neighbor naturally introduce next? Protect welcome. Never force.
+- Discovery Layer: What part of the truth should be revealed today? Protect curiosity. Never replace truth.
+- Presentation Layer: How can this feel effortless? Protect continuity. Never call attention to the machinery.
 
 ## Authoritative Sources
 
@@ -56,6 +69,28 @@ Companion questions for implementation decisions:
 Visitor-purpose compass:
 
 - Does this help someone leave Hawkins Hollow a little better than they arrived?
+
+## Continuity And Discovery Guardrails
+
+Stable world, dynamic window:
+
+- Rotate windows, not truth.
+- Discovery should deepen familiarity, never replace it.
+- Context is persistent. Navigation is incidental.
+- Every click should feel like continuing the same visit.
+- A returning visitor should feel: I know this neighbor a little better.
+- A returning visitor should not feel: this neighbor became someone else.
+
+Front porch and living room separation:
+
+- Front porch pages are curated introductions: short, welcoming, and selective.
+- Living room pages are complete references: exhaustive, searchable, and stable.
+- Rotation belongs on front porches; completeness belongs in living rooms.
+
+Continuity brake for dynamic ideas:
+
+- Ask: Does this reveal another part of the same neighbor, or make the neighbor feel different?
+- If it makes the neighbor feel different, do not ship it.
 
 ## Stewardship And Hospitality
 

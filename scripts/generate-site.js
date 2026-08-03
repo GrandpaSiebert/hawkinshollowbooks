@@ -224,6 +224,68 @@ function toSlug(value) {
     .replace(/^-|-$/g, '');
 }
 
+function normalizePlaceNameForArtwork(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/^\s*\d+[.)\-\s]*/, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+let placeArtworkLookupCache = null;
+
+function getPlaceArtworkLookup() {
+  if (placeArtworkLookupCache) {
+    return placeArtworkLookupCache;
+  }
+
+  const fromDirectory = (folderName, suffixPattern) => {
+    const dirPath = path.join(root, 'assets', folderName);
+    const entries = fs.existsSync(dirPath) ? fs.readdirSync(dirPath) : [];
+    const map = new Map();
+    for (const fileName of entries) {
+      const ext = path.extname(fileName).toLowerCase();
+      if (!['.png', '.jpg', '.jpeg', '.webp'].includes(ext)) {
+        continue;
+      }
+      const withoutExt = path.basename(fileName, ext);
+      const baseName = withoutExt
+        .replace(suffixPattern, '')
+        .replace(/\s+for$/i, '')
+        .trim();
+      const key = normalizePlaceNameForArtwork(baseName);
+      if (!key || map.has(key)) {
+        continue;
+      }
+      map.set(key, `/assets/${folderName}/${fileName}`);
+    }
+    return map;
+  };
+
+  placeArtworkLookupCache = {
+    environments: fromDirectory('environments', /-hep-v\d+.*$/i),
+    landmarks: fromDirectory('landmarks', /-hlp-v\d+.*$/i)
+  };
+
+  return placeArtworkLookupCache;
+}
+
+function getPlaceArtworkPathByName(placeName, placeKind = '') {
+  const key = normalizePlaceNameForArtwork(placeName);
+  if (!key) {
+    return '';
+  }
+
+  const lookup = getPlaceArtworkLookup();
+  const kind = String(placeKind || '').toLowerCase();
+
+  if (kind === 'landmark') {
+    return lookup.landmarks.get(key) || lookup.environments.get(key) || '';
+  }
+
+  return lookup.environments.get(key) || lookup.landmarks.get(key) || '';
+}
+
 function toBookPageSlug(book) {
   const safeId = getCanonicalBookId(book) || 'unknown'
     .toLowerCase()
@@ -558,12 +620,26 @@ function getCharacterExperienceProfile(character) {
   };
 }
 
+function toWarmExcerpt(value, fallback, maxLength = 180) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (!text) {
+    return fallback;
+  }
+  const firstSentenceMatch = text.match(/^(.{1,220}?[.!?])\s/);
+  const firstSentence = firstSentenceMatch ? firstSentenceMatch[1] : text;
+  if (firstSentence.length <= maxLength) {
+    return firstSentence;
+  }
+  return `${firstSentence.slice(0, maxLength - 1).trim()}...`;
+}
+
 function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex) {
   const allCharacters = (charactersData && charactersData.characters) || [];
   const books = (booksData && booksData.books) || [];
   const graphCharacters = (entityIndex && entityIndex.byType && entityIndex.byType.characters) || [];
   const graphEnvironments = (entityIndex && entityIndex.byType && entityIndex.byType.environments) || [];
   const graphLandmarks = (entityIndex && entityIndex.byType && entityIndex.byType.landmarks) || [];
+  const graphRelationships = (entityIndex && entityIndex.byType && entityIndex.byType.relationships) || [];
   const profile = getCharacterExperienceProfile(character);
 
   const matchedGraphCharacter = graphCharacters.find((entry) => {
@@ -585,23 +661,70 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     : [];
 
   const selfName = String(character.name || '').toLowerCase();
-  const relatedPeople = (mentions.characters || [])
+  const selfFirstName = String(character.name || '').split(' ')[0].toLowerCase();
+  const characterSlug = String(character.slug || '').toLowerCase();
+  const getNeighborBlurb = (entry) => {
+    const fallbackName = String(entry && entry.name ? entry.name : 'This friend').trim().split(' ')[0];
+    const description = String(entry && entry.description ? entry.description : '').trim();
+    return description || `${fallbackName} is part of the welcoming neighborhood that helps Hawkins Hollow feel like home.`;
+  };
+
+  const getRelationshipTag = (sourceKey) => {
+    if (sourceKey === 'neighborhood') {
+      return 'Neighborhood connection';
+    }
+    if (sourceKey === 'canon') {
+      return 'Recurring story connection';
+    }
+    if (sourceKey === 'reciprocal') {
+      return 'Mutual neighborhood connection';
+    }
+    return 'Neighbor to meet';
+  };
+
+  const toRelatedPersonFromCharacter = (entry, sourceKey) => ({
+    name: entry.name,
+    href: `${entry.slug}.html`,
+    blurb: getNeighborBlurb(entry),
+    relationshipTag: getRelationshipTag(sourceKey)
+  });
+
+  const relatedPeopleFromCanon = (mentions.characters || [])
     .filter((name) => String(name || '').trim().length > 0)
     .filter((name) => String(name).toLowerCase() !== selfName)
     .map((name) => {
       const matched = allCharacters.find((entry) => String(entry.name || '').toLowerCase() === String(name).toLowerCase());
       return matched
-        ? { name: matched.name, href: `${matched.slug}.html` }
-        : { name, href: '' };
-    })
-    .slice(0, 6);
+        ? toRelatedPersonFromCharacter(matched, 'canon')
+        : {
+          name,
+          href: '',
+          blurb: 'A friend mentioned in this character’s story world.',
+          relationshipTag: getRelationshipTag('canon')
+        };
+    });
 
-  const fallbackRelatedPeople = configuredRelatedCharacterSlugs
+  const relatedPeopleFromNeighborhood = configuredRelatedCharacterSlugs
     .map((slug) => allCharacters.find((entry) => String(entry.slug || '').toLowerCase() === String(slug).toLowerCase()))
     .filter(Boolean)
-    .filter((entry) => String(entry.slug || '').toLowerCase() !== String(character.slug || '').toLowerCase())
-    .map((entry) => ({ name: entry.name, href: `${entry.slug}.html` }))
-    .slice(0, 6);
+    .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
+    .map((entry) => toRelatedPersonFromCharacter(entry, 'neighborhood'));
+
+  const relatedPeopleFromReciprocalNeighborhood = allCharacters
+    .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
+    .filter((entry) => {
+      const related = entry.neighborhood && Array.isArray(entry.neighborhood.relatedCharacterSlugs)
+        ? entry.neighborhood.relatedCharacterSlugs
+        : [];
+      return related.some((slug) => String(slug || '').toLowerCase() === characterSlug);
+    })
+    .map((entry) => toRelatedPersonFromCharacter(entry, 'reciprocal'));
+
+  const relatedPeopleFromFeaturedFallback = allCharacters
+    .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
+    .filter((entry) => entry.featured)
+    .sort((a, b) => Number(a.sortOrder || 9999) - Number(b.sortOrder || 9999))
+    .map((entry) => toRelatedPersonFromCharacter(entry, 'fallback'));
 
   const mergeUniqueByName = (primaryList, secondaryList, maxItems) => {
     const seen = new Set();
@@ -620,6 +743,25 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     return merged;
   };
 
+  const mergeManyUniqueByName = (lists, maxItems) => {
+    const seen = new Set();
+    const merged = [];
+    for (const list of lists) {
+      for (const item of list) {
+        const key = String(item && item.name ? item.name : '').trim().toLowerCase();
+        if (!key || seen.has(key)) {
+          continue;
+        }
+        seen.add(key);
+        merged.push(item);
+        if (merged.length >= maxItems) {
+          return merged;
+        }
+      }
+    }
+    return merged;
+  };
+
   const placeLookup = new Map();
   for (const place of [...graphEnvironments, ...graphLandmarks]) {
     const key = String(place.name || '').toLowerCase();
@@ -628,35 +770,91 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     }
   }
 
-  const relatedPlaces = [...(mentions.environments || []), ...(mentions.landmarks || [])]
+  const normalizedCharacterMentions = (value) => (Array.isArray(value) ? value : [])
+    .map((name) => String(name || '').trim().toLowerCase())
+    .filter((name) => name.length > 0);
+
+  const relatedPlacesFromCharacterMentions = [...graphEnvironments, ...graphLandmarks]
+    .filter((place) => {
+      const placeMentions = place && place.mentions ? place.mentions : {};
+      const characters = normalizedCharacterMentions(placeMentions.characters);
+      return characters.includes(selfName)
+        || characters.includes(selfFirstName)
+        || characters.some((name) => name.includes(selfFirstName));
+    })
+    .map((place) => {
+      const href = place.entityPageHref || place.href || '';
+      return {
+        name: place.name || 'A familiar place',
+        href: href ? `../${href}` : '../map.html',
+        kind: place.type === 'landmark' ? 'Landmark' : 'Place',
+        image: getPlaceArtworkPathByName(place.name || '', place.type === 'landmark' ? 'Landmark' : 'Place'),
+        blurb: toWarmExcerpt(
+          place.textExcerpt,
+          `${character.name.split(' ')[0]} knows this corner of Hawkins Hollow well.`,
+          170
+        )
+      };
+    });
+
+  const relatedPlacesFromCanon = [...(mentions.environments || []), ...(mentions.landmarks || [])]
     .filter((name) => String(name || '').trim().length > 0)
     .map((name) => {
       const matched = placeLookup.get(String(name).toLowerCase());
       if (matched) {
         const href = matched.entityPageHref || matched.href || '';
-        return { name: matched.name || name, href: href ? `../${href}` : '' };
+        return {
+          name: matched.name || name,
+          href: href ? `../${href}` : '',
+          kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
+          image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
+          blurb: toWarmExcerpt(
+            matched.textExcerpt,
+            `${character.name.split(' ')[0]} visits this place in the neighborhood.`,
+            170
+          )
+        };
       }
-      return { name, href: '../map.html' };
-    })
-    .slice(0, 6);
+      return {
+        name,
+        href: '../map.html',
+        kind: 'Place',
+        image: getPlaceArtworkPathByName(name, 'Place'),
+        blurb: `${character.name.split(' ')[0]} visits this place in the neighborhood.`
+      };
+    });
 
-  const fallbackRelatedPlaces = configuredRelatedPlaceNames
+  const relatedPlacesFromNeighborhood = configuredRelatedPlaceNames
     .filter((name) => String(name || '').trim().length > 0)
     .map((name) => {
       const matched = placeLookup.get(String(name).toLowerCase());
       if (matched) {
         const href = matched.entityPageHref || matched.href || '';
-        return { name: matched.name || name, href: href ? `../${href}` : '' };
+        return {
+          name: matched.name || name,
+          href: href ? `../${href}` : '',
+          kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
+          image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
+          blurb: toWarmExcerpt(
+            matched.textExcerpt,
+            `${character.name.split(' ')[0]} would happily walk here with you.`,
+            170
+          )
+        };
       }
-      return { name, href: '../map.html' };
-    })
-    .slice(0, 6);
+      return {
+        name,
+        href: '../map.html',
+        kind: 'Place',
+        image: getPlaceArtworkPathByName(name, 'Place'),
+        blurb: `${character.name.split(' ')[0]} would happily walk here with you.`
+      };
+    });
 
-  const firstName = String(character.name || '').split(' ')[0].toLowerCase();
   const relatedStories = books
-    .filter((book) => (Array.isArray(book.characters) ? book.characters.join(' ') : String(book.characters || '')).toLowerCase().includes(firstName)
-      || String(book.title || '').toLowerCase().includes(firstName))
-    .slice(0, 3)
+    .filter((book) => (Array.isArray(book.characters) ? book.characters.join(' ') : String(book.characters || '')).toLowerCase().includes(selfFirstName)
+      || String(book.title || '').toLowerCase().includes(selfFirstName)
+      || String(book.title || '').toLowerCase().includes(selfName))
     .map((book) => ({
       title: book.title,
       href: getBookPageHref(book),
@@ -667,7 +865,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
       themes: normalizeStoryGuidanceList(book.themes, 'themes')
     }));
 
-  const fallbackStories = books.slice(0, 3).map((book) => ({
+  const fallbackStories = books.slice(0, 12).map((book) => ({
     title: book.title,
     href: getBookPageHref(book),
     series: book.series || book.seriesSlug || 'Hawkins Hollow',
@@ -678,6 +876,99 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   }));
 
   const featuredStories = relatedStories.length > 0 ? relatedStories : fallbackStories;
+  const relatedPeopleAll = mergeManyUniqueByName([
+    relatedPeopleFromNeighborhood,
+    relatedPeopleFromCanon,
+    relatedPeopleFromReciprocalNeighborhood,
+    relatedPeopleFromFeaturedFallback
+  ], 24);
+
+  const relatedPeopleBySlug = relatedPeopleAll
+    .map((person) => {
+      const href = String(person && person.href ? person.href : '');
+      const slug = href.replace(/\.html$/i, '').trim().toLowerCase();
+      if (!slug) {
+        return null;
+      }
+      return allCharacters.find((entry) => String(entry.slug || '').toLowerCase() === slug) || null;
+    })
+    .filter(Boolean);
+
+  const relatedPlacesFromPeopleNeighborhoods = relatedPeopleBySlug
+    .flatMap((entry) => (entry.neighborhood && Array.isArray(entry.neighborhood.relatedPlaceNames)
+      ? entry.neighborhood.relatedPlaceNames
+      : []))
+    .filter((name) => String(name || '').trim().length > 0)
+    .map((name) => {
+      const matched = placeLookup.get(String(name).toLowerCase());
+      if (matched) {
+        const href = matched.entityPageHref || matched.href || '';
+        return {
+          name: matched.name || name,
+          href: href ? `../${href}` : '../map.html',
+          kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
+          image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
+          blurb: toWarmExcerpt(
+            matched.textExcerpt,
+            `${character.name.split(' ')[0]} would likely bring a friend here during a neighborhood wander.`,
+            170
+          )
+        };
+      }
+      return {
+        name,
+        href: '../map.html',
+        kind: 'Place',
+        image: getPlaceArtworkPathByName(name, 'Place'),
+        blurb: `${character.name.split(' ')[0]} would likely bring a friend here during a neighborhood wander.`
+      };
+    });
+
+  const relatedPlacesAll = mergeManyUniqueByName([
+    relatedPlacesFromNeighborhood,
+    relatedPlacesFromCanon,
+    relatedPlacesFromCharacterMentions,
+    relatedPlacesFromPeopleNeighborhoods
+  ], 24);
+
+  const relatedRelationshipsAll = graphRelationships
+    .filter((relationship) => {
+      const relationshipMentions = relationship && relationship.mentions ? relationship.mentions : {};
+      const characters = normalizedCharacterMentions(relationshipMentions.characters);
+      return characters.includes(selfName)
+        || characters.includes(selfFirstName)
+        || characters.some((name) => name.includes(selfFirstName));
+    })
+    .map((relationship) => {
+      const mentionedCharacters = (relationship.mentions && Array.isArray(relationship.mentions.characters)
+        ? relationship.mentions.characters
+        : [])
+        .filter((name) => String(name || '').trim().length > 0);
+      const companions = mentionedCharacters
+        .filter((name) => String(name).toLowerCase() !== selfName)
+        .join(', ');
+      const companionText = companions
+        ? `Often seen with ${companions}.`
+        : 'A meaningful neighborhood connection.';
+      const relationshipStory = toWarmExcerpt(
+        relationship.textExcerpt,
+        companionText,
+        170
+      );
+      return {
+        name: relationship.name || relationship.id,
+        href: relationship.entityPageHref ? `../${relationship.entityPageHref}` : (relationship.href ? `../${relationship.href}` : ''),
+        blurb: relationshipStory,
+        relationshipTag: 'Shared connection'
+      };
+    })
+    .slice(0, 24);
+
+  const relatedStoriesAll = featuredStories.slice(0, 24);
+  const relatedStoriesPreview = relatedStoriesAll.slice(0, 3);
+  const relatedPeoplePreview = relatedPeopleAll.slice(0, 6);
+  const relatedPlacesPreview = relatedPlacesAll.slice(0, 6);
+  const relatedRelationshipsPreview = relatedRelationshipsAll.slice(0, 3);
 
   return {
     canonicalId: getCanonicalBookId({ code: character.code, id: character.code }),
@@ -687,9 +978,17 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     experienceType: profile.templateKey,
     visitorFeeling: profile.visitorFeeling,
     profile,
-    relatedPeople: mergeUniqueByName(relatedPeople, fallbackRelatedPeople, 6),
-    relatedPlaces: mergeUniqueByName(relatedPlaces, fallbackRelatedPlaces, 6),
-    relatedStories: featuredStories,
+    relatedPeople: relatedPeoplePreview,
+    relatedPeoplePreview,
+    relatedPeopleAll,
+    relatedPlaces: relatedPlacesPreview,
+    relatedPlacesPreview,
+    relatedPlacesAll,
+    relatedStories: relatedStoriesPreview,
+    relatedStoriesPreview,
+    relatedStoriesAll,
+    relatedRelationshipsPreview,
+    relatedRelationshipsAll,
     sourceDocument: matchedGraphCharacter && matchedGraphCharacter.canon ? matchedGraphCharacter.canon.sourceDocument : null,
     description: character.description || '',
     heroImage: character.heroImage || ''
@@ -2957,7 +3256,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
   const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
   const characterFirstName = characterName.split(' ')[0];
 
-  const relatedStoryCards = (experience.relatedStories || [])
+  const relatedStoryCards = (experience.relatedStoriesPreview || experience.relatedStories || [])
     .map((story) => {
       const coverImage = story.coverImage
         ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
@@ -2978,13 +3277,89 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     })
     .join('');
 
-  const relatedPeopleLinks = (experience.relatedPeople || []).length > 0
-    ? `<ul>${experience.relatedPeople.map((person) => (person.href ? `<li><a href="${person.href}">${person.name}</a></li>` : `<li>${person.name}</li>`)).join('')}</ul>`
+  const relatedPlacesCards = (experience.relatedPlacesPreview || experience.relatedPlaces || [])
+    .map((place) => {
+      const placeName = String(place && place.name ? place.name : 'A familiar place');
+      const placeKind = String(place && place.kind ? place.kind : 'Place');
+      const placeDescription = String(place && place.blurb ? place.blurb : `${characterFirstName} often slows down here and takes in what matters.`);
+      const placeHref = place && place.href ? place.href : '../map.html';
+      const placeImage = place && place.image ? String(place.image).replace(/^\//, '') : '';
+      const mediaHtml = placeImage
+        ? `<img src="../${placeImage}" alt="${placeName}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
+      return `<article class="character-story-card">
+        <div class="character-story-media">${mediaHtml}</div>
+        <div class="character-story-copy">
+          <p class="character-neighbor-tag">${placeKind}</p>
+          <h3>${placeName}</h3>
+          <p>${placeDescription}</p>
+          <p><a class="character-story-link" href="${placeHref}">Visit ${placeName} &rarr;</a></p>
+        </div>
+      </article>`;
+    })
+    .join('');
+
+  const relatedPeopleCards = (experience.relatedPeoplePreview || experience.relatedPeople || []).length > 0
+    ? `<div class="character-neighbor-list">${(experience.relatedPeoplePreview || experience.relatedPeople || []).map((person) => {
+      const neighborName = String(person && person.name ? person.name : 'Neighbor');
+      const neighborFirstName = neighborName.split(' ')[0];
+      const relationshipTag = person && person.relationshipTag ? person.relationshipTag : 'Neighbor to meet';
+      const blurb = person && person.blurb
+        ? person.blurb
+        : `${neighborFirstName} is part of this friendly corner of Hawkins Hollow.`;
+      const title = person && person.href
+        ? `<h3><a href="${person.href}">${neighborName}</a></h3>`
+        : `<h3>${neighborName}</h3>`;
+      const visitLink = person && person.href
+        ? `<p><a class="character-story-link" href="${person.href}">Visit ${neighborFirstName}'s page &rarr;</a></p>`
+        : '';
+      return `<article class="character-neighbor-card">
+        <p class="character-neighbor-tag">${relationshipTag}</p>
+        ${title}
+        <p>${blurb}</p>
+        ${visitLink}
+      </article>`;
+    }).join('')}</div>`
     : '<p>More friendships will appear here as the Hollow keeps growing.</p>';
 
-  const relatedPlaceLinks = (experience.relatedPlaces || []).length > 0
-    ? `<ul>${experience.relatedPlaces.map((place) => (place.href ? `<li><a href="${place.href}">${place.name}</a></li>` : `<li>${place.name}</li>`)).join('')}</ul>`
+  const relatedRelationshipCards = (experience.relatedRelationshipsPreview || []).length > 0
+    ? `<div class="character-neighbor-list">${experience.relatedRelationshipsPreview.map((relationship) => {
+      const relationshipName = String(relationship && relationship.name ? relationship.name : 'Neighborhood connection');
+      const relationshipTag = String(relationship && relationship.relationshipTag ? relationship.relationshipTag : 'Shared connection');
+      const relationshipDescription = String(relationship && relationship.blurb ? relationship.blurb : 'A meaningful connection in Hawkins Hollow.');
+      const relationshipLink = relationship && relationship.href
+        ? `<p><a class="character-story-link" href="${relationship.href}">Visit this connection &rarr;</a></p>`
+        : '';
+      return `<article class="character-neighbor-card">
+        <p class="character-neighbor-tag">${relationshipTag}</p>
+        <h3>${relationshipName}</h3>
+        <p>${relationshipDescription}</p>
+        ${relationshipLink}
+      </article>`;
+    }).join('')}</div>`
+    : '';
+
+  const relatedPlaceCards = relatedPlacesCards.length > 0
+    ? `<div class="character-story-list">${relatedPlacesCards}</div>`
     : '<p>Favorite places will be added as new memories are shared.</p>';
+
+  const hasStoryContinuation = (experience.relatedStoriesAll || []).length > 0;
+  const hasPeopleContinuation = (experience.relatedPeopleAll || []).length > 0;
+  const hasPlacesContinuation = (experience.relatedPlacesAll || []).length > 0;
+  const hasRelationshipsContinuation = (experience.relatedRelationshipsAll || []).length > 0;
+
+  const storyContinuationLink = hasStoryContinuation
+    ? `<p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p>`
+    : '';
+  const peopleContinuationLink = hasPeopleContinuation
+    ? `<p class="section-continue"><a class="button" href="${character.slug}-people.html">Meet more of ${characterFirstName}'s friends &rarr;</a></p>`
+    : '';
+  const placesContinuationLink = hasPlacesContinuation
+    ? `<p class="section-continue"><a class="button" href="${character.slug}-places.html">See where else ${characterFirstName} spends time &rarr;</a></p>`
+    : '';
+  const relationshipsContinuationLink = hasRelationshipsContinuation
+    ? `<p class="section-continue"><a class="button" href="${character.slug}-relationships.html">Learn more about ${characterFirstName}'s connections &rarr;</a></p>`
+    : '';
 
   const delightFact = experience.sourceDocument
     ? `From the Hawkins Hollow memory: ${experience.sourceDocument.split('/').pop()}`
@@ -3013,17 +3388,27 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
       <h2 id="character-together">${profile.storyHeading}</h2>
       <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
       <div class="character-story-list">${relatedStoryCards}</div>
+      ${storyContinuationLink}
     </section>
 
     <section class="content-card" aria-labelledby="character-people">
       <h2 id="character-people">${profile.friendHeading}</h2>
-      ${relatedPeopleLinks}
+      ${relatedPeopleCards}
+      ${peopleContinuationLink}
     </section>
 
     <section class="content-card" aria-labelledby="character-wander">
       <h2 id="character-wander">${profile.placeHeading}</h2>
-      ${relatedPlaceLinks}
+      ${relatedPlaceCards}
+      ${placesContinuationLink}
     </section>
+
+    ${relatedRelationshipCards ? `<section class="content-card" aria-labelledby="character-connections">
+      <h2 id="character-connections">Connections around ${characterFirstName}</h2>
+      <p>These are a few of the shared paths that help ${characterFirstName}'s world feel connected.</p>
+      ${relatedRelationshipCards}
+      ${relationshipsContinuationLink}
+    </section>` : ''}
 
     <section class="content-card" aria-labelledby="character-discovery">
       <h2 id="character-discovery">${profile.discoveryHeading}</h2>
@@ -3043,6 +3428,179 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     site,
     nav,
     `${site.domain}/characters/${character.slug}.html`,
+    config,
+    banner,
+    '../'
+  );
+}
+
+function renderCharacterContinuationPage(experience, continuationType, site, nav, config, banner) {
+  const character = experience.character;
+  const profile = experience.profile;
+  const characterName = String(character.name || character.slug || 'This friend').trim();
+  const firstName = characterName.split(' ')[0];
+
+  let pageTitle = '';
+  let pageDescription = '';
+  let sectionHeading = '';
+  let introLine = '';
+  let cardsHtml = '';
+
+  if (continuationType === 'stories') {
+    pageTitle = `Stories with ${characterName}`;
+    pageDescription = `Settle in with ${characterName} and discover more stories from this part of Hawkins Hollow.`;
+    sectionHeading = `Settle in with ${firstName}.`;
+    introLine = `These stories help you keep walking through ${firstName}'s world one gentle page at a time.`;
+    cardsHtml = (experience.relatedStoriesAll || []).map((story) => {
+      const coverImage = story.coverImage
+        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+      const description = story.description || `${firstName} is part of this gentle Hawkins Hollow story.`;
+      const guidanceLine = getStoryGuidanceLine(story, 3);
+      return `<article class="character-story-card">
+        <div class="character-story-media">${coverImage}</div>
+        <div class="character-story-copy">
+          <h3>${story.title}</h3>
+          <p>${description}</p>
+          ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
+          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
+        </div>
+      </article>`;
+    }).join('');
+  } else if (continuationType === 'places') {
+    pageTitle = `Walk with ${characterName}`;
+    pageDescription = `Come walk with ${characterName} and visit places that help tell this neighbor's story.`;
+    sectionHeading = `Come walk with ${firstName}.`;
+    introLine = `These are some of the places that help tell ${firstName}'s story.`;
+    cardsHtml = (experience.relatedPlacesAll || []).map((place) => {
+      const placeName = String(place && place.name ? place.name : 'A familiar place');
+      const placeKind = String(place && place.kind ? place.kind : 'Place');
+      const placeDescription = String(place && place.blurb ? place.blurb : `${firstName} often slows down here and takes in what matters.`);
+      const placeHref = place && place.href ? place.href : '../map.html';
+      const placeImage = place && place.image ? String(place.image).replace(/^\//, '') : '';
+      const mediaHtml = placeImage
+        ? `<img src="../${placeImage}" alt="${placeName}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
+      return `<article class="character-story-card">
+        <div class="character-story-media">${mediaHtml}</div>
+        <div class="character-story-copy">
+          <p class="character-neighbor-tag">${placeKind}</p>
+          <h3>${placeName}</h3>
+          <p>${placeDescription}</p>
+          <p><a class="character-story-link" href="${placeHref}">Visit ${placeName} &rarr;</a></p>
+        </div>
+      </article>`;
+    }).join('');
+  } else if (continuationType === 'people') {
+    pageTitle = `Friends of ${characterName}`;
+    pageDescription = `Spend a little more time with ${characterName} by meeting neighbors from this shared corner of Hawkins Hollow.`;
+    sectionHeading = `Spend a little more time with ${firstName}.`;
+    introLine = `These neighbors are part of the friendships that make ${firstName}'s world feel lived in.`;
+    cardsHtml = (experience.relatedPeopleAll || []).map((person) => {
+      const neighborName = String(person && person.name ? person.name : 'Neighbor');
+      const neighborFirstName = neighborName.split(' ')[0];
+      const relationshipTag = String(person && person.relationshipTag ? person.relationshipTag : 'Neighbor to meet');
+      const blurb = String(person && person.blurb ? person.blurb : `${neighborFirstName} is part of this friendly corner of Hawkins Hollow.`);
+      const title = person && person.href
+        ? `<h3><a href="${person.href}">${neighborName}</a></h3>`
+        : `<h3>${neighborName}</h3>`;
+      const visitLink = person && person.href
+        ? `<p><a class="character-story-link" href="${person.href}">Visit ${neighborFirstName}'s page &rarr;</a></p>`
+        : '';
+      return `<article class="character-neighbor-card">
+        <p class="character-neighbor-tag">${relationshipTag}</p>
+        ${title}
+        <p>${blurb}</p>
+        ${visitLink}
+      </article>`;
+    }).join('');
+    cardsHtml = cardsHtml ? `<div class="character-neighbor-list">${cardsHtml}</div>` : '';
+  } else {
+    pageTitle = `Connections around ${characterName}`;
+    pageDescription = `Shared relationship moments that help connect ${characterName}'s neighborhood.`;
+    sectionHeading = `See how ${firstName}'s world connects.`;
+    introLine = `These relationship pages show how neighbors, places, and shared moments gather around ${firstName}.`;
+    cardsHtml = (experience.relatedRelationshipsAll || []).map((relationship) => {
+      const relationshipName = String(relationship && relationship.name ? relationship.name : 'Neighborhood connection');
+      const relationshipTag = String(relationship && relationship.relationshipTag ? relationship.relationshipTag : 'Shared connection');
+      const relationshipDescription = String(relationship && relationship.blurb ? relationship.blurb : 'A meaningful connection in Hawkins Hollow.');
+      const relationshipLink = relationship && relationship.href
+        ? `<p><a class="character-story-link" href="${relationship.href}">Visit this connection &rarr;</a></p>`
+        : '';
+      return `<article class="character-neighbor-card">
+        <p class="character-neighbor-tag">${relationshipTag}</p>
+        <h3>${relationshipName}</h3>
+        <p>${relationshipDescription}</p>
+        ${relationshipLink}
+      </article>`;
+    }).join('');
+    cardsHtml = cardsHtml ? `<div class="character-neighbor-list">${cardsHtml}</div>` : '';
+  }
+
+  const contentHtml = cardsHtml
+    ? cardsHtml
+    : '<p>More paths are being prepared as Hawkins Hollow keeps growing.</p>';
+
+  const bridgeNeighbor = (experience.relatedPeopleAll || []).find(
+    (person) => person && person.href && person.name
+  ) || null;
+  const bridgeNeighborName = bridgeNeighbor ? String(bridgeNeighbor.name) : '';
+  const bridgeNeighborFirstName = bridgeNeighborName ? bridgeNeighborName.split(' ')[0] : '';
+
+  let bridgeLine = '';
+  if (bridgeNeighbor) {
+    if (continuationType === 'places') {
+      bridgeLine = `Many of these places are shared with ${bridgeNeighborFirstName}. If you'd like, come meet ${bridgeNeighborFirstName} next.`;
+    } else if (continuationType === 'stories') {
+      bridgeLine = `${firstName}'s adventures often begin with ${bridgeNeighborFirstName} nearby. You might enjoy spending a little time with ${bridgeNeighborFirstName}, too.`;
+    } else if (continuationType === 'relationships') {
+      bridgeLine = `Relationships become friendships in Hawkins Hollow. Here's someone ${firstName} sees often.`;
+    } else {
+      bridgeLine = `If you'd like to keep walking, ${bridgeNeighborFirstName} can show you another gentle corner of the neighborhood.`;
+    }
+  }
+
+  const bridgeSection = bridgeNeighbor
+    ? `<section class="content-card" aria-labelledby="continuation-bridge">
+      <h2 id="continuation-bridge">Keep the walk going</h2>
+      <p>${bridgeLine}</p>
+      <p><a class="button" href="${bridgeNeighbor.href}">Continue with ${bridgeNeighborFirstName}</a></p>
+    </section>`
+    : '';
+
+  return renderLayout(
+    pageTitle,
+    pageDescription,
+    `<section class="content-card" aria-labelledby="continuation-arrival">
+      <h1 id="continuation-arrival">${sectionHeading}</h1>
+      <p>${introLine}</p>
+      <p>You are still in ${firstName}'s part of Hawkins Hollow.</p>
+      <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
+      <p>
+        <a class="button" href="${character.slug}.html">Return to ${firstName}'s page</a>
+        <a class="button" href="../characters.html">Meet more friends</a>
+      </p>
+    </section>
+
+    <section class="content-card" aria-labelledby="continuation-list">
+      <h2 id="continuation-list">More to explore with ${firstName}</h2>
+      ${contentHtml}
+    </section>
+
+    ${bridgeSection}
+
+    <section class="content-card" aria-labelledby="continuation-next">
+      <h2 id="continuation-next">Where would you like to wander next?</h2>
+      <p>${profile.nextLine}</p>
+      <p>
+        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../map.html">Visit a place</a>
+        <a class="button" href="../community.html">Join the community</a>
+      </p>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/characters/${character.slug}-${continuationType}.html`,
     config,
     banner,
     '../'
@@ -3815,6 +4373,22 @@ function buildSite() {
     writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
+    );
+    writePageToOutputs(
+      path.join('characters', `${character.slug}-stories.html`),
+      renderCharacterContinuationPage(experienceAsset, 'stories', site, nav, config, characterExperienceBanner)
+    );
+    writePageToOutputs(
+      path.join('characters', `${character.slug}-places.html`),
+      renderCharacterContinuationPage(experienceAsset, 'places', site, nav, config, characterExperienceBanner)
+    );
+    writePageToOutputs(
+      path.join('characters', `${character.slug}-people.html`),
+      renderCharacterContinuationPage(experienceAsset, 'people', site, nav, config, characterExperienceBanner)
+    );
+    writePageToOutputs(
+      path.join('characters', `${character.slug}-relationships.html`),
+      renderCharacterContinuationPage(experienceAsset, 'relationships', site, nav, config, characterExperienceBanner)
     );
   }
 

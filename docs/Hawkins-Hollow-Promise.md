@@ -2,6 +2,10 @@
 
 This is the hospitality and experience constitution for Hawkins Hollow.
 
+Working definition:
+
+- Hawkins Hollow is a community that introduces itself, one neighbor at a time.
+
 Technical architecture explains how the software works.
 This promise explains why the experience exists and how it should feel.
 
@@ -32,10 +36,20 @@ These principles keep the system trustworthy and correct.
 These principles keep the world recognizable and emotionally consistent.
 
 - Every visit should feel like arriving at the same beloved place on a different day.
+- Rotate windows, not truth.
+- Discovery should deepen familiarity, never replace it.
+- Context is persistent. Navigation is incidental.
+- Every click should feel like continuing the same visit.
 - Seasonal changes stay gentle, familiar, and story-first.
 - Favor small shifts in tone, greeting copy, and suggestions over full redesigns.
 - Every page should leave visitors feeling just a little lighter than when they arrived.
 - Nothing in Hawkins Hollow should ever feel hurried.
+
+Front porch and living room distinction:
+
+- Front porches introduce with a few curated invitations.
+- Living rooms hold complete, reference-quality detail.
+- Visitors should always feel they are meeting the same neighbors in both spaces.
 
 ### Hospitality Constitution
 
@@ -50,6 +64,10 @@ Every page should answer these questions:
 - Have we earned the opportunity to recommend a book?
 
 If the answer to those questions is yes, the page is succeeding.
+
+Introduction test:
+
+- Does this help one neighbor naturally introduce another part of Hawkins Hollow?
 
 ### Stewardship Constitution
 

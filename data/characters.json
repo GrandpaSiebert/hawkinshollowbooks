@@ -181,8 +181,20 @@
       "code": "Ara",
       "name": "Aralynn Fox",
       "heroImage": "/assets/characters/individuals/Ara-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A thoughtful friend who keeps choosing honesty, kindness, and courage when moments feel difficult.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "alice-mole",
+          "spencer-field-mouse",
+          "callen-crow"
+        ],
+        "relatedPlaceNames": [
+          "Old Oak",
+          "Reading Stump",
+          "Schoolyard"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 100
     },
@@ -285,8 +297,20 @@
       "code": "Emm",
       "name": "Emmitt Armadillo",
       "heroImage": "/assets/characters/individuals/Emm-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A steady friend who listens carefully and helps others feel safer when a day feels uncertain.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "spencer-field-mouse",
+          "alice-mole",
+          "aralynn-fox"
+        ],
+        "relatedPlaceNames": [
+          "Pond Edge",
+          "Farmhouse",
+          "Reading Stump"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 150
     },
@@ -381,8 +405,20 @@
       "code": "Lex",
       "name": "Lex Hedgehog",
       "heroImage": "/assets/characters/individuals/Lex-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A growing helper who learns patience, repair, and the courage to try again when things go sideways.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "brandon-rabbit",
+          "austin-turtle",
+          "aralynn-fox"
+        ],
+        "relatedPlaceNames": [
+          "Community Garden",
+          "Schoolyard",
+          "Mailbox Path"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 210
     },
