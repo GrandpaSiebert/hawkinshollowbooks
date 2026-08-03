@@ -1,0 +1,17 @@
+Name,Slug/Page,Who am I,Why might we become friends,Where do I belong in Hawkins Hollow,Where might we go together next,Linked From (Core),Links To (Core),Cross-link Verified,Keep Signal,Complete,Notes
+Spencer,,,,,,,,No,,No,
+Alice,,,,,,,,No,,No,
+Austin,characters/austin-turtle.html,"A steady, patient friend who models quiet courage.","Austin helps children feel safe taking one small step at a time.","Austin appears across Storybooks, First Readers, and Second Readers as a familiar helper.","Continue into Austin's related stories and then map or neighbors.","characters.html","books/HH-A-0015-austin-s-quiet-day.html | books/HH-B-0003-austin-turtle-and-the-sight-word-challenge.html | books/HH-C-0003-austin-turtle-s-alphabetical-trail.html | characters/kaydence-owl.html | characters/brandon-rabbit.html | characters/callen-crow.html | map.html",Yes,"Warm, unhurried welcome tone on arrival section.",Yes,"Verified in generated output: story cards + related people links + related place links present."
+Kaydence,characters/kaydence-owl.html,"A careful, bright-eyed friend who turns questions into discoveries.","Kaydence encourages curiosity and makes questions feel welcome.","Kaydence belongs in the discovery-minded thread of Hawkins Hollow friendships.","Continue into Kaydence stories, then meet another neighbor from characters index.","characters.html","books linked from character page | characters/asher-chipmunk.html | characters/aydin-caracara.html | characters/aleea-caracara.html | characters/austin-turtle.html | map.html",Yes,"Curiosity-first description supports invitation tone.",Yes,"Verified in generated output: story cards + related people links + related place links present."
+Callen,characters/callen-crow.html,"A thoughtful neighbor learning honesty and repair.","Callen's growth through apology and courage feels relatable.","Callen belongs in the friendship-and-repair stories that strengthen community trust.","Continue to Callen stories, then follow to another friend or place.","characters.html","books/HH-A-0004-when-callen-said-sorry.html | books/HH-A-0007-callen-s-new-baby-brother.html | books/HH-A-0023-callen-s-gossip-problem.html | characters/bentley-crow.html | characters/brandon-rabbit.html | characters/austin-turtle.html | map.html",Yes,"Strong growth-oriented introduction gives emotional clarity.",Yes,"Verified in generated output: story cards + related people links + related place links present."
+Aydin,,,,,,,,No,,No,
+Aleea,,,,,,,,No,,No,
+Brandon,characters/brandon-rabbit.html,"An energetic friend with a tender heart.","Brandon shows children how big feelings can become kind choices.","Brandon belongs in stories about emotional growth and cooperative play.","Continue to Brandon stories and then outward to characters map path.","characters.html","books/HH-A-0011-brandon-s-listening-ears.html | books/HH-A-0029-brandon-s-wiggly-worries.html | books/HH-D-0002-brandon-rabbit-s-make-believe-farm.html | characters/callen-crow.html | characters/austin-turtle.html | characters/kaydence-owl.html | map.html",Yes,"Friendly arrival section keeps tone welcoming.",Yes,"Verified in generated output: story cards + related people links + related place links present."
+Bentley,,,,,,,,No,,No,
+Asher,,,,,,,,No,,No,
+Grandpa,,,,,,,,No,,No,
+Grandma,,,,,,,,No,,No,
+Mimi,,,,,,,,No,,No,
+Kayla,,,,,,,,No,,No,
+Blaine,,,,,,,,No,,No,
+Trinity,,,,,,,,No,,No,

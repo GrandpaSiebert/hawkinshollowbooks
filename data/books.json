@@ -11,8 +11,18 @@
       "title": "Spencer’s First Friend",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB001 Spencer’s First Friend Cover.png",
-      "description": "",
+      "description": "Spencer discovers that saying hello can be the first brave step toward a lasting friendship.",
       "summary": "",
+      "feelings": [
+        "Curious",
+        "Confused",
+        "Hopeful"
+      ],
+      "themes": [
+        "Friendship",
+        "Belonging",
+        "Courage"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 1
@@ -28,8 +38,17 @@
       "title": "The Sharing Acorn",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB002 The Sharing Acorn Cover.png",
-      "description": "",
+      "description": "One small acorn becomes a story about generosity, gratitude, and the joy of sharing what we have.",
       "summary": "",
+      "feelings": [
+        "Happy",
+        "Hopeful"
+      ],
+      "themes": [
+        "Sharing",
+        "Kindness",
+        "Gratitude"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 2
@@ -45,8 +64,18 @@
       "title": "Alice's Underground Party",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB003 Alice's Underground Party Cover.png",
-      "description": "",
+      "description": "Alice welcomes friends into a cozy gathering where everyone has a place and every voice matters.",
       "summary": "",
+      "feelings": [
+        "Curious",
+        "Happy",
+        "Hopeful"
+      ],
+      "themes": [
+        "Belonging",
+        "Friendship",
+        "Kindness"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 3
@@ -62,8 +91,18 @@
       "title": "When Callen Said Sorry",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB004 When Callen Said Sorry Cover.png",
-      "description": "",
+      "description": "Callen learns that a sincere apology can repair trust and make room for friendship to grow again.",
       "summary": "",
+      "feelings": [
+        "Nervous",
+        "Sad",
+        "Hopeful"
+      ],
+      "themes": [
+        "Honesty",
+        "Forgiveness",
+        "Listening"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 4
@@ -181,8 +220,18 @@
       "title": "Brandon's Listening Ears",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB011 Brandon's Listening Ears Cover.png",
-      "description": "",
+      "description": "Brandon discovers how listening carefully can turn a hard moment into a kind one.",
       "summary": "",
+      "feelings": [
+        "Frustrated",
+        "Curious",
+        "Hopeful"
+      ],
+      "themes": [
+        "Listening",
+        "Patience",
+        "Kindness"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 11
@@ -262,8 +311,18 @@
       "title": "Austin's Quiet Day",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB015 Austin's Quiet Day Cover.png",
-      "description": "",
+      "description": "Austin shows that quiet courage and steady steps can carry us through uncertain moments.",
       "summary": "",
+      "feelings": [
+        "Nervous",
+        "Brave",
+        "Hopeful"
+      ],
+      "themes": [
+        "Courage",
+        "Patience",
+        "Belonging"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 15
@@ -551,8 +610,18 @@
       "title": "Alice Mole Feels Left Out",
       "seriesSlug": "storybooks",
       "coverImage": "/assets/covers/Storybooks/SB032 Alice Mole Feels Left Out Cover.png",
-      "description": "",
+      "description": "Alice works through a lonely moment and discovers that belonging can begin with one honest conversation.",
       "summary": "",
+      "feelings": [
+        "Lonely",
+        "Confused",
+        "Hopeful"
+      ],
+      "themes": [
+        "Friendship",
+        "Belonging",
+        "Kindness"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 32
@@ -899,8 +968,18 @@
       "title": "Alice Mole and the Anniversary Star Wish",
       "seriesSlug": "tender-times",
       "coverImage": "/assets/covers/Tender Times/TT001 Alice Mole and the Anniversary Star Wish Cover.png",
-      "description": "",
+      "description": "Alice and her family hold tender memories together and find comfort in remembering with love.",
       "summary": "",
+      "feelings": [
+        "Sad",
+        "Happy",
+        "Hopeful"
+      ],
+      "themes": [
+        "Gratitude",
+        "Kindness",
+        "Courage"
+      ],
       "characters": [],
       "published": false,
       "sortOrder": 1

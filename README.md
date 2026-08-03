@@ -4,6 +4,12 @@
 
 Before exploring the repository, start with the [docs/Repository-Preface.md](docs/Repository-Preface.md) document. It explains the purpose of the project and the role each document plays in preserving it.
 
+Recommended onboarding order:
+
+1. Read [docs/Hawkins-Hollow-Design-Charter.md](docs/Hawkins-Hollow-Design-Charter.md).
+2. Read [docs/Chapter-4-Tend-the-Neighborhood.md](docs/Chapter-4-Tend-the-Neighborhood.md).
+3. Read production documents only when you are doing production work.
+
 This repository is a small static-site generator that uses shared layouts, reusable components, and separate JSON data files. It also includes a Library Scanner that treats `Library/` as a content repository and generates machine-readable indexes under `generated/`.
 
 ## Authoritative build system
@@ -191,6 +197,8 @@ Hawkins Hollow uses a dedicated experience and voice constitution:
 ## Documentation map
 
 - docs/Repository-Preface.md: introduction to the project’s character, purpose, and documentation ecosystem
+- docs/Hawkins-Hollow-Design-Charter.md: constitutional purpose and enduring design principles
+- docs/Chapter-4-Tend-the-Neighborhood.md: current stewardship practice for daily work
 - docs/Architecture.md: system architecture and technical constitution
 - docs/Build-Pipeline.md: build and ingestion workflow
 - docs/Hawkins-Hollow-Promise.md: hospitality and experience constitution

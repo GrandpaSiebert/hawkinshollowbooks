@@ -7,6 +7,8 @@ This policy protects the stable identity anchors of Hawkins Hollow while allowin
 The following documents are foundational:
 
 - docs/Repository-Preface.md
+- docs/Hawkins-Hollow-Design-Charter.md
+- docs/Chapter-4-Tend-the-Neighborhood.md
 - docs/Architecture.md
 - docs/Build-Pipeline.md
 - docs/Hawkins-Hollow-Promise.md

@@ -1,0 +1,5 @@
+Pattern,Frequency,Scope (Structural|Editorial),Template/Surface,Recommendation,Evidence Pages,Expected Impact,Keep Signal to Preserve,Owner,Status
+Visual Hierarchy,8,Structural,Series template,"Increase title prominence relative to artwork while preserving equal-story rhythm.","/storybook-shelf.html; /first-readers.html",High,"The shelf still feels warm and story-first.",,Proposed
+CTA Clarity,6,Structural,Story template,"Standardize primary CTA wording and placement across series pages.","/books.html; /first-readers.html",High,"Buttons remain gentle and non-pressuring.",,Proposed
+Orientation,4,Structural,Character template,"Strengthen opening orientation paragraph so first-time visitors know where they are.","/characters/spencer-field-mouse.html; /characters/alice-mole.html",Medium,"Character voice remains intimate and welcoming.",,Proposed
+Editorial Tone,3,Editorial,Series copy,"Tune copy to maintain series-specific mood shifts (quieter, gentler) without breaking shared rhythm.","/bedtime-library.html; /tender-times.html",Medium,"Series still feels like one place.",,Proposed

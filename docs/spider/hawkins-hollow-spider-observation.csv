@@ -1,0 +1,24 @@
+Date,Pass,URL/Page,Series,Template,Invitation (one sentence),Orientation (Yes|Mostly|No),First Emotion,Natural Next Click,Friction (I stopped because...),Unexpected Delight,Pattern Tag,Keep Signal,Notes
+2026-08-02,Pass 1 - Storybooks,/storybook-shelf.html,Storybooks,Series,"Choose a story and begin at any point.",Yes,Curious,Spencer,"I hesitated because I was not sure whether the ribbon was clickable.","The shelf felt like a real place, not a list.",CTA Clarity,"Books felt equal and inviting.",
+2026-08-02,Reference Walk 1 - Austin -> Story -> Place -> Callen,/characters/austin-turtle.html,Neighborhood,Character->Book->Place,"Austin invites me to start with a story, then walk somewhere, then meet someone.",Mostly,Welcomed,"I followed Austin because his first paragraph felt specific and warm.","From Austin's story page the strongest continuation is shelf-focused; to reach Place->Callen naturally I needed Map plus an entity relationship hop.","Place pages now always offer another step instead of dead-ending.",Neighborhood Flow,"Character page hospitality is strong and immediately usable.","Route completed with extra indirection at Place->Callen; motivation shifted from curiosity to path-solving at the place layer."
+2026-08-02,Reference Walk 2 - Kaydence -> Story -> Place -> Brandon,/characters/kaydence-owl.html,Neighborhood,Character->Book->Place,"Kaydence invites curiosity first, then gives clear people and place options.",Mostly,Curious,"I chose Kaydence because her introduction promised discovery and care.","Story pages still pull toward shelf/character before place; place-to-Brandon required a relationship-page bridge rather than direct character continuation.","Pond Edge and related place pages carry a calm voice and always provide onward options.",Neighborhood Flow,"The gentle next-step tone stays consistent even through canon-heavy pages.","Route completed via Place->Relationship->Brandon path; emotionally workable, but less neighbor-direct than target coffee-walk flow."
+2026-08-02,Reference Walk Follow-up - Places introduce neighbors,/entities/environment/env-0016-garden.html,Neighborhood,Place,"Places now introduce likely neighbors first, then leave deeper canon paths available.",Yes,Curious,"I clicked a neighbor name because I wondered who I'd meet here, not because it was the only route.","Story pages still bias toward shelf return before place continuation.","Garden and Pond Edge now surface direct neighbor links including Callen and Brandon.",Neighborhood Flow,"Relationship pages still exist as deeper context instead of forced first hop.","Meaningful reduction in path-solving at the place layer; the handoff now feels like neighbor introductions."
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,
+,,,,,,,,,,,,,

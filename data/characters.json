@@ -76,7 +76,20 @@
       "code": "Kay",
       "name": "Kaydence Owl",
       "heroImage": "/assets/characters/individuals/Kay-HP-V001.png",
-      "description": "Curious, careful, and always ready to learn something new.",
+      "description": "A careful, bright-eyed friend who turns questions into discoveries and helps others feel brave enough to ask their own.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "asher-chipmunk",
+          "aydin-caracara",
+          "aleea-caracara",
+          "austin-turtle"
+        ],
+        "relatedPlaceNames": [
+          "Schoolyard",
+          "Reading Stump",
+          "Old Oak"
+        ]
+      },
       "featured": true,
       "published": true,
       "sortOrder": 40
@@ -124,7 +137,19 @@
       "code": "Aus",
       "name": "Austin Turtle",
       "heroImage": "/assets/characters/individuals/Aus-HP-V001.png",
-      "description": "Steady, patient, and dependable when friends need someone beside them.",
+      "description": "A steady, patient friend who reminds everyone that quiet courage and small steps can still lead somewhere wonderful.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "kaydence-owl",
+          "brandon-rabbit",
+          "callen-crow"
+        ],
+        "relatedPlaceNames": [
+          "Schoolyard",
+          "Reading Stump",
+          "Mailbox Path"
+        ]
+      },
       "featured": true,
       "published": true,
       "sortOrder": 70
@@ -204,8 +229,20 @@
       "code": "Bra",
       "name": "Brandon Rabbit",
       "heroImage": "/assets/characters/individuals/Bra-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "An energetic friend with a tender heart who is learning that big feelings can become kind choices.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "callen-crow",
+          "austin-turtle",
+          "kaydence-owl"
+        ],
+        "relatedPlaceNames": [
+          "Community Garden",
+          "Schoolyard",
+          "Old Oak"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 130
     },
@@ -220,8 +257,20 @@
       "code": "Cal",
       "name": "Callen Crow",
       "heroImage": "/assets/characters/individuals/Cal-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A thoughtful neighbor who keeps growing through honesty, repair, and the courage to make things right.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "bentley-crow",
+          "brandon-rabbit",
+          "austin-turtle"
+        ],
+        "relatedPlaceNames": [
+          "Old Oak",
+          "Community Garden",
+          "Reading Stump"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 140
     },

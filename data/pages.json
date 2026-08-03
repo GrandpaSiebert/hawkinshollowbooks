@@ -86,6 +86,78 @@
       "published": true
     },
     {
+      "slug": "first-readers",
+      "title": "First Readers",
+      "template": "series",
+      "seriesSlug": "first-readers",
+      "navigation": false,
+      "order": 82,
+      "published": true
+    },
+    {
+      "slug": "second-readers",
+      "title": "Second Readers",
+      "template": "series",
+      "seriesSlug": "second-readers",
+      "navigation": false,
+      "order": 84,
+      "published": true
+    },
+    {
+      "slug": "bedtime-library",
+      "title": "Bedtime Library",
+      "template": "series",
+      "seriesSlug": "bedtime-library",
+      "navigation": false,
+      "order": 86,
+      "published": true
+    },
+    {
+      "slug": "growing-together",
+      "title": "Growing Together",
+      "template": "series",
+      "seriesSlug": "growing-together",
+      "navigation": false,
+      "order": 88,
+      "published": true
+    },
+    {
+      "slug": "tender-times",
+      "title": "Tender Times",
+      "template": "series",
+      "seriesSlug": "tender-times",
+      "navigation": false,
+      "order": 89,
+      "published": true
+    },
+    {
+      "slug": "basic-training",
+      "title": "Basic Training",
+      "template": "series",
+      "seriesSlug": "basic-training",
+      "navigation": false,
+      "order": 89.1,
+      "published": true
+    },
+    {
+      "slug": "holiday-story-poems",
+      "title": "Holiday Story Poems",
+      "template": "series",
+      "seriesSlug": "holiday-story-poems",
+      "navigation": false,
+      "order": 89.2,
+      "published": true
+    },
+    {
+      "slug": "hero-play-poems",
+      "title": "Hero Play Poems",
+      "template": "series",
+      "seriesSlug": "hero-play-poems",
+      "navigation": false,
+      "order": 89.3,
+      "published": true
+    },
+    {
       "slug": "the-porch-light",
       "title": "The Porch Light",
       "template": "legacy",

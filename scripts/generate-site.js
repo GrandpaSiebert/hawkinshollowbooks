@@ -490,7 +490,7 @@ const characterExperienceProfiles = {
     visitorFeeling: 'listened to, thoughtful, unhurried, curious',
     arrivalHeading: 'Welcome to Spencer’s quiet corner',
     arrivalBody: 'Spencer rewards patience. This is a place to think before you choose, notice before you speak, and move at the speed of curiosity.',
-    storyHeading: 'Spend a few quiet minutes with Spencer',
+    storyHeading: "Stories where you'll meet Spencer",
     friendHeading: 'Meet the people Spencer listens to',
     placeHeading: 'Walk somewhere Spencer would notice',
     discoveryHeading: 'Notice a small detail Spencer would not miss',
@@ -503,7 +503,7 @@ const characterExperienceProfiles = {
     visitorFeeling: 'welcomed, hopeful, encouraged, included',
     arrivalHeading: 'Welcome to Alice’s welcoming world',
     arrivalBody: 'Alice tends to open the door, make room, and help the next good thing feel possible.',
-    storyHeading: 'Spend a hopeful moment with Alice',
+    storyHeading: "Stories where you'll meet Alice",
     friendHeading: 'Meet the people Alice would invite in',
     placeHeading: 'Walk somewhere Alice would open up for you',
     discoveryHeading: 'Notice a small discovery Alice would celebrate',
@@ -516,7 +516,7 @@ const characterExperienceProfiles = {
     visitorFeeling: 'small, delighted, close to the ground, playful',
     arrivalHeading: 'Welcome to Bentley’s low-to-the-ground world',
     arrivalBody: 'Bentley’s visit is full of tiny victories, close-up wonders, and the kind of delight you only notice when you crouch down.',
-    storyHeading: 'Spend a tiny moment with Bentley',
+    storyHeading: "Stories where you'll meet Bentley",
     friendHeading: 'Meet the friends Bentley would point out',
     placeHeading: 'Walk somewhere small and surprising',
     discoveryHeading: 'Notice something tiny',
@@ -529,7 +529,7 @@ const characterExperienceProfiles = {
     visitorFeeling: 'slow, comfortable, reflective, safe',
     arrivalHeading: 'Welcome to Grandpa’s slow afternoon',
     arrivalBody: 'Grandpa does not rush the visitor. He makes room for stories, pauses, memories, and a place to sit awhile.',
-    storyHeading: 'Spend some time with Grandpa',
+    storyHeading: "Stories where you'll meet Grandpa",
     friendHeading: 'Meet the people Grandpa remembers well',
     placeHeading: 'Walk somewhere Grandpa would point out a bench',
     discoveryHeading: 'Notice a memory Grandpa would tell again',
@@ -548,7 +548,7 @@ function getCharacterExperienceProfile(character) {
     visitorFeeling: 'curious, comfortable, gently invited',
     arrivalHeading: `Welcome to ${firstName}’s world`,
     arrivalBody: character.description || `${characterName} is part of the welcoming community that makes Hawkins Hollow feel like home.`,
-    storyHeading: `Spend a little time with ${firstName}`,
+    storyHeading: `Stories where you'll meet ${firstName}`,
     friendHeading: `Meet the people ${firstName} knows`,
     placeHeading: `Walk somewhere with ${firstName}`,
     discoveryHeading: 'Notice something small',
@@ -576,6 +576,13 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   const mentions = matchedGraphCharacter && matchedGraphCharacter.canon && matchedGraphCharacter.canon.mentions
     ? matchedGraphCharacter.canon.mentions
     : { characters: [], environments: [], landmarks: [] };
+  const configuredNeighborhood = character && character.neighborhood ? character.neighborhood : {};
+  const configuredRelatedCharacterSlugs = Array.isArray(configuredNeighborhood.relatedCharacterSlugs)
+    ? configuredNeighborhood.relatedCharacterSlugs
+    : [];
+  const configuredRelatedPlaceNames = Array.isArray(configuredNeighborhood.relatedPlaceNames)
+    ? configuredNeighborhood.relatedPlaceNames
+    : [];
 
   const selfName = String(character.name || '').toLowerCase();
   const relatedPeople = (mentions.characters || [])
@@ -588,6 +595,30 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         : { name, href: '' };
     })
     .slice(0, 6);
+
+  const fallbackRelatedPeople = configuredRelatedCharacterSlugs
+    .map((slug) => allCharacters.find((entry) => String(entry.slug || '').toLowerCase() === String(slug).toLowerCase()))
+    .filter(Boolean)
+    .filter((entry) => String(entry.slug || '').toLowerCase() !== String(character.slug || '').toLowerCase())
+    .map((entry) => ({ name: entry.name, href: `${entry.slug}.html` }))
+    .slice(0, 6);
+
+  const mergeUniqueByName = (primaryList, secondaryList, maxItems) => {
+    const seen = new Set();
+    const merged = [];
+    for (const item of [...primaryList, ...secondaryList]) {
+      const key = String(item && item.name ? item.name : '').trim().toLowerCase();
+      if (!key || seen.has(key)) {
+        continue;
+      }
+      seen.add(key);
+      merged.push(item);
+      if (merged.length >= maxItems) {
+        break;
+      }
+    }
+    return merged;
+  };
 
   const placeLookup = new Map();
   for (const place of [...graphEnvironments, ...graphLandmarks]) {
@@ -605,7 +636,19 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         const href = matched.entityPageHref || matched.href || '';
         return { name: matched.name || name, href: href ? `../${href}` : '' };
       }
-      return { name, href: '' };
+      return { name, href: '../map.html' };
+    })
+    .slice(0, 6);
+
+  const fallbackRelatedPlaces = configuredRelatedPlaceNames
+    .filter((name) => String(name || '').trim().length > 0)
+    .map((name) => {
+      const matched = placeLookup.get(String(name).toLowerCase());
+      if (matched) {
+        const href = matched.entityPageHref || matched.href || '';
+        return { name: matched.name || name, href: href ? `../${href}` : '' };
+      }
+      return { name, href: '../map.html' };
     })
     .slice(0, 6);
 
@@ -618,14 +661,20 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
       title: book.title,
       href: getBookPageHref(book),
       series: book.series || book.seriesSlug || 'Hawkins Hollow',
-      coverImage: String(book.coverImage || '').replace(/^\//, '')
+      coverImage: String(book.coverImage || '').replace(/^\//, ''),
+      description: String(book.description || '').trim(),
+      feelings: normalizeStoryGuidanceList(book.feelings, 'feelings'),
+      themes: normalizeStoryGuidanceList(book.themes, 'themes')
     }));
 
   const fallbackStories = books.slice(0, 3).map((book) => ({
     title: book.title,
     href: getBookPageHref(book),
     series: book.series || book.seriesSlug || 'Hawkins Hollow',
-    coverImage: String(book.coverImage || '').replace(/^\//, '')
+    coverImage: String(book.coverImage || '').replace(/^\//, ''),
+    description: String(book.description || '').trim(),
+    feelings: normalizeStoryGuidanceList(book.feelings, 'feelings'),
+    themes: normalizeStoryGuidanceList(book.themes, 'themes')
   }));
 
   const featuredStories = relatedStories.length > 0 ? relatedStories : fallbackStories;
@@ -638,9 +687,9 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     experienceType: profile.templateKey,
     visitorFeeling: profile.visitorFeeling,
     profile,
-    relatedPeople,
-    relatedPlaces,
-    relatedStories,
+    relatedPeople: mergeUniqueByName(relatedPeople, fallbackRelatedPeople, 6),
+    relatedPlaces: mergeUniqueByName(relatedPlaces, fallbackRelatedPlaces, 6),
+    relatedStories: featuredStories,
     sourceDocument: matchedGraphCharacter && matchedGraphCharacter.canon ? matchedGraphCharacter.canon.sourceDocument : null,
     description: character.description || '',
     heroImage: character.heroImage || ''
@@ -648,7 +697,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
 }
 
 // Experience templates transform content objects into visitor-centered journeys.
-function renderCharacterExperiencePage(experience, site, nav, config) {
+function renderCharacterExperiencePage(experience, site, nav, config, banner) {
   const character = experience.character;
   const profile = experience.profile;
   const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
@@ -656,13 +705,20 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
   const relatedStoryCards = experience.relatedStories
     .map((story) => {
       const coverImage = story.coverImage
-        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" />`
-        : '';
-      return `<article class="book-card">
-        ${coverImage}
-        <h3>${story.title}</h3>
-        <p><strong>Series:</strong> ${story.series}</p>
-        <p><a class="button" href="../${story.href}">Read this story</a></p>
+        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+      const description = story.description
+        ? story.description
+        : `${characterFirstName} is part of this gentle Hawkins Hollow story.`;
+      const guidanceLine = getStoryGuidanceLine(story, 3);
+      return `<article class="character-story-card">
+        <div class="character-story-media">${coverImage}</div>
+        <div class="character-story-copy">
+          <h3>${story.title}</h3>
+          <p>${description}</p>
+          ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
+          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
+        </div>
       </article>`;
     })
     .join('');
@@ -696,7 +752,8 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
 
     <section class="content-card" aria-labelledby="character-together">
       <h2 id="character-together">${profile.storyHeading}</h2>
-      <div class="card-grid">${relatedStoryCards}</div>
+      <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
+      <div class="character-story-list">${relatedStoryCards}</div>
     </section>
 
     <section class="content-card" aria-labelledby="character-people">
@@ -728,7 +785,7 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
     nav,
     `${site.domain}/characters/${character.slug}.html`,
     config,
-    null
+    banner
   );
 }
 
@@ -1453,27 +1510,81 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       .filter((candidate) => candidate.id !== entity.id)
       .slice(0, 8);
 
-  const primaryContinuation = connectedCandidates.find((candidate) => candidate.type === 'book')
+  const isPlaceLikeEntity = entity.type === 'environment' || entity.type === 'landmark';
+  const placeNeighborCandidates = [];
+  if (isPlaceLikeEntity) {
+    const seenNeighborIds = new Set();
+    const addNeighbor = (candidate) => {
+      if (!candidate || candidate.type !== 'character' || !candidate.id || seenNeighborIds.has(candidate.id)) {
+        return;
+      }
+      seenNeighborIds.add(candidate.id);
+      placeNeighborCandidates.push(candidate);
+    };
+
+    connectedCandidates.forEach(addNeighbor);
+
+    const relationshipNodeIds = [];
+    for (const edge of edges) {
+      const otherNodeId = edge.from === nodeId ? edge.to : edge.from;
+      const otherNode = nodeMap.get(otherNodeId);
+      if (otherNode && otherNode.entityType === 'relationship') {
+        relationshipNodeIds.push(otherNodeId);
+      }
+    }
+
+    for (const relationshipNodeId of relationshipNodeIds) {
+      for (const relationshipEdge of ((entityGraph && entityGraph.edges) || [])) {
+        if (relationshipEdge.from !== relationshipNodeId && relationshipEdge.to !== relationshipNodeId) {
+          continue;
+        }
+        const counterpartId = relationshipEdge.from === relationshipNodeId ? relationshipEdge.to : relationshipEdge.from;
+        if (!counterpartId || counterpartId === nodeId) {
+          continue;
+        }
+        const counterpartNode = nodeMap.get(counterpartId);
+        if (!counterpartNode || counterpartNode.entityType !== 'character') {
+          continue;
+        }
+        addNeighbor({
+          id: counterpartNode.entityId,
+          name: normalizeEntityLabel(counterpartNode.name || counterpartNode.entityId, counterpartNode.entityId),
+          type: counterpartNode.entityType,
+          entityPageHref: counterpartNode.href
+        });
+      }
+    }
+  }
+
+  const primaryContinuation = (isPlaceLikeEntity && placeNeighborCandidates.length > 0
+    ? placeNeighborCandidates[0]
+    : null)
+    || connectedCandidates.find((candidate) => candidate.type === 'book')
     || connectedCandidates.find((candidate) => candidate.type === 'character')
     || connectedCandidates.find((candidate) => candidate.type === 'environment' || candidate.type === 'landmark')
     || continueExploring[0] || null;
 
-  const isPlaceLikeEntity = entity.type === 'environment' || entity.type === 'landmark';
   const continuationHeading = isPlaceLikeEntity
-    ? 'Follow this place into the next part of the story'
+    ? (placeNeighborCandidates.length > 0 ? 'Neighbors you might meet here' : 'Follow this place into the next part of the story')
     : 'Where would you like to wander next?';
   const continuationIntro = isPlaceLikeEntity
-    ? (primaryContinuation
-      ? `This place feels most alive when you follow ${primaryContinuation.name}.`
-      : 'This place opens naturally into the next story, person, or memory around Hawkins Hollow.')
+    ? (placeNeighborCandidates.length > 0
+      ? 'These are neighbors who often bring this place to life.'
+      : (primaryContinuation
+        ? `This place feels most alive when you follow ${primaryContinuation.name}.`
+        : 'This place opens naturally into the next story, person, or memory around Hawkins Hollow.'))
     : `People who explored ${entityLabel} also wandered through:`;
   const primaryContinuationButton = primaryContinuation && primaryContinuation.entityPageHref
     ? `<p><a class="button" href="../../${primaryContinuation.entityPageHref}">Continue with ${primaryContinuation.name}</a></p>`
     : '';
 
-  const continueHtml = continueExploring.length === 0
+  const placeContinuationList = placeNeighborCandidates.length > 0
+    ? placeNeighborCandidates.slice(0, 8)
+    : continueExploring;
+
+  const continueHtml = placeContinuationList.length === 0
     ? '<p>More connected entities are still being mapped. For now, choose another nearby path from the map or search.</p>'
-    : `<ul>${continueExploring.map((candidate) => {
+    : `<ul>${placeContinuationList.map((candidate) => {
       const href = candidate.entityPageHref || candidate.href || '';
       if (!href) {
         return `<li>${candidate.name || candidate.title || candidate.id}</li>`;
@@ -1529,7 +1640,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       <h2>${continuationHeading}</h2>
       <p>${continuationIntro}</p>
       ${primaryContinuationButton}
-      <p>${isPlaceLikeEntity ? 'Or choose another nearby path:' : 'Nearby paths:'}</p>
+      <p>${isPlaceLikeEntity ? (placeNeighborCandidates.length > 0 ? 'Or meet another neighbor from this place:' : 'Or choose another nearby path:') : 'Nearby paths:'}</p>
       ${continueHtml}
     </section>
 
@@ -2078,6 +2189,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
 
   const storyIntroLead = (invitationText || synopsisText || 'A gentle Storybook about discovering how even the smallest friendship can change a day.').trim();
   const storyIntroBody = synopsisText || 'This story invites a child and a caring grown-up to settle in together and begin.';
+  const storyGuidanceBlock = experienceBook ? renderStoryGuidanceBlock(experienceBook) : '';
   const isSpencerBook = String(getBookPublicTitle(book) || canonicalId).toLowerCase().includes('spencer');
   const storyActionLabel = resolvedCharacter ? `Meet ${resolvedCharacter.name}` : isSpencerBook ? 'Meet Spencer' : 'Meet the characters';
   const storyActionHref = resolvedCharacter ? `../characters/${resolvedCharacter.slug}.html` : isSpencerBook ? '../characters/spencer-field-mouse.html' : '../characters.html';
@@ -2086,6 +2198,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <h2 id="story-intro-heading">${getBookPublicTitle(book) || canonicalId}</h2>
       <p class="story-intro-lead"><em>${storyIntroLead}</em></p>
       <p>${storyIntroBody}</p>
+      ${storyGuidanceBlock}
       <p>
         <a class="button" href="../storybook-shelf.html">Read this story</a>
         <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
@@ -2220,28 +2333,46 @@ function renderLandingPage(page, site, nav, config, banner) {
 
     <section class="content-card" aria-labelledby="series-spotlight">
       <p class="eyebrow">Choose a shelf</p>
-      <h2 id="series-spotlight">There is a path for different kinds of visits</h2>
-      <p>Some families want shared stories, some want early reading practice, and some want a calm bedtime path. These are the most welcoming entry points.</p>
+      <h2 id="series-spotlight">Choose the kind of experience you want today</h2>
+      <p>Each series is a doorway into Hawkins Hollow. Choose one and begin there.</p>
       <div class="start-here-grid">
         <article class="start-here-item">
           <h3>Storybooks</h3>
           <p>Gentle shared stories for children and grown-ups to read together.</p>
-          <p><a class="button" href="storybook-shelf.html">Begin with Storybooks</a></p>
+          <p><a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>First Readers</h3>
-          <p>Shorter, simpler stories for early reading practice.</p>
-          <p><a class="button" href="books.html#series-first-readers">Open First Readers</a></p>
+          <p>Growing confidence, one story at a time.</p>
+          <p><a class="button" href="first-readers.html">Explore First Readers</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Second Readers</h3>
+          <p>Longer stories for growing reading independence.</p>
+          <p><a class="button" href="second-readers.html">Explore Second Readers</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Bedtime Library</h3>
-          <p>A calm path for winding down with gentle stories at the end of the day.</p>
-          <p><a class="button" href="books.html#series-bedtime-library">Try Bedtime Library</a></p>
+          <p>Quiet stories to end the day with calm and reassurance.</p>
+          <p><a class="button" href="bedtime-library.html">Enter the Bedtime Library</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Tender Times</h3>
+          <p>Stories for difficult feelings, comfort, and connection.</p>
+          <p><a class="button" href="tender-times.html">Explore Tender Times</a></p>
+        </article>
+
+        <article class="start-here-item">
+          <h3>Growing Together</h3>
+          <p>Stories that help families grow side by side.</p>
+          <p><a class="button" href="growing-together.html">Explore Growing Together</a></p>
         </article>
       </div>
-      <p><a href="books.html">See the full collection of series</a></p>
+      <p><a href="books.html">See every series</a></p>
     </section>
 
     <section class="content-card" aria-labelledby="act-three">
@@ -2261,7 +2392,7 @@ function renderLandingPage(page, site, nav, config, banner) {
         <article class="start-here-item">
           <h3>Looking for Bedtime?</h3>
           <p><strong>Path:</strong> Visit Bedtime Library -> Meet Grandma -> Read Together</p>
-          <p><a class="button" href="books.html#series-bedtime-library">Begin with Bedtime Library</a></p>
+          <p><a class="button" href="bedtime-library.html">Begin with Bedtime Library</a></p>
         </article>
 
         <article class="start-here-item">
@@ -2455,7 +2586,7 @@ function renderLandingPage(page, site, nav, config, banner) {
             mode: 'Remember',
             observation: 'This always reminds me that quiet stories can settle a whole evening.',
             invitation: 'If tonight feels a little full, the Bedtime Library is a gentle place to land.',
-            href: 'books.html#series-bedtime-library',
+            href: 'bedtime-library.html',
             cta: 'Begin Quietly'
           },
           {
@@ -2490,66 +2621,20 @@ function renderLandingPage(page, site, nav, config, banner) {
 
 function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup) {
   if (page.slug === 'books') {
-    const firstReadersDoorway = renderSeriesDoorwayFromLibraryIndex(
-      libraryIndex,
-      'First Readers',
-      'Children beginning to read with growing confidence.',
-      'Short, approachable stories with steady pacing and gentle support.',
-      'if you are still smiling, there is another friend waiting just down the path.',
-      'Continue the friendship'
-    );
-    const firstReadersCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'First Readers', amazonLookup);
-    const secondReadersDoorway = renderSeriesDoorwayFromLibraryIndex(
-      libraryIndex,
-      'Second Readers',
-      'Developing readers ready for longer story time and richer details.',
-      'Broader adventures that invite conversation and curiosity.',
-      'there are more trails to explore if you would like to keep wandering.',
-      'Stay in this place'
-    );
-    const secondReadersCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Second Readers', amazonLookup);
-    const bedtimeLibraryDoorway = renderSeriesDoorwayFromLibraryIndex(
-      libraryIndex,
-      'Bedtime Library',
-      'Families winding down at the end of the day.',
-      'Quiet, reassuring stories that help everyone settle together.',
-      'you do not have to hurry. When you are ready, there is another quiet place nearby.',
-      'Continue the feeling'
-    );
-    const bedtimeLibraryCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Bedtime Library', amazonLookup);
-    const growingTogetherDoorway = renderSeriesDoorwayFromLibraryIndex(
-      libraryIndex,
-      'Growing Together',
-      'Families talking about belonging, cooperation, and care.',
-      'Heart-forward stories about relationships and everyday kindness.',
-      'sometimes the best part is talking about it together after the story ends.',
-      'Try something together'
-    );
-    const growingTogetherCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Growing Together', amazonLookup);
-    const tenderTimesDoorway = renderSeriesDoorwayFromLibraryIndex(
-      libraryIndex,
-      'Tender Times',
-      'Children and caregivers moving through change or big feelings.',
-      'Comfort-centered stories that create space for reassurance and hope.',
-      'you can pause whenever you need to. When you are ready, a caring friend is nearby.',
-      'When you are ready'
-    );
-    const tenderTimesCards = renderSeriesCardsFromLibraryIndex(libraryIndex, 'Tender Times', amazonLookup);
-    const searchSection = renderSearchSection();
     return renderLayout(
       page.title,
-      'Every Hawkins Hollow story belongs somewhere in a larger journey. Some books are perfect for bedtime, some help beginning readers gain confidence, and others offer comfort during difficult moments. Browse the collections below and discover the stories that fit your family best.',
+      'Choose the kind of reading experience that feels right, then step into that series.',
       `<section class="content-card" aria-labelledby="books-introduction">
       <h2 id="books-introduction">Books</h2>
-      <p>Every Hawkins Hollow story belongs somewhere in a larger journey. Some books are perfect for bedtime, some help beginning readers gain confidence, and others offer comfort during difficult moments. Browse the collections below and discover the stories that fit your family best.</p>
+      <p>Hawkins Hollow stories are organized by reading experience. Begin with the shelf that fits your moment today.</p>
     </section>
 
     <section class="content-card" aria-labelledby="books-doorway">
       <h2 id="books-doorway">Where to begin</h2>
-      <p>If this is your first visit, you do not need to choose everything at once. Start with the path that fits your moment.</p>
+      <p>If this is your first visit, you do not need to choose everything at once. Pick one series and let the next step come naturally.</p>
       <p>
         <a class="button" href="storybook-shelf.html">Start with Storybooks</a>
-        <a class="button" href="books.html#series-bedtime-library">Try Bedtime Library</a>
+        <a class="button" href="bedtime-library.html">Try Bedtime Library</a>
       </p>
     </section>
 
@@ -2560,60 +2645,71 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
           <h3>Storybooks</h3>
           <p><strong>Who it is for:</strong> Families who want shared read-aloud moments.</p>
           <p><strong>Experience:</strong> Gentle illustrated adventures that introduce Hawkins Hollow one memory at a time.</p>
-          <p><strong>Start with:</strong> <a href="storybook-shelf.html">Visit the Storybook Shelf</a></p>
-          <p><strong>Continue the wonder:</strong> after one story, meet a character you just discovered.</p>
           <a class="button" href="storybook-shelf.html">Explore Storybooks</a>
         </article>
 
         <article class="start-here-item" id="series-first-readers">
           <h3>First Readers</h3>
-          ${firstReadersDoorway}
-          <p class="status-label">Auto-generated from the Library index.</p>
-          ${firstReadersCards}
+          <p><strong>Who it is for:</strong> Children beginning to read with a helper.</p>
+          <p><strong>Experience:</strong> Short, approachable stories that build confidence one page at a time.</p>
+          <a class="button" href="first-readers.html">Explore First Readers</a>
         </article>
 
         <article class="start-here-item" id="series-second-readers">
           <h3>Second Readers</h3>
-          ${secondReadersDoorway}
-          <p class="status-label">Auto-generated from the Library index.</p>
-          ${secondReadersCards}
+          <p><strong>Who it is for:</strong> Growing readers ready for longer adventures.</p>
+          <p><strong>Experience:</strong> Richer stories with deeper threads and warm companionship.</p>
+          <a class="button" href="second-readers.html">Explore Second Readers</a>
+        </article>
+
+        <article class="start-here-item" id="series-basic-training">
+          <h3>Basic Training</h3>
+          <p><strong>Who it is for:</strong> Children practicing everyday skills with encouragement.</p>
+          <p><strong>Experience:</strong> Story-based confidence for routines, habits, and readiness.</p>
+          <a class="button" href="basic-training.html">Explore Basic Training</a>
         </article>
 
         <article class="start-here-item" id="series-bedtime-library">
           <h3>Bedtime Library</h3>
-          ${bedtimeLibraryDoorway}
-          <p class="status-label">Auto-generated from the Library index.</p>
-          ${bedtimeLibraryCards}
+          <p><strong>Who it is for:</strong> Families winding down at the end of the day.</p>
+          <p><strong>Experience:</strong> Quiet pacing and reassuring stories for bedtime moments.</p>
+          <a class="button" href="bedtime-library.html">Enter the Bedtime Library</a>
         </article>
 
         <article class="start-here-item" id="series-growing-together">
           <h3>Growing Together</h3>
-          ${growingTogetherDoorway}
-          <p class="status-label">Auto-generated from the Library index.</p>
-          ${growingTogetherCards}
+          <p><strong>Who it is for:</strong> Families exploring belonging, care, and cooperation.</p>
+          <p><strong>Experience:</strong> Heart-forward stories about relationships that deepen over time.</p>
+          <a class="button" href="growing-together.html">Explore Growing Together</a>
         </article>
 
         <article class="start-here-item" id="series-tender-times">
           <h3>Tender Times</h3>
-          ${tenderTimesDoorway}
-          <p class="status-label">Auto-generated from the Library index.</p>
-          ${tenderTimesCards}
+          <p><strong>Who it is for:</strong> Children and caregivers moving through hard days.</p>
+          <p><strong>Experience:</strong> Comforting stories designed for reassurance, connection, and hope.</p>
+          <a class="button" href="tender-times.html">Explore Tender Times</a>
+        </article>
+
+        <article class="start-here-item" id="series-holiday-poems">
+          <h3>Holiday Story Poems</h3>
+          <p><strong>Who it is for:</strong> Families celebrating seasonal traditions together.</p>
+          <p><strong>Experience:</strong> Festive poems and stories for shared celebration and reflection.</p>
+          <a class="button" href="holiday-story-poems.html">Explore Holiday Story Poems</a>
+        </article>
+
+        <article class="start-here-item" id="series-hero-play-poems">
+          <h3>Hero Play Poems</h3>
+          <p><strong>Who it is for:</strong> Children who love imagination, courage, and pretend adventure.</p>
+          <p><strong>Experience:</strong> Playful poems that encourage confidence and creative thinking.</p>
+          <a class="button" href="hero-play-poems.html">Explore Hero Play Poems</a>
         </article>
       </div>
     </section>
 
-    <section class="content-card" aria-labelledby="explore-a-friendship">
-      <h2 id="explore-a-friendship">Explore a Friendship</h2>
-      <p>The best adventures are often shared. Discover how kindness, listening, courage, and patience grow between friends.</p>
-      <p>Use the search below to begin with a name, a place, or a feeling, then follow the connections.</p>
-    </section>
-
-    ${searchSection}
-
     <section class="content-card" aria-labelledby="books-closing">
       <h2 id="books-closing">Looking Ahead</h2>
-      <p>Every new Hawkins Hollow book begins with one child, one family, and one small moment that matters.</p>
-      <p>As new series arrive on the website, this library will continue to grow.</p>
+      <p>Home introduces experiences. Series pages introduce books. Book pages invite you into each story.</p>
+      <p>Choose a series, then choose a story.</p>
     </section>`,
       site,
       nav,
@@ -2645,31 +2741,31 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
         <article class="start-here-item">
           <h3>First Readers</h3>
           <p><strong>If your child is building reading confidence:</strong> Start with a short story that feels encouraging and familiar.</p>
-          <p><strong>Start with:</strong> <a href="books.html#series-first-readers">First Readers on the Books page</a></p>
+          <p><strong>Start with:</strong> <a href="first-readers.html">First Readers</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Second Readers</h3>
           <p><strong>If your family wants a richer reading adventure:</strong> Choose a longer path with more details and discussion.</p>
-          <p><strong>Start with:</strong> <a href="books.html#series-second-readers">Second Readers on the Books page</a></p>
+          <p><strong>Start with:</strong> <a href="second-readers.html">Second Readers</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Bedtime Library</h3>
           <p><strong>If you're looking for a bedtime story:</strong> Come this way for quiet pacing and reassuring endings.</p>
-          <p><strong>Start with:</strong> <a href="books.html#series-bedtime-library">Bedtime Library on the Books page</a></p>
+          <p><strong>Start with:</strong> <a href="bedtime-library.html">Bedtime Library</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Growing Together</h3>
           <p><strong>If your family wants encouragement:</strong> Follow stories about belonging, cooperation, and care.</p>
-          <p><strong>Start with:</strong> <a href="books.html#series-growing-together">Growing Together on the Books page</a></p>
+          <p><strong>Start with:</strong> <a href="growing-together.html">Growing Together</a></p>
         </article>
 
         <article class="start-here-item">
           <h3>Tender Times</h3>
           <p><strong>If someone in your family needs comfort:</strong> Walk this path gently and at your own pace.</p>
-          <p><strong>Start with:</strong> <a href="books.html#series-tender-times">Tender Times on the Books page</a></p>
+          <p><strong>Start with:</strong> <a href="tender-times.html">Tender Times</a></p>
         </article>
 
         <article class="start-here-item">
@@ -2855,7 +2951,7 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
 }
 
 // Experience templates transform content objects into visitor-centered journeys.
-function renderCharacterExperiencePage(experience, site, nav, config) {
+function renderCharacterExperiencePage(experience, site, nav, config, banner) {
   const character = experience.character;
   const profile = experience.profile;
   const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
@@ -2864,13 +2960,20 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
   const relatedStoryCards = (experience.relatedStories || [])
     .map((story) => {
       const coverImage = story.coverImage
-        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" />`
-        : '';
-      return `<article class="book-card">
-        ${coverImage}
-        <h3>${story.title}</h3>
-        <p><strong>Series:</strong> ${story.series}</p>
-        <p><a class="button" href="../${story.href}">Read this story</a></p>
+        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+      const description = story.description
+        ? story.description
+        : `${characterFirstName} is part of this gentle Hawkins Hollow story.`;
+      const guidanceLine = getStoryGuidanceLine(story, 3);
+      return `<article class="character-story-card">
+        <div class="character-story-media">${coverImage}</div>
+        <div class="character-story-copy">
+          <h3>${story.title}</h3>
+          <p>${description}</p>
+          ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
+          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
+        </div>
       </article>`;
     })
     .join('');
@@ -2908,7 +3011,8 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
 
     <section class="content-card" aria-labelledby="character-together">
       <h2 id="character-together">${profile.storyHeading}</h2>
-      <div class="card-grid">${relatedStoryCards}</div>
+      <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
+      <div class="character-story-list">${relatedStoryCards}</div>
     </section>
 
     <section class="content-card" aria-labelledby="character-people">
@@ -2940,7 +3044,7 @@ function renderCharacterExperiencePage(experience, site, nav, config) {
     nav,
     `${site.domain}/characters/${character.slug}.html`,
     config,
-    null,
+    banner,
     '../'
   );
 }
@@ -2957,16 +3061,170 @@ function getStorybookCardInvitation(book) {
   return invitationByTitle[title] || (book && book.description ? book.description : 'A gentle story waiting to be read.');
 }
 
-function getSeriesEditorial(series) {
-  const editorial = series && series.editorial ? series.editorial : {};
+const CANONICAL_STORY_FEELINGS = [
+  'Lonely',
+  'Nervous',
+  'Curious',
+  'Happy',
+  'Frustrated',
+  'Hopeful',
+  'Proud',
+  'Sad',
+  'Confused',
+  'Brave'
+];
 
+const CANONICAL_STORY_THEMES = [
+  'Friendship',
+  'Honesty',
+  'Kindness',
+  'Sharing',
+  'Patience',
+  'Courage',
+  'Forgiveness',
+  'Gratitude',
+  'Belonging',
+  'Listening'
+];
+
+const STORY_FEELING_ALIASES = {
+  unsure: 'Confused',
+  welcomed: 'Happy',
+  joyful: 'Happy',
+  worried: 'Nervous',
+  regretful: 'Sad',
+  relieved: 'Hopeful',
+  excited: 'Happy',
+  connected: 'Happy',
+  calm: 'Hopeful',
+  steady: 'Brave',
+  loved: 'Happy',
+  comforted: 'Hopeful'
+};
+
+const STORY_THEME_ALIASES = {
+  inclusion: 'Belonging',
+  repair: 'Forgiveness',
+  perseverance: 'Courage',
+  remembrance: 'Gratitude',
+  family: 'Kindness',
+  hope: 'Courage'
+};
+
+const STORY_FEELING_DISPLAY = {
+  Lonely: 'Feeling left out',
+  Nervous: 'Feeling nervous',
+  Curious: 'Feeling curious',
+  Happy: 'Feeling happy',
+  Frustrated: 'Feeling frustrated',
+  Hopeful: 'Feeling hopeful',
+  Proud: 'Feeling proud',
+  Sad: 'Feeling sad',
+  Confused: 'Feeling unsure',
+  Brave: 'Feeling brave'
+};
+
+function normalizeStoryGuidanceValue(value, type) {
+  const label = String(value || '').trim();
+  if (!label) {
+    return '';
+  }
+
+  const rawKey = label.toLowerCase();
+  const aliasMap = type === 'feelings' ? STORY_FEELING_ALIASES : STORY_THEME_ALIASES;
+  const canonicalList = type === 'feelings' ? CANONICAL_STORY_FEELINGS : CANONICAL_STORY_THEMES;
+  const canonicalValue = aliasMap[rawKey] || label;
+  return canonicalList.includes(canonicalValue) ? canonicalValue : '';
+}
+
+function normalizeStoryGuidanceList(values, type) {
+  if (!Array.isArray(values)) {
+    return [];
+  }
+
+  const cleaned = [];
+  const seen = new Set();
+  for (const value of values) {
+    const normalized = normalizeStoryGuidanceValue(value, type);
+    const key = normalized.toLowerCase();
+    if (!normalized || seen.has(key)) {
+      continue;
+    }
+    seen.add(key);
+    cleaned.push(normalized);
+  }
+  return cleaned;
+}
+
+function getStoryGuidance(book) {
   return {
-    welcomeHeading: editorial && editorial.welcomeHeading ? editorial.welcomeHeading : 'A Good Place to Begin',
-    welcomeText: editorial && editorial.welcomeText ? editorial.welcomeText : 'If this is your first visit to Hawkins Hollow, this story is a gentle place to begin.'
+    feelings: normalizeStoryGuidanceList(book && book.feelings, 'feelings'),
+    themes: normalizeStoryGuidanceList(book && book.themes, 'themes')
   };
 }
 
-function getStorybooksForSeries(series, booksData) {
+function getStoryGuidanceLine(book, maxItems) {
+  const guidance = getStoryGuidance(book);
+  const limit = Number.isFinite(maxItems) ? maxItems : 3;
+  const combined = [...guidance.feelings, ...guidance.themes].slice(0, limit);
+  return combined.length > 0 ? combined.join(' &bull; ') : '';
+}
+
+function renderStoryGuidanceBlock(book) {
+  const guidance = getStoryGuidance(book);
+  const hasFeelings = guidance.feelings.length > 0;
+  const hasThemes = guidance.themes.length > 0;
+
+  if (!hasFeelings && !hasThemes) {
+    return '';
+  }
+
+  const feelingsBlock = hasFeelings
+    ? `<div class="story-guidance-group">
+      <h3>Feelings you may recognize</h3>
+      <p>${guidance.feelings.map((feeling) => STORY_FEELING_DISPLAY[feeling] || feeling).join(' &bull; ')}</p>
+    </div>`
+    : '';
+
+  const themesBlock = hasThemes
+    ? `<div class="story-guidance-group">
+      <h3>Themes you'll find here</h3>
+      <p>${guidance.themes.join(' &bull; ')}</p>
+    </div>`
+    : '';
+
+  return `<section class="story-guidance" aria-label="This story gently explores">
+    <p class="story-guidance-heading">This story gently explores</p>
+    ${feelingsBlock}
+    ${themesBlock}
+  </section>`;
+}
+
+function getSeriesEditorial(series) {
+  const editorial = series && series.editorial ? series.editorial : {};
+  const rawDisplayOrder = String(editorial && editorial.displayOrder ? editorial.displayOrder : 'rotating').toLowerCase();
+  const displayOrder = rawDisplayOrder === 'rotating' ? 'rotating' : 'rotating';
+  const rawRotationFrequency = String(editorial && editorial.rotationFrequency ? editorial.rotationFrequency : 'daily').toLowerCase();
+  const rotationFrequency = rawRotationFrequency === 'weekly' ? 'weekly' : 'daily';
+
+  return {
+    welcomeHeading: editorial && editorial.welcomeHeading ? editorial.welcomeHeading : 'A Good Place to Begin',
+    welcomeText: editorial && editorial.welcomeText ? editorial.welcomeText : 'Choose a story that feels right for today and begin at your own pace.',
+    audienceText: editorial && editorial.audienceText ? editorial.audienceText : 'Families and readers looking for a welcoming place to begin.',
+    experienceText: editorial && editorial.experienceText ? editorial.experienceText : 'Stories designed to be shared, remembered, and revisited.',
+    invitationLabel: editorial && editorial.invitationLabel ? editorial.invitationLabel : `Explore ${series && series.title ? series.title : 'this collection'}`,
+    displayOrder,
+    rotationFrequency
+  };
+}
+
+function getSeriesPageHref(seriesSlug) {
+  return String(seriesSlug || '').toLowerCase() === 'storybooks'
+    ? 'storybook-shelf.html'
+    : `${seriesSlug}.html`;
+}
+
+function getBooksForSeries(series, booksData) {
   const seriesSlug = series && series.slug ? series.slug : 'storybooks';
 
   return (booksData.books || [])
@@ -2978,20 +3236,19 @@ function getStorybooksForSeries(series, booksData) {
         return aOrder - bOrder;
       }
       return String(a && a.title ? a.title : '').localeCompare(String(b && b.title ? b.title : ''));
-    })
-    .slice(0, 4);
+    });
 }
 
-function buildStorybookPreviewCards(booksData, series) {
-  const storybooks = getStorybooksForSeries(series, booksData);
+function buildSeriesPreviewCards(booksData, series) {
+  const seriesBooks = getBooksForSeries(series, booksData);
 
-  if (!storybooks.length) {
-    return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New Storybooks will appear here as the collection grows.</p></article>`;
+  if (!seriesBooks.length) {
+    return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New stories in this collection will appear here as the shelf grows.</p></article>`;
   }
 
-  const { welcomeHeading, welcomeText } = getSeriesEditorial(series);
-  const cardsMarkup = `<div class="storybook-list" aria-label="Storybook recommendations">
-        ${storybooks
+  const { welcomeHeading, welcomeText, displayOrder, rotationFrequency } = getSeriesEditorial(series);
+  const cardsMarkup = `<div class="storybook-list" aria-label="Series story recommendations" data-display-order="${displayOrder}" data-rotation-frequency="${rotationFrequency}" data-series-slug="${series && series.slug ? series.slug : ''}">
+        ${seriesBooks
           .map(
             (book) => `<article class="book-card storybook-card">
               <div class="storybook-card-media">
@@ -3000,6 +3257,7 @@ function buildStorybookPreviewCards(booksData, series) {
               <div class="storybook-card-copy">
                 <h3 class="story-card-title">${book.title}</h3>
                 <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
+                ${getStoryGuidanceLine(book, 3) ? `<p class="story-metadata-line">${getStoryGuidanceLine(book, 3)}</p>` : ''}
                 <a class="button" href="${getBookPageHref(book)}">Read this story</a>
               </div>
             </article>`
@@ -3016,73 +3274,98 @@ function buildStorybookPreviewCards(booksData, series) {
 
 function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
   const series = seriesData.series.find((entry) => entry.slug === page.seriesSlug);
-
-  if (page.slug === 'storybook-shelf') {
-    return renderLayout(
-      series.title,
-      'Welcome to the Hawkins Hollow Storybook Shelf.',
-      `<section class="content-card" aria-labelledby="storybook-shelf-introduction">
-      <h2 id="storybook-shelf-introduction">Storybook Shelf</h2>
-      <p>Welcome to the Hawkins Hollow Storybook Shelf.</p>
-      <p>These illustrated stories invite children and families into a gentle countryside community filled with familiar feelings, caring relationships, small adventures, and characters who grow by living alongside one another.</p>
-    </section>
-
-    <section class="content-card" aria-labelledby="stories-made-to-be-shared">
-      <h2 id="stories-made-to-be-shared">Stories Made to Be Shared</h2>
-      <p>Hawkins Hollow Storybooks are created for reading together—at bedtime, during a quiet afternoon, in a classroom reading corner, or anywhere a child and a caring grown-up can pause for a story.</p>
-      <p>Each book stands on its own, so families may begin with whichever character, feeling, or adventure seems like the best fit.</p>
-    </section>
-
-    <section class="content-card" aria-labelledby="the-shelf-is-growing">
-      <h2 id="the-shelf-is-growing">The Shelf Is Growing</h2>
-      <p>These stories are designed to be read together, one gentle page at a time.</p>
-      <p>Begin with one that feels right for today, then let the next story find you.</p>
-      <p>
-        <a class="button" href="storybook-series.html">Learn about the series</a>
-        <a class="button" href="books.html">Browse the full library</a>
-      </p>
-      <div class="storybook-shelf" aria-label="Storybooks to read in any order">
-        ${buildStorybookPreviewCards(booksData, series)}
-      </div>
-    </section>
-
-    <section class="content-card" aria-labelledby="choose-the-story-that-feels-right">
-      <h2 id="choose-the-story-that-feels-right">Choose the Story That Feels Right</h2>
-      <p>There is no required reading order in Hawkins Hollow. Begin with one story that catches your attention, share it at your own pace, and return whenever the porch light calls you back.</p>
-      <p><a class="button" href="books.html">See the wider collection of series</a></p>
-    </section>`,
-      site,
-      nav,
-      `${site.domain}/${page.slug}.html`,
-      config,
-      banner
-    );
-  }
-
-  const books = (booksData.books || []).filter((book) => book.seriesSlug === series.slug).slice(0, 3);
-  const cards = books
-    .map(
-      (book) => `<article class="book-card">
-        <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
-        <h3>${book.title}</h3>
-        ${book.description ? `<p>${book.description}</p>` : '<p>A gentle story waiting to be read.</p>'}
-        <p class="placeholder">A welcoming next step in the Storybooks path.</p>
-        <a class="button" href="${getBookPageHref(book)}">Read this story</a>
-      </article>`
-    )
-    .join('');
+  const editorial = getSeriesEditorial(series);
+  const collectionHeadingId = `${page.slug}-collection`;
+  const audienceHeadingId = `${page.slug}-audience`;
+  const shelfHeadingId = `${page.slug}-shelf`;
+  const continueHeadingId = `${page.slug}-continue`;
+  const invitationLabel = editorial.invitationLabel || `Explore ${series.title}`;
 
   return renderLayout(
     series.title,
-    series.description,
-    `<section class="content-card">
-      <p>${series.description}</p>
-      <p><a class="button" href="storybook-series.html">View the Storybook Series</a></p>
+    series.description || `Welcome to ${series.title} in Hawkins Hollow.`,
+    `<section class="content-card" aria-labelledby="${collectionHeadingId}">
+      <h2 id="${collectionHeadingId}">${series.title}</h2>
+      <p>${series.description || `Welcome to ${series.title}, where each story opens a gentle path into Hawkins Hollow.`}</p>
+      <p><a class="button" href="${getSeriesPageHref(series.slug)}">${invitationLabel}</a></p>
     </section>
 
-    <section class="content-card">
-      <h2>Books in this series</h2>
-      <div class="card-grid">${cards}</div>
+    <section class="content-card" aria-labelledby="${audienceHeadingId}">
+      <h2 id="${audienceHeadingId}">Who This Series Is For</h2>
+      <p><strong>Who it is for:</strong> ${editorial.audienceText}</p>
+      <p><strong>Experience:</strong> ${editorial.experienceText}</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="${shelfHeadingId}">
+      <h2 id="${shelfHeadingId}">Choose a Story</h2>
+      <p>These stories can be read in any order. Begin with the one that feels right today.</p>
+      <div class="storybook-shelf" aria-label="${series.title} stories to read in any order">
+        ${buildSeriesPreviewCards(booksData, series)}
+      </div>
+      <script>
+        (function () {
+          function hashString(value) {
+            var hash = 0;
+            for (var i = 0; i < value.length; i += 1) {
+              hash = ((hash << 5) - hash) + value.charCodeAt(i);
+              hash |= 0;
+            }
+            return Math.abs(hash);
+          }
+
+          function getIsoWeek(date) {
+            var d = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()));
+            var day = d.getUTCDay() || 7;
+            d.setUTCDate(d.getUTCDate() + 4 - day);
+            var yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+            return Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+          }
+
+          function getRotationBucket(frequency) {
+            var now = new Date();
+            if (frequency === 'weekly') {
+              return now.getUTCFullYear() + '-W' + String(getIsoWeek(now)).padStart(2, '0');
+            }
+            return now.getUTCFullYear()
+              + '-' + String(now.getUTCMonth() + 1).padStart(2, '0')
+              + '-' + String(now.getUTCDate()).padStart(2, '0');
+          }
+
+          var list = document.querySelector('.storybook-list[data-display-order]');
+          if (!list) {
+            return;
+          }
+
+          var displayOrder = String(list.getAttribute('data-display-order') || '').toLowerCase();
+          if (displayOrder !== 'rotating') {
+            return;
+          }
+
+          var cards = Array.prototype.slice.call(list.querySelectorAll('.storybook-card'));
+          if (cards.length < 2) {
+            return;
+          }
+
+          var seriesSlug = String(list.getAttribute('data-series-slug') || 'series');
+          var rotationFrequency = String(list.getAttribute('data-rotation-frequency') || 'daily').toLowerCase();
+          var bucket = getRotationBucket(rotationFrequency === 'weekly' ? 'weekly' : 'daily');
+          var startIndex = hashString(seriesSlug + '|' + bucket) % cards.length;
+          var rotatedCards = cards.slice(startIndex).concat(cards.slice(0, startIndex));
+          rotatedCards.forEach(function (card) {
+            list.appendChild(card);
+          });
+        })();
+      </script>
+    </section>
+
+    <section class="content-card" aria-labelledby="${continueHeadingId}">
+      <h2 id="${continueHeadingId}">Keep Exploring</h2>
+      <p>After one story, meet a character, visit a place, or choose another shelf in Hawkins Hollow.</p>
+      <p>
+        <a class="button" href="characters.html">Meet the characters</a>
+        <a class="button" href="map.html">Visit the map</a>
+        <a class="button" href="books.html">Browse all series</a>
+      </p>
     </section>`,
     site,
     nav,
@@ -3120,6 +3403,7 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   const isStorybook = book && book.seriesSlug === 'storybooks';
   const seriesLabel = isStorybook ? 'Storybook' : 'Book';
   const relatedCards = buildRelatedStorybookCards(booksData, book.slug);
+  const storyGuidanceBlock = renderStoryGuidanceBlock(book);
   const storyCharacters = Array.isArray(book && book.characters) ? book.characters : [];
   const storyEnvironments = Array.isArray(book && book.environments) ? book.environments : [];
   const characterAnchor = storyCharacters.length > 0
@@ -3140,6 +3424,7 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
       <h2>${publicTitle}</h2>
       <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${publicTitle}" />
       ${book.description ? `<p>${book.description}</p>` : '<p>A gentle story waiting to be read.</p>'}
+      ${storyGuidanceBlock}
       <p><strong>Series:</strong> ${book.seriesSlug || 'Hawkins Hollow'}</p>
       <p>
         ${isStorybook ? '<a class="button" href="storybook-shelf.html">Return to the Storybook Shelf</a>' : '<a class="button" href="books.html">Back to books</a>'}
@@ -3524,11 +3809,12 @@ function buildSite() {
   const featuredCharacters = charactersData.characters
     .filter((character) => character.featured === true)
     .sort((a, b) => a.sortOrder - b.sortOrder);
+  const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
   for (const character of featuredCharacters) {
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex);
     writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
-      renderCharacterExperiencePage(experienceAsset, site, nav, config)
+      renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
     );
   }
 

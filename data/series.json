@@ -5,58 +5,134 @@
       "title": "Storybooks",
       "description": "Illustrated storybooks that welcome children and families into Hawkins Hollow through gentle adventures, familiar feelings, and shared reading time.",
       "editorial": {
-        "recommendedFirstBook": "HH-A-0001",
         "welcomeHeading": "A Good Place to Begin",
-        "welcomeText": "If this is your first visit to Hawkins Hollow, this story is a gentle place to begin."
+        "welcomeText": "If this is your first visit to Hawkins Hollow, this story is a gentle place to begin.",
+        "audienceText": "Children and families reading together.",
+        "experienceText": "Gentle illustrated adventures that introduce Hawkins Hollow one memory at a time.",
+        "invitationLabel": "Visit the Storybook Shelf",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
       },
       "sortOrder": 1
     },
     {
       "slug": "first-readers",
       "title": "First Readers",
-      "description": "",
+      "description": "Simple, encouraging stories for children beginning to read with a helper.",
+      "editorial": {
+        "welcomeHeading": "Ready to Read Together?",
+        "welcomeText": "These stories use simple language for children beginning to read with a helper.",
+        "audienceText": "Beginning readers and the grown-ups reading beside them.",
+        "experienceText": "Short, approachable stories with steady pacing and confidence-building repetition.",
+        "invitationLabel": "Explore First Readers",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 2
     },
     {
       "slug": "second-readers",
       "title": "Second Readers",
-      "description": "",
+      "description": "Longer stories for children growing in reading confidence and independence.",
+      "editorial": {
+        "welcomeHeading": "Ready for Longer Adventures?",
+        "welcomeText": "These stories offer richer detail and longer paths for growing readers.",
+        "audienceText": "Readers ready for broader adventures and deeper story threads.",
+        "experienceText": "More independent reading with warm support from familiar Hawkins Hollow friends.",
+        "invitationLabel": "Explore Second Readers",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 3
     },
     {
       "slug": "basic-training",
       "title": "Basic Training",
-      "description": "",
+      "description": "Skill-building stories that help children practice habits, confidence, and everyday courage.",
+      "editorial": {
+        "welcomeHeading": "Practice with Purpose",
+        "welcomeText": "These stories support everyday skills through caring characters and practical moments.",
+        "audienceText": "Families helping children practice everyday readiness and resilience.",
+        "experienceText": "Guided stories for growth, confidence, and healthy routines.",
+        "invitationLabel": "Explore Basic Training",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 4
     },
     {
       "slug": "growing-together",
       "title": "Growing Together",
-      "description": "",
+      "description": "Stories about belonging, cooperation, and family relationships that deepen over time.",
+      "editorial": {
+        "welcomeHeading": "Grow Side by Side",
+        "welcomeText": "These stories help families grow through kindness, listening, and shared effort.",
+        "audienceText": "Families who want encouragement around belonging and cooperation.",
+        "experienceText": "Heart-forward stories about care, patience, and growing together.",
+        "invitationLabel": "Explore Growing Together",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 5
     },
     {
       "slug": "bedtime-library",
       "title": "Bedtime Library",
-      "description": "",
+      "description": "Quiet stories for winding down and ending the day with reassurance.",
+      "editorial": {
+        "welcomeHeading": "For Quiet Evenings",
+        "welcomeText": "Slow down, settle in, and choose a story for the end of the day.",
+        "audienceText": "Children and caregivers looking for gentle stories before rest.",
+        "experienceText": "Calm pacing and reassuring endings for shared bedtime moments.",
+        "invitationLabel": "Enter the Bedtime Library",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 6
     },
     {
       "slug": "tender-times",
       "title": "Tender Times",
-      "description": "",
+      "description": "Comforting stories for moments when children need reassurance, connection, and care.",
+      "editorial": {
+        "welcomeHeading": "When Today Has Been Hard",
+        "welcomeText": "These stories were written for moments when children need reassurance, comfort, and connection.",
+        "audienceText": "Families moving through change, big feelings, or difficult days.",
+        "experienceText": "Comfort-centered stories that make room for healing and hope.",
+        "invitationLabel": "Explore Tender Times",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 7
     },
     {
       "slug": "holiday-story-poems",
       "title": "Holiday Story Poems",
-      "description": "",
+      "description": "Seasonal poems and celebrations that mark special days in Hawkins Hollow.",
+      "editorial": {
+        "welcomeHeading": "Celebrate the Season",
+        "welcomeText": "Follow holidays and traditions through story poems written for shared reading.",
+        "audienceText": "Families celebrating seasonal traditions and gatherings.",
+        "experienceText": "Festive story poems that invite reflection, gratitude, and joy.",
+        "invitationLabel": "Explore Holiday Story Poems",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 8
     },
     {
       "slug": "hero-play-poems",
       "title": "Hero Play Poems",
-      "description": "",
+      "description": "Imaginative poems where children explore courage, play, and pretend adventures.",
+      "editorial": {
+        "welcomeHeading": "Play the Hero",
+        "welcomeText": "These poems celebrate imagination, bravery, and playful adventure.",
+        "audienceText": "Children who love pretend play and imaginative storytelling.",
+        "experienceText": "Rhythmic poems that inspire confidence and creative exploration.",
+        "invitationLabel": "Explore Hero Play Poems",
+        "displayOrder": "rotating",
+        "rotationFrequency": "daily"
+      },
       "sortOrder": 9
     }
   ]
