@@ -1681,11 +1681,22 @@ function getEntitiesForType(entityIndex, type) {
   return [];
 }
 
+function getEntityByTypeAndId(entityIndex, type, id) {
+  const collection = getEntitiesForType(entityIndex, type);
+  const normalizedId = String(id || '').toLowerCase();
+  return collection.find((entry) => String(entry && entry.id ? entry.id : '').toLowerCase() === normalizedId) || null;
+}
+
 function normalizeEntityLabel(value, fallback = '') {
   let label = String(value || fallback || '').replace(/\s+/g, ' ').trim();
   if (!label) {
     return String(fallback || 'Entity');
   }
+
+  label = label
+    .replace(/^~\$+/, '')
+    .replace(/^(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)+/i, '')
+    .trim();
 
   const cardIndex = label.search(/\sCard\s/i);
   if (cardIndex > 0) {
@@ -1799,7 +1810,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       id: otherNode.entityId,
       name: normalizeEntityLabel(otherNode.name || otherNode.entityId, otherNode.entityId),
       type: otherNode.entityType,
-      entityPageHref: otherNode.href
+      entityPageHref: otherNode.href,
+      excerpt: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).textExcerpt || '',
+      description: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).description || '',
+      coverImage: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).coverImage || ''
     });
   }
 
@@ -1911,6 +1925,213 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         extractor: ${(edge.provenance && edge.provenance.extractor) || 'unknown'}
       </li>`;
     }).join('')}</ul>`;
+
+  if (isPlaceLikeEntity) {
+    const placeName = entityLabel;
+    const placeArtwork = getPlaceArtworkPathByName(placeName, entity.type === 'landmark' ? 'Landmark' : 'Place');
+    const placeStorySource = String(storyText || '').replace(/^.*?Environment Identity:\s*/i, '');
+    const placeStoryLine = toWarmExcerpt(
+      placeStorySource,
+      `${placeName} is one of those welcoming corners where neighbors naturally slow down and spend a little more time together.`,
+      240
+    );
+
+    const allNeighborCandidates = placeNeighborCandidates.length > 0
+      ? placeNeighborCandidates
+      : connectedCandidates.filter((candidate) => candidate.type === 'character');
+    const previewNeighbors = allNeighborCandidates.slice(0, 4);
+
+    const storyCandidates = connectedCandidates.filter((candidate) => candidate.type === 'book');
+    const previewStories = storyCandidates.slice(0, 3);
+
+    const nearbyCandidates = connectedCandidates.filter(
+      (candidate) => (candidate.type === 'environment' || candidate.type === 'landmark') && candidate.id !== entity.id
+    );
+    const nearbyFallback = getEntitiesForType(entityIndex, entity.type)
+      .filter((candidate) => String(candidate.id || '') !== String(entity.id || ''))
+      .slice(0, 8)
+      .map((candidate) => ({
+        id: candidate.id,
+        name: normalizeEntityLabel(candidate.name || candidate.title || candidate.id, candidate.id),
+        type: candidate.type,
+        entityPageHref: candidate.entityPageHref || candidate.href || ''
+      }));
+    const allNearbyPlaces = nearbyCandidates.length > 0 ? nearbyCandidates : nearbyFallback;
+    const previewNearby = allNearbyPlaces.slice(0, 4);
+
+    const neighborCards = previewNeighbors.length === 0
+      ? '<p>More regular neighbors will appear here as this place keeps welcoming visitors.</p>'
+      : `<div class="character-neighbor-list">${previewNeighbors.map((candidate) => {
+        const name = normalizeEntityLabel(candidate.name || 'Neighbor', candidate.id);
+        const firstName = name.split(' ')[0];
+        const note = toWarmExcerpt(
+          candidate.excerpt || candidate.description,
+          `${firstName} is often part of what makes ${placeName} feel familiar.`,
+          160
+        );
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        return `<article class="character-neighbor-card">
+          <p class="character-neighbor-tag">Regular neighbor</p>
+          <h3>${href ? `<a href="${href}">${name}</a>` : name}</h3>
+          <p>${note}</p>
+        </article>`;
+      }).join('')}</div>`;
+
+    const storyCards = previewStories.length === 0
+      ? '<p>Stories that pass through this place will appear here as the neighborhood grows.</p>'
+      : `<div class="character-story-list">${previewStories.map((candidate) => {
+        const storyTitle = normalizeEntityLabel(candidate.name || 'A Hawkins Hollow story', candidate.id);
+        const storyNote = toWarmExcerpt(
+          candidate.excerpt || candidate.description,
+          `${storyTitle} passes through ${placeName} in a way that helps the neighborhood feel connected.`,
+          160
+        );
+        const coverPath = String(candidate.coverImage || '').replace(/^\//, '');
+        const media = coverPath
+          ? `<img src="../../${coverPath}" alt="Cover image for ${storyTitle}" loading="lazy" width="110" height="150" />`
+          : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        return `<article class="character-story-card">
+          <div class="character-story-media">${media}</div>
+          <div class="character-story-copy">
+            <h3>${storyTitle}</h3>
+            <p>${storyNote}</p>
+            ${href ? `<p><a class="character-story-link" href="${href}">Read this story &rarr;</a></p>` : ''}
+          </div>
+        </article>`;
+      }).join('')}</div>`;
+
+    const nearbyCards = previewNearby.length === 0
+      ? '<p>More nearby places will appear here as paths are mapped.</p>'
+      : `<div class="character-story-list">${previewNearby.map((candidate) => {
+        const nearbyName = normalizeEntityLabel(candidate.name || 'Another nearby place', candidate.id);
+        const kind = candidate.type === 'landmark' ? 'Landmark' : 'Place';
+        const nearbyImage = getPlaceArtworkPathByName(nearbyName, kind).replace(/^\//, '');
+        const media = nearbyImage
+          ? `<img src="../../${nearbyImage}" alt="${nearbyName}" loading="lazy" width="110" height="150" />`
+          : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        return `<article class="character-story-card">
+          <div class="character-story-media">${media}</div>
+          <div class="character-story-copy">
+            <p class="character-neighbor-tag">${kind}</p>
+            <h3>${href ? `<a href="${href}">${nearbyName}</a>` : nearbyName}</h3>
+            <p>${nearbyName} is a natural next stop if you'd like to keep wandering from ${placeName}.</p>
+          </div>
+        </article>`;
+      }).join('')}</div>`;
+
+    const timeMatch = String(storyText || '').match(/\b(morning|afternoon|evening|sunset|dusk|night)\b/i);
+    const seasonMatch = String(storyText || '').match(/\b(spring|summer|autumn|fall|winter)\b/i);
+    const specialList = [
+      `Why neighbors come: ${placeStoryLine}`,
+      `What usually happens: ${allNeighborCandidates.length > 0 ? 'Conversation, listening, and small moments shared between familiar neighbors.' : 'Gentle pauses, observation, and room for stories to begin.'}`,
+      `Time of day that feels nicest: ${timeMatch ? timeMatch[1] : 'The quieter parts of the day when families can slow down.'}`,
+      `Seasonal feeling: ${seasonMatch ? seasonMatch[1] : 'Small seasonal shifts that keep this place familiar while still feeling alive.'}`,
+      'Small traditions: Returning here to listen, read, and welcome someone else into the next part of the walk.'
+    ];
+
+    const fullNeighborList = allNeighborCandidates.length > 0
+      ? `<ul>${allNeighborCandidates.map((candidate) => {
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        const label = normalizeEntityLabel(candidate.name || candidate.id, candidate.id);
+        return `<li>${href ? `<a href="${href}">${label}</a>` : label}</li>`;
+      }).join('')}</ul>`
+      : '<p>More regular neighbors are still being mapped.</p>';
+
+    const fullNearbyList = allNearbyPlaces.length > 0
+      ? `<ul>${allNearbyPlaces.map((candidate) => {
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        const label = normalizeEntityLabel(candidate.name || candidate.id, candidate.id);
+        return `<li>${href ? `<a href="${href}">${label}</a>` : label}</li>`;
+      }).join('')}</ul>`
+      : '<p>More nearby places are still being mapped.</p>';
+
+    const placeHero = placeArtwork
+      ? `<img class="character-hero-full" src="../../${placeArtwork.replace(/^\//, '')}" alt="${placeName}" width="640" height="640" />`
+      : '';
+
+    return renderLayout(
+      placeName,
+      `Spend a little time in ${placeName} and keep wandering through Hawkins Hollow one welcoming step at a time.`,
+      `<section class="content-card" aria-labelledby="place-arrival">
+        <p class="eyebrow">Meet the Places</p>
+        ${placeHero}
+        <h1 id="place-arrival">Spend a little time in ${placeName}</h1>
+        <p>${placeStoryLine}</p>
+        <p><strong>This visit should feel:</strong> Familiar, welcoming, and connected to the same neighborhood walk.</p>
+        <p>
+          <a class="button" href="../../map.html">Return to the map</a>
+          <a class="button" href="../../community.html">Visit the community</a>
+        </p>
+      </section>
+
+      <section class="content-card" aria-labelledby="place-neighbors">
+        <h2 id="place-neighbors">Meet the neighbors you'll often find here</h2>
+        ${neighborCards}
+        ${allNeighborCandidates.length > 4 ? `<p class="section-continue"><a class="button" href="#place-all-neighbors">Find everyone who spends time at ${placeName} &rarr;</a></p>` : ''}
+      </section>
+
+      <section class="content-card" aria-labelledby="place-stories">
+        <h2 id="place-stories">Stories that begin or pass through here</h2>
+        ${storyCards}
+      </section>
+
+      <section class="content-card" aria-labelledby="place-nearby">
+        <h2 id="place-nearby">Nearby places to wander next</h2>
+        ${nearbyCards}
+        ${allNearbyPlaces.length > 4 ? '<p class="section-continue"><a class="button" href="#place-all-nearby">Explore more places nearby &rarr;</a></p>' : ''}
+      </section>
+
+      <section class="content-card" aria-labelledby="place-special">
+        <h2 id="place-special">What makes this place special?</h2>
+        <ul>${specialList.map((item) => `<li>${item}</li>`).join('')}</ul>
+      </section>
+
+      <section id="place-all-neighbors" class="content-card" aria-labelledby="place-all-neighbors-heading">
+        <h2 id="place-all-neighbors-heading">Everyone who spends time at ${placeName}</h2>
+        ${fullNeighborList}
+      </section>
+
+      <section id="place-all-nearby" class="content-card" aria-labelledby="place-all-nearby-heading">
+        <h2 id="place-all-nearby-heading">More places nearby</h2>
+        ${fullNearbyList}
+      </section>
+
+      <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
+        <h2>Developer Provenance Panel</h2>
+        <p>This panel is shown because <code>?debug=true</code> is present.</p>
+        <h3>Identity</h3>
+        <p><strong>Node ID:</strong> ${nodeId}</p>
+        <p><strong>Entity Path:</strong> ${(entity.entityPageHref || entity.href || 'n/a')}</p>
+
+        <h3>Source Canon</h3>
+        ${debugNodeProvenance}
+
+        <h3>Graph Connections</h3>
+        ${debugEdges}
+      </aside>
+
+      <script>
+        (function () {
+          var panel = document.getElementById('entity-debug-panel');
+          if (!panel) {
+            return;
+          }
+          var params = new URLSearchParams(window.location.search || '');
+          if (String(params.get('debug') || '').toLowerCase() === 'true') {
+            panel.hidden = false;
+          }
+        })();
+      </script>`,
+      site,
+      nav,
+      `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
+      config,
+      null,
+      '../../'
+    );
+  }
 
   return renderLayout(
     entityLabel,

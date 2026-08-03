@@ -45,6 +45,20 @@ function toSlug(value) {
     .replace(/^-|-$/g, '');
 }
 
+function sanitizeDisplayName(value) {
+  return String(value || '')
+    .replace(/^~\$+/, '')
+    .replace(/^(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)+/i, '')
+    .replace(/\s+[-\u2014]\s+(?:Environment|Landmark|Relationship)\s+Card$/i, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function isSkippableCanonFile(file) {
+  const name = String(file && file.path ? path.basename(file.path) : '').toLowerCase();
+  return name.startsWith('~$');
+}
+
 function detectMentions(text, values) {
   const lower = String(text || '').toLowerCase();
   const mentions = [];
@@ -63,7 +77,9 @@ function detectMentions(text, values) {
 }
 
 function toDisplayNameFromPath(filePath) {
-  return path.basename(filePath).replace(/\s+Visual Canon\.docx$/i, '').trim();
+  return sanitizeDisplayName(
+    path.basename(filePath).replace(/\s+Visual Canon\.docx$/i, '').trim()
+  );
 }
 
 function toDisplayNameFromText(rawText, fallbackName) {
@@ -78,7 +94,7 @@ function toDisplayNameFromText(rawText, fallbackName) {
     return fallbackName;
   }
 
-  const headingName = match[1].trim();
+  const headingName = sanitizeDisplayName(match[1]);
   return headingName.length > 1 ? headingName : fallbackName;
 }
 
@@ -138,6 +154,7 @@ function ensureStableId(registry, type, sourceDocumentPath) {
 function extractCanonRecords(type, files, siteRoot, mentionLookups, registry) {
   return files
     .filter((file) => file.extension === 'docx')
+    .filter((file) => !isSkippableCanonFile(file))
     .map((file) => {
       const absoluteDocPath = path.join(siteRoot, 'Library', file.path.split('/').join(path.sep));
       const rawText = fs.existsSync(absoluteDocPath) ? extractDocxRawText(absoluteDocPath) : '';
@@ -174,9 +191,11 @@ function writeWorldCanonArtifacts(siteRoot, charactersData, libraryScan, outputD
   const characterNames = ((charactersData && charactersData.characters) || []).map((character) => character.name);
   const environmentNames = files
     .filter((file) => file.category === 'Environments')
+    .filter((file) => !isSkippableCanonFile(file))
     .map((file) => toDisplayNameFromPath(file.path));
   const landmarkNames = files
     .filter((file) => file.category === 'Landmarks')
+    .filter((file) => !isSkippableCanonFile(file))
     .map((file) => toDisplayNameFromPath(file.path));
 
   const mentionLookups = {
