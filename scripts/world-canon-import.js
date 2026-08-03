@@ -88,13 +88,24 @@ function toDisplayNameFromText(rawText, fallbackName) {
     return fallbackName;
   }
 
-  const pattern = /^\s*(?:\d+\.\d+\s+)?(.+?)\s+[-\u2014]/;
-  const match = pattern.exec(text);
-  if (!match || !match[1]) {
-    return fallbackName;
+  const compactText = text.replace(/\s+/g, ' ').trim();
+  const headingPatterns = [
+    /^(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)*(.*?)\s+[\u2014-]\s+(?:Environment|Landmark|Relationship)\s+Card\b/i,
+    /^(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)*(.*?)\s+(?:Environment|Landmark|Relationship)\s+Card\b/i,
+    /^\s*(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)*(.*?)\s+[\u2014-]/i
+  ];
+
+  let headingName = '';
+  for (const pattern of headingPatterns) {
+    const match = pattern.exec(compactText);
+    if (match && match[1]) {
+      headingName = sanitizeDisplayName(match[1]);
+      if (headingName) {
+        break;
+      }
+    }
   }
 
-  const headingName = sanitizeDisplayName(match[1]);
   return headingName.length > 1 ? headingName : fallbackName;
 }
 

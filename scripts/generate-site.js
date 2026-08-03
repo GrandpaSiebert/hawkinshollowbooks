@@ -16,6 +16,11 @@ function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
 
+function resetDir(dir) {
+  fs.rmSync(dir, { recursive: true, force: true });
+  ensureDir(dir);
+}
+
 function copyDir(srcDir, destDir) {
   ensureDir(destDir);
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
@@ -4566,7 +4571,7 @@ function buildSite() {
     }
   }
 
-  outputDirs.forEach((outputDir) => ensureDir(outputDir));
+  outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
 
   for (const page of pageDefinitions) {
