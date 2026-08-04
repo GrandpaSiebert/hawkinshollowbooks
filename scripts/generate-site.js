@@ -297,7 +297,20 @@ function getPlaceArtworkPathByName(placeName, placeKind = '') {
     return lookup.landmarks.get(key) || lookup.environments.get(key) || '';
   }
 
-  return lookup.environments.get(key) || lookup.landmarks.get(key) || '';
+  const direct = lookup.environments.get(key) || lookup.landmarks.get(key) || '';
+  if (direct) {
+    return direct;
+  }
+
+  const environmentArtworkAliases = {
+    'farmhouse exterior': 'farmhouse porch'
+  };
+  const aliasKey = environmentArtworkAliases[key] || '';
+  if (!aliasKey) {
+    return '';
+  }
+
+  return lookup.environments.get(aliasKey) || lookup.landmarks.get(aliasKey) || '';
 }
 
 function toBookPageSlug(book) {
@@ -1969,7 +1982,11 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     };
     const placeName = entityLabel;
     const placeArtwork = getPlaceArtworkPathByName(placeName, entity.type === 'landmark' ? 'Landmark' : 'Place');
-    const placeStorySource = String(storyText || '').replace(/^.*?Environment Identity:\s*/i, '');
+    const rawPlaceStoryText = String(storyText || '');
+    const storyFunctionMatch = rawPlaceStoryText.match(/Story Function:\s*([\s\S]*)/i);
+    const placeStorySource = storyFunctionMatch && storyFunctionMatch[1]
+      ? storyFunctionMatch[1]
+      : rawPlaceStoryText.replace(/^.*?Environment Identity:\s*/i, '');
     const placeStoryLine = toWarmExcerpt(
       placeStorySource,
       `${placeName} is one of those welcoming corners where neighbors naturally slow down and spend a little more time together.`,

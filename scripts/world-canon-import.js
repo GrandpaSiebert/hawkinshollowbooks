@@ -47,7 +47,9 @@ function toSlug(value) {
 
 function sanitizeDisplayName(value) {
   return String(value || '')
+    .replace(/^#+\s*/, '')
     .replace(/^~\$+/, '')
+    .replace(/^[a-z]\s*\.\s*(?:\d+\s*)+/i, '')
     .replace(/^(?:\d+[a-z]?(?:\.\d+)?[.)]?\s+)+/i, '')
     .replace(/\s+[-\u2014]\s+(?:Environment|Landmark|Relationship)\s+Card$/i, '')
     .replace(/\s+/g, ' ')
@@ -102,6 +104,19 @@ function toDisplayNameFromText(rawText, fallbackName) {
       headingName = sanitizeDisplayName(match[1]);
       if (headingName) {
         break;
+      }
+    }
+  }
+
+  // Some canon docs begin with a generic heading like
+  // "Environment Visual Canon — Hawkins Hollow Farmhouse Exterior".
+  // Prefer the specific place name portion when present.
+  if (!headingName || /^environment visual canon$/i.test(headingName)) {
+    const genericCanonMatch = /environment\s+visual\s+canon\s+[\u2014-]\s+(?:hawkins\s+hollow\s+)?(.+?)\s+environment\s+name\b/i.exec(compactText);
+    if (genericCanonMatch && genericCanonMatch[1]) {
+      const canonicalName = sanitizeDisplayName(genericCanonMatch[1]);
+      if (canonicalName) {
+        headingName = canonicalName;
       }
     }
   }
