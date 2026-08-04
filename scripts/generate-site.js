@@ -647,13 +647,42 @@ function getCharacterExperienceProfile(character) {
   };
 }
 
-function toWarmExcerpt(value, fallback, maxLength = 180) {
-  const text = String(value || '').replace(/\s+/g, ' ').trim();
+function stripNarrationLeakagePrefix(value) {
+  return String(value || '')
+    .replace(/^\s*\d+[a-z]?(?:\.\d+)?(?:\s+\d+)?\s*/i, '')
+    .replace(/^\s*[-:;,.]+\s*/, '')
+    .replace(/\b(?:Environment|Landmark|Relationship|Character)\s+(?:Card|Sheet)\b\s*/ig, '')
+    .replace(/\b(?:Environment\s+Identity|Relationship\s+Function)\b\s*:?\s*/ig, '')
+    .replace(/\bVisual\s+Canon\b\s*/ig, '')
+    .replace(/^\s*[\u2014\-]\s*/, '')
+    .trim();
+}
+
+function isLikelyNarrationLeakage(value) {
+  const text = String(value || '').trim();
   if (!text) {
+    return true;
+  }
+
+  if (/^(?:\d+[a-z]?(?:\.\d+)?(?:\s+\d+)?|\d+[a-z]?\.)$/i.test(text)) {
+    return true;
+  }
+
+  return /visual canon|environment card|relationship sheet|relationship function|environment identity|source document|extractor|mentions-|canonical/i.test(text);
+}
+
+function toWarmExcerpt(value, fallback, maxLength = 180) {
+  const raw = String(value || '').replace(/\s+/g, ' ').trim();
+  const stripped = stripNarrationLeakagePrefix(raw);
+  const text = stripped.replace(/\s+/g, ' ').trim();
+  if (!text || isLikelyNarrationLeakage(text)) {
     return fallback;
   }
   const firstSentenceMatch = text.match(/^(.{1,220}?[.!?])\s/);
   const firstSentence = firstSentenceMatch ? firstSentenceMatch[1] : text;
+  if (!firstSentence || isLikelyNarrationLeakage(firstSentence)) {
+    return fallback;
+  }
   if (firstSentence.length <= maxLength) {
     return firstSentence;
   }
@@ -689,6 +718,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
 
   const selfName = String(character.name || '').toLowerCase();
   const selfFirstName = String(character.name || '').split(' ')[0].toLowerCase();
+  const characterFirstName = String(character.name || '').split(' ')[0] || 'This friend';
   const characterSlug = String(character.slug || '').toLowerCase();
   const getNeighborBlurb = (entry) => {
     const fallbackName = String(entry && entry.name ? entry.name : 'This friend').trim().split(' ')[0];
@@ -707,6 +737,15 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
       return 'Mutual neighborhood connection';
     }
     return 'Neighbor to meet';
+  };
+
+  const buildPlaceVisitorBlurb = (placeName) => `${characterFirstName} often slows down at ${placeName} and notices one small detail worth sharing.`;
+
+  const buildRelationshipVisitorBlurb = (companions) => {
+    if (companions) {
+      return `${characterFirstName} and ${companions} share moments that help this corner of Hawkins Hollow feel connected.`;
+    }
+    return `This connection helps ${characterFirstName}'s world feel steady and welcoming.`;
   };
 
   const toRelatedPersonFromCharacter = (entry, sourceKey) => ({
@@ -816,11 +855,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         href: href ? `../${href}` : '../map.html',
         kind: place.type === 'landmark' ? 'Landmark' : 'Place',
         image: getPlaceArtworkPathByName(place.name || '', place.type === 'landmark' ? 'Landmark' : 'Place'),
-        blurb: toWarmExcerpt(
-          place.textExcerpt,
-          `${character.name.split(' ')[0]} knows this corner of Hawkins Hollow well.`,
-          170
-        )
+        blurb: buildPlaceVisitorBlurb(place.name || 'this place')
       };
     });
 
@@ -835,11 +870,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
           href: href ? `../${href}` : '',
           kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
           image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
-          blurb: toWarmExcerpt(
-            matched.textExcerpt,
-            `${character.name.split(' ')[0]} visits this place in the neighborhood.`,
-            170
-          )
+          blurb: buildPlaceVisitorBlurb(matched.name || name)
         };
       }
       return {
@@ -847,7 +878,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         href: '../map.html',
         kind: 'Place',
         image: getPlaceArtworkPathByName(name, 'Place'),
-        blurb: `${character.name.split(' ')[0]} visits this place in the neighborhood.`
+        blurb: buildPlaceVisitorBlurb(name)
       };
     });
 
@@ -862,11 +893,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
           href: href ? `../${href}` : '',
           kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
           image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
-          blurb: toWarmExcerpt(
-            matched.textExcerpt,
-            `${character.name.split(' ')[0]} would happily walk here with you.`,
-            170
-          )
+          blurb: buildPlaceVisitorBlurb(matched.name || name)
         };
       }
       return {
@@ -874,7 +901,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         href: '../map.html',
         kind: 'Place',
         image: getPlaceArtworkPathByName(name, 'Place'),
-        blurb: `${character.name.split(' ')[0]} would happily walk here with you.`
+        blurb: buildPlaceVisitorBlurb(name)
       };
     });
 
@@ -935,11 +962,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
           href: href ? `../${href}` : '../map.html',
           kind: matched.type === 'landmark' ? 'Landmark' : 'Place',
           image: getPlaceArtworkPathByName(matched.name || name, matched.type === 'landmark' ? 'Landmark' : 'Place'),
-          blurb: toWarmExcerpt(
-            matched.textExcerpt,
-            `${character.name.split(' ')[0]} would likely bring a friend here during a neighborhood wander.`,
-            170
-          )
+          blurb: buildPlaceVisitorBlurb(matched.name || name)
         };
       }
       return {
@@ -947,7 +970,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
         href: '../map.html',
         kind: 'Place',
         image: getPlaceArtworkPathByName(name, 'Place'),
-        blurb: `${character.name.split(' ')[0]} would likely bring a friend here during a neighborhood wander.`
+        blurb: buildPlaceVisitorBlurb(name)
       };
     });
 
@@ -977,11 +1000,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
       const companionText = companions
         ? `Often seen with ${companions}.`
         : 'A meaningful neighborhood connection.';
-      const relationshipStory = toWarmExcerpt(
-        relationship.textExcerpt,
-        companionText,
-        170
-      );
+      const relationshipStory = buildRelationshipVisitorBlurb(companions);
       return {
         name: relationship.name || relationship.id,
         href: relationship.entityPageHref ? `../${relationship.entityPageHref}` : (relationship.href ? `../${relationship.href}` : ''),
@@ -1057,9 +1076,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     ? `<ul>${experience.relatedPlaces.map((place) => (place.href ? `<li><a href="${place.href}">${place.name}</a></li>` : `<li>${place.name}</li>`)).join('')}</ul>`
     : '<p>Favorite places will be added as new memories are shared.</p>';
 
-  const delightFact = experience.sourceDocument
-    ? `From the Hawkins Hollow memory: ${experience.sourceDocument.split('/').pop()}`
-    : `${character.name.split(' ')[0]} notices the quiet thing that makes the visit feel real.`;
+  const delightFact = `${character.name.split(' ')[0]} is one of the neighbors children often return to when they want a familiar friend.`;
 
   return renderLayout(
     character.name,
@@ -2195,6 +2212,161 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     );
   }
 
+  if (entity.type === 'relationship') {
+    const relationshipParticipants = connectedCandidates.filter((candidate) => candidate.type === 'character');
+    const relationshipPlaces = connectedCandidates.filter(
+      (candidate) => candidate.type === 'environment' || candidate.type === 'landmark'
+    );
+    const fallbackRelationshipPlaces = continueExploring.filter(
+      (candidate) => candidate.type === 'environment' || candidate.type === 'landmark'
+    );
+
+    const primaryPerson = relationshipParticipants[0] || null;
+    const secondaryPerson = relationshipParticipants[1] || null;
+    const relationshipStorySourceMatch = String(storyText || '').match(/Relationship Function:\s*([\s\S]*)/i);
+    const relationshipStorySource = relationshipStorySourceMatch && relationshipStorySourceMatch[1]
+      ? relationshipStorySourceMatch[1]
+      : String(storyText || '').replace(/^.*?Relationship Function:\s*/i, '');
+    const relationshipStoryLine = toWarmExcerpt(
+      relationshipStorySource,
+      primaryPerson && secondaryPerson
+        ? `${primaryPerson.name} and ${secondaryPerson.name} show how neighbors make room for each other in small, steady ways.`
+        : `${entityLabel} is one of the shared connections that helps Hawkins Hollow feel welcoming and real.`,
+      240
+    );
+
+    const participantCards = relationshipParticipants.length === 0
+      ? '<p>Named neighbors for this connection will appear here as mapping expands.</p>'
+      : `<div class="start-here-grid">${relationshipParticipants.slice(0, 6).map((candidate) => {
+        const name = normalizeEntityLabel(candidate.name || 'Neighbor', candidate.id);
+        const firstName = name.split(' ')[0];
+        const note = toWarmExcerpt(
+          candidate.excerpt || candidate.description,
+          `${firstName} helps this connection stay warm, clear, and easy to step into.`,
+          150
+        );
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        return `<article class="start-here-item">
+          <p class="eyebrow">Neighbor in this connection</p>
+          <h3>${href ? `<a href="${href}">${name}</a>` : name}</h3>
+          <p>${note}</p>
+        </article>`;
+      }).join('')}</div>`;
+
+    const placeCandidates = relationshipPlaces.length > 0
+      ? relationshipPlaces
+      : fallbackRelationshipPlaces;
+    const placeList = placeCandidates.length === 0
+      ? '<p>Connected places are still being mapped for this relationship.</p>'
+      : `<ul>${placeCandidates.slice(0, 8).map((candidate) => {
+        const label = normalizeEntityLabel(candidate.name || candidate.id, candidate.id);
+        const typeLabel = candidate.type === 'landmark' ? 'Landmark' : 'Place';
+        const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
+        return `<li>${href ? `<a href="${href}">${label}</a>` : label} (${typeLabel})</li>`;
+      }).join('')}</ul>`;
+
+    const relationshipNextLabel = primaryContinuation && primaryContinuation.name
+      ? `Continue with ${primaryContinuation.name}`
+      : 'Continue exploring Hawkins Hollow';
+    const relationshipPrimaryButton = primaryContinuation && primaryContinuation.entityPageHref
+      ? `<p><a class="button" href="../../${primaryContinuation.entityPageHref}">${relationshipNextLabel}</a></p>`
+      : '<p><a class="button" href="../../map.html">Open the map</a></p>';
+
+    return renderLayout(
+      entityLabel,
+      `Meet the shared connection in ${entityLabel} and choose a gentle next step through Hawkins Hollow.`,
+      `<section class="content-card" aria-labelledby="relationship-arrival">
+        <p class="eyebrow">Shared connection</p>
+        <h1 id="relationship-arrival">Spend a moment with ${entityLabel}</h1>
+        <p>${relationshipStoryLine}</p>
+        <p><strong>Who this is for:</strong> Families and readers who want to understand how neighbors support one another in everyday moments.</p>
+        <p><strong>Why this matters:</strong> This connection helps the wider story world feel steady, relational, and welcoming.</p>
+        <p>
+          <a class="button" href="../../characters.html">Meet the neighbors</a>
+          <a class="button" href="../../map.html">Open the map</a>
+          <a class="button" href="../../storybook-shelf.html">Read a story</a>
+        </p>
+      </section>
+
+      <section class="content-card" aria-labelledby="relationship-neighbors">
+        <h2 id="relationship-neighbors">Who you'll meet in this connection</h2>
+        ${participantCards}
+      </section>
+
+      <section class="content-card" aria-labelledby="relationship-places">
+        <h2 id="relationship-places">Where this connection often appears</h2>
+        <p>Follow one nearby place to watch this relationship in context.</p>
+        ${placeList}
+      </section>
+
+      <section class="content-card" aria-labelledby="relationship-next-step">
+        <h2 id="relationship-next-step">Choose your next step</h2>
+        <p>${continuationIntro}</p>
+        ${relationshipPrimaryButton}
+        <p>Or choose another path:</p>
+        ${continueHtml}
+      </section>
+
+      <section class="content-card" aria-labelledby="developer-mode">
+        <details>
+          <summary id="developer-mode"><strong>Developer Mode:</strong> relationship metadata and provenance</summary>
+          <section class="content-card" aria-labelledby="relationship-identity">
+            <h3 id="relationship-identity">Identity</h3>
+            ${identityRows.join('')}
+          </section>
+
+          <section class="content-card" aria-labelledby="relationship-canon">
+            <h3 id="relationship-canon">Canonical excerpt</h3>
+            <p>${storyText || 'Canonical relationship details will appear here as ingestion expands.'}</p>
+          </section>
+
+          <section class="content-card" aria-labelledby="relationship-connections">
+            <h3 id="relationship-connections">Graph connections</h3>
+            ${connectionsHtml}
+          </section>
+        </details>
+      </section>
+
+      <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
+        <h2>Developer Provenance Panel</h2>
+        <p>This panel is shown because <code>?debug=true</code> is present.</p>
+        <h3>Identity</h3>
+        <p><strong>Node ID:</strong> ${nodeId}</p>
+        <p><strong>Entity Path:</strong> ${(entity.entityPageHref || entity.href || 'n/a')}</p>
+
+        <h3>Source Canon</h3>
+        ${debugNodeProvenance}
+
+        <h3>Graph Connections</h3>
+        ${debugEdges}
+
+        <h3>Generated Page</h3>
+        <p>Renderer: <code>renderUniversalEntityPage</code></p>
+        <p>Graph source: <code>generated/entity-graph.json</code></p>
+        <p>Entity source: <code>generated/entity-index.json</code></p>
+      </aside>
+
+      <script>
+        (function () {
+          var panel = document.getElementById('entity-debug-panel');
+          if (!panel) {
+            return;
+          }
+          var params = new URLSearchParams(window.location.search || '');
+          if (String(params.get('debug') || '').toLowerCase() === 'true') {
+            panel.hidden = false;
+          }
+        })();
+      </script>`,
+      site,
+      nav,
+      `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
+      config,
+      null,
+      '../../'
+    );
+  }
+
   return renderLayout(
     entityLabel,
     `Entity profile for ${entityLabel}`,
@@ -3200,6 +3372,14 @@ function renderLandingPage(page, site, nav, config, banner) {
     banner
   );
 }
+function escapeHtml(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup) {
   if (page.slug === 'books') {
@@ -3644,9 +3824,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     ? `<p class="section-continue"><a class="button" href="${character.slug}-relationships.html">Learn more about ${characterFirstName}'s connections &rarr;</a></p>`
     : '';
 
-  const delightFact = experience.sourceDocument
-    ? `From the Hawkins Hollow memory: ${experience.sourceDocument.split('/').pop()}`
-    : `${characterFirstName} is one of the neighbors children often return to when they want a familiar friend.`;
+  const delightFact = `${characterFirstName} is one of the neighbors children often return to when they want a familiar friend.`;
 
   const warmDescription = experience.description
     ? experience.description
@@ -4295,10 +4473,258 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   );
 }
 
+function getCompanionResourceRegistryResources(companionResourceRegistry) {
+  return Array.isArray(companionResourceRegistry && companionResourceRegistry.resources)
+    ? companionResourceRegistry.resources
+    : [];
+}
+
+function getCompanionResourceAudience(resource) {
+  return String((resource && resource.structural && resource.structural.primaryAudience) || resource.primaryAudience || 'Shared');
+}
+
+function getCompanionResourceStatus(resource) {
+  return String((resource && resource.structural && resource.structural.status) || resource.status || 'Draft');
+}
+
+function getCompanionResourceSecondaryAudiences(resource) {
+  const secondary = (resource && resource.structural && resource.structural.secondaryAudiences) || resource.secondaryAudiences || [];
+  return Array.isArray(secondary) ? secondary.filter(Boolean) : [];
+}
+
+function getCompanionResourceWorldSummary(resource) {
+  const world = resource && resource.world ? resource.world : {};
+  const summaryParts = [];
+  const addPart = (label, values) => {
+    if (!Array.isArray(values) || values.length === 0) {
+      return;
+    }
+
+    summaryParts.push(`${label}: ${values.join(', ')}`);
+  };
+
+  addPart('Characters', world.characters);
+  addPart('Places', world.places);
+  addPart('Objects', world.objects);
+  addPart('Related books', world.relatedBooks);
+
+  return summaryParts;
+}
+
+function getCompanionResourceVisitorIntro(resource) {
+  const audience = getCompanionResourceAudience(resource);
+
+  if (audience === 'Child') {
+    return 'Made for hands-on reading, noticing, and a little bit of play.';
+  }
+
+  if (audience === 'Parent/Family') {
+    return 'Made for reading together, gentle prompts, and calm conversation.';
+  }
+
+  if (audience === 'Educator/Librarian') {
+    return 'Made for planning, shared reading, and group-friendly support.';
+  }
+
+  return 'Made to help the story continue in a warm, practical way.';
+}
+
+function getCompanionResourceVisitorHeadline(resource) {
+  const publicName = resource && resource.publicName ? resource.publicName : 'Companion resource';
+  const audience = getCompanionResourceAudience(resource);
+
+  if (publicName && /reading support/i.test(publicName)) {
+    return 'Reading together builds confidence one page at a time.';
+  }
+
+  if (publicName && /family discussion guide/i.test(publicName)) {
+    return 'A calm guide for the conversation that comes after the story.';
+  }
+
+  if (publicName && /educator notes/i.test(publicName)) {
+    return 'A planning note for adults preparing to share the story with a group.';
+  }
+
+  if (audience === 'Child') {
+    return 'A small activity that helps the story live on in a child’s hands.';
+  }
+
+  if (audience === 'Parent/Family') {
+    return 'A gentle way to keep reading time connected to daily life.';
+  }
+
+  if (audience === 'Educator/Librarian') {
+    return 'A practical support page for sharing the story with a group.';
+  }
+
+  return publicName;
+}
+
+function renderCompanionResourceVisitorCard(resource) {
+  const audience = getCompanionResourceAudience(resource);
+  const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
+  const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
+  const headline = getCompanionResourceVisitorHeadline(resource);
+
+  return `<article class="start-here-item companion-resource-card">
+    <p class="eyebrow">${escapeHtml(audience)}</p>
+    <h3>${escapeHtml(resourceTitle)}</h3>
+    <p><strong>${escapeHtml(headline)}</strong></p>
+    <p>${escapeHtml(summary)}</p>
+    <p>${escapeHtml(getCompanionResourceVisitorIntro(resource))}</p>
+    <p>
+      <a class="button" href="books/HH-A-0001-spencer-s-first-friend.html">Read the story</a>
+      <a class="button" href="characters/spencer-field-mouse.html">Meet Spencer</a>
+      <a class="button" href="map.html">Open the map</a>
+      <a class="button" href="storybook-shelf.html">Continue your journey</a>
+    </p>
+  </article>`;
+}
+
+function renderCompanionResourceDeveloperCard(resource) {
+  const structural = resource && resource.structural ? resource.structural : {};
+  const worldSummary = getCompanionResourceWorldSummary(resource);
+  const secondaryAudiences = getCompanionResourceSecondaryAudiences(resource);
+  const sourceFile = resource && (resource.sourceFile || resource.filePath || '');
+  const resourceId = resource && resource.resourceId ? resource.resourceId : 'Unknown resource';
+
+  return `<article class="start-here-item companion-resource-registry-card">
+    <p class="eyebrow">${escapeHtml(getCompanionResourceAudience(resource))}</p>
+    <h3>${escapeHtml(resource.publicName || resource.title || resourceId)}</h3>
+    <p><strong>Resource ID:</strong> ${escapeHtml(resourceId)}</p>
+    <p><strong>Resource type:</strong> ${escapeHtml(structural.resourceType || resource.resourceType || 'Resource')}</p>
+    <p><strong>Status:</strong> ${escapeHtml(getCompanionResourceStatus(resource))}</p>
+    ${secondaryAudiences.length > 0 ? `<p><strong>Secondary audience:</strong> ${escapeHtml(secondaryAudiences.join(', '))}</p>` : ''}
+    ${sourceFile ? `<p><strong>Source file:</strong> <code>${escapeHtml(sourceFile)}</code></p>` : ''}
+    ${worldSummary.length > 0 ? `<p><strong>Shared connections:</strong> ${escapeHtml(worldSummary.join(' | '))}</p>` : ''}
+  </article>`;
+}
+
+function renderCompanionResourceRegistryPage(companionResourceRegistry, site, nav, config, banner) {
+  const resources = getCompanionResourceRegistryResources(companionResourceRegistry);
+  const audiences = ['Child', 'Parent/Family', 'Educator/Librarian'];
+  const groupedResources = audiences.map((audience) => ({
+    audience,
+    items: resources.filter((resource) => getCompanionResourceAudience(resource) === audience)
+  }));
+  const uniqueCharacters = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.characters) || [])))];
+  const uniquePlaces = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.places) || [])))];
+  const uniqueObjects = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.objects) || [])))];
+  const storyId = (companionResourceRegistry && companionResourceRegistry.referenceStory && companionResourceRegistry.referenceStory.id) || 'HH-A-0001';
+  const storyTitle = (companionResourceRegistry && companionResourceRegistry.referenceStory && companionResourceRegistry.referenceStory.title) || "Spencer's First Friend";
+
+  const audienceCards = groupedResources.map(({ audience, items }) => {
+    const cardHtml = items.length > 0
+      ? `<div class="start-here-grid">${items.map(renderCompanionResourceVisitorCard).join('')}</div>`
+      : '<p>No resources have been assigned here yet.</p>';
+
+    return `<section class="content-card" aria-labelledby="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
+      <h2 id="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${escapeHtml(audience)}</h2>
+      <p>${escapeHtml(getCompanionResourceVisitorIntro({ structural: { primaryAudience: audience } }))}</p>
+      ${cardHtml}
+    </section>`;
+  }).join('\n\n');
+
+  const developerCards = groupedResources.map(({ audience, items }) => {
+    const cardHtml = items.length > 0
+      ? `<div class="start-here-grid">${items.map(renderCompanionResourceDeveloperCard).join('')}</div>`
+      : '<p>No resources have been assigned here yet.</p>';
+
+    return `<section class="content-card" aria-labelledby="registry-${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
+      <h3 id="registry-${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${escapeHtml(audience)}</h3>
+      ${cardHtml}
+    </section>`;
+  }).join('\n\n');
+
+  return renderLayout(
+    'Companion Resources',
+    'Gentle story extensions for children, families, and educators in Hawkins Hollow.',
+    `<section class="content-card" aria-labelledby="visitor-doorway">
+      <h2 id="visitor-doorway">Choose a path that fits today</h2>
+      <p>Every Hawkins Hollow story has gentle ways to keep the journey going.</p>
+      <p>Whether you are reading together at home, sharing a story with a class, or looking for a quiet activity, choose the path that fits today.</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="before-you-choose">
+      <h2 id="before-you-choose">Before you choose</h2>
+      <p>Pick the path that best fits this moment. Each one opens with a welcome, offers one gentle next step, and then helps you continue the story.</p>
+      <p>
+        <a class="button" href="#child">Children</a>
+        <a class="button" href="#parent-family">Parents &amp; Families</a>
+        <a class="button" href="#educator-librarian">Educators &amp; Librarians</a>
+      </p>
+    </section>
+
+    ${audienceCards}
+
+    <section class="content-card" aria-labelledby="registry-shared">
+      <h2 id="registry-shared">Shared assets in Spencer's First Friend</h2>
+      <div class="start-here-grid">
+        <article class="start-here-item">
+          <h3>Characters</h3>
+          <p>${escapeHtml(uniqueCharacters.length > 0 ? uniqueCharacters.join(', ') : 'None yet')}</p>
+        </article>
+        <article class="start-here-item">
+          <h3>Places</h3>
+          <p>${escapeHtml(uniquePlaces.length > 0 ? uniquePlaces.join(', ') : 'None yet')}</p>
+        </article>
+        <article class="start-here-item">
+          <h3>Objects</h3>
+          <p>${escapeHtml(uniqueObjects.length > 0 ? uniqueObjects.join(', ') : 'None yet')}</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="content-card" aria-labelledby="developer-mode">
+      <details>
+        <summary id="developer-mode"><strong>Developer Mode:</strong> registry, metadata, and diagnostics</summary>
+        <p>This is the authoritative registry view for maintainers. It keeps the system visible without putting it in front of visitors.</p>
+        <p><strong>Approved story:</strong> ${escapeHtml(storyId)} ${escapeHtml(storyTitle)}</p>
+        <p><strong>Registry counts:</strong> ${resources.length} resources across ${audiences.length} audience pathways.</p>
+        <section class="content-card" aria-labelledby="registry-model">
+          <h3 id="registry-model">What the registry stores</h3>
+          <div class="start-here-grid">
+            <article class="start-here-item">
+              <h4>Structural relationships</h4>
+              <p>Story, series, resource type, audience, file path, and status.</p>
+            </article>
+            <article class="start-here-item">
+              <h4>World relationships</h4>
+              <p>Characters, places, landmarks, objects, and related story connections.</p>
+            </article>
+            <article class="start-here-item">
+              <h4>Shared assets</h4>
+              <p>Characters, places, objects, and story links that keep every audience in the same world.</p>
+            </article>
+          </div>
+        </section>
+
+        ${developerCards}
+
+        <section class="content-card" aria-labelledby="registry-next">
+          <h3 id="registry-next">What happens next</h3>
+          <p>When the registry is complete, page shells can consume this data without caring where the PDFs live or how they are named.</p>
+          <p><a class="button" href="books.html">Back to Books</a> <a class="button" href="characters.html">Meet Characters</a> <a class="button" href="map.html">Open the Map</a></p>
+        </section>
+      </details>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/resources.html`,
+    config,
+    banner
+  );
+}
+
 function renderUnderConstructionPage(page, site, nav, constructionData, config, banner) {
   if (page && page.slug === 'resources') {
+    const registry = readJsonIfExists('data/companion-resource-registry.json');
+    if (registry && Array.isArray(registry.resources)) {
+      return renderCompanionResourceRegistryPage(registry, site, nav, config, banner);
+    }
+
     return renderLayout(
-      'Family Resources',
+      'Companion Resources',
       'Gentle prompts and next steps that help stories continue after the last page.',
       `<section class="content-card" aria-labelledby="resources-doorway">
         <h2 id="resources-doorway">Open the Family Drawer</h2>

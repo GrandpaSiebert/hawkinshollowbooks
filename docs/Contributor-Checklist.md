@@ -95,6 +95,10 @@ If any answer is no, the work is not finished yet.
 - Are choices meaningful and easy to understand?
 - Is commerce presented as a continuation of belonging, not an interruption?
 - Does the copy speak with visitors, not at them?
+- Could someone arrive here first and still feel oriented?
+- Does the page follow the narration rhythm: welcome, why this matters, what it is, next path?
+- If this page intentionally deviates from narration grammar, is the exception documented with visitor-first rationale?
+- Do resource cards answer "Why would I want this?" before "What is this?"
 - Does discovery deepen familiarity rather than replace it?
 - Do recurring neighbors still feel recognizably the same?
 - Does context remain persistent even when navigation changes?
@@ -118,6 +122,7 @@ Ship rule:
 - Does the writing leave room for imagination?
 - Does seasonal language notice rather than announce?
 - Does the content feel like someone walking beside the visitor?
+- Could this sentence have been copied directly from canon-oriented documentation?
 
 ## Final Question
 

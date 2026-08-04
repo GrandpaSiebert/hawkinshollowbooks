@@ -52,3 +52,4 @@ When a decision changes:
 - canonical-authority-registry.md: canonical authority ownership map (who owns truth) and active source resolution contract (where truth is currently read).
 - canonical-reference-pattern.md: one-page Golden Record Authoring Guide; defines the Canonical Reference Pattern and freeze-before-scale rule.
 - book-experience-pattern.md: visitor-experience design principle for book pages; story-first page intent and litmus test guardrail.
+- narration-grammar.md: cross-page visitor narration rhythm (welcome, why it matters, what it is, next path) and progressive disclosure boundary.

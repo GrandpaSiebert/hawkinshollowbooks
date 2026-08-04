@@ -25,6 +25,7 @@ Each layer protects one responsibility.
 - Introduction Layer: What should this neighbor naturally introduce next? Protect welcome. Never force.
 - Discovery Layer: What part of the truth should be revealed today? Protect curiosity. Never replace truth.
 - Presentation Layer: How can this feel effortless? Protect continuity. Never call attention to the machinery.
+- Review Layer: Is the contract still intact? Protect consistency. Never assume.
 
 ## Authoritative Sources
 
@@ -70,6 +71,53 @@ Visitor-purpose compass:
 
 - Does this help someone leave Hawkins Hollow a little better than they arrived?
 
+## Narration Grammar Guardrail
+
+Hawkins Hollow pages should follow one visitor-facing narration rhythm:
+
+1. Welcome.
+2. Why this matters.
+3. What it is.
+4. What to do next.
+
+This guardrail applies across stories, characters, places, relationships, and resources.
+
+Canonical truth does not change. Narration order changes what the visitor feels first.
+
+For full guidance, see docs/architecture/narration-grammar.md.
+
+## Visitor Prose Origin Guardrail
+
+Visitor copy is generated from canonical knowledge, never copied from canonical documentation.
+
+This protects role separation:
+
+- Canon records precise truth.
+- Renderer interprets truth for audience and context.
+- Voice expresses that interpretation as hospitality.
+
+Canonical writing and visitor writing serve different purposes. Visitor pages should be faithful to canon without quoting canon-oriented phrasing.
+
+## Resource Experience Guardrail
+
+Every resource should answer "Why would I want this?" before it answers "What is this?"
+
+This rule applies to visitor-facing resource cards, landing sections, and continuation paths.
+
+The registry remains canonical. The renderer's first job is to turn canonical facts into an invitation.
+
+Visitor-facing resource grammar:
+
+1. Headline or invitation sentence.
+2. Purpose or benefit statement.
+3. Story connection or next path.
+
+Technical metadata belongs lower on the page or in developer mode.
+
+For the full resource pattern, see docs/architecture/resource-experience-pattern.md.
+
+Resource narration is the first formal implementation of the broader narration grammar.
+
 ## Continuity And Discovery Guardrails
 
 Stable world, dynamic window:
@@ -103,6 +151,7 @@ These questions prevent different forms of drift.
 
 - Stewardship protects world integrity: truth, authority, identity, relationships, and validation.
 - Hospitality protects visitor experience: welcome, curiosity, discovery, connection, and continuation.
+- Review protects the contract: canonical truth, disclosure order, and host voice remain aligned over time.
 
 Neither path is optional, and neither path replaces the other.
 

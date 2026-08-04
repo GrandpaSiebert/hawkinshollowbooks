@@ -1,0 +1,584 @@
+{
+  "registryName": "Companion Resource Registry",
+  "referenceStory": {
+    "id": "HH-A-0001",
+    "title": "Spencer's First Friend",
+    "series": "Storybooks"
+  },
+  "sourcePackage": {
+    "title": "Companion Resource Package — HH-A-0001 Spencer's First Friend",
+    "filePath": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resource Package — HH-A-0001 Spencer's First Friend.docx"
+  },
+  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "resources": [
+    {
+      "resourceId": "HH-A-0001-ACT-BP3",
+      "publicName": "Spencer's Brave Plan 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-BP3-Spencers-Brave-Plan-3-V001-WORKING.pdf",
+      "summary": "Brave-plan sequence that helps readers break a hard task into small, visible steps.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Activity Pages",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Hawkins Hollow Path"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-COLOR",
+      "publicName": "One Small Brave Step",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-COLOR-One-Small-Brave-Step-V001-WORKING.pdf",
+      "summary": "Coloring page that lets children name one brave step and picture it clearly.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-DISCUSS",
+      "publicName": "Kind New Friend Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-DISCUSS-Kind-New-Friend-Cards-V001-WORKING.pdf",
+      "summary": "Conversation cards that help children practice friendly talk and noticing helpers.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Discussion Cards",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex",
+          "Grandpa"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "stick markers",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-MATCH",
+      "publicName": "Match the Brave Step",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-MATCH-Match-the-Brave-Step-V001-WORKING.pdf",
+      "summary": "Matching activity that pairs words, steps, and story ideas.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Hawkins Hollow Path"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "vine loop",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-OBJECT",
+      "publicName": "Three Pebbles Sorting Page",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-OBJECT-Three-Pebbles-Sorting-Page-V001-WORKING.pdf",
+      "summary": "Sorting page built around the story's three-pebble object pattern.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Object Sorting Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-PACE",
+      "publicName": "Slow Fast and Just Right",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-PACE-Slow-Fast-and-Just-Right-V001-WORKING.pdf",
+      "summary": "Choice activity that helps children notice speed, pacing, and the just-right next step.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Pacing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Hawkins Hollow Path",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "vine loop"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-RECOG",
+      "publicName": "Who Helps Here",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-RECOG-Who-Helps-Here-V001-WORKING.pdf",
+      "summary": "Recognition set for identifying the helpers who make the story world feel safe and welcoming.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Recognition Set",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex",
+          "Grandpa"
+        ],
+        "places": [
+          "Burrow Path",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "stick markers",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-SCAV",
+      "publicName": "Find Three Brave Plan Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-SCAV-Find-Three-Brave-Plan-Objects-V001-WORKING.pdf",
+      "summary": "Scavenger hunt that asks children to find objects connected to the brave plan.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Scavenger Hunt",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Hawkins Hollow Path"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "vine loop",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-SEQ",
+      "publicName": "Small Steps Grow a Friend",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-SEQ-Small-Steps-Grow-a-Friend-V001-WORKING.pdf",
+      "summary": "Sequence activity that follows the story's small steps from first meeting to growing trust.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-VOCAB",
+      "publicName": "Story Word Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-VOCAB-Story-Word-Cards-V001-WORKING.pdf",
+      "summary": "Vocabulary cards for key story words, helpful prompts, and shared language.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Vocabulary Cards",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family",
+          "Educator/Librarian"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Hawkins Hollow Path"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch",
+          "vine loop"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-EDU-NOTES",
+      "publicName": "Spencer's First Friend Educator Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-EDU-NOTES-Spencers-First-Friend-V001-REVIEW.pdf",
+      "summary": "Teaching guidance for classroom use, discussion, and library support.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex",
+          "Grandpa"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "stick markers",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-FAM-GUIDE",
+      "publicName": "Spencer's First Friend Family Discussion Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-FAM-GUIDE-Spencers-First-Friend-V001-REVIEW--- Family Discussion Guide.pdf",
+      "summary": "Conversation prompts that help families talk through the story together.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [
+          "Child"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "vine loop",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-READ-SUPPORT",
+      "publicName": "Spencer's First Friend Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-READ-SUPPORT-Spencers-First-Friend-V001-REVIEW--- Reading Support.pdf",
+      "summary": "Read-aloud support for pacing, comprehension, and family reading confidence.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [
+          "Educator/Librarian"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex",
+          "Grandpa"
+        ],
+        "places": [
+          "Burrow Path",
+          "Hawkins Hollow Path",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch",
+          "stick markers"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    }
+  ]
+}
