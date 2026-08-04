@@ -48,6 +48,13 @@
     "image": "assets/banners/141 Hawkins Hollow Free Child Resoures Ribbon.png",
     "alt": "Resources banner for free child resources in Hawkins Hollow."
   },
+  "community": {
+    "title": "Community",
+    "subtitle": "Step onto the porch and find the neighbors, rhythms, and small moments that make Hawkins Hollow feel like home.",
+    "bannerId": "116",
+    "image": "assets/banners/116 Hawkins Hollow Grandpa's Porch Ribbon.png",
+    "alt": "Community banner inviting visitors onto Grandpa's porch in Hawkins Hollow."
+  },
   "storybook-shelf": {
     "title": "Storybook Shelf",
     "subtitle": "A gathering place for the earliest stories in Hawkins Hollow.",
