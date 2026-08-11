@@ -3707,7 +3707,7 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
 
 function renderCharactersPage(site, nav, charactersData, config, banner) {
   const cards = charactersData.characters
-    .filter((character) => character.featured === true)
+    .filter((character) => character.published !== false)
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map(
         (character) => `<a class="character-card" href="characters/${character.slug}.html" aria-label="Meet ${character.name}">
@@ -5284,7 +5284,7 @@ function buildSite() {
   }
 
   const featuredCharacters = charactersData.characters
-    .filter((character) => character.featured === true)
+    .filter((character) => character.published !== false)
     .sort((a, b) => a.sortOrder - b.sortOrder);
   const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
   for (const character of featuredCharacters) {
