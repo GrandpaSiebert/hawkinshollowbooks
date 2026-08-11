@@ -2,6 +2,12 @@
   "characters": [
     {
       "slug": "grandpa",
+      "identity": {
+        "canonicalId": "HH-CHR-0009",
+        "legacyAliases": [
+          "Gpa"
+        ]
+      },
       "code": "Gpa",
       "name": "Grandpa",
       "role": "Storyteller",
@@ -13,7 +19,13 @@
     },
     {
       "slug": "alice-mole",
-      "code": "Ali",
+      "identity": {
+        "canonicalId": "HH-CHR-0001",
+        "legacyAliases": [
+          "Ali"
+        ]
+      },
+        "name": "Kaydence Chipmunk",
       "name": "Alice Mole",
       "heroImage": "/assets/characters/individuals/Ali-HP-V001.png",
       "description": "A thoughtful friend who often discovers answers by listening.",
@@ -23,6 +35,12 @@
     },
     {
       "slug": "spencer-field-mouse",
+      "identity": {
+        "canonicalId": "HH-CHR-0002",
+        "legacyAliases": [
+          "Spe"
+        ]
+      },
       "code": "Spe",
       "name": "Spencer Field Mouse",
       "heroImage": "/assets/characters/individuals/Spe-HP-V001.png",
@@ -33,6 +51,12 @@
     },
     {
       "slug": "asher-chipmunk",
+      "identity": {
+        "canonicalId": "HH-CHR-0003",
+        "legacyAliases": [
+          "Ash"
+        ]
+      },
       "code": "Ash",
       "name": "Asher Chipmunk",
       "heroImage": "/assets/characters/individuals/Ash-HP-V001.png",
@@ -42,17 +66,42 @@
       "sortOrder": 30
     },
     {
-      "slug": "kaydence-owl",
+      "slug": "kaydence-chipmunk",
+      "identity": {
+        "canonicalId": "HH-CHR-0004",
+        "legacyAliases": [
+          "Kay"
+        ]
+      },
       "code": "Kay",
-      "name": "Kaydence Owl",
+      "name": "Kaydence Chipmunk",
       "heroImage": "/assets/characters/individuals/Kay-HP-V001.png",
-      "description": "Curious, careful, and always ready to learn something new.",
+      "description": "A careful, bright-eyed friend who turns questions into discoveries and helps others feel brave enough to ask their own.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "asher-chipmunk",
+          "aydin-caracara",
+          "aleea-caracara",
+          "austin-turtle"
+        ],
+        "relatedPlaceNames": [
+          "Schoolyard",
+          "Reading Stump",
+          "Old Oak"
+        ]
+      },
       "featured": true,
       "published": true,
       "sortOrder": 40
     },
     {
       "slug": "aydin-caracara",
+      "identity": {
+        "canonicalId": "HH-CHR-0005",
+        "legacyAliases": [
+          "Ayd"
+        ]
+      },
       "code": "Ayd",
       "name": "Aydin Caracara",
       "heroImage": "/assets/characters/individuals/Ayd-HP-V001.png",
@@ -63,6 +112,12 @@
     },
     {
       "slug": "aleea-caracara",
+      "identity": {
+        "canonicalId": "HH-CHR-0006",
+        "legacyAliases": [
+          "Ale"
+        ]
+      },
       "code": "Ale",
       "name": "Aleea Caracara",
       "heroImage": "/assets/characters/individuals/Ale-HP-V001.png",
@@ -73,16 +128,40 @@
     },
     {
       "slug": "austin-turtle",
+      "identity": {
+        "canonicalId": "HH-CHR-0007",
+        "legacyAliases": [
+          "Aus"
+        ]
+      },
       "code": "Aus",
       "name": "Austin Turtle",
       "heroImage": "/assets/characters/individuals/Aus-HP-V001.png",
-      "description": "Steady, patient, and dependable when friends need someone beside them.",
+      "description": "A steady, patient friend who reminds everyone that quiet courage and small steps can still lead somewhere wonderful.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "kaydence-chipmunk",
+          "brandon-rabbit",
+          "callen-crow"
+        ],
+        "relatedPlaceNames": [
+          "Schoolyard",
+          "Reading Stump",
+          "Mailbox Path"
+        ]
+      },
       "featured": true,
       "published": true,
       "sortOrder": 70
     },
     {
       "slug": "bentley-crow",
+      "identity": {
+        "canonicalId": "HH-CHR-0008",
+        "legacyAliases": [
+          "Ben"
+        ]
+      },
       "code": "Ben",
       "name": "Bentley Crow",
       "heroImage": "/assets/characters/individuals/Ben-HP-V001.png",
@@ -93,16 +172,40 @@
     },
     {
       "slug": "aralynn-fox",
+      "identity": {
+        "canonicalId": "HH-CHR-0010",
+        "legacyAliases": [
+          "Ara"
+        ]
+      },
       "code": "Ara",
       "name": "Aralynn Fox",
       "heroImage": "/assets/characters/individuals/Ara-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A thoughtful friend who keeps choosing honesty, kindness, and courage when moments feel difficult.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "alice-mole",
+          "spencer-field-mouse",
+          "callen-crow"
+        ],
+        "relatedPlaceNames": [
+          "Old Oak",
+          "Reading Stump",
+          "Schoolyard"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 100
     },
     {
       "slug": "baxter-badger",
+      "identity": {
+        "canonicalId": "HH-CHR-0011",
+        "legacyAliases": [
+          "Bax"
+        ]
+      },
       "code": "Bax",
       "name": "Baxter Badger",
       "heroImage": "/assets/characters/individuals/Bax-HP-V001.png",
@@ -113,6 +216,12 @@
     },
     {
       "slug": "blain-turtle",
+      "identity": {
+        "canonicalId": "HH-CHR-0012",
+        "legacyAliases": [
+          "Blain"
+        ]
+      },
       "code": "Blain",
       "name": "Blain Turtle",
       "heroImage": "/assets/characters/individuals/Blain-HP-V001.png",
@@ -123,36 +232,96 @@
     },
     {
       "slug": "brandon-rabbit",
+      "identity": {
+        "canonicalId": "HH-CHR-0013",
+        "legacyAliases": [
+          "Bra"
+        ]
+      },
       "code": "Bra",
       "name": "Brandon Rabbit",
       "heroImage": "/assets/characters/individuals/Bra-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "An energetic friend with a tender heart who is learning that big feelings can become kind choices.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "callen-crow",
+          "austin-turtle",
+          "kaydence-chipmunk"
+        ],
+        "relatedPlaceNames": [
+          "Community Garden",
+          "Schoolyard",
+          "Old Oak"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 130
     },
     {
       "slug": "callen-crow",
+      "identity": {
+        "canonicalId": "HH-CHR-0014",
+        "legacyAliases": [
+          "Cal"
+        ]
+      },
       "code": "Cal",
       "name": "Callen Crow",
       "heroImage": "/assets/characters/individuals/Cal-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A thoughtful neighbor who keeps growing through honesty, repair, and the courage to make things right.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "bentley-crow",
+          "brandon-rabbit",
+          "austin-turtle"
+        ],
+        "relatedPlaceNames": [
+          "Old Oak",
+          "Community Garden",
+          "Reading Stump"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 140
     },
     {
       "slug": "emmitt-armadillo",
+      "identity": {
+        "canonicalId": "HH-CHR-0015",
+        "legacyAliases": [
+          "Emm"
+        ]
+      },
       "code": "Emm",
       "name": "Emmitt Armadillo",
       "heroImage": "/assets/characters/individuals/Emm-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A steady friend who listens carefully and helps others feel safer when a day feels uncertain.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "spencer-field-mouse",
+          "alice-mole",
+          "aralynn-fox"
+        ],
+        "relatedPlaceNames": [
+          "Pond Edge",
+          "Farmhouse",
+          "Reading Stump"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 150
     },
     {
       "slug": "garrett-hedgehog",
+      "identity": {
+        "canonicalId": "HH-CHR-0016",
+        "legacyAliases": [
+          "Gar"
+        ]
+      },
       "code": "Gar",
       "name": "Garrett Hedgehog",
       "heroImage": "/assets/characters/individuals/Gar-HP-V001.png",
@@ -163,6 +332,12 @@
     },
     {
       "slug": "grandma-siebert",
+      "identity": {
+        "canonicalId": "HH-CHR-0017",
+        "legacyAliases": [
+          "Gma"
+        ]
+      },
       "code": "Gma",
       "name": "Grandma Siebert",
       "heroImage": "/assets/characters/individuals/Gma-HP-V001.png",
@@ -173,6 +348,12 @@
     },
     {
       "slug": "harlie-mouse",
+      "identity": {
+        "canonicalId": "HH-CHR-0018",
+        "legacyAliases": [
+          "Har"
+        ]
+      },
       "code": "Har",
       "name": "Harlie Mouse",
       "heroImage": "/assets/characters/individuals/Har-HP-V001.png",
@@ -183,6 +364,12 @@
     },
     {
       "slug": "haylee-prairie-dog",
+      "identity": {
+        "canonicalId": "HH-CHR-0019",
+        "legacyAliases": [
+          "Hay"
+        ]
+      },
       "code": "Hay",
       "name": "Haylee Prairie Dog",
       "heroImage": "/assets/characters/individuals/Hay-HP-V001.png",
@@ -193,6 +380,12 @@
     },
     {
       "slug": "kayla-rabbit",
+      "identity": {
+        "canonicalId": "HH-CHR-0020",
+        "legacyAliases": [
+          "Kayla"
+        ]
+      },
       "code": "Kayla",
       "name": "Kayla Rabbit",
       "heroImage": "/assets/characters/individuals/Kayla-HP-V001.png",
@@ -203,16 +396,40 @@
     },
     {
       "slug": "lex-hedgehog",
+      "identity": {
+        "canonicalId": "HH-CHR-0021",
+        "legacyAliases": [
+          "Lex"
+        ]
+      },
       "code": "Lex",
       "name": "Lex Hedgehog",
       "heroImage": "/assets/characters/individuals/Lex-HP-V001.png",
-      "description": "",
-      "featured": false,
+      "description": "A growing helper who learns patience, repair, and the courage to try again when things go sideways.",
+      "neighborhood": {
+        "relatedCharacterSlugs": [
+          "brandon-rabbit",
+          "austin-turtle",
+          "aralynn-fox"
+        ],
+        "relatedPlaceNames": [
+          "Community Garden",
+          "Schoolyard",
+          "Mailbox Path"
+        ]
+      },
+      "featured": true,
       "published": true,
       "sortOrder": 210
     },
     {
       "slug": "lillian-squirrel",
+      "identity": {
+        "canonicalId": "HH-CHR-0022",
+        "legacyAliases": [
+          "Lil"
+        ]
+      },
       "code": "Lil",
       "name": "Lillian Squirrel",
       "heroImage": "/assets/characters/individuals/Lil-HP-V001.png",
@@ -223,6 +440,12 @@
     },
     {
       "slug": "mimi-hawkins",
+      "identity": {
+        "canonicalId": "HH-CHR-0023",
+        "legacyAliases": [
+          "Mimi"
+        ]
+      },
       "code": "Mimi",
       "name": "Mimi Hawkins",
       "heroImage": "/assets/characters/individuals/Mimi-HP-V001.png",
@@ -233,6 +456,12 @@
     },
     {
       "slug": "pop-pop-farmer-hawkins",
+      "identity": {
+        "canonicalId": "HH-CHR-0024",
+        "legacyAliases": [
+          "Pop"
+        ]
+      },
       "code": "Pop",
       "name": "Pop-pop/Farmer Hawkins",
       "heroImage": "/assets/characters/individuals/Pop-HP-V001.png",
@@ -243,6 +472,12 @@
     },
     {
       "slug": "skylin-crow",
+      "identity": {
+        "canonicalId": "HH-CHR-0025",
+        "legacyAliases": [
+          "Sky"
+        ]
+      },
       "code": "Sky",
       "name": "Skylin Crow",
       "heroImage": "/assets/characters/individuals/Sky-HP-V001.png",
@@ -253,6 +488,12 @@
     },
     {
       "slug": "trinity-egret",
+      "identity": {
+        "canonicalId": "HH-CHR-0026",
+        "legacyAliases": [
+          "Trinity"
+        ]
+      },
       "code": "Trinity",
       "name": "Trinity Egret",
       "heroImage": "/assets/characters/individuals/Trinity-HP-V001.png",
@@ -263,6 +504,12 @@
     },
     {
       "slug": "zylar-squirrel",
+      "identity": {
+        "canonicalId": "HH-CHR-0027",
+        "legacyAliases": [
+          "Zyl"
+        ]
+      },
       "code": "Zyl",
       "name": "Zylar Squirrel",
       "heroImage": "/assets/characters/individuals/Zyl-HP-V001.png",

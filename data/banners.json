@@ -27,12 +27,33 @@
     "image": "assets/banners/016 Hawkins Hollow Explore Ribbon.png",
     "alt": "Books banner welcoming visitors to the Hawkins Hollow book collections."
   },
+  "places": {
+    "title": "Meet the Places of Hawkins Hollow",
+    "subtitle": "Every path in Hawkins Hollow leads to a place worth knowing.",
+    "bannerId": "021",
+    "image": "assets/banners/021 Hawkins Hollow Places Ribbon.png",
+    "alt": "Places ribbon welcoming visitors into the neighborhoods, paths, and gathering spots of Hawkins Hollow."
+  },
+  "map": {
+    "title": "Come Wander Hawkins Hollow",
+    "subtitle": "Choose a familiar path and see where the neighborhood introduces you next.",
+    "bannerId": "021",
+    "image": "assets/banners/021 Hawkins Hollow Places Ribbon.png",
+    "alt": "Places ribbon for the Hawkins Hollow map and environment pages."
+  },
   "resources": {
-    "title": "Resources",
-    "subtitle": "Free child resources for families and classrooms.",
+    "title": "Companion Resources",
+    "subtitle": "Child, family, and educator materials that extend each story into everyday use.",
     "bannerId": "141",
     "image": "assets/banners/141 Hawkins Hollow Free Child Resoures Ribbon.png",
-    "alt": "Resources banner for free child resources in Hawkins Hollow."
+    "alt": "Companion resources banner for families, children, and educators in Hawkins Hollow."
+  },
+  "community": {
+    "title": "Community",
+    "subtitle": "Step onto the porch and find the neighbors, rhythms, and small moments that make Hawkins Hollow feel like home.",
+    "bannerId": "116",
+    "image": "assets/banners/116 Hawkins Hollow Grandpa's Porch Ribbon.png",
+    "alt": "Community banner inviting visitors onto Grandpa's porch in Hawkins Hollow."
   },
   "storybook-shelf": {
     "title": "Storybook Shelf",
@@ -47,6 +68,62 @@
     "bannerId": "031",
     "image": "assets/banners/031 Hawkins Hollow Storybooks Ribbon.png",
     "alt": "Storybook Series banner featuring a warm and welcoming collection of early stories."
+  },
+  "first-readers": {
+    "title": "First Readers",
+    "subtitle": "Growing confidence, one story at a time.",
+    "bannerId": "036",
+    "image": "assets/banners/036 Hawkins Hollow First Readers Ribbon.png",
+    "alt": "First Readers banner for early reading stories in Hawkins Hollow."
+  },
+  "second-readers": {
+    "title": "Second Readers",
+    "subtitle": "Longer adventures for growing independence.",
+    "bannerId": "041",
+    "image": "assets/banners/041 Hawkins Hollow Second Readers Ribbon.png",
+    "alt": "Second Readers banner for longer story paths in Hawkins Hollow."
+  },
+  "bedtime-library": {
+    "title": "Bedtime Library",
+    "subtitle": "Quiet stories for winding down together.",
+    "bannerId": "046",
+    "image": "assets/banners/046 Hawkins Hollow Bedtime Library Ribbon.png",
+    "alt": "Bedtime Library banner for gentle end-of-day stories."
+  },
+  "growing-together": {
+    "title": "Growing Together",
+    "subtitle": "Stories about belonging, care, and shared growth.",
+    "bannerId": "051",
+    "image": "assets/banners/051 Hawkins Hollow Growing Together Ribbon.png",
+    "alt": "Growing Together banner for family-centered stories."
+  },
+  "tender-times": {
+    "title": "Tender Times",
+    "subtitle": "Comforting stories for difficult days.",
+    "bannerId": "056",
+    "image": "assets/banners/056 Hawkins Hollow Tender Times Ribbon.png",
+    "alt": "Tender Times banner for comfort-centered stories in Hawkins Hollow."
+  },
+  "basic-training": {
+    "title": "Basic Training",
+    "subtitle": "Skill-building stories for everyday courage.",
+    "bannerId": "061",
+    "image": "assets/banners/061 Hawkins Hollow Basic Training Ribbon.png",
+    "alt": "Basic Training banner for confidence-building stories."
+  },
+  "holiday-story-poems": {
+    "title": "Holiday Story Poems",
+    "subtitle": "Seasonal poems and celebrations in Hawkins Hollow.",
+    "bannerId": "151",
+    "image": "assets/banners/151 Hawkins Hollow Holidays in the Hollow Ribbon.png",
+    "alt": "Holiday Story Poems banner for seasonal celebrations."
+  },
+  "hero-play-poems": {
+    "title": "Hero Play Poems",
+    "subtitle": "Imagination, courage, and playful adventures.",
+    "bannerId": "076",
+    "image": "assets/banners/076 Hawkins Hollow Hero Ribbon.png",
+    "alt": "Hero Play Poems banner for imaginative adventures."
   },
   "the-porch-light": {
     "title": "The Porch Light",
