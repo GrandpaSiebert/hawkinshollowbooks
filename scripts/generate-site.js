@@ -2873,6 +2873,24 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const resolvedEnvironment = experienceEnvironments
     .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
     .find((environment) => Boolean(environment)) || null;
+  const resolvedCharacters = experienceCharacters
+    .map((characterId) => characterByCanonicalId.get(String(characterId || '').toUpperCase()))
+    .filter((character) => Boolean(character));
+  const uniqueResolvedCharacters = resolvedCharacters.filter((character, index, list) => {
+    const key = String(character.id || character.slug || character.name || '').toUpperCase();
+    return list.findIndex((entry) => String(entry.id || entry.slug || entry.name || '').toUpperCase() === key) === index;
+  });
+  const titleLower = String(getBookPublicTitle(book) || canonicalId).toLowerCase();
+  const inferredCharacter = uniqueResolvedCharacters.length > 0
+    ? null
+    : Array.from(characterByCanonicalId.values()).find((character) => {
+        const fullName = String(character && character.name || '').toLowerCase();
+        const firstName = fullName.split(' ')[0];
+        return Boolean(firstName) && titleLower.includes(firstName);
+      }) || null;
+  const storyCharacters = inferredCharacter
+    ? [inferredCharacter]
+    : uniqueResolvedCharacters;
   const rawSynopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
   const rawInvitationText = String((experienceBook && experienceBook.description) || '').trim();
   const synopsisText = isGenericStoryPlaceholder(rawSynopsisText) ? '' : rawSynopsisText;
@@ -2932,12 +2950,13 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     : resolvedEnvironment
       ? `This place helps the story feel more real, and it often opens the door to the next chapter of the adventure.`
       : 'This next step keeps the story feeling alive after the final page.';
-  const continuationPrimaryLink = resolvedCharacter
-    ? `<a class="button" href="../characters/${resolvedCharacter.slug}.html">Learn more about ${resolvedCharacter.name}</a>`
-    : resolvedEnvironment
-      ? `<a class="button" href="../${getEntityPageHref('environment', resolvedEnvironment.id, resolvedEnvironment.name)}">Step into ${resolvedEnvironment.name}</a>`
-      : `<a class="button" href="../storybook-shelf.html">Return to the Storybook Shelf</a>`;
-  const continuationSecondaryLinks = `${resolvedCharacter ? `<a class="button" href="../characters.html">Meet more friends</a>` : ''}${resolvedEnvironment ? ` <a class="button" href="../map.html">Open the map</a>` : ''}${isStorybookLike ? ` <a class="button" href="../storybook-shelf.html">Return to the Storybook Shelf</a>` : ' <a class="button" href="../books.html">Browse more stories</a>'}`.trim();
+  const seriesSlug = resolveSeriesSlug(normalizedBookForCopy);
+  const seriesPageHref = seriesSlug ? `../${getSeriesPageHref(seriesSlug)}` : '../books.html';
+  const seriesReturnLabel = seriesSlug === 'storybooks'
+    ? 'Return to the Storybook Shelf'
+    : `Return to ${book.series || 'this series'}`;
+  const continuationPrimaryLink = `<a class="button" href="${seriesPageHref}">${seriesReturnLabel}</a>`;
+  const continuationSecondaryLinks = `<a class="button" href="../map.html">Explore more of Hawkins Hollow</a>`;
   const continuationCard = `<section class="content-card" aria-labelledby="story-continue">
       <h2 id="story-continue">${continuationHeading}</h2>
       <p>${continuationMessage}</p>
@@ -2954,8 +2973,28 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const storyIntroBody = synopsisText || getBookDetailBody(normalizedBookForCopy);
   const storyGuidanceBlock = experienceBook ? renderStoryGuidanceBlock(experienceBook) : '';
   const isSpencerBook = String(getBookPublicTitle(book) || canonicalId).toLowerCase().includes('spencer');
-  const storyActionLabel = resolvedCharacter ? `Meet ${resolvedCharacter.name}` : isSpencerBook ? 'Meet Spencer' : 'Meet the characters';
-  const storyActionHref = resolvedCharacter ? `../characters/${resolvedCharacter.slug}.html` : isSpencerBook ? '../characters/spencer-field-mouse.html' : '../characters.html';
+  const primaryStoryCharacter = storyCharacters[0] || null;
+  const primaryStoryCharacterFirstName = primaryStoryCharacter
+    ? String(primaryStoryCharacter.name || '').split(' ')[0]
+    : '';
+  const storyActionLabel = primaryStoryCharacter
+    ? (storyCharacters.length > 1
+      ? `Meet this story's characters`
+      : (primaryStoryCharacterFirstName ? `Meet ${primaryStoryCharacterFirstName}` : 'Meet this story\'s character'))
+    : isSpencerBook
+      ? 'Meet Spencer'
+      : 'Meet the characters';
+  const storyActionHref = primaryStoryCharacter
+    ? `../characters/${primaryStoryCharacter.slug}.html`
+    : isSpencerBook
+      ? '../characters/spencer-field-mouse.html'
+      : '../characters.html';
+  const amazonReadHref = (amazon && amazon.links && (amazon.links.paperback || amazon.links.hardcover || amazon.links.kindle))
+    || (amazon && amazon.url)
+    || seriesPageHref;
+  const amazonReadAttrs = String(amazonReadHref).startsWith('http')
+    ? ' target="_blank" rel="noopener noreferrer"'
+    : '';
   const storyIntroCard = `<section class="content-card" aria-labelledby="story-intro-heading">
       <p class="eyebrow">Storybook</p>
       <h2 id="story-intro-heading">${getBookPublicTitle(book) || canonicalId}</h2>
@@ -2963,7 +3002,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <p>${storyIntroBody}</p>
       ${storyGuidanceBlock}
       <p>
-        <a class="button" href="../storybook-shelf.html">Read this story</a>
+        <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>Read this story</a>
         <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
       </p>
     </section>`;
@@ -4457,18 +4496,23 @@ function buildSeriesPreviewCards(booksData, series) {
 function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
   const series = seriesData.series.find((entry) => entry.slug === page.seriesSlug);
   const editorial = getSeriesEditorial(series);
+  const seriesVoice = getSeriesVoice(series && series.slug);
   const collectionHeadingId = `${page.slug}-collection`;
   const audienceHeadingId = `${page.slug}-audience`;
   const shelfHeadingId = `${page.slug}-shelf`;
   const continueHeadingId = `${page.slug}-continue`;
   const invitationLabel = editorial.invitationLabel || `Explore ${series.title}`;
+  const openingLead = series.description || `Welcome to ${series.title}, where each story opens a gentle path into Hawkins Hollow.`;
+  const openingBody = `${series.title} is built as a ${seriesVoice.moment} that ${seriesVoice.purpose}.`;
+  const audienceSupport = `If you are unsure where to begin, choose one story that fits today and let the next step unfold naturally.`;
 
   return renderLayout(
     series.title,
     series.description || `Welcome to ${series.title} in Hawkins Hollow.`,
     `<section class="content-card" aria-labelledby="${collectionHeadingId}">
       <h2 id="${collectionHeadingId}">${series.title}</h2>
-      <p>${series.description || `Welcome to ${series.title}, where each story opens a gentle path into Hawkins Hollow.`}</p>
+      <p>${openingLead}</p>
+      <p>${openingBody}</p>
       <p><a class="button" href="${getSeriesPageHref(series.slug)}">${invitationLabel}</a></p>
     </section>
 
@@ -4476,6 +4520,7 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
       <h2 id="${audienceHeadingId}">Who This Series Is For</h2>
       <p><strong>Who it is for:</strong> ${editorial.audienceText}</p>
       <p><strong>Experience:</strong> ${editorial.experienceText}</p>
+      <p>${audienceSupport}</p>
     </section>
 
     <section class="content-card" aria-labelledby="${shelfHeadingId}">
