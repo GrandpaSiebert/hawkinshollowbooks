@@ -3027,7 +3027,7 @@ function renderLandingPage(page, site, nav, config, banner) {
         <p class="eyebrow">Welcome to</p>
         <h1>${site.siteName}</h1>
         <p class="welcome-home-line">Look who's home!</p>
-        <p>Hawkins Hollow is a place where stories gather, children find their first favorites, and every path leads toward a warm welcome.</p>
+        <p>Hawkins Hollow is a neighborhood first and a catalog second. Visitors can meet people, explore places, and gather ideas for family reading before choosing a book. The goal is to help every child feel seen, calm, and curious from the first click.</p>
         <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
       </section>
 
@@ -3046,6 +3046,7 @@ function renderLandingPage(page, site, nav, config, banner) {
       <p class="eyebrow">Act Two</p>
       <h2 id="act-two">Where would you like to begin today?</h2>
       <p>Choose any path. You do not have to start in one place to belong here.</p>
+      <p>Some visitors begin with a character they already love, while others start with a place, a family activity, or a seasonal moment. This section helps each person find a next step that matches their day.</p>
       <div class="start-anywhere-grid">
         <a class="start-anywhere-item" href="books.html" aria-label="Read a Story">
           <p class="start-anywhere-icon" aria-hidden="true">📚</p>
@@ -3089,6 +3090,7 @@ function renderLandingPage(page, site, nav, config, banner) {
       <p class="eyebrow">Choose a shelf</p>
       <h2 id="series-spotlight">Choose the kind of experience you want today</h2>
       <p>Each series is a doorway into Hawkins Hollow. Choose one and begin there.</p>
+      <p>These shelves are organized by reading moment, so bedtime stories, first-reader practice, and deeper family conversations each have a clear home.</p>
       <div class="start-here-grid">
         <article class="start-here-item">
           <h3>Storybooks</h3>
@@ -3133,6 +3135,7 @@ function renderLandingPage(page, site, nav, config, banner) {
       <p class="eyebrow">Featured Paths</p>
       <h2 id="act-three">If this is your first visit</h2>
       <p>Try one of these gentle pathways and see where your curiosity leads.</p>
+      <p>Each path connects a person, a place, and a story so new visitors can understand how the world fits together.</p>
       <p id="todays-wander-copy"><strong>Something Grandpa noticed today:</strong> <span id="todays-wander-kind">Notice</span> - The orchard feels especially peaceful today.</p>
       <p id="todays-wander-invitation">If you feel like a short walk, the path starts there.</p>
       <p><a id="todays-wander-link" class="button" href="map.html">Take This Walk</a></p>
@@ -3159,9 +3162,10 @@ function renderLandingPage(page, site, nav, config, banner) {
 
     <section class="content-card" aria-labelledby="act-four">
       <p class="eyebrow">Act Four</p>
-      <h2 id="act-four">Take a little of Hawkins Hollow home</h2>
-      <p>After you wander a while, the books are waiting to continue the experience.</p>
-      <p>Start with the stories, step into the world, and discover the books that make Hawkins Hollow feel like home.</p>
+      <h2 id="act-four">When you are ready to take a story home</h2>
+      <p>Books matter in Hawkins Hollow, but they come after welcome, belonging, and discovery.</p>
+      <p>If today's walk introduced a story your family loves, you can bring that title home and keep the conversation going tonight.</p>
+      <p>The invitation is simple: explore first, connect deeply, and then choose the books that fit your family best.</p>
       <p>
         <a class="button" href="books.html">Browse Books</a>
         <a class="button" href="storybook-shelf.html">Open the Storybook Shelf</a>
@@ -3251,7 +3255,7 @@ function renderLandingPage(page, site, nav, config, banner) {
             ],
             featureTitle: 'Read a Story',
             featureHref: 'books.html',
-            featureCopy: 'Summer is a good time to slow down, settle in, and read together.'
+            featureCopy: 'Summer is a good time to slow down, settle in, and read together. A shared story can turn a long evening into a favorite family memory.'
           },
           autumn: {
             thoughts: [
@@ -3274,7 +3278,7 @@ function renderLandingPage(page, site, nav, config, banner) {
             ],
             featureTitle: 'Explore a Friendship',
             featureHref: 'books.html',
-            featureCopy: 'This is a good season for listening closely and following the threads between friends.'
+            featureCopy: 'This is a good season for listening closely and following the threads between friends. Stories about relationships feel especially meaningful when the days turn quieter.'
           },
           winter: {
             thoughts: [
@@ -3297,7 +3301,7 @@ function renderLandingPage(page, site, nav, config, banner) {
             ],
             featureTitle: 'Find a Family Activity',
             featureHref: 'resources.html',
-            featureCopy: 'Quiet days are perfect for shared activities, family time, and cozy discovery.'
+            featureCopy: 'Quiet days are perfect for shared activities, family time, and cozy discovery. A small activity and a gentle story can make home feel even warmer.'
           }
         };
 
