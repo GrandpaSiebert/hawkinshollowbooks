@@ -2767,6 +2767,12 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
 function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, experienceContext = {}) {
   const detailPath = getBookPageHref(book);
   const canonicalId = getCanonicalBookId(book);
+  const normalizedBookForCopy = {
+    ...book,
+    slug: String(book && book.slug ? book.slug : canonicalId).toLowerCase(),
+    title: getBookPublicTitle(book) || canonicalId,
+    seriesSlug: resolveSeriesSlug(book)
+  };
   const files = (book.files || []).sort();
   const previewFiles = files.slice(0, 20);
   const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
@@ -2867,8 +2873,10 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const resolvedEnvironment = experienceEnvironments
     .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
     .find((environment) => Boolean(environment)) || null;
-  const synopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
-  const invitationText = String((experienceBook && experienceBook.description) || '').trim();
+  const rawSynopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
+  const rawInvitationText = String((experienceBook && experienceBook.description) || '').trim();
+  const synopsisText = isGenericStoryPlaceholder(rawSynopsisText) ? '' : rawSynopsisText;
+  const invitationText = isGenericStoryPlaceholder(rawInvitationText) ? '' : rawInvitationText;
   const characterList = experienceCharacters
     .map((characterId) => {
       const character = characterByCanonicalId.get(String(characterId || '').toUpperCase());
@@ -2937,12 +2945,13 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <p>${continuationSecondaryLinks ? `<strong>Also:</strong> ${continuationSecondaryLinks}</p>` : ''}
     </section>`;
 
+  const generatedInvitation = getBookSpecificInvitation(normalizedBookForCopy, { mode: 'detail' });
   const pageDescription = isSpencerExperiencePass
-    ? (invitationText || `A gentle Storybook about discovering how even the smallest friendship can change a day.`)
-    : `A story invitation for ${getBookPublicTitle(book) || canonicalId}`;
+    ? (invitationText || generatedInvitation)
+    : (invitationText || generatedInvitation);
 
-  const storyIntroLead = (invitationText || synopsisText || 'A gentle Storybook about discovering how even the smallest friendship can change a day.').trim();
-  const storyIntroBody = synopsisText || 'This story invites a child and a caring grown-up to settle in together and begin.';
+  const storyIntroLead = (invitationText || synopsisText || generatedInvitation).trim();
+  const storyIntroBody = synopsisText || getBookDetailBody(normalizedBookForCopy);
   const storyGuidanceBlock = experienceBook ? renderStoryGuidanceBlock(experienceBook) : '';
   const isSpencerBook = String(getBookPublicTitle(book) || canonicalId).toLowerCase().includes('spencer');
   const storyActionLabel = resolvedCharacter ? `Meet ${resolvedCharacter.name}` : isSpencerBook ? 'Meet Spencer' : 'Meet the characters';
@@ -3507,37 +3516,37 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
         <article class="start-here-item">
           <h3>First Readers</h3>
           <p><strong>If your child is building reading confidence:</strong> Start with a short story that feels encouraging and familiar.</p>
-          <p><strong>Start with:</strong> <a href="first-readers.html">First Readers</a></p>
+          <a class="button" href="first-readers.html">Explore First Readers</a>
         </article>
 
         <article class="start-here-item">
           <h3>Second Readers</h3>
           <p><strong>If your family wants a richer reading adventure:</strong> Choose a longer path with more details and discussion.</p>
-          <p><strong>Start with:</strong> <a href="second-readers.html">Second Readers</a></p>
+          <a class="button" href="second-readers.html">Explore Second Readers</a>
         </article>
 
         <article class="start-here-item">
           <h3>Bedtime Library</h3>
           <p><strong>If you're looking for a bedtime story:</strong> Come this way for quiet pacing and reassuring endings.</p>
-          <p><strong>Start with:</strong> <a href="bedtime-library.html">Bedtime Library</a></p>
+          <a class="button" href="bedtime-library.html">Enter the Bedtime Library</a>
         </article>
 
         <article class="start-here-item">
           <h3>Growing Together</h3>
           <p><strong>If your family wants encouragement:</strong> Follow stories about belonging, cooperation, and care.</p>
-          <p><strong>Start with:</strong> <a href="growing-together.html">Growing Together</a></p>
+          <a class="button" href="growing-together.html">Explore Growing Together</a>
         </article>
 
         <article class="start-here-item">
           <h3>Tender Times</h3>
           <p><strong>If someone in your family needs comfort:</strong> Walk this path gently and at your own pace.</p>
-          <p><strong>Start with:</strong> <a href="tender-times.html">Tender Times</a></p>
+          <a class="button" href="tender-times.html">Explore Tender Times</a>
         </article>
 
         <article class="start-here-item">
           <h3>Wander Freely</h3>
           <p><strong>If you simply want to explore:</strong> Start with a place, then follow what sounds interesting.</p>
-          <p><strong>Start with:</strong> <a href="map.html">Open the Map</a></p>
+          <a class="button" href="map.html">Open the Map</a>
         </article>
       </div>
     </section>
@@ -4081,7 +4090,157 @@ function getStorybookCardInvitation(book) {
     'When Callen Said Sorry': 'Watch a hard moment soften into a thoughtful apology.'
   };
 
-  return invitationByTitle[title] || (book && book.description ? book.description : 'A gentle story waiting to be read.');
+  return invitationByTitle[title] || getBookSpecificInvitation(book, { mode: 'card' });
+}
+
+function getStableTextIndex(value, length) {
+  const text = String(value || 'book').trim();
+  let hash = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    hash = ((hash << 5) - hash) + text.charCodeAt(i);
+    hash |= 0;
+  }
+  if (!Number.isFinite(length) || length <= 0) {
+    return 0;
+  }
+  return Math.abs(hash) % length;
+}
+
+function getSeriesVoice(seriesSlug) {
+  const voices = {
+    storybooks: {
+      moment: 'gentle shared reading moment',
+      purpose: 'invites families to read aloud, talk together, and notice everyday kindness'
+    },
+    'first-readers': {
+      moment: 'confidence-building first-reader adventure',
+      purpose: 'helps early readers practice steadily while still feeling supported'
+    },
+    'second-readers': {
+      moment: 'longer independent reading journey',
+      purpose: 'gives growing readers more depth while keeping the world warm and accessible'
+    },
+    'basic-training': {
+      moment: 'practical life-skill story',
+      purpose: 'turns everyday routines into approachable steps that children can try'
+    },
+    'growing-together': {
+      moment: 'relationship-centered family story',
+      purpose: 'encourages belonging, cooperation, and care through shared moments'
+    },
+    'bedtime-library': {
+      moment: 'calming bedtime story',
+      purpose: 'helps children settle, feel safe, and end the day with reassurance'
+    },
+    'tender-times': {
+      moment: 'comfort-focused story for hard days',
+      purpose: 'offers gentle language for feelings and strengthens connection at home'
+    },
+    'holiday-story-poems': {
+      moment: 'seasonal family poem-story',
+      purpose: 'connects celebrations to gratitude, memory, and togetherness'
+    },
+    'hero-play-poems': {
+      moment: 'imagination-forward play poem',
+      purpose: 'encourages courage, creativity, and joyful pretend adventure'
+    }
+  };
+
+  return voices[String(seriesSlug || '').toLowerCase()] || {
+    moment: 'welcoming Hawkins Hollow story',
+    purpose: 'opens a clear path into the people, places, and values of the neighborhood'
+  };
+}
+
+function resolveSeriesSlug(book) {
+  const explicitSlug = String(book && book.seriesSlug || '').trim().toLowerCase();
+  if (explicitSlug) {
+    return explicitSlug;
+  }
+
+  const seriesCode = String(book && book.seriesCode || '').trim().toUpperCase();
+  const seriesCodeMap = {
+    A: 'storybooks',
+    B: 'first-readers',
+    C: 'second-readers',
+    D: 'basic-training',
+    E: 'growing-together',
+    F: 'bedtime-library',
+    G: 'tender-times',
+    H: 'holiday-story-poems',
+    I: 'hero-play-poems'
+  };
+  if (seriesCodeMap[seriesCode]) {
+    return seriesCodeMap[seriesCode];
+  }
+
+  const seriesLabel = String(book && book.series || '').toLowerCase();
+  if (seriesLabel.includes('storybook')) return 'storybooks';
+  if (seriesLabel.includes('first reader')) return 'first-readers';
+  if (seriesLabel.includes('second reader')) return 'second-readers';
+  if (seriesLabel.includes('basic training')) return 'basic-training';
+  if (seriesLabel.includes('growing together')) return 'growing-together';
+  if (seriesLabel.includes('bedtime')) return 'bedtime-library';
+  if (seriesLabel.includes('tender')) return 'tender-times';
+  if (seriesLabel.includes('holiday')) return 'holiday-story-poems';
+  if (seriesLabel.includes('hero')) return 'hero-play-poems';
+  return '';
+}
+
+function getBookSpecificInvitation(book, options = {}) {
+  const title = String(book && (book.title || getCanonicalBookId(book)) || 'This story').trim();
+  const existingDescription = String(book && book.description || '').trim();
+  if (existingDescription) {
+    return existingDescription;
+  }
+
+  const resolvedSeriesSlug = resolveSeriesSlug(book);
+  const voice = getSeriesVoice(resolvedSeriesSlug);
+  const key = `${String(book && book.slug || '')}|${title}|${resolvedSeriesSlug}`;
+  const openerOptions = [
+    `${title} offers a ${voice.moment} in Hawkins Hollow.`,
+    `In ${title}, readers step into a ${voice.moment} shaped by the heart of Hawkins Hollow.`,
+    `${title} welcomes readers with a ${voice.moment} that feels warm, familiar, and close to home.`
+  ];
+  const closerOptions = [
+    `It ${voice.purpose}.`,
+    `This story ${voice.purpose}.`,
+    `Along the way, it ${voice.purpose}.`
+  ];
+
+  const opener = openerOptions[getStableTextIndex(`${key}|opener`, openerOptions.length)];
+  const closer = closerOptions[getStableTextIndex(`${key}|closer`, closerOptions.length)];
+  const full = `${opener} ${closer}`;
+
+  return options.mode === 'detail'
+    ? full
+    : full;
+}
+
+function getBookDetailBody(book) {
+  const title = String(book && (book.title || getCanonicalBookId(book)) || 'this story').trim();
+  const options = [
+    `Read ${title} with someone you love, then continue by meeting a character or visiting a place connected to the story.`,
+    `${title} works best when readers pause, notice small moments, and carry the story into conversation afterward.`,
+    `After ${title}, families can keep exploring Hawkins Hollow through related friends, places, and companion activities.`
+  ];
+  return options[getStableTextIndex(`${String(book && book.slug || title)}|detail-body`, options.length)];
+}
+
+function isGenericStoryPlaceholder(text) {
+  const value = String(text || '').trim().toLowerCase();
+  if (!value) {
+    return true;
+  }
+
+  const genericPhrases = [
+    'a gentle story waiting to be read.',
+    'a gentle storybook about discovering how even the smallest friendship can change a day.',
+    'this story invites a child and a caring grown-up to settle in together and begin.',
+    'a story invitation for '
+  ];
+
+  return genericPhrases.some((phrase) => value.includes(phrase));
 }
 
 const CANONICAL_STORY_FEELINGS = [
@@ -4412,7 +4571,7 @@ function buildRelatedStorybookCards(booksData, currentBookSlug) {
       (book) => `<article class="book-card">
         <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
         <h3>${book.title}</h3>
-        <p>${book.description ? book.description : 'A gentle story waiting to be read.'}</p>
+        <p>${getBookSpecificInvitation(book, { mode: 'card' })}</p>
         <a class="button" href="${book.slug}.html">Read this story</a>
       </article>`
     )
@@ -4446,7 +4605,7 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
       <p class="eyebrow">${seriesLabel}</p>
       <h2>${publicTitle}</h2>
       <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${publicTitle}" />
-      ${book.description ? `<p>${book.description}</p>` : '<p>A gentle story waiting to be read.</p>'}
+      <p>${getBookSpecificInvitation(book, { mode: 'detail' })}</p>
       ${storyGuidanceBlock}
       <p><strong>Series:</strong> ${book.seriesSlug || 'Hawkins Hollow'}</p>
       <p>
