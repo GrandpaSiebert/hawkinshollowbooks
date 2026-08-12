@@ -350,6 +350,10 @@ function getBookCharactersPageHref(book) {
   return `books/${toBookPageSlug(book)}-characters.html`;
 }
 
+function getBookCompanionResourcesPageHref(book) {
+  return `books/${toBookPageSlug(book)}-resources.html`;
+}
+
 function getCanonicalBookId(book) {
   return String((book && ((book.identity && book.identity.canonicalId) || book.canonicalId || book.code || book.id)) || '').trim();
 }
@@ -2796,6 +2800,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const bookModelByCanonicalId = experienceContext.bookModelByCanonicalId || new Map();
   const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
   const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
+  const companionResourceRegistry = experienceContext.companionResourceRegistry || null;
   const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
   const bannerBook = experienceBook || bookModelByCanonicalId.get(canonicalId.toUpperCase()) || book;
   const fileTypeSummary = ((book.fileTypes || [])
@@ -3004,11 +3009,12 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
         <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
       </p>
     </section>`;
+  const companionResourceSection = renderBookCompanionResourcesSection(experienceBook || book, companionResourceRegistry);
 
   return renderLayout(
     `${getBookPublicTitle(book) || canonicalId}`,
     pageDescription,
-    `${experienceIntroCard}${storyIntroCard}${continuationCard}
+    `${experienceIntroCard}${storyIntroCard}${companionResourceSection}${continuationCard}
     <script type="application/ld+json">${jsonLd}</script>`,
     site,
     nav,
@@ -4758,6 +4764,111 @@ function getCompanionResourceRegistryResources(companionResourceRegistry) {
     : [];
 }
 
+function getCompanionResourceAnchor(resource, index) {
+  const base = toSlug((resource && (resource.publicName || resource.title || resource.resourceId)) || `resource-${index + 1}`);
+  return base || `resource-${index + 1}`;
+}
+
+function getCompanionResourcesForBook(book, companionResourceRegistry) {
+  const resources = getCompanionResourceRegistryResources(companionResourceRegistry);
+  const storyId = String(getCanonicalBookId(book) || '').toUpperCase();
+  const storyTitle = String(getBookPublicTitle(book) || '').toLowerCase();
+
+  return resources.filter((resource) => {
+    const structural = resource && resource.structural ? resource.structural : {};
+    const world = resource && resource.world ? resource.world : {};
+    const resourceStoryId = String(structural.storyId || '').toUpperCase();
+    const resourceStoryTitle = String(structural.storyTitle || '').toLowerCase();
+    const relatedStories = Array.isArray(world.relatedStories)
+      ? world.relatedStories.map((value) => String(value || '').toUpperCase())
+      : [];
+    const relatedBooks = Array.isArray(world.relatedBooks)
+      ? world.relatedBooks.map((value) => String(value || '').toLowerCase())
+      : [];
+
+    return resourceStoryId === storyId
+      || relatedStories.includes(storyId)
+      || resourceStoryTitle === storyTitle
+      || relatedBooks.includes(storyTitle);
+  });
+}
+
+function renderCompanionResourceStoryCard(resource, index, pageHref, bookHref) {
+  const audience = getCompanionResourceAudience(resource);
+  const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
+  const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
+  const headline = getCompanionResourceVisitorHeadline(resource);
+  const intro = getCompanionResourceVisitorIntro(resource);
+  const anchor = getCompanionResourceAnchor(resource, index);
+
+  return `<article class="start-here-item companion-resource-card" id="${escapeHtml(anchor)}">
+    <p class="eyebrow">${escapeHtml(audience)}</p>
+    <h3>${escapeHtml(resourceTitle)}</h3>
+    <p><strong>${escapeHtml(headline)}</strong></p>
+    <p>${escapeHtml(summary)}</p>
+    <p>${escapeHtml(intro)}</p>
+    <p>
+      <a class="button" href="${escapeHtml(pageHref)}">Open this resource</a>
+      <a class="button" href="${escapeHtml(bookHref)}">Return to the book</a>
+    </p>
+  </article>`;
+}
+
+function renderBookCompanionResourcesSection(book, companionResourceRegistry) {
+  const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
+  if (!resources.length) {
+    return '';
+  }
+
+  const pageFileName = `${toBookPageSlug(book)}-resources.html`;
+  const bookFileName = `${toBookPageSlug(book)}.html`;
+  const cards = resources.map((resource, index) => {
+    const anchor = getCompanionResourceAnchor(resource, index);
+    return renderCompanionResourceStoryCard(resource, index, `${pageFileName}#${anchor}`, bookFileName);
+  }).join('');
+
+  return `<section class="content-card" aria-labelledby="companion-pack-resources">
+    <h2 id="companion-pack-resources">Companion Pack Resources</h2>
+    <p>These links come from the Story Master companion-resource registry for this book.</p>
+    <div class="start-here-grid">${cards}</div>
+    <p><a class="button" href="${pageFileName}">Open the full companion pack</a></p>
+  </section>`;
+}
+
+function renderBookCompanionResourcesPage(book, companionResourceRegistry, site, nav, config) {
+  const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
+  const pageHref = `${toBookPageSlug(book)}-resources.html`;
+  const bookHref = `${toBookPageSlug(book)}.html`;
+  const bookTitle = getBookPublicTitle(book) || getCanonicalBookId(book);
+  const resourceCards = resources.length > 0
+    ? resources.map((resource, index) => {
+      const anchor = getCompanionResourceAnchor(resource, index);
+      return renderCompanionResourceStoryCard(resource, index, `#${anchor}`, bookHref);
+    }).join('')
+    : '<p>No companion resources have been assigned to this book yet.</p>';
+
+  return renderLayout(
+    `${bookTitle} Companion Pack`,
+    `Companion resources for ${bookTitle}`,
+    `<section class="content-card" aria-labelledby="companion-pack-heading">
+      <h2 id="companion-pack-heading">Companion resources for this story</h2>
+      <p>These are the available resources from the companion pack for ${bookTitle}.</p>
+      <p><a class="button" href="${bookHref}">Return to the book</a></p>
+    </section>
+
+    <section class="content-card" aria-labelledby="companion-pack-resources-list">
+      <h2 id="companion-pack-resources-list">Available resources</h2>
+      <div class="start-here-grid">${resourceCards}</div>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/${pageHref}`,
+    config,
+    getBookCoverBanner(book),
+    '../'
+  );
+}
+
 function getCompanionResourceAudience(resource) {
   return String((resource && resource.structural && resource.structural.primaryAudience) || resource.primaryAudience || 'Shared');
 }
@@ -5228,6 +5339,7 @@ function buildSite() {
   const constructionData = readJson('data/under-construction.json');
   const config = readJson('data/site-config.json');
   const banners = readJson('data/banners.json');
+  const companionResourceRegistry = readJsonIfExists('data/companion-resource-registry.json');
   const authorityRegistry = loadCanonicalAuthorityRegistry();
   const updatedSourceProjection = writeLegacySourceRegistryProjection(authorityRegistry);
   if (updatedSourceProjection) {
@@ -5406,9 +5518,17 @@ function buildSite() {
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
         bookModelByCanonicalId,
         characterByCanonicalId,
-        environmentByCanonicalId
+        environmentByCanonicalId,
+        companionResourceRegistry
       })
     );
+    const companionResources = getCompanionResourcesForBook(storyBook || book, companionResourceRegistry);
+    if (companionResources.length > 0) {
+      writePageToOutputs(
+        getBookCompanionResourcesPageHref(book),
+        renderBookCompanionResourcesPage(storyBook || book, companionResourceRegistry, site, nav, config)
+      );
+    }
     if (storyCharacters.length > 0) {
       writePageToOutputs(
         getBookCharactersPageHref(book),
