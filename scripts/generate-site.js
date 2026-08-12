@@ -5173,8 +5173,7 @@ function getCompanionResourcePublishedUrl(resource) {
   const rawSourcePath = String(resource && (resource.sourceFile || resource.filePath || resource.sourcePath) || '')
     .replace(/\\/g, '/')
     .replace(/^\/+/, '');
-  const absoluteSourcePath = path.join(root, 'Library', ...rawSourcePath.split('/'));
-  if (!rawSourcePath || !fs.existsSync(absoluteSourcePath)) {
+  if (!rawSourcePath) {
     return '';
   }
 
