@@ -3711,9 +3711,13 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
     .sort((a, b) => a.sortOrder - b.sortOrder)
     .map(
         (character) => `<a class="character-card" href="characters/${character.slug}.html" aria-label="Meet ${character.name}">
-          <img class="character-hero-thumb" src="${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
-          <h3>${character.name}</h3>
-          <p>${character.description}</p>
+          <div class="character-card-media">
+            <img class="character-hero-thumb" src="${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
+          </div>
+          <div class="character-card-copy">
+            <h3>${character.name}</h3>
+            <p>${character.description}</p>
+          </div>
         </a>`
     )
     .join('');
