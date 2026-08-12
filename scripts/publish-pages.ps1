@@ -13,10 +13,22 @@ try {
         throw "This folder is not a git repository: $repoRoot"
     }
 
+    Write-Host "Running pre-publish branch guard..."
+    node scripts/prepublish-guard.js --branch $Branch --skip-route-drop-check
+    if ($LASTEXITCODE -ne 0) {
+        throw "Pre-publish branch guard failed with exit code $LASTEXITCODE"
+    }
+
     Write-Host "Building site..."
     node scripts/generate-site.js
     if ($LASTEXITCODE -ne 0) {
         throw "Site build failed with exit code $LASTEXITCODE"
+    }
+
+    Write-Host "Running pre-publish sitemap guard..."
+    node scripts/prepublish-guard.js --branch $Branch --allow-dirty
+    if ($LASTEXITCODE -ne 0) {
+        throw "Pre-publish sitemap guard failed with exit code $LASTEXITCODE"
     }
 
     git add -A
@@ -49,7 +61,3 @@ try {
 finally {
     Pop-Location
 }
-git status
-git add .github/workflows/deploy-pages.yml scripts/publish-pages.ps1 package.json README.md
-git commit -m "Add GitHub Pages deployment workflow"
-git push origin main

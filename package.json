@@ -23,6 +23,7 @@
     "library:rollback": "node scripts/library-rollback.js --apply",
     "library:rollback:preview": "node scripts/library-rollback.js --preview",
     "preview": "node scripts/preview-site.js",
+    "publish:guard": "node scripts/prepublish-guard.js --branch main",
     "publish:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
