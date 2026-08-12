@@ -350,8 +350,10 @@ function getBookCharactersPageHref(book) {
   return `books/${toBookPageSlug(book)}-characters.html`;
 }
 
-function getBookCompanionResourcesPageHref(book) {
-  return `books/${toBookPageSlug(book)}-resources.html`;
+function getBookCompanionResourcesHref(book, hasResources = true) {
+  return hasResources
+    ? `resources.html?story=${encodeURIComponent(String(getCanonicalBookId(book) || '').trim())}`
+    : 'resources.html';
 }
 
 function getCanonicalBookId(book) {
@@ -4816,57 +4818,24 @@ function renderCompanionResourceStoryCard(resource, index, pageHref, bookHref) {
 
 function renderBookCompanionResourcesSection(book, companionResourceRegistry) {
   const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
-  if (!resources.length) {
-    return '';
-  }
-
-  const pageFileName = `${toBookPageSlug(book)}-resources.html`;
-  const bookFileName = `${toBookPageSlug(book)}.html`;
-  const cards = resources.map((resource, index) => {
-    const anchor = getCompanionResourceAnchor(resource, index);
-    return renderCompanionResourceStoryCard(resource, index, `${pageFileName}#${anchor}`, bookFileName);
-  }).join('');
+  const hasResources = resources.length > 0;
+  const resourcesHref = getBookCompanionResourcesHref(book, hasResources);
+  const resourceCountText = hasResources
+    ? `${resources.length} companion resource${resources.length === 1 ? '' : 's'} are available for this story.`
+    : 'No companion resources are published for this story yet.';
+  const actionsMarkup = hasResources
+    ? `<p>
+      <a class="button" href="${escapeHtml(resourcesHref)}">Companion Resources</a>
+      <a class="button" href="resources.html">Browse all resources</a>
+    </p>`
+    : '';
 
   return `<section class="content-card" aria-labelledby="companion-pack-resources">
-    <h2 id="companion-pack-resources">Companion Pack Resources</h2>
-    <p>These links come from the Story Master companion-resource registry for this book.</p>
-    <div class="start-here-grid">${cards}</div>
-    <p><a class="button" href="${pageFileName}">Open the full companion pack</a></p>
+    <h2 id="companion-pack-resources">Companion Resources</h2>
+    <p>${escapeHtml(resourceCountText)}</p>
+    <p>Open the main Resources catalog to see the available materials, filtered to this story when resources exist.</p>
+    ${actionsMarkup}
   </section>`;
-}
-
-function renderBookCompanionResourcesPage(book, companionResourceRegistry, site, nav, config) {
-  const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
-  const pageHref = `${toBookPageSlug(book)}-resources.html`;
-  const bookHref = `${toBookPageSlug(book)}.html`;
-  const bookTitle = getBookPublicTitle(book) || getCanonicalBookId(book);
-  const resourceCards = resources.length > 0
-    ? resources.map((resource, index) => {
-      const anchor = getCompanionResourceAnchor(resource, index);
-      return renderCompanionResourceStoryCard(resource, index, `#${anchor}`, bookHref);
-    }).join('')
-    : '<p>No companion resources have been assigned to this book yet.</p>';
-
-  return renderLayout(
-    `${bookTitle} Companion Pack`,
-    `Companion resources for ${bookTitle}`,
-    `<section class="content-card" aria-labelledby="companion-pack-heading">
-      <h2 id="companion-pack-heading">Companion resources for this story</h2>
-      <p>These are the available resources from the companion pack for ${bookTitle}.</p>
-      <p><a class="button" href="${bookHref}">Return to the book</a></p>
-    </section>
-
-    <section class="content-card" aria-labelledby="companion-pack-resources-list">
-      <h2 id="companion-pack-resources-list">Available resources</h2>
-      <div class="start-here-grid">${resourceCards}</div>
-    </section>`,
-    site,
-    nav,
-    `${site.domain}/${pageHref}`,
-    config,
-    getBookCoverBanner(book),
-    '../'
-  );
 }
 
 function getCompanionResourceAudience(resource) {
@@ -4950,21 +4919,25 @@ function getCompanionResourceVisitorHeadline(resource) {
   return publicName;
 }
 
-function renderCompanionResourceVisitorCard(resource) {
+function renderCompanionResourceVisitorCard(resource, bookLookup) {
   const audience = getCompanionResourceAudience(resource);
   const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
   const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
   const headline = getCompanionResourceVisitorHeadline(resource);
+  const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
+  const storyBook = bookLookup && bookLookup.get(storyId) ? bookLookup.get(storyId) : null;
+  const storyHref = storyBook ? getBookPageHref(storyBook) : 'books.html';
+  const charactersHref = storyBook ? `${toBookPageSlug(storyBook)}-characters.html` : 'characters.html';
 
-  return `<article class="start-here-item companion-resource-card">
+  return `<article class="start-here-item companion-resource-card" data-companion-resource-card data-companion-resource-story-id="${escapeHtml(storyId)}">
     <p class="eyebrow">${escapeHtml(audience)}</p>
     <h3>${escapeHtml(resourceTitle)}</h3>
     <p><strong>${escapeHtml(headline)}</strong></p>
     <p>${escapeHtml(summary)}</p>
     <p>${escapeHtml(getCompanionResourceVisitorIntro(resource))}</p>
     <p>
-      <a class="button" href="books/HH-A-0001-spencer-s-first-friend.html">Read the story</a>
-      <a class="button" href="characters/spencer-field-mouse.html">Meet Spencer</a>
+      <a class="button" href="${escapeHtml(storyHref)}">Read the story</a>
+      <a class="button" href="${escapeHtml(charactersHref)}">Meet the characters</a>
       <a class="button" href="map.html">Open the map</a>
       <a class="button" href="storybook-shelf.html">Continue your journey</a>
     </p>
@@ -4990,13 +4963,28 @@ function renderCompanionResourceDeveloperCard(resource) {
   </article>`;
 }
 
-function renderCompanionResourceRegistryPage(companionResourceRegistry, site, nav, config, banner) {
+function renderCompanionResourceRegistryPage(companionResourceRegistry, site, nav, config, banner, booksData = null) {
   const resources = getCompanionResourceRegistryResources(companionResourceRegistry);
+  const bookLookup = new Map(((booksData && booksData.books) || []).map((book) => [String(getCanonicalBookId(book)).toUpperCase(), book]));
   const audiences = ['Child', 'Parent/Family', 'Educator/Librarian'];
   const groupedResources = audiences.map((audience) => ({
     audience,
     items: resources.filter((resource) => getCompanionResourceAudience(resource) === audience)
   }));
+  const storyOptions = [];
+  const seenStoryIds = new Set();
+  for (const resource of resources) {
+    const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
+    if (!storyId || seenStoryIds.has(storyId)) {
+      continue;
+    }
+    seenStoryIds.add(storyId);
+    const relatedBook = bookLookup.get(storyId) || null;
+    storyOptions.push({
+      storyId,
+      label: relatedBook ? (getBookPublicTitle(relatedBook) || storyId) : ((resource && resource.structural && resource.structural.storyTitle) || storyId)
+    });
+  }
   const uniqueCharacters = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.characters) || [])))];
   const uniquePlaces = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.places) || [])))];
   const uniqueObjects = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.objects) || [])))];
@@ -5005,15 +4993,19 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
 
   const audienceCards = groupedResources.map(({ audience, items }) => {
     const cardHtml = items.length > 0
-      ? `<div class="start-here-grid">${items.map(renderCompanionResourceVisitorCard).join('')}</div>`
+      ? `<div class="start-here-grid">${items.map((resource) => renderCompanionResourceVisitorCard(resource, bookLookup)).join('')}</div>`
       : '<p>No resources have been assigned here yet.</p>';
 
-    return `<section class="content-card" aria-labelledby="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
+    return `<section class="content-card" data-companion-audience-section aria-labelledby="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
       <h2 id="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${escapeHtml(audience)}</h2>
       <p>${escapeHtml(getCompanionResourceVisitorIntro({ structural: { primaryAudience: audience } }))}</p>
       ${cardHtml}
     </section>`;
   }).join('\n\n');
+
+  const storySelectOptions = storyOptions.length > 0
+    ? storyOptions.map((option) => `<option value="${escapeHtml(option.storyId)}">${escapeHtml(option.label)}</option>`).join('')
+    : '<option value="">No story filters available</option>';
 
   const developerCards = groupedResources.map(({ audience, items }) => {
     const cardHtml = items.length > 0
@@ -5045,7 +5037,97 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
       </p>
     </section>
 
+    <section class="content-card" aria-labelledby="resource-filter">
+      <h2 id="resource-filter">Filter the catalog</h2>
+      <p>Choose a story to focus the catalog on its companion resources. Clear the filter to browse everything again.</p>
+      <div class="resource-filter-controls">
+        <label for="companion-resource-story-filter"><strong>Story</strong></label>
+        <select id="companion-resource-story-filter">
+          <option value="">All stories</option>
+          ${storySelectOptions}
+        </select>
+        <a class="button" href="resources.html">Show all resources</a>
+      </div>
+      <p id="resource-filter-status" class="resource-filter-status"></p>
+    </section>
+
     ${audienceCards}
+
+    <script>
+      (function() {
+        const select = document.getElementById('companion-resource-story-filter');
+        const status = document.getElementById('resource-filter-status');
+        const sections = Array.from(document.querySelectorAll('[data-companion-audience-section]'));
+        const cards = Array.from(document.querySelectorAll('[data-companion-resource-card]'));
+        const params = new URLSearchParams(window.location.search);
+        const storyFromUrl = (params.get('story') || '').trim().toUpperCase();
+
+        function setStatus(message) {
+          if (status) {
+            status.textContent = message;
+          }
+        }
+
+        function applyFilter(storyValue, fromUrl) {
+          let matchedCount = 0;
+
+          cards.forEach((card) => {
+            const cardStory = String(card.dataset.companionResourceStoryId || '').trim().toUpperCase();
+            const matches = !storyValue || cardStory === storyValue;
+            card.hidden = !matches;
+            if (matches && storyValue) {
+              matchedCount += 1;
+            }
+          });
+
+          sections.forEach((section) => {
+            const visibleCards = section.querySelectorAll('[data-companion-resource-card]:not([hidden])');
+            section.hidden = Boolean(storyValue) && visibleCards.length === 0;
+          });
+
+          if (!storyValue) {
+            setStatus('Showing the full catalog. Choose a story to focus the view.');
+            return;
+          }
+
+          const label = select && select.selectedOptions.length > 0 ? select.selectedOptions[0].textContent : storyValue;
+          if (matchedCount > 0) {
+            setStatus('Showing companion resources for ' + label + '.');
+            return;
+          }
+
+          cards.forEach((card) => {
+            card.hidden = false;
+          });
+          sections.forEach((section) => {
+            section.hidden = false;
+          });
+          setStatus('No companion resources are published yet for ' + label + '; showing the full catalog instead.');
+          if (fromUrl && select) {
+            select.value = '';
+          }
+        }
+
+        if (select) {
+          select.addEventListener('change', function() {
+            const nextStory = String(select.value || '').trim().toUpperCase();
+            const nextUrl = new URL(window.location.href);
+            if (nextStory) {
+              nextUrl.searchParams.set('story', nextStory);
+            } else {
+              nextUrl.searchParams.delete('story');
+            }
+            window.history.replaceState({}, '', nextUrl.toString());
+            applyFilter(nextStory, false);
+          });
+        }
+
+        if (storyFromUrl && select) {
+          select.value = storyFromUrl;
+        }
+        applyFilter(storyFromUrl, Boolean(storyFromUrl));
+      })();
+    </script>
 
     <section class="content-card" aria-labelledby="registry-shared">
       <h2 id="registry-shared">Shared assets in Spencer's First Friend</h2>
@@ -5110,7 +5192,7 @@ function renderUnderConstructionPage(page, site, nav, constructionData, config, 
   if (page && page.slug === 'resources') {
     const registry = readJsonIfExists('data/companion-resource-registry.json');
     if (registry && Array.isArray(registry.resources)) {
-      return renderCompanionResourceRegistryPage(registry, site, nav, config, banner);
+      return renderCompanionResourceRegistryPage(registry, site, nav, config, banner, readJson('data/books.json'));
     }
 
     return renderLayout(
@@ -5299,6 +5381,24 @@ function writePageToOutputs(fileName, html) {
   outputDirs.forEach((outputDir) => writePage(fileName, html, outputDir));
 }
 
+function toCanonicalSiteUrl(site, fileName) {
+  const normalized = String(fileName || '').replace(/\\/g, '/').replace(/^\/+/, '');
+  if (!normalized || normalized === 'index.html') {
+    return `${String(site.domain || '').replace(/\/$/, '')}/`;
+  }
+
+  return `${String(site.domain || '').replace(/\/$/, '')}/${normalized}`;
+}
+
+function buildSitemapXml(site, routeNames) {
+  const routes = Array.from(routeNames)
+    .filter((route) => route && route !== 'sitemap.xml')
+    .sort((a, b) => a.localeCompare(b));
+
+  const urls = routes.map((route) => `  <url>\n    <loc>${toCanonicalSiteUrl(site, route)}</loc>\n  </url>`).join('\n');
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+}
+
 function copyStaticSiteAssets(outputDir) {
   fs.copyFileSync(path.join(root, 'styles.css'), path.join(outputDir, 'styles.css'));
   if (fs.existsSync(path.join(root, 'assets'))) {
@@ -5443,6 +5543,14 @@ function buildSite() {
   outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
 
+  const sitemapRoutes = new Set();
+  const writePageToOutputsAndTrack = (fileName, html) => {
+    if (fileName !== 'sitemap.xml') {
+      sitemapRoutes.add(fileName);
+    }
+    writePageToOutputs(fileName, html);
+  };
+
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
     const referenceIssue = pageReferenceIssues.get(page.slug);
@@ -5463,7 +5571,11 @@ function buildSite() {
       html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner);
     }
 
-    writePageToOutputs(page.slug === 'index' ? 'index.html' : `${page.slug}.html`, html);
+    const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
+    writePageToOutputs(pageRoute, html);
+    if (page.status !== 'legacy') {
+      sitemapRoutes.add(pageRoute);
+    }
   }
 
   const featuredCharacters = charactersData.characters
@@ -5476,22 +5588,27 @@ function buildSite() {
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
     );
+    sitemapRoutes.add(path.join('characters', `${character.slug}.html`));
     writePageToOutputs(
       path.join('characters', `${character.slug}-stories.html`),
       renderCharacterContinuationPage(experienceAsset, 'stories', site, nav, config, characterExperienceBanner)
     );
+    sitemapRoutes.add(path.join('characters', `${character.slug}-stories.html`));
     writePageToOutputs(
       path.join('characters', `${character.slug}-places.html`),
       renderCharacterContinuationPage(experienceAsset, 'places', site, nav, config, characterExperienceBanner)
     );
+    sitemapRoutes.add(path.join('characters', `${character.slug}-places.html`));
     writePageToOutputs(
       path.join('characters', `${character.slug}-people.html`),
       renderCharacterContinuationPage(experienceAsset, 'people', site, nav, config, characterExperienceBanner)
     );
+    sitemapRoutes.add(path.join('characters', `${character.slug}-people.html`));
     writePageToOutputs(
       path.join('characters', `${character.slug}-relationships.html`),
       renderCharacterContinuationPage(experienceAsset, 'relationships', site, nav, config, characterExperienceBanner)
     );
+    sitemapRoutes.add(path.join('characters', `${character.slug}-relationships.html`));
   }
 
   const indexedBooks = (libraryIndex.books || []).slice().sort((a, b) => a.id.localeCompare(b.id));
@@ -5522,18 +5639,13 @@ function buildSite() {
         companionResourceRegistry
       })
     );
-    const companionResources = getCompanionResourcesForBook(storyBook || book, companionResourceRegistry);
-    if (companionResources.length > 0) {
-      writePageToOutputs(
-        getBookCompanionResourcesPageHref(book),
-        renderBookCompanionResourcesPage(storyBook || book, companionResourceRegistry, site, nav, config)
-      );
-    }
+    sitemapRoutes.add(getBookPageHref(book));
     if (storyCharacters.length > 0) {
       writePageToOutputs(
         getBookCharactersPageHref(book),
         renderStoryCharactersPage(storyBook || book, storyCharacters, site, nav, config)
       );
+      sitemapRoutes.add(getBookCharactersPageHref(book));
     }
   }
 
@@ -5546,7 +5658,10 @@ function buildSite() {
   for (const entity of allEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
     writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners));
+    sitemapRoutes.add(pagePath);
   }
+
+  writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
   console.log(`Generated ${allEntities.length} universal entity pages.`);
