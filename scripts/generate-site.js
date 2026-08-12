@@ -5662,6 +5662,16 @@ function buildSitemapXml(site, routeNames) {
 
 function copyStaticSiteAssets(outputDir) {
   fs.copyFileSync(path.join(root, 'styles.css'), path.join(outputDir, 'styles.css'));
+  const rootEntries = fs.readdirSync(root, { withFileTypes: true });
+  for (const entry of rootEntries) {
+    if (!entry.isFile()) {
+      continue;
+    }
+    if (!/^google[\w-]+\.html$/i.test(entry.name)) {
+      continue;
+    }
+    fs.copyFileSync(path.join(root, entry.name), path.join(outputDir, entry.name));
+  }
   if (fs.existsSync(path.join(root, 'assets'))) {
     copyDir(path.join(root, 'assets'), path.join(outputDir, 'assets'));
   }
