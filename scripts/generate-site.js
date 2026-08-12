@@ -424,7 +424,7 @@ function mapStatusToAvailability(status) {
 
 function createSearchIndex(libraryIndex, amazonLookup) {
   const records = ((libraryIndex && libraryIndex.books) || []).map((book) => {
-    const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+    const amazon = getAmazonRecordForBook(book, amazonLookup);
     const keywords = [
       book.id,
       book.title,
@@ -518,7 +518,7 @@ function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
 
 function createMergedBookIndex(libraryIndex, amazonLookup) {
   const records = ((libraryIndex && libraryIndex.books) || []).map((book) => {
-    const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+    const amazon = getAmazonRecordForBook(book, amazonLookup);
     return {
       id: book.id,
       title: book.title || book.id,
@@ -2746,13 +2746,46 @@ function renderSearchSection() {
 }
 
 function buildAmazonLookup(amazonIndex) {
-  const map = new Map();
+  const byId = new Map();
+  const byTitle = new Map();
   for (const record of (amazonIndex && amazonIndex.records) || []) {
     if (record && record.id) {
-      map.set(record.id.toUpperCase(), record);
+      byId.set(record.id.toUpperCase(), record);
+    }
+    const titleKey = normalizeAmazonMatchKey(record && record.title);
+    if (titleKey && !byTitle.has(titleKey)) {
+      byTitle.set(titleKey, record);
     }
   }
-  return map;
+  return { byId, byTitle };
+}
+
+function normalizeAmazonMatchKey(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function getAmazonRecordForBook(book, amazonLookup) {
+  if (!amazonLookup) {
+    return null;
+  }
+
+  const id = String((book && book.id) || '').trim().toUpperCase();
+  if (id && amazonLookup.byId && amazonLookup.byId.has(id)) {
+    return amazonLookup.byId.get(id) || null;
+  }
+
+  const titleKey = normalizeAmazonMatchKey(book && (book.title || book.name));
+  if (titleKey && amazonLookup.byTitle && amazonLookup.byTitle.has(titleKey)) {
+    return amazonLookup.byTitle.get(titleKey) || null;
+  }
+
+  return null;
 }
 
 function getSeriesBooksFromLibraryIndex(libraryIndex, seriesName) {
@@ -2790,7 +2823,7 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
       const pdf = (book.files || []).find((file) => file.toLowerCase().endsWith('.pdf'));
       const fileCount = (book.files || []).length;
       const detailHref = getBookPageHref(book);
-      const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+      const amazon = getAmazonRecordForBook(book, amazonLookup);
       const links = amazon && amazon.links ? amazon.links : {};
       const buttons = [
         links.paperback ? `<a class="button" href="${links.paperback}" target="_blank" rel="noopener noreferrer">Buy Paperback</a>` : '',
@@ -2829,7 +2862,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   };
   const files = (book.files || []).sort();
   const previewFiles = files.slice(0, 20);
-  const amazon = amazonLookup ? amazonLookup.get((book.id || '').toUpperCase()) : null;
+  const amazon = getAmazonRecordForBook(book, amazonLookup);
   const bookModelByCanonicalId = experienceContext.bookModelByCanonicalId || new Map();
   const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
   const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
@@ -4501,7 +4534,7 @@ function getBooksForSeries(series, booksData) {
     });
 }
 
-function buildSeriesPreviewCards(booksData, series) {
+function buildSeriesPreviewCards(booksData, series, amazonLookup) {
   const seriesBooks = getBooksForSeries(series, booksData);
 
   if (!seriesBooks.length) {
@@ -4512,7 +4545,12 @@ function buildSeriesPreviewCards(booksData, series) {
   const cardsMarkup = `<div class="storybook-list" aria-label="Series story recommendations" data-display-order="${displayOrder}" data-rotation-frequency="${rotationFrequency}" data-series-slug="${series && series.slug ? series.slug : ''}">
         ${seriesBooks
           .map(
-            (book) => `<article class="book-card storybook-card">
+            (book) => {
+              const amazon = getAmazonRecordForBook(book, amazonLookup);
+              const amazonHref = amazon && (amazon.url || (amazon.links && (amazon.links.paperback || amazon.links.kindle || amazon.links.hardcover)))
+                ? (amazon.url || amazon.links.paperback || amazon.links.kindle || amazon.links.hardcover)
+                : '';
+              return `<article class="book-card storybook-card">
               <div class="storybook-card-media">
                 <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
               </div>
@@ -4520,9 +4558,11 @@ function buildSeriesPreviewCards(booksData, series) {
                 <h3 class="story-card-title">${book.title}</h3>
                 <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
                 ${getStoryGuidanceLine(book, 3) ? `<p class="story-metadata-line">${getStoryGuidanceLine(book, 3)}</p>` : ''}
+                ${amazonHref ? `<a class="button" href="${amazonHref}" target="_blank" rel="noopener noreferrer">View on Amazon</a>` : ''}
                 <a class="button" href="${getBookPageHref(book)}">Read this story</a>
               </div>
-            </article>`
+            </article>`;
+            }
           )
           .join('')}
       </div>`;
@@ -4534,7 +4574,7 @@ function buildSeriesPreviewCards(booksData, series) {
     ${cardsMarkup}`;
 }
 
-function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner) {
+function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup) {
   const series = seriesData.series.find((entry) => entry.slug === page.seriesSlug);
   const editorial = getSeriesEditorial(series);
   const seriesVoice = getSeriesVoice(series && series.slug);
@@ -4568,7 +4608,7 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
       <h2 id="${shelfHeadingId}">Choose a Story</h2>
       <p>These stories can be read in any order. Begin with the one that feels right today.</p>
       <div class="storybook-shelf" aria-label="${series.title} stories to read in any order">
-        ${buildSeriesPreviewCards(booksData, series)}
+        ${buildSeriesPreviewCards(booksData, series, amazonLookup)}
       </div>
       <script>
         (function () {
@@ -5835,7 +5875,7 @@ function buildSite() {
     } else if (page.template === 'article') {
       html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup);
     } else if (page.template === 'series') {
-      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner);
+      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup);
     } else if (page.template === 'book-detail') {
       html = renderBookDetailPage(page, site, nav, booksData, config, banner);
     } else {
