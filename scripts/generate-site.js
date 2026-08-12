@@ -3063,6 +3063,9 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const amazonReadAttrs = String(amazonReadHref).startsWith('http')
     ? ' target="_blank" rel="noopener noreferrer"'
     : '';
+  const amazonReadLabel = String(amazonReadHref).startsWith('http')
+    ? 'View on Amazon'
+    : 'Explore this series';
   const storyIntroCard = `<section class="content-card" aria-labelledby="story-intro-heading">
       <p class="eyebrow">Storybook</p>
       <h2 id="story-intro-heading">${getBookPublicTitle(book) || canonicalId}</h2>
@@ -3071,7 +3074,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       ${storyCharacterSection}
       ${storyGuidanceBlock}
       <p>
-        <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>Read this story</a>
+        <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>${amazonReadLabel}</a>
         <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
       </p>
     </section>`;
@@ -4558,8 +4561,10 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
                 <h3 class="story-card-title">${book.title}</h3>
                 <p class="story-card-invitation">${getStorybookCardInvitation(book)}</p>
                 ${getStoryGuidanceLine(book, 3) ? `<p class="story-metadata-line">${getStoryGuidanceLine(book, 3)}</p>` : ''}
-                ${amazonHref ? `<a class="button" href="${amazonHref}" target="_blank" rel="noopener noreferrer">View on Amazon</a>` : ''}
-                <a class="button" href="${getBookPageHref(book)}">Read this story</a>
+                <div class="story-card-actions">
+                  ${amazonHref ? `<a class="button" href="${amazonHref}" target="_blank" rel="noopener noreferrer">View on Amazon</a>` : ''}
+                  <a class="button" href="${getBookPageHref(book)}">Read this story</a>
+                </div>
               </div>
             </article>`;
             }

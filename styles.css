@@ -469,6 +469,13 @@ h2 {
   margin-bottom: 0.5rem;
 }
 
+.story-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  align-items: center;
+}
+
 .storybook-card .button {
   margin-top: 0;
   padding: 0.5rem 0.8rem;
