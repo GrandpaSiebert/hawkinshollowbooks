@@ -646,6 +646,18 @@ h2 {
   margin-bottom: 0;
 }
 
+/* Support legacy card markup where img/h3/p are direct children. */
+.character-card > .character-hero-thumb {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+  align-self: start;
+}
+
+.character-card > h3,
+.character-card > p {
+  grid-column: 2;
+}
+
 .character-hero-thumb {
   display: block;
   width: 100%;
