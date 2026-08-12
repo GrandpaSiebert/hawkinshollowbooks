@@ -3,5 +3,6 @@
   "previewMessage": "Hawkins Hollow Website Preview",
   "previewSubmessage": "This site is currently being built. Some pages are still being prepared.",
   "siteName": "Hawkins Hollow Books",
-  "siteUrl": "https://hawkinshollowbooks.com"
+  "siteUrl": "https://hawkinshollowbooks.com",
+  "libraryBaseUrl": "https://pub-d3308832301d4b6387c9e30504f86c7d.r2.dev"
 }

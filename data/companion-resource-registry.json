@@ -9,18 +9,18 @@
     "title": "Companion Resource Package — HH-A-0001 Spencer's First Friend",
     "filePath": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resource Package — HH-A-0001 Spencer's First Friend.docx"
   },
-  "generatedAt": "2026-08-04T00:00:00.000Z",
+  "generatedAt": "2026-08-12T03:28:14.727Z",
   "resources": [
     {
-      "resourceId": "HH-A-0001-ACT-BP3",
-      "publicName": "Spencer's Brave Plan 3",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-BP3-Spencers-Brave-Plan-3-V001-WORKING.pdf",
-      "summary": "Brave-plan sequence that helps readers break a hard task into small, visible steps.",
+      "resourceId": "HH-A-0001-ACT-SCAV",
+      "publicName": "Find Three Brave Plan Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-SCAV-Find-Three-Brave-Plan-Objects-V001-WORKING.pdf",
+      "summary": "Scavenger hunt that asks children to find objects connected to the brave plan.",
       "structural": {
         "storyId": "HH-A-0001",
         "storyTitle": "Spencer's First Friend",
         "series": "Storybooks",
-        "resourceType": "Activity Pages",
+        "resourceType": "Scavenger Hunt",
         "primaryAudience": "Child",
         "secondaryAudiences": [
           "Parent/Family"
@@ -44,50 +44,8 @@
         ],
         "objects": [
           "Three Pebbles",
-          "tidy pouch",
+          "vine loop",
           "stick markers"
-        ],
-        "relatedStories": [
-          "HH-A-0001"
-        ],
-        "relatedBooks": [
-          "Spencer's First Friend"
-        ]
-      }
-    },
-    {
-      "resourceId": "HH-A-0001-ACT-COLOR",
-      "publicName": "One Small Brave Step",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-COLOR-One-Small-Brave-Step-V001-WORKING.pdf",
-      "summary": "Coloring page that lets children name one brave step and picture it clearly.",
-      "structural": {
-        "storyId": "HH-A-0001",
-        "storyTitle": "Spencer's First Friend",
-        "series": "Storybooks",
-        "resourceType": "Coloring Page",
-        "primaryAudience": "Child",
-        "secondaryAudiences": [
-          "Parent/Family"
-        ],
-        "status": "Working"
-      },
-      "world": {
-        "characters": [
-          "Spencer",
-          "Austin",
-          "Lex"
-        ],
-        "places": [
-          "Burrow Path",
-          "Clover Patch"
-        ],
-        "landmarks": [
-          "Fence Line",
-          "Rounded Burrow Entrance"
-        ],
-        "objects": [
-          "Three Pebbles",
-          "tidy pouch"
         ],
         "relatedStories": [
           "HH-A-0001"
@@ -186,15 +144,15 @@
       }
     },
     {
-      "resourceId": "HH-A-0001-ACT-OBJECT",
-      "publicName": "Three Pebbles Sorting Page",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-OBJECT-Three-Pebbles-Sorting-Page-V001-WORKING.pdf",
-      "summary": "Sorting page built around the story's three-pebble object pattern.",
+      "resourceId": "HH-A-0001-ACT-COLOR",
+      "publicName": "One Small Brave Step",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-COLOR-One-Small-Brave-Step-V001-WORKING.pdf",
+      "summary": "Coloring page that lets children name one brave step and picture it clearly.",
       "structural": {
         "storyId": "HH-A-0001",
         "storyTitle": "Spencer's First Friend",
         "series": "Storybooks",
-        "resourceType": "Object Sorting Page",
+        "resourceType": "Coloring Page",
         "primaryAudience": "Child",
         "secondaryAudiences": [
           "Parent/Family"
@@ -204,7 +162,8 @@
       "world": {
         "characters": [
           "Spencer",
-          "Austin"
+          "Austin",
+          "Lex"
         ],
         "places": [
           "Burrow Path",
@@ -270,94 +229,6 @@
       }
     },
     {
-      "resourceId": "HH-A-0001-ACT-RECOG",
-      "publicName": "Who Helps Here",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-RECOG-Who-Helps-Here-V001-WORKING.pdf",
-      "summary": "Recognition set for identifying the helpers who make the story world feel safe and welcoming.",
-      "structural": {
-        "storyId": "HH-A-0001",
-        "storyTitle": "Spencer's First Friend",
-        "series": "Storybooks",
-        "resourceType": "Recognition Set",
-        "primaryAudience": "Child",
-        "secondaryAudiences": [
-          "Parent/Family"
-        ],
-        "status": "Working"
-      },
-      "world": {
-        "characters": [
-          "Spencer",
-          "Austin",
-          "Lex",
-          "Grandpa"
-        ],
-        "places": [
-          "Burrow Path",
-          "Farmhouse Porch"
-        ],
-        "landmarks": [
-          "Fence Line",
-          "Rounded Burrow Entrance"
-        ],
-        "objects": [
-          "Three Pebbles",
-          "stick markers",
-          "tidy pouch"
-        ],
-        "relatedStories": [
-          "HH-A-0001"
-        ],
-        "relatedBooks": [
-          "Spencer's First Friend"
-        ]
-      }
-    },
-    {
-      "resourceId": "HH-A-0001-ACT-SCAV",
-      "publicName": "Find Three Brave Plan Objects",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-SCAV-Find-Three-Brave-Plan-Objects-V001-WORKING.pdf",
-      "summary": "Scavenger hunt that asks children to find objects connected to the brave plan.",
-      "structural": {
-        "storyId": "HH-A-0001",
-        "storyTitle": "Spencer's First Friend",
-        "series": "Storybooks",
-        "resourceType": "Scavenger Hunt",
-        "primaryAudience": "Child",
-        "secondaryAudiences": [
-          "Parent/Family"
-        ],
-        "status": "Working"
-      },
-      "world": {
-        "characters": [
-          "Spencer",
-          "Austin",
-          "Lex"
-        ],
-        "places": [
-          "Burrow Path",
-          "Clover Patch",
-          "Hawkins Hollow Path"
-        ],
-        "landmarks": [
-          "Fence Line",
-          "Rounded Burrow Entrance"
-        ],
-        "objects": [
-          "Three Pebbles",
-          "vine loop",
-          "stick markers"
-        ],
-        "relatedStories": [
-          "HH-A-0001"
-        ],
-        "relatedBooks": [
-          "Spencer's First Friend"
-        ]
-      }
-    },
-    {
       "resourceId": "HH-A-0001-ACT-SEQ",
       "publicName": "Small Steps Grow a Friend",
       "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-SEQ-Small-Steps-Grow-a-Friend-V001-WORKING.pdf",
@@ -402,19 +273,18 @@
       }
     },
     {
-      "resourceId": "HH-A-0001-ACT-VOCAB",
-      "publicName": "Story Word Cards",
-      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-VOCAB-Story-Word-Cards-V001-WORKING.pdf",
-      "summary": "Vocabulary cards for key story words, helpful prompts, and shared language.",
+      "resourceId": "HH-A-0001-ACT-BP3",
+      "publicName": "Spencer's Brave Plan 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-BP3-Spencers-Brave-Plan-3-V001-WORKING.pdf",
+      "summary": "Brave-plan sequence that helps readers break a hard task into small, visible steps.",
       "structural": {
         "storyId": "HH-A-0001",
         "storyTitle": "Spencer's First Friend",
         "series": "Storybooks",
-        "resourceType": "Vocabulary Cards",
+        "resourceType": "Activity Pages",
         "primaryAudience": "Child",
         "secondaryAudiences": [
-          "Parent/Family",
-          "Educator/Librarian"
+          "Parent/Family"
         ],
         "status": "Working"
       },
@@ -436,7 +306,7 @@
         "objects": [
           "Three Pebbles",
           "tidy pouch",
-          "vine loop"
+          "stick markers"
         ],
         "relatedStories": [
           "HH-A-0001"
@@ -577,6 +447,4904 @@
         ],
         "relatedBooks": [
           "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-VOCAB",
+      "publicName": "Story Word Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-VOCAB-Story-Word-Cards-V001-WORKING.pdf",
+      "summary": "Vocabulary cards for key story words, helpful prompts, and shared language.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Vocabulary Cards",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family",
+          "Educator/Librarian"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch",
+          "Hawkins Hollow Path"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch",
+          "vine loop"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-OBJECT",
+      "publicName": "Three Pebbles Sorting Page",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-OBJECT-Three-Pebbles-Sorting-Page-V001-WORKING.pdf",
+      "summary": "Sorting page built around the story's three-pebble object pattern.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Object Sorting Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin"
+        ],
+        "places": [
+          "Burrow Path",
+          "Clover Patch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0001-ACT-RECOG",
+      "publicName": "Who Helps Here",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/Companion Resources/HH-A-0001-ACT-RECOG-Who-Helps-Here-V001-WORKING.pdf",
+      "summary": "Recognition set for identifying the helpers who make the story world feel safe and welcoming.",
+      "structural": {
+        "storyId": "HH-A-0001",
+        "storyTitle": "Spencer's First Friend",
+        "series": "Storybooks",
+        "resourceType": "Recognition Set",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [
+          "Spencer",
+          "Austin",
+          "Lex",
+          "Grandpa"
+        ],
+        "places": [
+          "Burrow Path",
+          "Farmhouse Porch"
+        ],
+        "landmarks": [
+          "Fence Line",
+          "Rounded Burrow Entrance"
+        ],
+        "objects": [
+          "Three Pebbles",
+          "stick markers",
+          "tidy pouch"
+        ],
+        "relatedStories": [
+          "HH-A-0001"
+        ],
+        "relatedBooks": [
+          "Spencer's First Friend"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-COLOR-BRANDON-FINDS-THE-PERFECT-ACORN-V001-WORKING",
+      "publicName": "COLOR Brandon Finds The Perfect Acorn",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-COLOR-Brandon-Finds-the-Perfect-Acorn-V001-WORKING.pdf",
+      "summary": "COLOR Brandon Finds The Perfect Acorn companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-EDU-NOTES-THE-SHARING-ACORN-V001-REVIEW",
+      "publicName": "EDU NOTES The Sharing Acorn V001 REVIEW",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-EDU-NOTES-The-Sharing-Acorn-V001-REVIEW.pdf",
+      "summary": "EDU NOTES The Sharing Acorn V001 REVIEW companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-FAM-GUIDE-THE-SHARING-ACORN-V001-REVIEW",
+      "publicName": "FAM GUIDE The Sharing Acorn V001 REVIEW",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-FAM-GUIDE-The-Sharing-Acorn-V001-REVIEW.pdf",
+      "summary": "FAM GUIDE The Sharing Acorn V001 REVIEW companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-MATCH-WHICH-SHARE-LOOKS-FAIR-V001-WORKING",
+      "publicName": "MATCH Which Share Looks Fair",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-MATCH-Which-Share-Looks-Fair-V001-WORKING.pdf",
+      "summary": "MATCH Which Share Looks Fair companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-OBJECT-WHOLE-ACORN-TO-TWO-HALVES-V001-WORKING",
+      "publicName": "OBJECT Whole Acorn To Two Halves",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-OBJECT-Whole-Acorn-to-Two-Halves-V001-WORKING.pdf",
+      "summary": "OBJECT Whole Acorn To Two Halves companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Object Sorting Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-READ-SUPPORT-THE-SHARING-ACORN-V001-REVIEW",
+      "publicName": "READ SUPPORT The Sharing Acorn V001 REVIEW",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-READ-SUPPORT-The-Sharing-Acorn-V001-REVIEW.pdf",
+      "summary": "READ SUPPORT The Sharing Acorn V001 REVIEW companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-RECOG-WHO-HELPS-HERE-V001-WORKING",
+      "publicName": "RECOG Who Helps Here",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-RECOG-Who-Helps-Here-V001-WORKING.pdf",
+      "summary": "RECOG Who Helps Here companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Recognition Set",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-SEQ-FAIR-FEELS-BETTER-INSIDE-V001-WORKING",
+      "publicName": "SEQ Fair Feels Better Inside",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-SEQ-Fair-Feels-Better-Inside-V001-WORKING.pdf",
+      "summary": "SEQ Fair Feels Better Inside companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0002-ACT-SH3-SHARE-HEART-3-V001-WORKING",
+      "publicName": "SH3 Share Heart 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/Companion Resources/HH-A-0002-ACT-SH3-Share-Heart-3-V001-WORKING.pdf",
+      "summary": "SH3 Share Heart 3 companion resource for The Sharing Acorn.",
+      "structural": {
+        "storyId": "HH-A-0002",
+        "storyTitle": "The Sharing Acorn",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0002"
+        ],
+        "relatedBooks": [
+          "The Sharing Acorn"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-CARDS-CHARACTER-AND-PLACE-RECOGNITION-V001-WORKING",
+      "publicName": "CARDS Character And Place Recognition",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-CARDS-Character-and-Place-Recognition-V001-WORKING.pdf",
+      "summary": "CARDS Character And Place Recognition companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-CHOICE-TRUTH-AND-REPAIR-V001-WORKING",
+      "publicName": "CHOICE Truth And Repair",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-CHOICE-Truth-and-Repair-V001-WORKING.pdf",
+      "summary": "CHOICE Truth And Repair companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-COLOR-HONEST-CONVERSATION-V001-WORKING",
+      "publicName": "COLOR Honest Conversation",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-COLOR-Honest-Conversation-V001-WORKING.pdf",
+      "summary": "COLOR Honest Conversation companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-COLOR-INCLUDE-ALL-THREE-V001-WORKING",
+      "publicName": "COLOR Include All Three",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-COLOR-Include-All-Three-V001-WORKING.pdf",
+      "summary": "COLOR Include All Three companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-COLOR-MISSING-FRIEND-REALIZATION-V001-WORKING",
+      "publicName": "COLOR Missing Friend Realization",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-COLOR-Missing-Friend-Realization-V001-WORKING.pdf",
+      "summary": "COLOR Missing Friend Realization companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-COLOR-ROOM-FOR-ALL-V001-WORKING",
+      "publicName": "COLOR Room For All",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-COLOR-Room-for-All-V001-WORKING.pdf",
+      "summary": "COLOR Room For All companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-COLOR-WALKING-BACK-TOGETHER-V001-WORKING",
+      "publicName": "COLOR Walking Back Together",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-COLOR-Walking-Back-Together-V001-WORKING.pdf",
+      "summary": "COLOR Walking Back Together companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-EDUCATOR-LIBRARIAN-NOTES",
+      "publicName": "Educator Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003---Educator - Librarian Notes.pdf",
+      "summary": "Educator Librarian Notes companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003---Family Guide.pdf",
+      "summary": "Family Guide companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-READING-SUPPORT",
+      "publicName": "Hh=a=0003 Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH=A=0003---Reading Support.pdf",
+      "summary": "Hh=a=0003 Reading Support companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-MATCH-PARTY-OBJECTS-V001-WORKING",
+      "publicName": "MATCH Party Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-MATCH-Party-Objects-V001-WORKING.pdf",
+      "summary": "MATCH Party Objects companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-NOTICE-SOFT-LIGHT-BELONGING-V001-WORKING",
+      "publicName": "NOTICE Soft Light Belonging",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-NOTICE-Soft-Light-Belonging-V001-WORKING.pdf",
+      "summary": "NOTICE Soft Light Belonging companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-NOTICE-WELCOME-READY-PARTY-ROOM-V001-WORKING",
+      "publicName": "NOTICE Welcome Ready Party Room",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-NOTICE-Welcome-Ready-Party-Room-V001-WORKING.pdf",
+      "summary": "NOTICE Welcome Ready Party Room companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-NOTICE-WHO-IS-MISSING-V001-WORKING",
+      "publicName": "NOTICE Who Is Missing",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-NOTICE-Who-Is-Missing-V001-WORKING.pdf",
+      "summary": "NOTICE Who Is Missing companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-PATH-ALICES-REPAIR-ROUTE-V001-WORKING",
+      "publicName": "PATH Alices Repair Route",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-PATH-Alices-Repair-Route-V001-WORKING.pdf",
+      "summary": "PATH Alices Repair Route companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Path Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-REFLECT-BELONGING-ENDING-V001-WORKING",
+      "publicName": "REFLECT Belonging Ending",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-REFLECT-Belonging-Ending-V001-WORKING.pdf",
+      "summary": "REFLECT Belonging Ending companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Reflection Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-SEQUENCE-INCLUDE-ALL-THREE-V001-WORKING",
+      "publicName": "SEQUENCE Include All Three",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-SEQUENCE-Include-All-Three-V001-WORKING.pdf",
+      "summary": "SEQUENCE Include All Three companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0003-ACT-TOOL-CHECK-THE-CIRCLE-V001-WORKING",
+      "publicName": "TOOL Check The Circle",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/Companion Resources/HH-A-0003-ACT-TOOL-Check-the-Circle-V001-WORKING.pdf",
+      "summary": "TOOL Check The Circle companion resource for Alice's Underground Party.",
+      "structural": {
+        "storyId": "HH-A-0003",
+        "storyTitle": "Alice's Underground Party",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0003"
+        ],
+        "relatedBooks": [
+          "Alice's Underground Party"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-CARDS-CHARACTER-AND-PLACE-RECOGNITION-V001-WORKING",
+      "publicName": "CARDS Character And Place Recognition",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-CARDS-Character-and-Place-Recognition-V001-WORKING.pdf",
+      "summary": "CARDS Character And Place Recognition companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-CHOICE-ASK-FIRST-OR-SURPRISE-V001-WORKING",
+      "publicName": "CHOICE Ask First Or Surprise",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-CHOICE-Ask-First-or-Surprise-V001-WORKING.pdf",
+      "summary": "CHOICE Ask First Or Surprise companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-CHOICE-SAFE-JOKE-CHOICES-V001-WORKING",
+      "publicName": "CHOICE Safe Joke Choices",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-CHOICE-Safe-Joke-Choices-V001-WORKING.pdf",
+      "summary": "CHOICE Safe Joke Choices companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-ASK-TO-FIX-V001-WORKING",
+      "publicName": "COLOR Ask To Fix",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Ask-to-Fix-V001-WORKING.pdf",
+      "summary": "COLOR Ask To Fix companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-FLOATING-FEATHER-V001-WORKING",
+      "publicName": "COLOR Floating Feather",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Floating-Feather-V001-WORKING.pdf",
+      "summary": "COLOR Floating Feather companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-SINCERE-SORRY-V001-WORKING",
+      "publicName": "COLOR Sincere Sorry",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Sincere-Sorry-V001-WORKING.pdf",
+      "summary": "COLOR Sincere Sorry companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-STEADY-FRIENDSHIP-V001-WORKING",
+      "publicName": "COLOR Steady Friendship",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Steady-Friendship-V001-WORKING.pdf",
+      "summary": "COLOR Steady Friendship companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-SURPRISE-SPLASH-V001-WORKING",
+      "publicName": "COLOR Surprise Splash",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Surprise-Splash-V001-WORKING.pdf",
+      "summary": "COLOR Surprise Splash companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-COLOR-THREE-PEBBLES-V001-WORKING",
+      "publicName": "COLOR Three Pebbles",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-COLOR-Three-Pebbles-V001-WORKING.pdf",
+      "summary": "COLOR Three Pebbles companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-EDUCATOR-LIBRARIAN-NOTES",
+      "publicName": "Educator Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004--- Educator-Librarian Notes.pdf",
+      "summary": "Educator Librarian Notes companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004--- Family Guide.pdf",
+      "summary": "Family Guide companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-MATCH-CHANGED-BEHAVIOR-V001-WORKING",
+      "publicName": "MATCH Changed Behavior",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-MATCH-Changed-Behavior-V001-WORKING.pdf",
+      "summary": "MATCH Changed Behavior companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-MATCH-STORY-OBJECTS-V001-WORKING",
+      "publicName": "MATCH Story Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-MATCH-Story-Objects-V001-WORKING.pdf",
+      "summary": "MATCH Story Objects companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-MATCH-WHAT-HAPPENED-V001-WORKING",
+      "publicName": "MATCH What Happened",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-MATCH-What-Happened-V001-WORKING.pdf",
+      "summary": "MATCH What Happened companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-NOTICE-GIVE-SPACE-V001-WORKING",
+      "publicName": "NOTICE Give Space",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-NOTICE-Give-Space-V001-WORKING.pdf",
+      "summary": "NOTICE Give Space companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004--- Reading Support.pdf",
+      "summary": "Reading Support companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-REFLECT-REPAIR-ENDING-V001-WORKING",
+      "publicName": "REFLECT Repair Ending",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-REFLECT-Repair-Ending-V001-WORKING.pdf",
+      "summary": "REFLECT Repair Ending companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Reflection Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-SEQUENCE-REAL-SORRY-V001-WORKING",
+      "publicName": "SEQUENCE Real Sorry",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-SEQUENCE-Real-Sorry-V001-WORKING.pdf",
+      "summary": "SEQUENCE Real Sorry companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0004-ACT-TOOL-REAL-SORRY-THREE-V001-WORKING",
+      "publicName": "TOOL Real Sorry Three",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/Companion Resources/HH-A-0004-ACT-TOOL-Real-Sorry-Three-V001-WORKING.pdf",
+      "summary": "TOOL Real Sorry Three companion resource for When Callen Said Sorry.",
+      "structural": {
+        "storyId": "HH-A-0004",
+        "storyTitle": "When Callen Said Sorry",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0004"
+        ],
+        "relatedBooks": [
+          "When Callen Said Sorry"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-CARDS-CHARACTER-AND-PLACE-RECOGNITION-V001-WORKING",
+      "publicName": "CARDS Character And Place Recognition",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-CARDS-Character-and-Place-Recognition-V001-WORKING.pdf",
+      "summary": "CARDS Character And Place Recognition companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-CHOICE-SOFT-HELLO-CHOICES-V001-WORKING",
+      "publicName": "CHOICE Soft Hello Choices",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-CHOICE-Soft-Hello-Choices-V001-WORKING.pdf",
+      "summary": "CHOICE Soft Hello Choices companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-ACCESSIBLE-PATH-V001-WORKING",
+      "publicName": "COLOR Accessible Path",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Accessible-Path-V001-WORKING.pdf",
+      "summary": "COLOR Accessible Path companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-ASHER-IS-WELCOMED-V001-WORKING",
+      "publicName": "COLOR Asher Is Welcomed",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Asher-Is-Welcomed-V001-WORKING.pdf",
+      "summary": "COLOR Asher Is Welcomed companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-BELONGING-STUMP-NOOK-V001-WORKING",
+      "publicName": "COLOR Belonging Stump Nook",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Belonging-Stump-Nook-V001-WORKING.pdf",
+      "summary": "COLOR Belonging Stump Nook companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-FIRST-SIGHT-NEW-FRIENDS-V001-WORKING",
+      "publicName": "COLOR First Sight New Friends",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-First-Sight-New-Friends-V001-WORKING.pdf",
+      "summary": "COLOR First Sight New Friends companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-GIVE-SPACE-V001-WORKING",
+      "publicName": "COLOR Give Space",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Give-Space-V001-WORKING.pdf",
+      "summary": "COLOR Give Space companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-RHYTHM-WALK-V001-WORKING",
+      "publicName": "COLOR Rhythm Walk",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Rhythm-Walk-V001-WORKING.pdf",
+      "summary": "COLOR Rhythm Walk companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-SOFT-HELLO-V001-WORKING",
+      "publicName": "COLOR Soft Hello",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Soft-Hello-V001-WORKING.pdf",
+      "summary": "COLOR Soft Hello companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-COLOR-WELCOME-PLAN-SETUP-V001-WORKING",
+      "publicName": "COLOR Welcome Plan Setup",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-COLOR-Welcome-Plan-Setup-V001-WORKING.pdf",
+      "summary": "COLOR Welcome Plan Setup companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-EDUCATOR-AND-LIBRARIAN-NOTES",
+      "publicName": "Educator And Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005 — Educator and Librarian Notes.pdf",
+      "summary": "Educator And Librarian Notes companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005 — Family Guide.pdf",
+      "summary": "Family Guide companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-MATCH-COMMUNICATION-COUNTS-V001-WORKING",
+      "publicName": "MATCH Communication Counts",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-MATCH-Communication-Counts-V001-WORKING.pdf",
+      "summary": "MATCH Communication Counts companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-MATCH-WELCOME-OBJECTS-V001-WORKING",
+      "publicName": "MATCH Welcome Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-MATCH-Welcome-Objects-V001-WORKING.pdf",
+      "summary": "MATCH Welcome Objects companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-NOTICE-GIVE-SPACE-V001-WORKING",
+      "publicName": "NOTICE Give Space",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-NOTICE-Give-Space-V001-WORKING.pdf",
+      "summary": "NOTICE Give Space companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-NOTICE-WHICH-PATH-WELCOMES-WHEELS-V001-WORKING",
+      "publicName": "NOTICE Which Path Welcomes Wheels",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-NOTICE-Which-Path-Welcomes-Wheels-V001-WORKING.pdf",
+      "summary": "NOTICE Which Path Welcomes Wheels companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005 — Reading Support.pdf",
+      "summary": "Reading Support companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-REFLECT-A-WELCOME-THAT-FITS-V001-WORKING",
+      "publicName": "REFLECT A Welcome That Fits",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-REFLECT-A-Welcome-That-Fits-V001-WORKING.pdf",
+      "summary": "REFLECT A Welcome That Fits companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Reflection Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-RHYTHM-SOFT-AND-STEADY-V001-WORKING",
+      "publicName": "RHYTHM Soft And Steady",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-RHYTHM-Soft-and-Steady-V001-WORKING.pdf",
+      "summary": "RHYTHM Soft And Steady companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-SEQUENCE-WELCOME-PLAN-V001-WORKING",
+      "publicName": "SEQUENCE Welcome Plan",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-SEQUENCE-Welcome-Plan-V001-WORKING.pdf",
+      "summary": "SEQUENCE Welcome Plan companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0005-ACT-TOOL-WELCOME-PLAN-THREE-V001-WORKING",
+      "publicName": "TOOL Welcome Plan Three",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/Companion Resources/HH-A-0005-ACT-TOOL-Welcome-Plan-Three-V001-WORKING.pdf",
+      "summary": "TOOL Welcome Plan Three companion resource for The New Animals in the Hollow.",
+      "structural": {
+        "storyId": "HH-A-0005",
+        "storyTitle": "The New Animals in the Hollow",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0005"
+        ],
+        "relatedBooks": [
+          "The New Animals in the Hollow"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-COLOR-RULES-WE-CAN-SEE-V001-WORKING",
+      "publicName": "COLOR Rules We Can See",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-COLOR-Rules-We-Can-See-V001-WORKING.pdf",
+      "summary": "COLOR Rules We Can See companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-DISCUSS-KIND-SWITCH-CARDS-V001-WORKING",
+      "publicName": "DISCUSS Kind Switch Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-DISCUSS-Kind-Switch-Cards-V001-WORKING.pdf",
+      "summary": "DISCUSS Kind Switch Cards companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Discussion Cards",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-EDUCATOR-AND-LIBRARIAN-NOTES",
+      "publicName": "Educator And Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006 — Educator and Librarian Notes.pdf",
+      "summary": "Educator And Librarian Notes companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006 — Family Guide.pdf",
+      "summary": "Family Guide companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-MATCH-WHOSE-TURN-STONE-V001-WORKING",
+      "publicName": "MATCH Whose Turn Stone",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-MATCH-Whose-Turn-Stone-V001-WORKING.pdf",
+      "summary": "MATCH Whose Turn Stone companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-OBJECT-THREE-TURN-STONES-V001-WORKING",
+      "publicName": "OBJECT Three Turn Stones",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-OBJECT-Three-Turn-Stones-V001-WORKING.pdf",
+      "summary": "OBJECT Three Turn Stones companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Object Sorting Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-READER-ACTIVITY-DRAFTS",
+      "publicName": "Reader Ivity Drafts",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006 — Reader Activity Drafts.pdf",
+      "summary": "Reader Ivity Drafts companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-RETELL-BEGINNING-BUZZY-FAIR-V001-WORKING",
+      "publicName": "RETELL Beginning Buzzy Fair",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-RETELL-Beginning-Buzzy-Fair-V001-WORKING.pdf",
+      "summary": "RETELL Beginning Buzzy Fair companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Retell Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-SAFE-GIVE-THE-POND-EDGE-SPACE-V001-WORKING",
+      "publicName": "SAFE Give The Pond Edge Space",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-SAFE-Give-the-Pond-Edge-Space-V001-WORKING.pdf",
+      "summary": "SAFE Give The Pond Edge Space companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Safety Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-SCAV-FIND-THREE-TURN-HOLDERS-V001-WORKING",
+      "publicName": "SCAV Find Three Turn Holders",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-SCAV-Find-Three-Turn-Holders-V001-WORKING.pdf",
+      "summary": "SCAV Find Three Turn Holders companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Scavenger Hunt",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-SEQUENCE-TURN-STONE-3-V001-WORKING",
+      "publicName": "SEQUENCE Turn Stone 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-SEQUENCE-Turn-Stone-3-V001-WORKING.pdf",
+      "summary": "SEQUENCE Turn Stone 3 companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-VOCAB-STORY-WORD-CARDS-V001-WORKING",
+      "publicName": "VOCAB Story Word Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-VOCAB-Story-Word-Cards-V001-WORKING.pdf",
+      "summary": "VOCAB Story Word Cards companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Vocabulary Cards",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0006-ACT-WAIT-WAITING-JOBS-AT-THE-POND-V001-WORKING",
+      "publicName": "WAIT Waiting Jobs At The Pond",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/Companion Resources/HH-A-0006-ACT-WAIT-Waiting-Jobs-at-the-Pond-V001-WORKING.pdf",
+      "summary": "WAIT Waiting Jobs At The Pond companion resource for Taking Turns at the Pond.",
+      "structural": {
+        "storyId": "HH-A-0006",
+        "storyTitle": "Taking Turns at the Pond",
+        "series": "Storybooks",
+        "resourceType": "Waiting Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0006"
+        ],
+        "relatedBooks": [
+          "Taking Turns at the Pond"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-CHOICE-SLOW-BODY-CHOICES-V001-WORKING",
+      "publicName": "CHOICE Slow Body Choices",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-CHOICE-Slow-Body-Choices-V001-WORKING.pdf",
+      "summary": "CHOICE Slow Body Choices companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-CHOICE-TINY-HELPER-JOBS-V001-WORKING",
+      "publicName": "CHOICE Tiny Helper Jobs",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-CHOICE-Tiny-Helper-Jobs-V001-WORKING.pdf",
+      "summary": "CHOICE Tiny Helper Jobs companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-BENTLEY-IS-HERE-V001-WORKING",
+      "publicName": "COLOR Bentley Is Here",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Bentley-Is-Here-V001-WORKING.pdf",
+      "summary": "COLOR Bentley Is Here companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-GENTLE-FITS-A-BABY-V001-WORKING",
+      "publicName": "COLOR Gentle Fits A Baby",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Gentle-Fits-a-Baby-V001-WORKING.pdf",
+      "summary": "COLOR Gentle Fits A Baby companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-PAUSE-AND-PROTECT-V001-WORKING",
+      "publicName": "COLOR Pause And Protect",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Pause-and-Protect-V001-WORKING.pdf",
+      "summary": "COLOR Pause And Protect companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-SLOW-BODIES-V001-WORKING",
+      "publicName": "COLOR Slow Bodies",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Slow-Bodies-V001-WORKING.pdf",
+      "summary": "COLOR Slow Bodies companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-THREE-SOFT-FEATHERS-V001-WORKING",
+      "publicName": "COLOR Three Soft Feathers",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Three-Soft-Feathers-V001-WORKING.pdf",
+      "summary": "COLOR Three Soft Feathers companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-TINY-HELPING-TURNS-V001-WORKING",
+      "publicName": "COLOR Tiny Helping Turns",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Tiny-Helping-Turns-V001-WORKING.pdf",
+      "summary": "COLOR Tiny Helping Turns companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-WELCOME-TOO-BIG-V001-WORKING",
+      "publicName": "COLOR Welcome Too Big",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Welcome-Too-Big-V001-WORKING.pdf",
+      "summary": "COLOR Welcome Too Big companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-COLOR-WHISPER-WELCOME-V001-WORKING",
+      "publicName": "COLOR Whisper Welcome",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-COLOR-Whisper-Welcome-V001-WORKING.pdf",
+      "summary": "COLOR Whisper Welcome companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-EDUCATOR-AND-LIBRARIAN-NOTES",
+      "publicName": "Educator And Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007 — Educator and Librarian Notes.pdf",
+      "summary": "Educator And Librarian Notes companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007 — Family Guide.pdf",
+      "summary": "Family Guide companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-MATCH-GENTLE-OBJECTS-V001-WORKING",
+      "publicName": "MATCH Gentle Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-MATCH-Gentle-Objects-V001-WORKING.pdf",
+      "summary": "MATCH Gentle Objects companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-MATCH-TAKE-TURNS-HELPING-V001-WORKING",
+      "publicName": "MATCH Take Turns Helping",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-MATCH-Take-Turns-Helping-V001-WORKING.pdf",
+      "summary": "MATCH Take Turns Helping companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-NOTICE-WHISPER-OR-TOO-LOUD-V001-WORKING",
+      "publicName": "NOTICE Whisper Or Too Loud",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-NOTICE-Whisper-or-Too-Loud-V001-WORKING.pdf",
+      "summary": "NOTICE Whisper Or Too Loud companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Noticing Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007 — Reading Support.pdf",
+      "summary": "Reading Support companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-RECOGNITION-CHARACTER-AND-PLACE-V001-WORKING",
+      "publicName": "RECOGNITION Character And Place",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-RECOGNITION-Character-and-Place-V001-WORKING.pdf",
+      "summary": "RECOGNITION Character And Place companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-REFLECT-BIG-LOVE-GENTLE-SHAPE-V001-WORKING",
+      "publicName": "REFLECT Big Love Gentle Shape",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-REFLECT-Big-Love-Gentle-Shape-V001-WORKING.pdf",
+      "summary": "REFLECT Big Love Gentle Shape companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Reflection Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-SAFE-ROOM-AROUND-THE-NEST-V001-WORKING",
+      "publicName": "SAFE Room Around The Nest",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-SAFE-Room-Around-the-Nest-V001-WORKING.pdf",
+      "summary": "SAFE Room Around The Nest companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Safety Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-SEQUENCE-GENTLE-HELPER-3-V001-WORKING",
+      "publicName": "SEQUENCE Gentle Helper 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-SEQUENCE-Gentle-Helper-3-V001-WORKING.pdf",
+      "summary": "SEQUENCE Gentle Helper 3 companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0007-ACT-TOOL-GENTLE-HELPER-3-V001-WORKING",
+      "publicName": "TOOL Gentle Helper 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/Companion Resources/HH-A-0007-ACT-TOOL-Gentle-Helper-3-V001-WORKING.pdf",
+      "summary": "TOOL Gentle Helper 3 companion resource for Callen's New Baby Brother.",
+      "structural": {
+        "storyId": "HH-A-0007",
+        "storyTitle": "Callen's New Baby Brother",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0007"
+        ],
+        "relatedBooks": [
+          "Callen's New Baby Brother"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-CHOICE-DISTRACTION-AND-PRIORITY-V001-WORKING",
+      "publicName": "CHOICE Distraction And Priority",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-CHOICE-Distraction-and-Priority-V001-WORKING.pdf",
+      "summary": "CHOICE Distraction And Priority companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-CHOICE-WHAT-COMES-FIRST-V001-WORKING",
+      "publicName": "CHOICE What Comes First",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-CHOICE-What-Comes-First-V001-WORKING.pdf",
+      "summary": "CHOICE What Comes First companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Choice Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-ARALYNN-RETURNS-V001-WORKING",
+      "publicName": "COLOR Aralynn Returns",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Aralynn-Returns-V001-WORKING.pdf",
+      "summary": "COLOR Aralynn Returns companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-CLEAR-PROMISE-V001-WORKING",
+      "publicName": "COLOR Clear Promise",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Clear-Promise-V001-WORKING.pdf",
+      "summary": "COLOR Clear Promise companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-DO-IT-FIRST-V001-WORKING",
+      "publicName": "COLOR Do It First",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Do-It-First-V001-WORKING.pdf",
+      "summary": "COLOR Do It First companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-PROMISE-FIRST-CHOICE-V001-WORKING",
+      "publicName": "COLOR Promise First Choice",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Promise-First-Choice-V001-WORKING.pdf",
+      "summary": "COLOR Promise First Choice companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-SAY-DONE-V001-WORKING",
+      "publicName": "COLOR Say Done",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Say-Done-V001-WORKING.pdf",
+      "summary": "COLOR Say Done companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-SHINY-DISTRACTION-V001-WORKING",
+      "publicName": "COLOR Shiny Distraction",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Shiny-Distraction-V001-WORKING.pdf",
+      "summary": "COLOR Shiny Distraction companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-THREE-SEEDS-V001-WORKING",
+      "publicName": "COLOR Three Seeds",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Three-Seeds-V001-WORKING.pdf",
+      "summary": "COLOR Three Seeds companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-COLOR-TRUST-SHINES-V001-WORKING",
+      "publicName": "COLOR Trust Shines",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-COLOR-Trust-Shines-V001-WORKING.pdf",
+      "summary": "COLOR Trust Shines companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-EDUCATOR-AND-LIBRARIAN-NOTES",
+      "publicName": "Educator And Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008 — Educator and Librarian Notes.pdf",
+      "summary": "Educator And Librarian Notes companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008 — Family Guide.pdf",
+      "summary": "Family Guide companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-LANGUAGE-IF-THE-PLAN-MUST-CHANGE-V001-WORKING",
+      "publicName": "LANGUAGE If The Plan Must Change",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-LANGUAGE-If-the-Plan-Must-Change-V001-WORKING.pdf",
+      "summary": "LANGUAGE If The Plan Must Change companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Language Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-MATCH-SNACK-SPOT-OBJECTS-V001-WORKING",
+      "publicName": "MATCH Snack Spot Objects",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-MATCH-Snack-Spot-Objects-V001-WORKING.pdf",
+      "summary": "MATCH Snack Spot Objects companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-PATH-ARALYNNS-PROMISE-ROUTE-V001-WORKING",
+      "publicName": "PATH Aralynns Promise Route",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-PATH-Aralynns-Promise-Route-V001-WORKING.pdf",
+      "summary": "PATH Aralynns Promise Route companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Path Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008 — Reading Support.pdf",
+      "summary": "Reading Support companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-RECOGNITION-CHARACTER-AND-PLACE-V001-WORKING",
+      "publicName": "RECOGNITION Character And Place",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-RECOGNITION-Character-and-Place-V001-WORKING.pdf",
+      "summary": "RECOGNITION Character And Place companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-REFLECT-TRUST-SHINES-V001-WORKING",
+      "publicName": "REFLECT Trust Shines",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-REFLECT-Trust-Shines-V001-WORKING.pdf",
+      "summary": "REFLECT Trust Shines companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Reflection Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-SORT-PROMISE-OR-HOPEFUL-PLAN-V001-WORKING",
+      "publicName": "SORT Promise Or Hopeful Plan",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-SORT-Promise-or-Hopeful-Plan-V001-WORKING.pdf",
+      "summary": "SORT Promise Or Hopeful Plan companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Sorting Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0008-ACT-TOOL-PROMISE-FIRST-3-V001-WORKING",
+      "publicName": "TOOL Promise First 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/Companion Resources/HH-A-0008-ACT-TOOL-Promise-First-3-V001-WORKING.pdf",
+      "summary": "TOOL Promise First 3 companion resource for Aralynn Fox's Promise.",
+      "structural": {
+        "storyId": "HH-A-0008",
+        "storyTitle": "Aralynn Fox's Promise",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0008"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox's Promise"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-BUILDING-THE-TRAIL-V001-WORKING",
+      "publicName": "COLOR Building The Trail",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Building-the-Trail-V001-WORKING.pdf",
+      "summary": "COLOR Building The Trail companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-GRATITUDE-RETURNED-V001-WORKING",
+      "publicName": "COLOR Gratitude Returned",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Gratitude-Returned-V001-WORKING.pdf",
+      "summary": "COLOR Gratitude Returned companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THANKING-ALICE-V001-WORKING",
+      "publicName": "COLOR Thanking Alice",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Thanking-Alice-V001-WORKING.pdf",
+      "summary": "COLOR Thanking Alice companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THANKING-ARALYNN-V001-WORKING",
+      "publicName": "COLOR Thanking Aralynn",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Thanking-Aralynn-V001-WORKING.pdf",
+      "summary": "COLOR Thanking Aralynn companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THANKING-AUSTIN-V001-WORKING",
+      "publicName": "COLOR Thanking Austin",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Thanking-Austin-V001-WORKING.pdf",
+      "summary": "COLOR Thanking Austin companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THANKING-KAYDENCE-AND-ASHER-V001-WORKING",
+      "publicName": "COLOR Thanking Kaydence And Asher",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Thanking-Kaydence-and-Asher-V001-WORKING.pdf",
+      "summary": "COLOR Thanking Kaydence And Asher companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THANKING-SPENCER-V001-WORKING",
+      "publicName": "COLOR Thanking Spencer",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Thanking-Spencer-V001-WORKING.pdf",
+      "summary": "COLOR Thanking Spencer companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-THREE-PEBBLES-V001-WORKING",
+      "publicName": "COLOR Three Pebbles",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Three-Pebbles-V001-WORKING.pdf",
+      "summary": "COLOR Three Pebbles companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COLOR-WARM-AND-GLOWY-V001-WORKING",
+      "publicName": "COLOR Warm And Glowy",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COLOR-Warm-and-Glowy-V001-WORKING.pdf",
+      "summary": "COLOR Warm And Glowy companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-COMM-COMMUNICATION-COUNTS-V001-WORKING",
+      "publicName": "COMM Communication Counts",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-COMM-Communication-Counts-V001-WORKING.pdf",
+      "summary": "COMM Communication Counts companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Communication Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-EDUCATOR-AND-LIBRARIAN-NOTES",
+      "publicName": "Educator And Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009 — Educator and Librarian Notes.pdf",
+      "summary": "Educator And Librarian Notes companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009 — Family Guide.pdf",
+      "summary": "Family Guide companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-LANGUAGE-THANK-YOU-WORDS-THAT-FIT-V001-WORKING",
+      "publicName": "LANGUAGE Thank You Words That Fit",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-LANGUAGE-Thank-You-Words-That-Fit-V001-WORKING.pdf",
+      "summary": "LANGUAGE Thank You Words That Fit companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Language Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-MAP-WHOLE-HOLLOW-KINDNESS-V001-WORKING",
+      "publicName": "MAP Whole Hollow Kindness",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-MAP-Whole-Hollow-Kindness-V001-WORKING.pdf",
+      "summary": "MAP Whole Hollow Kindness companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Map Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-MATCH-PEBBLE-MEMORY-V001-WORKING",
+      "publicName": "MATCH Pebble Memory",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-MATCH-Pebble-Memory-V001-WORKING.pdf",
+      "summary": "MATCH Pebble Memory companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-MATCH-SPECIFIC-THANKS-V001-WORKING",
+      "publicName": "MATCH Specific Thanks",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-MATCH-Specific-Thanks-V001-WORKING.pdf",
+      "summary": "MATCH Specific Thanks companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-MATCH-WHO-HELPED-HERE-V001-WORKING",
+      "publicName": "MATCH Who Helped Here",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-MATCH-Who-Helped-Here-V001-WORKING.pdf",
+      "summary": "MATCH Who Helped Here companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Matching Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-PATH-LEXS-GRATITUDE-ROUTE-V001-WORKING",
+      "publicName": "PATH Lexs Gratitude Route",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-PATH-Lexs-Gratitude-Route-V001-WORKING.pdf",
+      "summary": "PATH Lexs Gratitude Route companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Path Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009 — Reading Support.pdf",
+      "summary": "Reading Support companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-RECOGNITION-CHARACTER-AND-PLACE-V001-WORKING",
+      "publicName": "RECOGNITION Character And Place",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-RECOGNITION-Character-and-Place-V001-WORKING.pdf",
+      "summary": "RECOGNITION Character And Place companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-SEQUENCE-THANK-YOU-TRAIL-3-V001-WORKING",
+      "publicName": "SEQUENCE Thank You Trail 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-SEQUENCE-Thank-You-Trail-3-V001-WORKING.pdf",
+      "summary": "SEQUENCE Thank You Trail 3 companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Sequence Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0009-ACT-TOOL-THANK-YOU-TRAIL-3-V001-WORKING",
+      "publicName": "TOOL Thank You Trail 3",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/Companion Resources/HH-A-0009-ACT-TOOL-Thank-You-Trail-3-V001-WORKING.pdf",
+      "summary": "TOOL Thank You Trail 3 companion resource for The Thank You Trail.",
+      "structural": {
+        "storyId": "HH-A-0009",
+        "storyTitle": "The Thank You Trail",
+        "series": "Storybooks",
+        "resourceType": "Tool Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0009"
+        ],
+        "relatedBooks": [
+          "The Thank You Trail"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-ACCESSIBLE-ROUTE-WORKS-V001-WORKING",
+      "publicName": "ACCESSIBLE ROUTE Works",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-ACCESSIBLE-ROUTE-Works-V001-WORKING.pdf",
+      "summary": "ACCESSIBLE ROUTE Works companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Accessibility Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-CHARACTER-PLACE-RECOGNITION-V001-WORKING",
+      "publicName": "CHARACTER PLACE Recognition",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-CHARACTER-PLACE-Recognition-V001-WORKING.pdf",
+      "summary": "CHARACTER PLACE Recognition companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Character Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-CHECK-IT-WORKS-SEQUENCE-V001-WORKING",
+      "publicName": "CHECK IT WORKS Sequence",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-CHECK-IT-WORKS-Sequence-V001-WORKING.pdf",
+      "summary": "CHECK IT WORKS Sequence companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Check-in Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-ACCESSIBLE-TEAM-WALK-V001-WORKING",
+      "publicName": "COLOR Accessible Team Walk",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Accessible-Team-Walk-V001-WORKING.pdf",
+      "summary": "COLOR Accessible Team Walk companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-EVERYONE-TALKS-V001-WORKING",
+      "publicName": "COLOR Everyone Talks",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Everyone-Talks-V001-WORKING.pdf",
+      "summary": "COLOR Everyone Talks companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-HELPER-BEGINS-WORKING-V001-WORKING",
+      "publicName": "COLOR Helper Begins",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Helper-Begins-Working-V001-WORKING.pdf",
+      "summary": "COLOR Helper Begins companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-MYSTERY-FENCE-LINE-V001-WORKING",
+      "publicName": "COLOR Mystery Fence Line",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Mystery-Fence-Line-V001-WORKING.pdf",
+      "summary": "COLOR Mystery Fence Line companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-ONE-JOB-EACH-V001-WORKING",
+      "publicName": "COLOR One Job Each",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-One-Job-Each-V001-WORKING.pdf",
+      "summary": "COLOR One Job Each companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-RUSHED-PLAN-FALLS-APART-V001-WORKING",
+      "publicName": "COLOR Rushed Plan Falls Apart",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Rushed-Plan-Falls-Apart-V001-WORKING.pdf",
+      "summary": "COLOR Rushed Plan Falls Apart companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-SHARED-REALIZATION-V001-WORKING",
+      "publicName": "COLOR Shared Realization",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Shared-Realization-V001-WORKING.pdf",
+      "summary": "COLOR Shared Realization companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-STOP-LOOK-LISTEN-V001-WORKING",
+      "publicName": "COLOR Stop Look Listen",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Stop-Look-Listen-V001-WORKING.pdf",
+      "summary": "COLOR Stop Look Listen companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-TEAM-PLAN-THREE-V001-WORKING",
+      "publicName": "COLOR Team Plan Three",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Team-Plan-Three-V001-WORKING.pdf",
+      "summary": "COLOR Team Plan Three companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-COLOR-TOGETHER-ENDING-V001-WORKING",
+      "publicName": "COLOR Together Ending",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-COLOR-Together-Ending-V001-WORKING.pdf",
+      "summary": "COLOR Together Ending companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Coloring Page",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-EDUCATOR-LIBRARIAN-NOTES",
+      "publicName": "Educator Librarian Notes",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010---Educator - Librarian Notes.pdf",
+      "summary": "Educator Librarian Notes companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Educator Notes",
+        "primaryAudience": "Educator/Librarian",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-FAMILY-GUIDE",
+      "publicName": "Family Guide",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010---Family Guide.pdf",
+      "summary": "Family Guide companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Family Discussion Guide",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-HELPER-OBJECT-MATCH-V001-WORKING",
+      "publicName": "HELPER OBJECT Match",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-HELPER-OBJECT-Match-V001-WORKING.pdf",
+      "summary": "HELPER OBJECT Match companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Helper Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-ONE-JOB-MATCH-V001-WORKING",
+      "publicName": "ONE JOB Match",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-ONE-JOB-Match-V001-WORKING.pdf",
+      "summary": "ONE JOB Match companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "One-Step Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-ONE-VOICE-CHOICES-V001-WORKING",
+      "publicName": "ONE VOICE Choices",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-ONE-VOICE-Choices-V001-WORKING.pdf",
+      "summary": "ONE VOICE Choices companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "One-Step Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-READING-SUPPORT",
+      "publicName": "Reading Support",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010---Reading Support.pdf",
+      "summary": "Reading Support companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Reading Support",
+        "primaryAudience": "Parent/Family",
+        "secondaryAudiences": [],
+        "status": "Review"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-SAFETY-VOICE-MATTERS-V001-WORKING",
+      "publicName": "SAFETY VOICE Matters",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-SAFETY-VOICE-Matters-V001-WORKING.pdf",
+      "summary": "SAFETY VOICE Matters companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Activity Resource",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-TEAMPLAN3-RECALL-V001-WORKING",
+      "publicName": "TEAMPLAN3 Recall",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-TEAMPLAN3-Recall-V001-WORKING.pdf",
+      "summary": "TEAMPLAN3 Recall companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Team Plan Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-TEAMPLAN3-SEQUENCE-CARDS-V001-WORKING",
+      "publicName": "TEAMPLAN3 Sequence Cards",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-TEAMPLAN3-Sequence-Cards-V001-WORKING.pdf",
+      "summary": "TEAMPLAN3 Sequence Cards companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Team Plan Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
+        ]
+      }
+    },
+    {
+      "resourceId": "HH-A-0010-ACT-TOGETHER-TEAM-REFLECTION-V001-WORKING",
+      "publicName": "TOGETHER TEAM Reflection",
+      "sourceFile": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/Companion Resources/HH-A-0010-ACT-TOGETHER-TEAM-Reflection-V001-WORKING.pdf",
+      "summary": "TOGETHER TEAM Reflection companion resource for Aralynn Fox Feels Left Out.",
+      "structural": {
+        "storyId": "HH-A-0010",
+        "storyTitle": "Aralynn Fox Feels Left Out",
+        "series": "Storybooks",
+        "resourceType": "Together Activity",
+        "primaryAudience": "Child",
+        "secondaryAudiences": [
+          "Parent/Family"
+        ],
+        "status": "Working"
+      },
+      "world": {
+        "characters": [],
+        "places": [],
+        "landmarks": [],
+        "objects": [],
+        "relatedStories": [
+          "HH-A-0010"
+        ],
+        "relatedBooks": [
+          "Aralynn Fox Feels Left Out"
         ]
       }
     }

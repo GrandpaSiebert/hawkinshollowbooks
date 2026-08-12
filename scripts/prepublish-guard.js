@@ -8,7 +8,7 @@ function parseArgs(argv) {
     sitemapPath: 'build-recovery/sitemap.xml',
     maxRouteDropPercent: 20,
     maxRouteDropAbsolute: 150,
-    requireContains: '',
+    requireContains: String(process.env.PUBLISH_REQUIRE_CONTAINS || '').trim(),
     allowDirty: false,
     skipRouteDropCheck: false
   };

@@ -1,6 +1,7 @@
 param(
     [string]$Message,
-    [string]$Branch = "main"
+    [string]$Branch = "main",
+    [string]$RequiredBaseCommit = "f65dd02"
 )
 
 $ErrorActionPreference = "Stop"
@@ -14,7 +15,7 @@ try {
     }
 
     Write-Host "Running pre-publish branch guard..."
-    node scripts/prepublish-guard.js --branch $Branch --skip-route-drop-check
+    node scripts/prepublish-guard.js --branch $Branch --skip-route-drop-check --require-contains $RequiredBaseCommit
     if ($LASTEXITCODE -ne 0) {
         throw "Pre-publish branch guard failed with exit code $LASTEXITCODE"
     }
@@ -26,7 +27,7 @@ try {
     }
 
     Write-Host "Running pre-publish sitemap guard..."
-    node scripts/prepublish-guard.js --branch $Branch --allow-dirty
+    node scripts/prepublish-guard.js --branch $Branch --allow-dirty --require-contains $RequiredBaseCommit
     if ($LASTEXITCODE -ne 0) {
         throw "Pre-publish sitemap guard failed with exit code $LASTEXITCODE"
     }

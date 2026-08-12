@@ -17,7 +17,38 @@ function ensureDir(dir) {
 }
 
 function resetDir(dir) {
-  fs.rmSync(dir, { recursive: true, force: true });
+  try {
+    fs.rmSync(dir, {
+      recursive: true,
+      force: true,
+      maxRetries: 8,
+      retryDelay: 200
+    });
+  } catch (error) {
+    const code = error && error.code ? String(error.code) : '';
+    if (code !== 'EPERM' && code !== 'ENOTEMPTY' && code !== 'EBUSY') {
+      throw error;
+    }
+
+    // On Windows, transient file locks can block whole-directory removal.
+    // Fall back to best-effort cleanup so generation can continue.
+    ensureDir(dir);
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const entryPath = path.join(dir, entry.name);
+      try {
+        fs.rmSync(entryPath, {
+          recursive: true,
+          force: true,
+          maxRetries: 8,
+          retryDelay: 200
+        });
+      } catch (entryError) {
+        const entryCode = entryError && entryError.code ? String(entryError.code) : 'UNKNOWN';
+        console.warn(`[recovery warning] cleanup lock persisted for ${entryPath} (${entryCode}); continuing.`);
+      }
+    }
+  }
   ensureDir(dir);
 }
 
@@ -4919,28 +4950,259 @@ function getCompanionResourceVisitorHeadline(resource) {
   return publicName;
 }
 
+let companionResourcePublishedUrlIndexCache = null;
+const DEFAULT_LIBRARY_BASE_URL = 'https://library.hawkinshollowbooks.com';
+
+function getConfiguredLibraryBaseUrl() {
+  const envBase = String(process.env.LIBRARY_BASE_URL || '').trim();
+  if (envBase) {
+    return envBase.replace(/\/+$/, '');
+  }
+
+  const configPath = path.join(root, 'data', 'site-config.json');
+  if (!fs.existsSync(configPath)) {
+    return '';
+  }
+
+  try {
+    const config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+    const configured = String((config && (config.libraryBaseUrl || config.resourceLibraryBaseUrl)) || '').trim();
+    return configured ? configured.replace(/\/+$/, '') : '';
+  } catch {
+    return '';
+  }
+}
+
+function normalizeCompanionResourceSourcePath(value) {
+  return String(value || '')
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '')
+    .trim()
+    .toLowerCase();
+}
+
+function isHttpUrl(value) {
+  return /^https?:\/\//i.test(String(value || '').trim());
+}
+
+function getCompanionResourcePublishedUrlIndex() {
+  if (companionResourcePublishedUrlIndexCache) {
+    return companionResourcePublishedUrlIndexCache;
+  }
+
+  const bySourcePath = new Map();
+  let baseUrl = DEFAULT_LIBRARY_BASE_URL;
+  let mappingConfig = null;
+  let baseUrlSource = 'default';
+  const manifestPath = path.join(root, 'generated', 'manifest', 'manifest.json');
+  const mappingPath = path.join(root, 'data', 'library-publish-mapping.json');
+
+  if (fs.existsSync(manifestPath)) {
+    try {
+      const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      const manifestBase = String((manifest && manifest.library && manifest.library.baseUrl) || '').trim();
+      if (manifestBase) {
+        baseUrl = manifestBase.replace(/\/+$/, '');
+        baseUrlSource = 'manifest';
+      }
+      const records = Array.isArray(manifest && manifest.records) ? manifest.records : [];
+      for (const record of records) {
+        const assets = Array.isArray(record && record.assets) ? record.assets : [];
+        for (const asset of assets) {
+          const sourcePath = normalizeCompanionResourceSourcePath(asset && asset.sourcePath);
+          const url = String((asset && asset.url) || '').trim();
+          if (!sourcePath || !isHttpUrl(url)) {
+            continue;
+          }
+          bySourcePath.set(sourcePath, url);
+        }
+      }
+    } catch (error) {
+      console.warn(`Companion resource manifest read failed: ${error.message}`);
+    }
+  }
+
+  if (fs.existsSync(mappingPath)) {
+    try {
+      mappingConfig = JSON.parse(fs.readFileSync(mappingPath, 'utf8'));
+    } catch (error) {
+      console.warn(`Companion resource mapping read failed: ${error.message}`);
+      mappingConfig = null;
+    }
+  }
+
+  const configuredBaseUrl = getConfiguredLibraryBaseUrl();
+  if (configuredBaseUrl) {
+    baseUrl = configuredBaseUrl;
+    baseUrlSource = 'configured';
+  }
+
+  companionResourcePublishedUrlIndexCache = { bySourcePath, baseUrl, mappingConfig, baseUrlSource };
+  return companionResourcePublishedUrlIndexCache;
+}
+
+function sanitizeResourcePathSegment(value, preserveDot = false) {
+  const pattern = preserveDot ? /[^a-z0-9.-]+/g : /[^a-z0-9-]+/g;
+  return String(value || '')
+    .toLowerCase()
+    .replace(pattern, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+}
+
+function normalizeResourcePrefix(value) {
+  return String(value || '')
+    .replace(/\\/g, '/')
+    .trim()
+    .toLowerCase()
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '') + '/';
+}
+
+function resolveResourceMapping(normalizedSourcePath, mappingConfig) {
+  const fallback = (mappingConfig && mappingConfig.fallback) || { r2Prefix: 'resources/' };
+  const rules = Array.isArray(mappingConfig && mappingConfig.rules) ? mappingConfig.rules : [];
+
+  for (const rule of rules) {
+    const localPrefixes = Array.isArray(rule.localPrefixes) ? rule.localPrefixes : [];
+    for (const localPrefix of localPrefixes) {
+      const normalizedPrefix = normalizeResourcePrefix(localPrefix);
+      if (normalizedSourcePath.startsWith(normalizedPrefix)) {
+        return {
+          r2Prefix: normalizeResourcePrefix(rule.r2Prefix || fallback.r2Prefix),
+          matchedPrefix: normalizedPrefix
+        };
+      }
+    }
+  }
+
+  return {
+    r2Prefix: normalizeResourcePrefix(fallback.r2Prefix || 'resources/'),
+    matchedPrefix: ''
+  };
+}
+
+function buildCanonicalResourceUrlFromSourcePath(sourcePath, indexContext) {
+  if (!sourcePath) {
+    return '';
+  }
+
+  const normalizedSourcePath = String(sourcePath).replace(/\\/g, '/').replace(/^\/+/, '');
+  const parts = normalizedSourcePath.split('/').filter(Boolean);
+  let objectParts = [];
+
+  if (parts.length >= 4 && String(parts[0]).toLowerCase() === 'books') {
+    // Match the current bucket layout used by the uploaded companion resources:
+    // books/<series-slug>/<range-slug>/<book-slug>/<original-subpath...>
+    objectParts = [
+      'books',
+      sanitizeResourcePathSegment(parts[1]),
+      sanitizeResourcePathSegment(parts[2]),
+      sanitizeResourcePathSegment(parts[3]),
+      ...parts.slice(4)
+    ];
+  } else {
+    const mapping = resolveResourceMapping(normalizedSourcePath.toLowerCase(), indexContext && indexContext.mappingConfig);
+    const matchedSegments = mapping.matchedPrefix.split('/').filter(Boolean).length;
+    const keySegments = parts.length > matchedSegments ? parts.slice(matchedSegments) : parts;
+    const sanitizedSegments = keySegments.map((segment, index) => {
+      const isLast = index === keySegments.length - 1;
+      if (!isLast) {
+        return sanitizeResourcePathSegment(segment);
+      }
+      const ext = path.extname(segment).toLowerCase();
+      const base = segment.slice(0, segment.length - ext.length);
+      const safeBase = sanitizeResourcePathSegment(base);
+      const safeExt = sanitizeResourcePathSegment(ext.replace(/^\./, ''), true);
+      return safeExt ? `${safeBase}.${safeExt}` : safeBase;
+    });
+    objectParts = [...mapping.r2Prefix.split('/').filter(Boolean), ...sanitizedSegments];
+  }
+
+  const objectKey = objectParts.map((segment) => encodeURIComponent(segment)).join('/');
+  const baseUrl = String((indexContext && indexContext.baseUrl) || DEFAULT_LIBRARY_BASE_URL).replace(/\/+$/, '');
+  return `${baseUrl}/${objectKey}`;
+}
+
+function getCompanionResourcePublishedUrl(resource) {
+  const directCandidates = [
+    resource && resource.publicUrl,
+    resource && resource.publishedUrl,
+    resource && resource.resourceUrl,
+    resource && resource.url,
+    resource && resource.fileUrl,
+    resource && resource.downloadUrl,
+    resource && resource.structural && resource.structural.url
+  ];
+
+  for (const candidate of directCandidates) {
+    if (isHttpUrl(candidate)) {
+      return String(candidate).trim();
+    }
+  }
+
+  const sourcePath = normalizeCompanionResourceSourcePath(
+    resource && (resource.sourceFile || resource.filePath || resource.sourcePath)
+  );
+  if (!sourcePath) {
+    return '';
+  }
+
+  const publishedIndex = getCompanionResourcePublishedUrlIndex();
+  if (publishedIndex.bySourcePath.has(sourcePath)) {
+    const mappedUrl = String(publishedIndex.bySourcePath.get(sourcePath) || '').trim();
+    if (!mappedUrl) {
+      return '';
+    }
+    if (publishedIndex.baseUrlSource === 'configured') {
+      try {
+        const parsed = new URL(mappedUrl);
+        return `${publishedIndex.baseUrl}${parsed.pathname}`;
+      } catch {
+        return mappedUrl;
+      }
+    }
+    return mappedUrl;
+  }
+
+  const canSynthesizeUrl = publishedIndex.baseUrlSource === 'configured';
+  if (!canSynthesizeUrl) {
+    return '';
+  }
+
+  const rawSourcePath = String(resource && (resource.sourceFile || resource.filePath || resource.sourcePath) || '')
+    .replace(/\\/g, '/')
+    .replace(/^\/+/, '');
+  const absoluteSourcePath = path.join(root, 'Library', ...rawSourcePath.split('/'));
+  if (!rawSourcePath || !fs.existsSync(absoluteSourcePath)) {
+    return '';
+  }
+
+  return buildCanonicalResourceUrlFromSourcePath(rawSourcePath, publishedIndex);
+}
+
 function renderCompanionResourceVisitorCard(resource, bookLookup) {
   const audience = getCompanionResourceAudience(resource);
   const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
   const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
   const headline = getCompanionResourceVisitorHeadline(resource);
+  const status = getCompanionResourceStatus(resource);
+  const resourceType = String((resource && resource.structural && resource.structural.resourceType) || resource.resourceType || 'Resource').trim();
+  const resourceHref = getCompanionResourcePublishedUrl(resource);
+  const availabilityMarkup = resourceHref
+    ? `<a class="button" href="${escapeHtml(resourceHref)}" target="_blank" rel="noopener noreferrer">Open resource file</a>`
+    : '<strong>Availability:</strong> Not published yet. Check back soon.';
   const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
-  const storyBook = bookLookup && bookLookup.get(storyId) ? bookLookup.get(storyId) : null;
-  const storyHref = storyBook ? getBookPageHref(storyBook) : 'books.html';
-  const charactersHref = storyBook ? `${toBookPageSlug(storyBook)}-characters.html` : 'characters.html';
 
   return `<article class="start-here-item companion-resource-card" data-companion-resource-card data-companion-resource-story-id="${escapeHtml(storyId)}">
     <p class="eyebrow">${escapeHtml(audience)}</p>
     <h3>${escapeHtml(resourceTitle)}</h3>
     <p><strong>${escapeHtml(headline)}</strong></p>
     <p>${escapeHtml(summary)}</p>
+    <p><strong>Type:</strong> ${escapeHtml(resourceType)}</p>
+    <p><strong>Status:</strong> ${escapeHtml(status)}</p>
     <p>${escapeHtml(getCompanionResourceVisitorIntro(resource))}</p>
-    <p>
-      <a class="button" href="${escapeHtml(storyHref)}">Read the story</a>
-      <a class="button" href="${escapeHtml(charactersHref)}">Meet the characters</a>
-      <a class="button" href="map.html">Open the map</a>
-      <a class="button" href="storybook-shelf.html">Continue your journey</a>
-    </p>
+    <p>${availabilityMarkup}</p>
   </article>`;
 }
 
