@@ -333,6 +333,23 @@ function getBookPageHref(book) {
   return `books/${toBookPageSlug(book)}.html`;
 }
 
+function getBookCoverBanner(book) {
+  if (!book || !book.coverImage) {
+    return null;
+  }
+
+  const title = getBookPublicTitle(book) || getCanonicalBookId(book);
+  return {
+    image: toOutputAssetPath(book.coverImage),
+    alt: `Cover image for ${title}`,
+    bannerId: 'book-cover'
+  };
+}
+
+function getBookCharactersPageHref(book) {
+  return `books/${toBookPageSlug(book)}-characters.html`;
+}
+
 function getCanonicalBookId(book) {
   return String((book && ((book.identity && book.identity.canonicalId) || book.canonicalId || book.code || book.id)) || '').trim();
 }
@@ -2780,6 +2797,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
   const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
   const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
+  const bannerBook = experienceBook || bookModelByCanonicalId.get(canonicalId.toUpperCase()) || book;
   const fileTypeSummary = ((book.fileTypes || [])
     .map((item) => `${item.extension.toUpperCase()}: ${item.count}`)
     .join(' | ')) || 'No file type data';
@@ -2873,38 +2891,18 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const resolvedEnvironment = experienceEnvironments
     .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
     .find((environment) => Boolean(environment)) || null;
-  const resolvedCharacters = experienceCharacters
-    .map((characterId) => characterByCanonicalId.get(String(characterId || '').toUpperCase()))
-    .filter((character) => Boolean(character));
-  const uniqueResolvedCharacters = resolvedCharacters.filter((character, index, list) => {
-    const key = String(character.id || character.slug || character.name || '').toUpperCase();
-    return list.findIndex((entry) => String(entry.id || entry.slug || entry.name || '').toUpperCase() === key) === index;
-  });
-  const titleLower = String(getBookPublicTitle(book) || canonicalId).toLowerCase();
-  const inferredCharacter = uniqueResolvedCharacters.length > 0
-    ? null
-    : Array.from(characterByCanonicalId.values()).find((character) => {
-        const fullName = String(character && character.name || '').toLowerCase();
-        const firstName = fullName.split(' ')[0];
-        return Boolean(firstName) && titleLower.includes(firstName);
-      }) || null;
-  const storyCharacters = inferredCharacter
-    ? [inferredCharacter]
-    : uniqueResolvedCharacters;
+  const storyCharacters = resolveStoryCharactersForBook(experienceBook || book, characterByCanonicalId);
+  const storyCharactersPageHref = storyCharacters.length > 0 ? `${toBookPageSlug(book)}-characters.html` : '';
   const rawSynopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
   const rawInvitationText = String((experienceBook && experienceBook.description) || '').trim();
   const synopsisText = isGenericStoryPlaceholder(rawSynopsisText) ? '' : rawSynopsisText;
   const invitationText = isGenericStoryPlaceholder(rawInvitationText) ? '' : rawInvitationText;
-  const characterList = experienceCharacters
-    .map((characterId) => {
-      const character = characterByCanonicalId.get(String(characterId || '').toUpperCase());
-      if (!character) {
-        return '';
-      }
-      return `<li><a href="../characters/${character.slug}.html">${character.name}</a></li>`;
-    })
-    .filter((value) => Boolean(value))
+  const characterList = storyCharacters
+    .map((character) => `<li><a href="../characters/${character.slug}.html">${character.name}</a></li>`)
     .join('');
+  const storyCharacterSection = storyCharacters.length > 0
+    ? `<p><strong>Characters you will meet in this story:</strong></p><ul>${characterList}</ul>`
+    : '';
   const environmentList = experienceEnvironments
     .map((environmentId) => {
       const environment = environmentByCanonicalId.get(String(environmentId || '').toUpperCase());
@@ -2922,8 +2920,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <h2 id="story-introduction">Welcome. Let us introduce you to Spencer.</h2>
       ${invitationText ? `<p><em>${invitationText}</em></p>` : ''}
       ${synopsisText ? `<p>${synopsisText}</p>` : ''}
-      <p><strong>You'll meet</strong></p>
-      <ul>${characterList || '<li>Spencer Field Mouse</li><li>Alice Mole</li>'}</ul>
+      ${storyCharacterSection || '<p><strong>Characters you will meet in this story:</strong></p><ul><li>Spencer Field Mouse</li><li>Alice Mole</li></ul>'}
       <p><strong>You'll visit</strong></p>
       <ul>${environmentList || '<li>Story Stump</li><li>Pond Edge</li><li>Farmhouse Porch</li>'}</ul>
       <p><strong>Perfect for</strong></p>
@@ -2985,7 +2982,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       ? 'Meet Spencer'
       : 'Meet the characters';
   const storyActionHref = primaryStoryCharacter
-    ? `../characters/${primaryStoryCharacter.slug}.html`
+    ? `${storyCharactersPageHref || `../characters/${primaryStoryCharacter.slug}.html`}`
     : isSpencerBook
       ? '../characters/spencer-field-mouse.html'
       : '../characters.html';
@@ -3000,6 +2997,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <h2 id="story-intro-heading">${getBookPublicTitle(book) || canonicalId}</h2>
       <p class="story-intro-lead"><em>${storyIntroLead}</em></p>
       <p>${storyIntroBody}</p>
+      ${storyCharacterSection}
       ${storyGuidanceBlock}
       <p>
         <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>Read this story</a>
@@ -3016,7 +3014,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     nav,
     `${site.domain}/${detailPath}`,
     config,
-    null,
+    getBookCoverBanner(bannerBook),
     '../'
   );
 }
@@ -4627,6 +4625,75 @@ function buildRelatedStorybookCards(booksData, currentBookSlug) {
     .join('');
 }
 
+function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map()) {
+  const declaredCharacterIds = Array.isArray(book && book.characters) ? book.characters : [];
+  const resolvedCharacters = declaredCharacterIds
+    .map((characterId) => {
+      const normalizedId = String(characterId || '').trim();
+      if (!normalizedId) {
+        return null;
+      }
+      const directMatch = characterByCanonicalId.get(normalizedId.toUpperCase());
+      if (directMatch) {
+        return directMatch;
+      }
+      return Array.from(characterByCanonicalId.values()).find((character) => {
+        return String(character.slug || '').toLowerCase() === normalizedId.toLowerCase()
+          || String(character.name || '').toLowerCase() === normalizedId.toLowerCase();
+      }) || null;
+    })
+    .filter((character) => Boolean(character));
+
+  const uniqueResolvedCharacters = resolvedCharacters.filter((character, index, list) => {
+    const key = String(character.identity && character.identity.canonicalId || character.slug || character.name || '').toUpperCase();
+    return list.findIndex((entry) => String(entry.identity && entry.identity.canonicalId || entry.slug || entry.name || '').toUpperCase() === key) === index;
+  });
+
+  const titleLower = String(getBookPublicTitle(book) || getCanonicalBookId(book)).toLowerCase();
+  const inferredCharacter = uniqueResolvedCharacters.length > 0
+    ? null
+    : Array.from(characterByCanonicalId.values()).find((character) => {
+        const fullName = String(character && character.name || '').toLowerCase();
+        const firstName = fullName.split(' ')[0];
+        return Boolean(firstName) && titleLower.includes(firstName);
+      }) || null;
+
+  return inferredCharacter
+    ? [inferredCharacter]
+    : uniqueResolvedCharacters;
+}
+
+function renderStoryCharactersPage(book, storyCharacters, site, nav, config) {
+  const bookTitle = getBookPublicTitle(book) || getCanonicalBookId(book);
+  const bookHref = getBookPageHref(book);
+  const characterCards = storyCharacters.map((character) => `<a class="character-card" href="../characters/${character.slug}.html" aria-label="Meet ${character.name}">
+        <div class="character-card-media">
+          <img class="character-hero-thumb" src="../${String(character.heroImage || '').replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
+        </div>
+        <div class="character-card-copy">
+          <h3>${character.name}</h3>
+          <p>${character.description || ''}</p>
+        </div>
+      </a>`).join('');
+
+  return renderLayout(
+    `${bookTitle} Characters`,
+    `Characters you will meet in ${bookTitle}`,
+    `<section class="content-card" aria-labelledby="story-characters-heading">
+      <h2 id="story-characters-heading">Characters you will meet in this story</h2>
+      <p>These are the specific friends listed for this book in the story master.</p>
+      <div class="character-grid">${characterCards}</div>
+      <p><a class="button" href="${toBookPageSlug(book)}.html">Return to the book</a></p>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/books/${toBookPageSlug(book)}-characters.html`,
+    config,
+    null,
+    '../'
+  );
+}
+
 function renderBookDetailPage(page, site, nav, booksData, config, banner) {
   const book = booksData.books.find((entry) => entry.slug === page.bookSlug);
   const canonicalId = getCanonicalBookId(book);
@@ -5332,6 +5399,8 @@ function buildSite() {
       .filter((entry) => Boolean(entry[0]))
   );
   for (const book of indexedBooks) {
+    const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
+    const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
     writePageToOutputs(
       getBookPageHref(book),
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
@@ -5340,6 +5409,12 @@ function buildSite() {
         environmentByCanonicalId
       })
     );
+    if (storyCharacters.length > 0) {
+      writePageToOutputs(
+        getBookCharactersPageHref(book),
+        renderStoryCharactersPage(storyBook || book, storyCharacters, site, nav, config)
+      );
+    }
   }
 
   const allEntities = (entityIndex.entities || []).slice().sort((a, b) => {

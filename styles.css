@@ -147,6 +147,10 @@ h2 {
   display: block;
 }
 
+.page-banner-image[data-banner-id="book-cover"] {
+  object-position: center top;
+}
+
 .page-banner p {
   margin: 0.3rem 0 0;
 }
