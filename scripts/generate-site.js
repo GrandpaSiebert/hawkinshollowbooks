@@ -5846,7 +5846,7 @@ function copyStaticSiteAssets(outputDir) {
     if (!entry.isFile()) {
       continue;
     }
-    if (!/^google[\w-]+\.html$/i.test(entry.name)) {
+    if (!/^google[\w-]+\.html$/i.test(entry.name) && entry.name.toLowerCase() !== 'robots.txt') {
       continue;
     }
     fs.copyFileSync(path.join(root, entry.name), path.join(outputDir, entry.name));
