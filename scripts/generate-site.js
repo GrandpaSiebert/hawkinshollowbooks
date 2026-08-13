@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const AdmZip = require('adm-zip');
 const { writeLibraryArtifacts } = require('./library-scanner');
 const { writeAmazonKdpArtifact } = require('./amazon-kdp-import');
 const { writeCharacterCanonArtifact } = require('./character-canon-import');
@@ -11,6 +12,8 @@ const previewBuildDir = path.join(root, 'build');
 const outputDirs = [buildDir, previewBuildDir];
 const authorityRegistryPath = path.join(root, 'data', 'canonical-authority-registry.json');
 const sourceRegistryPath = path.join(root, 'data', 'canonical-source-registry.json');
+let libraryIndexBookLookupCache = null;
+const storyMasterCharacterNameCache = new Map();
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -402,6 +405,130 @@ function getBookLegacyAliases(book) {
 
 function getBookPublicTitle(book) {
   return String((book && (book.title || book.name)) || '').trim();
+}
+
+function normalizeCharacterNameKey(value) {
+  return String(value || '')
+    .toLowerCase()
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/['’]/g, '')
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function getLibraryIndexBookLookup() {
+  if (libraryIndexBookLookupCache) {
+    return libraryIndexBookLookupCache;
+  }
+
+  const libraryIndex = readJsonIfExists('generated/library-index.json');
+  const byId = new Map();
+  const byTitle = new Map();
+  for (const book of (libraryIndex && libraryIndex.books) || []) {
+    const id = String((book && book.id) || '').trim().toUpperCase();
+    if (id && !byId.has(id)) {
+      byId.set(id, book);
+    }
+    const titleKey = normalizeCharacterNameKey(book && book.title);
+    if (titleKey && !byTitle.has(titleKey)) {
+      byTitle.set(titleKey, book);
+    }
+  }
+
+  libraryIndexBookLookupCache = { byId, byTitle };
+  return libraryIndexBookLookupCache;
+}
+
+function getStoryMasterCharacterNamesForBook(book) {
+  const cacheKey = String(getCanonicalBookId(book) || getBookPublicTitle(book) || '').trim().toUpperCase();
+  if (storyMasterCharacterNameCache.has(cacheKey)) {
+    return storyMasterCharacterNameCache.get(cacheKey) || [];
+  }
+
+  const lookup = getLibraryIndexBookLookup();
+  const canonicalId = String(getCanonicalBookId(book) || '').trim().toUpperCase();
+  const titleKey = normalizeCharacterNameKey(getBookPublicTitle(book));
+  const libraryBook = (canonicalId && lookup.byId.get(canonicalId)) || (titleKey && lookup.byTitle.get(titleKey)) || null;
+  if (!libraryBook) {
+    storyMasterCharacterNameCache.set(cacheKey, []);
+    return [];
+  }
+
+  const storyMasterFile = ((libraryBook && libraryBook.files) || []).find((file) => /story master\.docx$/i.test(String(file || '')));
+  if (!storyMasterFile) {
+    storyMasterCharacterNameCache.set(cacheKey, []);
+    return [];
+  }
+
+  const absolutePath = path.join(root, 'Library', ...String(storyMasterFile).split('/'));
+  if (!fs.existsSync(absolutePath)) {
+    storyMasterCharacterNameCache.set(cacheKey, []);
+    return [];
+  }
+
+  try {
+    const zip = new AdmZip(absolutePath);
+    const documentEntry = zip.getEntry('word/document.xml');
+    if (!documentEntry) {
+      storyMasterCharacterNameCache.set(cacheKey, []);
+      return [];
+    }
+    const text = documentEntry.getData().toString('utf8').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    const match = /Main characters:\s*(.+?)\s+(?:Setting spot:|Theme\/skill:|Problem trigger:|Bentley control:|Pages:)/i.exec(text);
+    const names = match
+      ? match[1]
+          .split(/\s*,\s*/)
+          .map((value) => String(value || '').trim())
+          .filter((value) => Boolean(value))
+      : [];
+    storyMasterCharacterNameCache.set(cacheKey, names);
+    return names;
+  } catch {
+    storyMasterCharacterNameCache.set(cacheKey, []);
+    return [];
+  }
+}
+
+function resolveStoryMasterCharactersForBook(book, characterByCanonicalId = new Map()) {
+  const names = getStoryMasterCharacterNamesForBook(book);
+  if (names.length === 0) {
+    return [];
+  }
+
+  const characters = Array.from(characterByCanonicalId.values());
+  const byFullName = new Map();
+  const byFirstName = new Map();
+  for (const character of characters) {
+    const fullNameKey = normalizeCharacterNameKey(character && character.name);
+    if (fullNameKey && !byFullName.has(fullNameKey)) {
+      byFullName.set(fullNameKey, character);
+    }
+    const firstNameKey = normalizeCharacterNameKey(String(character && character.name || '').split(' ')[0]);
+    if (!firstNameKey) {
+      continue;
+    }
+    const list = byFirstName.get(firstNameKey) || [];
+    list.push(character);
+    byFirstName.set(firstNameKey, list);
+  }
+
+  return names
+    .map((name) => {
+      const exact = byFullName.get(normalizeCharacterNameKey(name));
+      if (exact) {
+        return exact;
+      }
+      const firstNameMatches = byFirstName.get(normalizeCharacterNameKey(String(name || '').split(' ')[0])) || [];
+      return firstNameMatches.length === 1 ? firstNameMatches[0] : null;
+    })
+    .filter((character, index, list) => {
+      if (!character) {
+        return false;
+      }
+      const key = String(character.identity && character.identity.canonicalId || character.slug || character.name || '').toUpperCase();
+      return list.findIndex((entry) => String(entry.identity && entry.identity.canonicalId || entry.slug || entry.name || '').toUpperCase() === key) === index;
+    });
 }
 
 function getEntityPageHref(entityType, entityId, entityName = '') {
@@ -4732,6 +4859,13 @@ function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map())
     const key = String(character.identity && character.identity.canonicalId || character.slug || character.name || '').toUpperCase();
     return list.findIndex((entry) => String(entry.identity && entry.identity.canonicalId || entry.slug || entry.name || '').toUpperCase() === key) === index;
   });
+
+  const storyMasterCharacters = uniqueResolvedCharacters.length > 1
+    ? []
+    : resolveStoryMasterCharactersForBook(book, characterByCanonicalId);
+  if (storyMasterCharacters.length > uniqueResolvedCharacters.length) {
+    return storyMasterCharacters;
+  }
 
   const titleLower = String(getBookPublicTitle(book) || getCanonicalBookId(book)).toLowerCase();
   const inferredCharacter = uniqueResolvedCharacters.length > 0
