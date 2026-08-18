@@ -26,6 +26,8 @@
     "preview": "node scripts/preview-site.js",
     "publish:guard": "node scripts/prepublish-guard.js --branch main --require-contains f65dd02",
     "publish:pages": "powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1",
+    "indexnow:submit": "node scripts/indexnow-submit.js --key e4b3aad43c3b4ece93f1a3b5b6962b38 --from-sitemap build-recovery/sitemap.xml",
+    "indexnow:submit:dry-run": "node scripts/indexnow-submit.js --key e4b3aad43c3b4ece93f1a3b5b6962b38 --from-sitemap build-recovery/sitemap.xml --dry-run",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

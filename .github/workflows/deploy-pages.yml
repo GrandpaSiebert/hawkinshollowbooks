@@ -47,6 +47,10 @@ jobs:
           touch build-recovery/.nojekyll
           echo "hawkinshollowbooks.com" > build-recovery/CNAME
 
+      - name: Copy IndexNow key file
+        run: |
+          cp e4b3aad43c3b4ece93f1a3b5b6962b38.txt build-recovery/e4b3aad43c3b4ece93f1a3b5b6962b38.txt
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
