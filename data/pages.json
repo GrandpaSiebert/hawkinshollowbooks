@@ -49,6 +49,14 @@
       "published": true
     },
     {
+      "slug": "themes",
+      "title": "Explore Themes",
+      "template": "article",
+      "navigation": false,
+      "order": 55,
+      "published": true
+    },
+    {
       "slug": "community",
       "title": "Community",
       "template": "under-construction",

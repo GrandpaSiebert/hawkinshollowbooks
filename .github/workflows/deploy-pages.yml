@@ -35,7 +35,7 @@ jobs:
         run: npm ci
 
       - name: Build site
-        run: node scripts/generate-site.js
+        run: npm run build
 
       - name: Verify required pages exist
         run: |

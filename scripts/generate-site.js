@@ -5,6 +5,7 @@ const { writeLibraryArtifacts } = require('./library-scanner');
 const { writeAmazonKdpArtifact } = require('./amazon-kdp-import');
 const { writeCharacterCanonArtifact } = require('./character-canon-import');
 const { writeWorldCanonArtifacts } = require('./world-canon-import');
+const { project: projectStoryMasters } = require('./project-story-masters');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -349,9 +350,7 @@ function getPlaceArtworkPathByName(placeName, placeKind = '') {
 
 function toBookPageSlug(book) {
   const safeId = getCanonicalBookId(book) || 'unknown'
-    .toLowerCase()
-    .replace(/\+/g, '-plus-')
-    .replace(/[^a-z0-9-]+/g, '-')
+    .replace(/[^A-Za-z0-9+-]+/g, '-')
     .replace(/-+/g, '-')
     .replace(/^-|-$/g, '');
   const safeTitle = (book.title || '')
@@ -386,8 +385,8 @@ function getBookCharactersPageHref(book) {
 
 function getBookCompanionResourcesHref(book, hasResources = true) {
   return hasResources
-    ? `resources.html?story=${encodeURIComponent(String(getCanonicalBookId(book) || '').trim())}`
-    : 'resources.html';
+    ? `../resources.html?story=${encodeURIComponent(String(getCanonicalBookId(book) || '').trim())}`
+    : '../resources.html';
 }
 
 function getCanonicalBookId(book) {
@@ -405,6 +404,56 @@ function getBookLegacyAliases(book) {
 
 function getBookPublicTitle(book) {
   return String((book && (book.title || book.name)) || '').trim();
+}
+
+function createBookPagePresentationModel(book, bookModel, storyMasterRecord, characterByCanonicalId, companionResourceRegistry) {
+  const canonicalId = getCanonicalBookId(book);
+  const curatedDescription = String(bookModel && bookModel.description || '').trim();
+  const websiteDescription = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields.websiteDescription;
+  const readingAge = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields.readingAge;
+  const storyMasterThemes = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields.themes;
+  const curatedThemes = Array.isArray(bookModel && bookModel.themes) ? bookModel.themes.filter(Boolean) : [];
+  const canUseStoryMasterWebsiteDescription = !curatedDescription
+    && websiteDescription
+    && String(websiteDescription.value || '').trim();
+  const canUseStoryMasterThemes = curatedThemes.length === 0 && storyMasterThemes && Array.isArray(storyMasterThemes.value) && storyMasterThemes.value.length > 0;
+  const resolvedParticipants = [];
+  const unresolvedParticipants = [];
+  const seenCharacterIds = new Set();
+  for (const fieldName of ['mainCharacters', 'featuredCharacters', 'characterDependencies']) {
+    const field = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields[fieldName];
+    for (const resolution of (field && field.resolutions) || []) {
+      const provenance = { sourceDocument: field.sourceDocument, sourceSection: field.sourceSection, sourceLabel: field.sourceLabel, extractionMethod: field.extractionMethod, sourceField: fieldName };
+      const character = (resolution.resolutionStatus === 'exact' || resolution.resolutionStatus === 'resolved-alias') ? characterByCanonicalId.get(String(resolution.canonicalId || '').toUpperCase()) : null;
+      if (character && !seenCharacterIds.has(resolution.canonicalId)) {
+        seenCharacterIds.add(resolution.canonicalId);
+        resolvedParticipants.push({ canonicalId: resolution.canonicalId, character, provenance });
+      } else if (!character) {
+        unresolvedParticipants.push({ rawValue: resolution.rawValue, resolutionStatus: resolution.resolutionStatus, provenance });
+      }
+    }
+  }
+  const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
+
+  return {
+    storyMasterWebsiteDescription: canUseStoryMasterWebsiteDescription
+      ? {
+          value: String(websiteDescription.value).trim(),
+          provenance: {
+            sourceDocument: websiteDescription.sourceDocument,
+            sourceSection: websiteDescription.sourceSection,
+            sourceLabel: websiteDescription.sourceLabel,
+            extractionMethod: websiteDescription.extractionMethod,
+            selectionReason: 'Book Model description is empty; use explicit Story Master Website Description.'
+          }
+        }
+      : null
+    ,
+    readingAge: readingAge && String(readingAge.value || '').trim() ? { value: String(readingAge.value).trim(), provenance: readingAge } : null,
+    themes: canUseStoryMasterThemes ? { values: storyMasterThemes.value, provenance: storyMasterThemes } : null,
+    characters: { resolvedParticipants, unresolvedParticipants },
+    resources: { count: resources.length, preview: resources.slice(0, 3) }
+  };
 }
 
 function normalizeCharacterNameKey(value) {
@@ -475,13 +524,30 @@ function getStoryMasterCharacterNamesForBook(book) {
       return [];
     }
     const text = documentEntry.getData().toString('utf8').replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
-    const match = /Main characters:\s*(.+?)\s+(?:Setting spot:|Theme\/skill:|Problem trigger:|Bentley control:|Pages:)/i.exec(text);
-    const names = match
-      ? match[1]
-          .split(/\s*,\s*/)
-          .map((value) => String(value || '').trim())
-          .filter((value) => Boolean(value))
-      : [];
+    const castLabelSchemas = [
+      /\b(?:[A-Za-z'’-]+\s+){0,6}Main characters:\s*(.+?)\s+(?=(?:[A-Z][A-Za-z'’\-/ ]{2,80}:))/i,
+      /\b(?:[A-Za-z'’-]+\s+){0,6}Visible Cast:\s*(.+?)\s+(?=(?:[A-Z][A-Za-z'’\-/ ]{2,80}:))/i,
+      /\bCast of Characters(?:\s+[A-Za-z'’-]+){0,6}:\s*(.+?)\s+(?=(?:[A-Z][A-Za-z'’\-/ ]{2,80}:))/i
+    ];
+
+    const splitCastValues = (rawValue) => String(rawValue || '')
+      .split(/;|,|\band\b/gi)
+      .map((value) => String(value || '').replace(/\s*\([^)]*\)\s*/g, ' ').replace(/\s+/g, ' ').trim())
+      .filter((value) => Boolean(value))
+      .filter((value) => !/^(none|n\/a|not applicable)$/i.test(value));
+
+    let names = [];
+    for (const schema of castLabelSchemas) {
+      const match = schema.exec(text);
+      if (!match) {
+        continue;
+      }
+      names = splitCastValues(match[1]);
+      if (names.length > 0) {
+        break;
+      }
+    }
+
     storyMasterCharacterNameCache.set(cacheKey, names);
     return names;
   } catch {
@@ -513,7 +579,7 @@ function resolveStoryMasterCharactersForBook(book, characterByCanonicalId = new 
     byFirstName.set(firstNameKey, list);
   }
 
-  return names
+  const resolvedCharacters = names
     .map((name) => {
       const exact = byFullName.get(normalizeCharacterNameKey(name));
       if (exact) {
@@ -521,11 +587,17 @@ function resolveStoryMasterCharactersForBook(book, characterByCanonicalId = new 
       }
       const firstNameMatches = byFirstName.get(normalizeCharacterNameKey(String(name || '').split(' ')[0])) || [];
       return firstNameMatches.length === 1 ? firstNameMatches[0] : null;
-    })
+    });
+  const unresolvedNames = names.filter((name, index) => !resolvedCharacters[index]);
+  if (unresolvedNames.length > 0) {
+    console.warn(
+      `[story master warning] book "${getCanonicalBookId(book) || getBookPublicTitle(book)}": unresolved character names: ${unresolvedNames.join(', ')}`
+    );
+  }
+
+  return resolvedCharacters
+    .filter((character) => Boolean(character))
     .filter((character, index, list) => {
-      if (!character) {
-        return false;
-      }
       const key = String(character.identity && character.identity.canonicalId || character.slug || character.name || '').toUpperCase();
       return list.findIndex((entry) => String(entry.identity && entry.identity.canonicalId || entry.slug || entry.name || '').toUpperCase() === key) === index;
     });
@@ -870,9 +942,8 @@ function toWarmExcerpt(value, fallback, maxLength = 180) {
   return `${firstSentence.slice(0, maxLength - 1).trim()}...`;
 }
 
-function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex) {
+function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, bookDiscovery = []) {
   const allCharacters = (charactersData && charactersData.characters) || [];
-  const books = (booksData && booksData.books) || [];
   const graphCharacters = (entityIndex && entityIndex.byType && entityIndex.byType.characters) || [];
   const graphEnvironments = (entityIndex && entityIndex.byType && entityIndex.byType.environments) || [];
   const graphLandmarks = (entityIndex && entityIndex.byType && entityIndex.byType.landmarks) || [];
@@ -1086,31 +1157,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
       };
     });
 
-  const relatedStories = books
-    .filter((book) => (Array.isArray(book.characters) ? book.characters.join(' ') : String(book.characters || '')).toLowerCase().includes(selfFirstName)
-      || String(book.title || '').toLowerCase().includes(selfFirstName)
-      || String(book.title || '').toLowerCase().includes(selfName))
-    .map((book) => ({
-      title: book.title,
-      href: getBookPageHref(book),
-      series: book.series || book.seriesSlug || 'Hawkins Hollow',
-      coverImage: String(book.coverImage || '').replace(/^\//, ''),
-      description: String(book.description || '').trim(),
-      feelings: normalizeStoryGuidanceList(book.feelings, 'feelings'),
-      themes: normalizeStoryGuidanceList(book.themes, 'themes')
-    }));
-
-  const fallbackStories = books.slice(0, 12).map((book) => ({
-    title: book.title,
-    href: getBookPageHref(book),
-    series: book.series || book.seriesSlug || 'Hawkins Hollow',
-    coverImage: String(book.coverImage || '').replace(/^\//, ''),
-    description: String(book.description || '').trim(),
-    feelings: normalizeStoryGuidanceList(book.feelings, 'feelings'),
-    themes: normalizeStoryGuidanceList(book.themes, 'themes')
-  }));
-
-  const featuredStories = relatedStories.length > 0 ? relatedStories : fallbackStories;
+  const featuredStories = bookDiscovery;
   const relatedPeopleAll = mergeManyUniqueByName([
     relatedPeopleFromNeighborhood,
     relatedPeopleFromCanon,
@@ -1191,8 +1238,8 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     })
     .slice(0, 24);
 
-  const relatedStoriesAll = featuredStories.slice(0, 24);
-  const relatedStoriesPreview = relatedStoriesAll.slice(0, 3);
+  const relatedStoriesAll = featuredStories;
+  const relatedStoriesPreview = [];
   const relatedPeoplePreview = relatedPeopleAll.slice(0, 6);
   const relatedPlacesPreview = relatedPlacesAll.slice(0, 6);
   const relatedRelationshipsPreview = relatedRelationshipsAll.slice(0, 3);
@@ -1218,7 +1265,8 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     relatedRelationshipsAll,
     sourceDocument: matchedGraphCharacter && matchedGraphCharacter.canon ? matchedGraphCharacter.canon.sourceDocument : null,
     description: character.description || '',
-    heroImage: character.heroImage || ''
+    heroImage: character.heroImage || '',
+    bookDiscovery
   };
 }
 
@@ -1233,15 +1281,13 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
       const coverImage = story.coverImage
         ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
-      const description = story.description
-        ? story.description
-        : `${characterFirstName} is part of this gentle Hawkins Hollow story.`;
+      const description = story.description ? `<p>${story.description}</p>` : '';
       const guidanceLine = getStoryGuidanceLine(story, 3);
       return `<article class="character-story-card">
         <div class="character-story-media">${coverImage}</div>
         <div class="character-story-copy">
           <h3>${story.title}</h3>
-          <p>${description}</p>
+          ${description}
           ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
           <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
         </div>
@@ -2994,6 +3040,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
   const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
   const companionResourceRegistry = experienceContext.companionResourceRegistry || null;
+  const presentationModel = experienceContext.presentationModel || {};
   const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
   const bannerBook = experienceBook || bookModelByCanonicalId.get(canonicalId.toUpperCase()) || book;
   const fileTypeSummary = ((book.fileTypes || [])
@@ -3089,7 +3136,8 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const resolvedEnvironment = experienceEnvironments
     .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
     .find((environment) => Boolean(environment)) || null;
-  const storyCharacters = resolveStoryCharactersForBook(experienceBook || book, characterByCanonicalId);
+  const projectedCharacters = (presentationModel.characters && presentationModel.characters.resolvedParticipants || []).map((participant) => participant.character);
+  const storyCharacters = projectedCharacters.length > 0 ? projectedCharacters : resolveStoryCharactersForBook(experienceBook || book, characterByCanonicalId);
   const storyCharactersPageHref = storyCharacters.length > 0 ? `${toBookPageSlug(book)}-characters.html` : '';
   const rawSynopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
   const rawInvitationText = String((experienceBook && experienceBook.description) || '').trim();
@@ -3164,9 +3212,18 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     ? (invitationText || generatedInvitation)
     : (invitationText || generatedInvitation);
 
-  const storyIntroLead = (invitationText || synopsisText || generatedInvitation).trim();
+  const storyIntroLead = (presentationModel.storyMasterWebsiteDescription && presentationModel.storyMasterWebsiteDescription.value
+    || invitationText || synopsisText || generatedInvitation).trim();
   const storyIntroBody = synopsisText || getBookDetailBody(normalizedBookForCopy);
-  const storyGuidanceBlock = experienceBook ? renderStoryGuidanceBlock(experienceBook) : '';
+  const storyGuidanceBlock = presentationModel.themes
+    ? `<section class="story-guidance" aria-label="This story gently explores"><p class="story-guidance-heading">This story gently explores</p><div class="story-guidance-group"><h3>Themes you'll find here</h3><p>${presentationModel.themes.values.map((theme) => `<a href="../themes.html?theme=${encodeURIComponent(String(theme).trim().toLowerCase())}">${escapeHtml(theme)}</a>`).join(' &bull; ')}</p></div></section>`
+    : renderStoryGuidanceBlock(experienceBook || {});
+  const readingAgeBlock = presentationModel.readingAge ? `<p class="story-metadata-line"><strong>Reading Age:</strong> ${escapeHtml(presentationModel.readingAge.value)}</p>` : '';
+  const resourcePreview = presentationModel.resources && presentationModel.resources.preview.length > 0
+    ? `<section class="content-card" aria-labelledby="story-resource-preview"><h2 id="story-resource-preview">Companion Resources</h2><div class="start-here-grid">${presentationModel.resources.preview.map((resource) => {
+      const href = getCompanionResourcePublishedUrl(resource);
+      return `<article class="start-here-item"><p class="eyebrow">${escapeHtml(getCompanionResourceAudience(resource))}</p><h3>${escapeHtml(resource.publicName || resource.resourceId)}</h3><p>${escapeHtml(resource.summary || '')}</p><p><strong>Type:</strong> ${escapeHtml((resource.structural && resource.structural.resourceType) || resource.resourceType || 'Resource')}</p>${href ? `<p><a class="button" href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer">Open resource</a></p>` : ''}</article>`;
+    }).join('')}</div></section>` : '';
   const isSpencerBook = String(getBookPublicTitle(book) || canonicalId).toLowerCase().includes('spencer');
   const primaryStoryCharacter = storyCharacters[0] || null;
   const primaryStoryCharacterFirstName = primaryStoryCharacter
@@ -3199,6 +3256,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       <p class="story-intro-lead"><em>${storyIntroLead}</em></p>
       <p>${storyIntroBody}</p>
       ${storyCharacterSection}
+      ${readingAgeBlock}
       ${storyGuidanceBlock}
       <p>
         <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>${amazonReadLabel}</a>
@@ -3210,7 +3268,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   return renderLayout(
     `${getBookPublicTitle(book) || canonicalId}`,
     pageDescription,
-    `${experienceIntroCard}${storyIntroCard}${companionResourceSection}${continuationCard}
+    `${experienceIntroCard}${storyIntroCard}${resourcePreview}${companionResourceSection}${continuationCard}
     <script type="application/ld+json">${jsonLd}</script>`,
     site,
     nav,
@@ -3633,7 +3691,27 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup) {
+function renderThemesPage(page, site, nav, config, banner, libraryIndex) {
+  const themeIndex = readJsonIfExists('generated/story-master-theme-book-index.json');
+  const booksById = new Map(((libraryIndex && libraryIndex.books) || []).map((book) => [String(book.id || '').toUpperCase(), book]));
+  const themes = ((themeIndex && themeIndex.records) || []).map((entry) => ({
+    theme: entry.theme,
+    key: String(entry.theme || '').trim().toLowerCase(),
+    books: (entry.books || []).map((association) => {
+      const book = booksById.get(String(association.bookId || '').toUpperCase());
+      return book ? { title: book.title, href: book.pageHref || association.bookHref, series: book.series || '' } : null;
+    }).filter(Boolean)
+  })).sort((first, second) => first.theme.localeCompare(second.theme));
+  const themeData = JSON.stringify(themes).replace(/</g, '\\u003c');
+  const directory = themes.map((entry) => `<a class="start-here-item" data-theme-entry data-theme-key="${escapeHtml(entry.key)}" href="themes.html?theme=${encodeURIComponent(entry.key)}"><h3>${escapeHtml(entry.theme)}</h3><p>${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}</p></a>`).join('');
+  const options = themes.map((entry) => `<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.theme)} (${entry.books.length})</option>`).join('');
+  return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();entries.forEach(function(entry){entry.hidden=Boolean(query)&&String(entry.getAttribute('data-theme-key')||'').indexOf(query)===-1})}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">Read '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});filterDirectory('');render(key)})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
+}
+
+function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex = null) {
+  if (page.slug === 'themes') {
+    return renderThemesPage(page, site, nav, config, banner, libraryIndex);
+  }
   if (page.slug === 'books') {
     return renderLayout(
       page.title,
@@ -3649,6 +3727,7 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       <p>
         <a class="button" href="storybook-shelf.html">Start with Storybooks</a>
         <a class="button" href="bedtime-library.html">Try Bedtime Library</a>
+        <a class="button" href="themes.html">Explore by Theme</a>
       </p>
     </section>
 
@@ -3809,6 +3888,22 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
   }
 
   if (page.slug === 'map') {
+    const mapPlaces = [
+      ...((entityIndex && entityIndex.byType && entityIndex.byType.environments) || []),
+      ...((entityIndex && entityIndex.byType && entityIndex.byType.landmarks) || [])
+    ]
+      .sort((first, second) => String(first.name || first.title || first.id).localeCompare(String(second.name || second.title || second.id)))
+      .map((place) => {
+        const name = place.name || place.title || place.id || 'Unnamed Place';
+        const href = place.entityPageHref || place.href || '';
+        const kind = place.type === 'environment' ? 'Place' : 'Landmark';
+        return href
+          ? `<a class="map-place-card" href="${escapeHtml(href)}"><p class="map-place-kind">${escapeHtml(kind)}</p><h3>${escapeHtml(name)}</h3><p>Open this location</p></a>`
+          : '';
+      })
+      .filter((markup) => Boolean(markup))
+      .join('');
+
     return renderLayout(
       page.title,
       'A story map of Hawkins Hollow where families can wander by place and discover connected stories.',
@@ -3828,8 +3923,8 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
 
     <section class="content-card" aria-labelledby="map-places">
       <h2 id="map-places">Places Around Hawkins Hollow</h2>
-      <p class="search-hint">Loading environments and landmarks from the Hawkins Hollow memory...</p>
-      <div id="map-places-grid" class="map-grid" aria-live="polite"></div>
+      <p class="search-hint">Choose a familiar place and see where the neighborhood leads next.</p>
+      <div id="map-places-grid" class="map-grid" aria-live="polite">${mapPlaces || '<p>No places are available yet.</p>'}</div>
     </section>
 
     <script>
@@ -3996,6 +4091,16 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     })
     .join('');
 
+  const bookDiscoveryCards = (experience.bookDiscovery || []).map((book) => {
+    const coverImage = book.coverImage
+      ? `<img src="../${book.coverImage}" alt="Cover image for ${book.title}" loading="lazy" width="110" height="150" />`
+      : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+    return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3><p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
+  }).join('');
+  const bookDiscoverySection = bookDiscoveryCards
+    ? `<section class="content-card" aria-labelledby="character-book-discovery"><h2 id="character-book-discovery">Stories with ${characterFirstName}</h2><div class="character-story-list">${bookDiscoveryCards}</div><p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p></section>`
+    : '';
+
   const relatedPlacesCards = (experience.relatedPlacesPreview || experience.relatedPlaces || [])
     .map((place) => {
       const placeName = String(place && place.name ? place.name : 'A familiar place');
@@ -4101,12 +4206,14 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
       </p>
     </section>
 
-    <section class="content-card" aria-labelledby="character-together">
+    ${(relatedStoryCards ? `<section class="content-card" aria-labelledby="character-together">
       <h2 id="character-together">${profile.storyHeading}</h2>
       <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
       <div class="character-story-list">${relatedStoryCards}</div>
       ${storyContinuationLink}
-    </section>
+    </section>` : '')}
+
+    ${bookDiscoverySection}
 
     <section class="content-card" aria-labelledby="character-people">
       <h2 id="character-people">${profile.friendHeading}</h2>
@@ -4172,13 +4279,13 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
       const coverImage = story.coverImage
         ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
-      const description = story.description || `${firstName} is part of this gentle Hawkins Hollow story.`;
+      const description = story.description ? `<p>${story.description}</p>` : '';
       const guidanceLine = getStoryGuidanceLine(story, 3);
       return `<article class="character-story-card">
         <div class="character-story-media">${coverImage}</div>
         <div class="character-story-copy">
           <h3>${story.title}</h3>
-          <p>${description}</p>
+          ${description}
           ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
           <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
         </div>
@@ -4838,6 +4945,9 @@ function buildRelatedStorybookCards(booksData, currentBookSlug) {
 
 function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map()) {
   const declaredCharacterIds = Array.isArray(book && book.characters) ? book.characters : [];
+  const hasDeclaredCharacterAuthority = declaredCharacterIds
+    .map((value) => String(value || '').trim())
+    .some((value) => value.length > 0);
   const resolvedCharacters = declaredCharacterIds
     .map((characterId) => {
       const normalizedId = String(characterId || '').trim();
@@ -4860,25 +4970,12 @@ function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map())
     return list.findIndex((entry) => String(entry.identity && entry.identity.canonicalId || entry.slug || entry.name || '').toUpperCase() === key) === index;
   });
 
-  const storyMasterCharacters = uniqueResolvedCharacters.length > 1
-    ? []
-    : resolveStoryMasterCharactersForBook(book, characterByCanonicalId);
-  if (storyMasterCharacters.length > uniqueResolvedCharacters.length) {
-    return storyMasterCharacters;
+  if (hasDeclaredCharacterAuthority) {
+    return uniqueResolvedCharacters;
   }
 
-  const titleLower = String(getBookPublicTitle(book) || getCanonicalBookId(book)).toLowerCase();
-  const inferredCharacter = uniqueResolvedCharacters.length > 0
-    ? null
-    : Array.from(characterByCanonicalId.values()).find((character) => {
-        const fullName = String(character && character.name || '').toLowerCase();
-        const firstName = fullName.split(' ')[0];
-        return Boolean(firstName) && titleLower.includes(firstName);
-      }) || null;
-
-  return inferredCharacter
-    ? [inferredCharacter]
-    : uniqueResolvedCharacters;
+  const storyMasterCharacters = resolveStoryMasterCharactersForBook(book, characterByCanonicalId);
+  return storyMasterCharacters;
 }
 
 function renderStoryCharactersPage(book, storyCharacters, site, nav, config) {
@@ -5036,7 +5133,7 @@ function renderBookCompanionResourcesSection(book, companionResourceRegistry) {
   const actionsMarkup = hasResources
     ? `<p>
       <a class="button" href="${escapeHtml(resourcesHref)}">Companion Resources</a>
-      <a class="button" href="resources.html">Browse all resources</a>
+      <a class="button" href="../resources.html">Browse all resources</a>
     </p>`
     : '';
 
@@ -5359,7 +5456,7 @@ function getCompanionResourcePublishedUrl(resource) {
   return buildCanonicalResourceUrlFromSourcePath(rawSourcePath, publishedIndex);
 }
 
-function renderCompanionResourceVisitorCard(resource, bookLookup) {
+function renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLookup) {
   const audience = getCompanionResourceAudience(resource);
   const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
   const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
@@ -5371,8 +5468,12 @@ function renderCompanionResourceVisitorCard(resource, bookLookup) {
     ? `<a class="button" href="${escapeHtml(resourceHref)}" target="_blank" rel="noopener noreferrer">Open resource file</a>`
     : '<strong>Availability:</strong> Not published yet. Check back soon.';
   const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
+  const bookReturn = bookRouteLookup.get(storyId) || null;
+  const bookReturnMarkup = bookReturn
+    ? `<a class="button" href="${escapeHtml(bookReturn.href)}">Read the Story</a>`
+    : '';
 
-  return `<article class="start-here-item companion-resource-card" data-companion-resource-card data-companion-resource-story-id="${escapeHtml(storyId)}">
+  return `<article class="start-here-item companion-resource-card" data-companion-resource-card data-companion-resource-id="${escapeHtml(resource.resourceId || '')}" data-companion-resource-story-id="${escapeHtml(storyId)}">
     <p class="eyebrow">${escapeHtml(audience)}</p>
     <h3>${escapeHtml(resourceTitle)}</h3>
     <p><strong>${escapeHtml(headline)}</strong></p>
@@ -5380,7 +5481,7 @@ function renderCompanionResourceVisitorCard(resource, bookLookup) {
     <p><strong>Type:</strong> ${escapeHtml(resourceType)}</p>
     <p><strong>Status:</strong> ${escapeHtml(status)}</p>
     <p>${escapeHtml(getCompanionResourceVisitorIntro(resource))}</p>
-    <p>${availabilityMarkup}</p>
+    <p>${availabilityMarkup} ${bookReturnMarkup}</p>
   </article>`;
 }
 
@@ -5403,9 +5504,12 @@ function renderCompanionResourceDeveloperCard(resource) {
   </article>`;
 }
 
-function renderCompanionResourceRegistryPage(companionResourceRegistry, site, nav, config, banner, booksData = null) {
+function renderCompanionResourceRegistryPage(companionResourceRegistry, site, nav, config, banner, booksData = null, mergedBookIndex = null) {
   const resources = getCompanionResourceRegistryResources(companionResourceRegistry);
   const bookLookup = new Map(((booksData && booksData.books) || []).map((book) => [String(getCanonicalBookId(book)).toUpperCase(), book]));
+  const bookRouteLookup = new Map(((mergedBookIndex && mergedBookIndex.records) || [])
+    .filter((book) => book && book.id && book.pageHref)
+    .map((book) => [String(book.id).toUpperCase(), { href: book.pageHref, title: book.title || book.id }]));
   const audiences = ['Child', 'Parent/Family', 'Educator/Librarian'];
   const groupedResources = audiences.map((audience) => ({
     audience,
@@ -5433,7 +5537,7 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
 
   const audienceCards = groupedResources.map(({ audience, items }) => {
     const cardHtml = items.length > 0
-      ? `<div class="start-here-grid">${items.map((resource) => renderCompanionResourceVisitorCard(resource, bookLookup)).join('')}</div>`
+      ? `<div class="start-here-grid">${items.map((resource) => renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLookup)).join('')}</div>`
       : '<p>No resources have been assigned here yet.</p>';
 
     return `<section class="content-card" data-companion-audience-section aria-labelledby="${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
@@ -5628,11 +5732,11 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
   );
 }
 
-function renderUnderConstructionPage(page, site, nav, constructionData, config, banner) {
+function renderUnderConstructionPage(page, site, nav, constructionData, config, banner, mergedBookIndex = null) {
   if (page && page.slug === 'resources') {
     const registry = readJsonIfExists('data/companion-resource-registry.json');
     if (registry && Array.isArray(registry.resources)) {
-      return renderCompanionResourceRegistryPage(registry, site, nav, config, banner, readJson('data/books.json'));
+      return renderCompanionResourceRegistryPage(registry, site, nav, config, banner, readJson('data/books.json'), mergedBookIndex);
     }
 
     return renderLayout(
@@ -5846,7 +5950,10 @@ function copyStaticSiteAssets(outputDir) {
     if (!entry.isFile()) {
       continue;
     }
-    if (!/^google[\w-]+\.html$/i.test(entry.name) && entry.name.toLowerCase() !== 'robots.txt') {
+    const isGoogleVerificationFile = /^google[\w-]+\.html$/i.test(entry.name);
+    const isRobotsFile = entry.name.toLowerCase() === 'robots.txt';
+    const isIndexNowKeyFile = /^[a-f0-9]{32,128}\.txt$/i.test(entry.name);
+    if (!isGoogleVerificationFile && !isRobotsFile && !isIndexNowKeyFile) {
       continue;
     }
     fs.copyFileSync(path.join(root, entry.name), path.join(outputDir, entry.name));
@@ -5868,6 +5975,7 @@ function copyStaticSiteAssets(outputDir) {
 
 function buildSite() {
   const libraryArtifacts = writeLibraryArtifacts(root);
+  projectStoryMasters(null, 'full-corpus', false);
   const amazonArtifacts = writeAmazonKdpArtifact(root);
   console.log(
     `Library index updated: ${libraryArtifacts.summary.fileCount} files, ${libraryArtifacts.summary.indexedBooks} book records.`
@@ -5890,6 +5998,8 @@ function buildSite() {
   const config = readJson('data/site-config.json');
   const banners = readJson('data/banners.json');
   const companionResourceRegistry = readJsonIfExists('data/companion-resource-registry.json');
+  const storyMasterIndex = readJsonIfExists('generated/story-master-index.json');
+  const storyMasterCharacterBookIndex = readJsonIfExists('generated/story-master-character-book-index.json');
   const authorityRegistry = loadCanonicalAuthorityRegistry();
   const updatedSourceProjection = writeLegacySourceRegistryProjection(authorityRegistry);
   if (updatedSourceProjection) {
@@ -6012,13 +6122,13 @@ function buildSite() {
     } else if (page.slug === 'characters') {
       html = renderCharactersPage(site, nav, charactersData, config, banner);
     } else if (page.template === 'article') {
-      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup);
+      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex);
     } else if (page.template === 'series') {
       html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup);
     } else if (page.template === 'book-detail') {
       html = renderBookDetailPage(page, site, nav, booksData, config, banner);
     } else {
-      html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner);
+      html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner, mergedBookIndex);
     }
 
     const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
@@ -6032,8 +6142,28 @@ function buildSite() {
     .filter((character) => character.published !== false)
     .sort((a, b) => a.sortOrder - b.sortOrder);
   const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
+  const libraryBookById = new Map((libraryIndex.books || []).map((book) => [String(book.id || '').toUpperCase(), book]));
+  const bookModelByDiscoveryId = new Map((booksData.books || []).map((book) => [getCanonicalBookId(book).toUpperCase(), book]));
+  const characterBookDiscoveryById = new Map(((storyMasterCharacterBookIndex && storyMasterCharacterBookIndex.records) || []).map((record) => {
+    const books = (record.books || []).map((association) => {
+      const libraryBook = libraryBookById.get(String(association.bookId || '').toUpperCase());
+      const bookModel = bookModelByDiscoveryId.get(String(association.bookId || '').toUpperCase());
+      if (!libraryBook) return null;
+      const coverAligned = Boolean(bookModel && bookModel.coverImage
+        && normalizeCharacterNameKey(bookModel.title) === normalizeCharacterNameKey(libraryBook.title));
+      return {
+        title: libraryBook.title,
+        href: libraryBook.pageHref || association.bookHref,
+        series: libraryBook.series,
+        coverImage: coverAligned ? String(bookModel.coverImage).replace(/^\//, '') : '',
+        coverStatus: coverAligned ? 'aligned-book-model-cover' : 'withheld-unproven-cover'
+      };
+    }).filter(Boolean).sort((first, second) => String(first.href).localeCompare(String(second.href)));
+    return [String(record.canonicalCharacterId || '').toUpperCase(), books];
+  }));
   for (const character of featuredCharacters) {
-    const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex);
+    const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
+    const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || []);
     writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
@@ -6067,11 +6197,46 @@ function buildSite() {
       .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
       .filter((entry) => Boolean(entry[0]))
   );
+  const storyMasterByDiscoveryId = new Map(
+    ((storyMasterIndex && storyMasterIndex.records) || [])
+      .map((record) => [String(record && record.discoveryId || record && record.id || '').toUpperCase(), record])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const storyMasterPresentationReport = [];
+  const characterDiscovery = new Map();
+  const themeDiscovery = new Map();
   const characterByCanonicalId = new Map(
     (charactersData.characters || [])
       .map((character) => [String(((character.identity && character.identity.canonicalId) || '').trim()).toUpperCase(), character])
       .filter((entry) => Boolean(entry[0]))
   );
+  const characterByName = new Map(
+    (charactersData.characters || [])
+      .map((character) => [normalizeCharacterNameKey(character.name), character])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const companionResourceCharacterIndex = new Map();
+  const companionResourceCharacterUnresolved = [];
+  for (const resource of getCompanionResourceRegistryResources(companionResourceRegistry)) {
+    for (const rawValue of ((resource && resource.world && resource.world.characters) || [])) {
+      const character = characterByName.get(normalizeCharacterNameKey(rawValue));
+      const association = {
+        resourceId: resource.resourceId || '',
+        resourceName: resource.publicName || resource.title || resource.resourceId || '',
+        sourceFile: resource.sourceFile || resource.filePath || '',
+        rawValue,
+        sourceField: 'world.characters'
+      };
+      if (!character || !character.identity || !character.identity.canonicalId) {
+        companionResourceCharacterUnresolved.push({ ...association, resolutionStatus: 'unresolved' });
+        continue;
+      }
+      const canonicalCharacterId = character.identity.canonicalId;
+      const entries = companionResourceCharacterIndex.get(canonicalCharacterId) || [];
+      entries.push({ ...association, canonicalCharacterId, resolutionStatus: 'exact' });
+      companionResourceCharacterIndex.set(canonicalCharacterId, entries);
+    }
+  }
   const environmentByCanonicalId = new Map(
     (((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || []))
       .map((environment) => [String(environment.id || '').trim().toUpperCase(), environment])
@@ -6079,6 +6244,32 @@ function buildSite() {
   );
   for (const book of indexedBooks) {
     const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
+    const presentationModel = createBookPagePresentationModel(
+      book,
+      storyBook,
+      storyMasterByDiscoveryId.get(String(book.id || '').toUpperCase()) || null,
+      characterByCanonicalId,
+      companionResourceRegistry
+    );
+    if (presentationModel.storyMasterWebsiteDescription) {
+      storyMasterPresentationReport.push({
+        discoveryId: String(book.id || '').toUpperCase(),
+        field: 'websiteDescription',
+        ...presentationModel.storyMasterWebsiteDescription.provenance
+      });
+    }
+    for (const participant of presentationModel.characters.resolvedParticipants) {
+      const entries = characterDiscovery.get(participant.canonicalId) || [];
+      entries.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book), sourceField: participant.provenance.sourceField, sourceDocument: participant.provenance.sourceDocument, sourceSection: participant.provenance.sourceSection, sourceLabel: participant.provenance.sourceLabel });
+      characterDiscovery.set(participant.canonicalId, entries);
+    }
+    for (const theme of (presentationModel.themes && presentationModel.themes.values) || []) {
+      const normalized = String(theme || '').trim().toLowerCase();
+      if (!normalized) continue;
+      const entry = themeDiscovery.get(normalized) || { theme, books: [] };
+      entry.books.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book) });
+      themeDiscovery.set(normalized, entry);
+    }
     const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
     writePageToOutputs(
       getBookPageHref(book),
@@ -6086,7 +6277,8 @@ function buildSite() {
         bookModelByCanonicalId,
         characterByCanonicalId,
         environmentByCanonicalId,
-        companionResourceRegistry
+        companionResourceRegistry,
+        presentationModel
       })
     );
     sitemapRoutes.add(getBookPageHref(book));
@@ -6098,6 +6290,15 @@ function buildSite() {
       sitemapRoutes.add(getBookCharactersPageHref(book));
     }
   }
+
+  fs.writeFileSync(
+    path.join(root, 'generated', 'story-master-presentation-report.json'),
+    `${JSON.stringify({ scope: 'website-description-full-expansion', selections: storyMasterPresentationReport }, null, 2)}\n`,
+    'utf8'
+  );
+  fs.writeFileSync(path.join(root, 'generated', 'story-master-character-book-index.json'), `${JSON.stringify({ records: Array.from(characterDiscovery, ([canonicalCharacterId, books]) => ({ canonicalCharacterId, books })) }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(path.join(root, 'generated', 'story-master-theme-book-index.json'), `${JSON.stringify({ records: Array.from(themeDiscovery.values()) }, null, 2)}\n`, 'utf8');
+  fs.writeFileSync(path.join(root, 'generated', 'companion-resource-character-index.json'), `${JSON.stringify({ records: Array.from(companionResourceCharacterIndex, ([canonicalCharacterId, resources]) => ({ canonicalCharacterId, resources })), unresolved: companionResourceCharacterUnresolved }, null, 2)}\n`, 'utf8');
 
   const allEntities = (entityIndex.entities || []).slice().sort((a, b) => {
     if (a.type === b.type) {
