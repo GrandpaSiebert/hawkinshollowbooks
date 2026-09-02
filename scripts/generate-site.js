@@ -5975,7 +5975,6 @@ function copyStaticSiteAssets(outputDir) {
 
 function buildSite() {
   const libraryArtifacts = writeLibraryArtifacts(root);
-  projectStoryMasters(null, 'full-corpus', false);
   const amazonArtifacts = writeAmazonKdpArtifact(root);
   console.log(
     `Library index updated: ${libraryArtifacts.summary.fileCount} files, ${libraryArtifacts.summary.indexedBooks} book records.`
@@ -5998,8 +5997,6 @@ function buildSite() {
   const config = readJson('data/site-config.json');
   const banners = readJson('data/banners.json');
   const companionResourceRegistry = readJsonIfExists('data/companion-resource-registry.json');
-  const storyMasterIndex = readJsonIfExists('generated/story-master-index.json');
-  const storyMasterCharacterBookIndex = readJsonIfExists('generated/story-master-character-book-index.json');
   const authorityRegistry = loadCanonicalAuthorityRegistry();
   const updatedSourceProjection = writeLegacySourceRegistryProjection(authorityRegistry);
   if (updatedSourceProjection) {
@@ -6073,6 +6070,10 @@ function buildSite() {
   console.log(
     `Entity graph updated: ${entityGraph.summary.nodeCount} nodes, ${entityGraph.summary.edgeCount} edges (${entityGraph.summary.unresolvedMentionCount} unresolved mentions).`
   );
+
+  projectStoryMasters(null, 'full-corpus', false);
+  const storyMasterIndex = readJsonIfExists('generated/story-master-index.json');
+  const storyMasterCharacterBookIndex = readJsonIfExists('generated/story-master-character-book-index.json');
 
   const pageDefinitions = pages.map((page) => ({ ...page }));
   const existingSlugs = new Set(pageDefinitions.map((page) => page.slug));
