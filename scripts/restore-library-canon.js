@@ -37,6 +37,10 @@ function isCanonicalDocument(sourcePath) {
     || /^(Characters|Relationships|Environments|Landmarks)\//i.test(normalized);
 }
 
+function isWorldCanonDocument(key) {
+  return /^(Characters|Relationships|Environments|Landmarks)\/.*\.docx$/i.test(String(key || ''));
+}
+
 function toDestination(rootPath, sourcePath) {
   const segments = String(sourcePath || '').replace(/\\/g, '/').split('/');
   if (!segments.length || segments.some((segment) => !segment || segment === '.' || segment === '..')) {
@@ -85,6 +89,18 @@ async function fetchR2Object(client, bucket, key) {
   return bodyToBuffer(response.Body);
 }
 
+async function listR2ObjectKeys(client, bucket) {
+  const { ListObjectsV2Command } = require('@aws-sdk/client-s3');
+  const keys = [];
+  let continuationToken;
+  do {
+    const response = await client.send(new ListObjectsV2Command({ Bucket: bucket, ContinuationToken: continuationToken }));
+    keys.push(...(response.Contents || []).map((entry) => entry.Key));
+    continuationToken = response.NextContinuationToken;
+  } while (continuationToken);
+  return keys;
+}
+
 async function restoreLibraryCanon(options = {}) {
   const baseUrl = String(options.baseUrl || defaultBaseUrl).replace(/\/+$/, '');
   const destination = path.resolve(options.destination || path.join(root, 'Library'));
@@ -101,7 +117,19 @@ async function restoreLibraryCanon(options = {}) {
     manifest = JSON.parse((await fetchR2Object(r2Client, options.bucket || defaultBucket, options.manifestKey || defaultManifestKey)).toString('utf8'));
   }
   const assets = (manifest.records || []).flatMap((record) => record.assets || []);
-  const documents = assets.filter((asset) => isCanonicalDocument(asset.sourcePath));
+  const documentsByPath = new Map(assets
+    .filter((asset) => isCanonicalDocument(asset.sourcePath))
+    .map((asset) => [asset.sourcePath, asset]));
+
+  if (r2Client) {
+    const bucket = options.bucket || defaultBucket;
+    for (const key of await listR2ObjectKeys(r2Client, bucket)) {
+      if (isWorldCanonDocument(key)) {
+        documentsByPath.set(key, { key, sourcePath: key });
+      }
+    }
+  }
+  const documents = Array.from(documentsByPath.values());
 
   if (documents.length === 0) {
     throw new Error('The public library manifest contained no canonical DOCX source documents.');
@@ -131,4 +159,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { restoreLibraryCanon, isCanonicalDocument, parseArgs };
+module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, parseArgs };
