@@ -41,6 +41,10 @@ function isWorldCanonDocument(key) {
   return /^(Characters|Relationships|Environments|Landmarks)\/.*\.docx$/i.test(String(key || ''));
 }
 
+function isFreebieObject(key) {
+  return /^Freebies\/.+[^\/]$/i.test(String(key || ''));
+}
+
 function toDestination(rootPath, sourcePath) {
   const segments = String(sourcePath || '').replace(/\\/g, '/').split('/');
   if (!segments.length || segments.some((segment) => !segment || segment === '.' || segment === '..')) {
@@ -120,12 +124,16 @@ async function restoreLibraryCanon(options = {}) {
   const documentsByPath = new Map(assets
     .filter((asset) => isCanonicalDocument(asset.sourcePath))
     .map((asset) => [asset.sourcePath, asset]));
+  const catalogObjects = new Set();
 
   if (r2Client) {
     const bucket = options.bucket || defaultBucket;
     for (const key of await listR2ObjectKeys(r2Client, bucket)) {
       if (isWorldCanonDocument(key)) {
         documentsByPath.set(key, { key, sourcePath: key });
+      }
+      if (isFreebieObject(key)) {
+        catalogObjects.add(key);
       }
     }
   }
@@ -148,8 +156,16 @@ async function restoreLibraryCanon(options = {}) {
     }
   }
 
-  console.log(`Restored ${documents.length} canonical Library DOCX files from ${r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : baseUrl}.`);
-  return { documentCount: documents.length, destination };
+  for (const objectKey of catalogObjects) {
+    const outputPath = toDestination(destination, objectKey);
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.closeSync(fs.openSync(outputPath, 'w'));
+    }
+  }
+
+  console.log(`Restored ${documents.length} canonical Library DOCX files and ${catalogObjects.size} Freebies catalog paths from ${r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : baseUrl}.`);
+  return { documentCount: documents.length, catalogObjectCount: catalogObjects.size, destination };
 }
 
 if (require.main === module) {
@@ -159,4 +175,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, parseArgs };
+module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, isFreebieObject, parseArgs };
