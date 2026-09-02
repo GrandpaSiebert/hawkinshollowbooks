@@ -124,6 +124,11 @@ async function restoreLibraryCanon(options = {}) {
   const documentsByPath = new Map(assets
     .filter((asset) => isCanonicalDocument(asset.sourcePath))
     .map((asset) => [asset.sourcePath, asset]));
+  // Manifest sourcePath is authoritative for original Library identity (preserves '+', casing, punctuation);
+  // the CDN object key is lossy (slugified) and must never be reverse-engineered into a Library path.
+  const manifestPlaceholderPaths = new Set(assets
+    .map((asset) => asset.sourcePath)
+    .filter((sourcePath) => sourcePath && !documentsByPath.has(sourcePath)));
   const catalogObjects = new Set();
 
   if (r2Client) {
@@ -164,8 +169,17 @@ async function restoreLibraryCanon(options = {}) {
     }
   }
 
-  console.log(`Restored ${documents.length} canonical Library DOCX files and ${catalogObjects.size} Freebies catalog paths from ${r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : baseUrl}.`);
-  return { documentCount: documents.length, catalogObjectCount: catalogObjects.size, destination };
+  for (const sourcePath of manifestPlaceholderPaths) {
+    const outputPath = toDestination(destination, sourcePath);
+    if (!fs.existsSync(outputPath)) {
+      fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+      fs.closeSync(fs.openSync(outputPath, 'w'));
+    }
+  }
+
+  const placeholderCount = catalogObjects.size + manifestPlaceholderPaths.size;
+  console.log(`Restored ${documents.length} canonical Library DOCX files and ${placeholderCount} catalog paths from ${r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : baseUrl}.`);
+  return { documentCount: documents.length, catalogObjectCount: placeholderCount, destination };
 }
 
 if (require.main === module) {
