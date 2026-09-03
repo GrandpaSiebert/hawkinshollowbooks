@@ -415,7 +415,7 @@ function createBookPagePresentationModel(book, bookModel, storyMasterRecord, cha
   const curatedThemes = Array.isArray(bookModel && bookModel.themes) ? bookModel.themes.filter(Boolean) : [];
   const canUseStoryMasterWebsiteDescription = websiteDescription
     && String(websiteDescription.value || '').trim();
-  const canUseStoryMasterThemes = curatedThemes.length === 0 && storyMasterThemes && Array.isArray(storyMasterThemes.value) && storyMasterThemes.value.length > 0;
+  const canUseStoryMasterThemes = storyMasterThemes && Array.isArray(storyMasterThemes.value) && storyMasterThemes.value.length > 0;
   const resolvedParticipants = [];
   const unresolvedParticipants = [];
   const seenCharacterIds = new Set();
@@ -4115,7 +4115,8 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     const coverImage = book.coverImage
       ? `<img src="../${book.coverImage}" alt="Cover image for ${book.title}" loading="lazy" width="110" height="150" />`
       : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
-    return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3><p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
+    const description = book.description ? `<p>${escapeHtml(book.description)}</p>` : '';
+    return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
   }).join('');
   const bookDiscoverySection = bookDiscoveryCards
     ? `<section class="content-card" aria-labelledby="character-book-discovery"><h2 id="character-book-discovery">Stories with ${characterFirstName}</h2><div class="character-story-list">${bookDiscoveryCards}</div><p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p></section>`
@@ -6165,6 +6166,11 @@ function buildSite() {
   const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
   const libraryBookById = new Map((libraryIndex.books || []).map((book) => [String(book.id || '').toUpperCase(), book]));
   const bookModelByDiscoveryId = new Map((booksData.books || []).map((book) => [getCanonicalBookId(book).toUpperCase(), book]));
+  const storyMasterByDiscoveryId = new Map(
+    ((storyMasterIndex && storyMasterIndex.records) || [])
+      .map((record) => [String(record && record.discoveryId || record && record.id || '').toUpperCase(), record])
+      .filter((entry) => Boolean(entry[0]))
+  );
   const characterBookDiscoveryById = new Map(((storyMasterCharacterBookIndex && storyMasterCharacterBookIndex.records) || []).map((record) => {
     const books = (record.books || []).map((association) => {
       const libraryBook = libraryBookById.get(String(association.bookId || '').toUpperCase());
@@ -6172,12 +6178,19 @@ function buildSite() {
       if (!libraryBook) return null;
       const coverAligned = Boolean(bookModel && bookModel.coverImage
         && normalizeCharacterNameKey(bookModel.title) === normalizeCharacterNameKey(libraryBook.title));
+      const storyMasterRecord = storyMasterByDiscoveryId.get(String(association.bookId || '').toUpperCase());
+      const storyMasterDescription = storyMasterRecord && storyMasterRecord.fields
+        ? (storyMasterRecord.fields.websiteDescription && String(storyMasterRecord.fields.websiteDescription.value || '').trim())
+          || (storyMasterRecord.fields.shortDescription && String(storyMasterRecord.fields.shortDescription.value || '').trim())
+          || ''
+        : '';
       return {
         title: libraryBook.title,
         href: libraryBook.pageHref || association.bookHref,
         series: libraryBook.series,
         coverImage: coverAligned ? String(bookModel.coverImage).replace(/^\//, '') : '',
-        coverStatus: coverAligned ? 'aligned-book-model-cover' : 'withheld-unproven-cover'
+        coverStatus: coverAligned ? 'aligned-book-model-cover' : 'withheld-unproven-cover',
+        description: storyMasterDescription
       };
     }).filter(Boolean).sort((first, second) => String(first.href).localeCompare(String(second.href)));
     return [String(record.canonicalCharacterId || '').toUpperCase(), books];
@@ -6216,11 +6229,6 @@ function buildSite() {
   const bookModelByCanonicalId = new Map(
     (booksData.books || [])
       .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
-      .filter((entry) => Boolean(entry[0]))
-  );
-  const storyMasterByDiscoveryId = new Map(
-    ((storyMasterIndex && storyMasterIndex.records) || [])
-      .map((record) => [String(record && record.discoveryId || record && record.id || '').toUpperCase(), record])
       .filter((entry) => Boolean(entry[0]))
   );
   const storyMasterPresentationReport = [];
