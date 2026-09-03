@@ -127,6 +127,10 @@ function walkDirectory(startDir, onDirectory, onFile) {
   }
 }
 
+function isIgnoredLibraryFile(fileName) {
+  return String(fileName || '').startsWith('~$');
+}
+
 function buildCategorySummary(files) {
   const summaryMap = new Map();
   for (const file of files) {
@@ -232,6 +236,10 @@ function scanLibrary(siteRoot) {
       folders.push(normalizeRelativePath(dirPath, libraryRoot));
     },
     (filePath, fileName) => {
+      if (isIgnoredLibraryFile(fileName)) {
+        return;
+      }
+
       const stats = fs.statSync(filePath);
       const relativePath = normalizeRelativePath(filePath, libraryRoot);
       const extension = path.extname(fileName).toLowerCase().replace(/^\./, '');
@@ -299,5 +307,6 @@ function writeLibraryArtifacts(siteRoot, outputDir = path.join(siteRoot, 'genera
 
 module.exports = {
   scanLibrary,
-  writeLibraryArtifacts
+  writeLibraryArtifacts,
+  isIgnoredLibraryFile
 };

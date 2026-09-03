@@ -35,6 +35,12 @@
       "role": "character"
     },
     {
+      "localPrefixes": ["freebies/"],
+      "r2Prefix": "Freebies/",
+      "role": "other",
+      "preserveSourcePath": true
+    },
+    {
       "localPrefixes": ["resources/", "ribbons/"],
       "r2Prefix": "resources/",
       "role": "resource"

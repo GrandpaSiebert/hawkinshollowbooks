@@ -101,6 +101,13 @@ function normalizePrefix(value) {
     .replace(/\/+$/, '') + '/';
 }
 
+function normalizeOutputPrefix(value) {
+  return ensurePosix(String(value || ''))
+    .trim()
+    .replace(/^\/+/, '')
+    .replace(/\/+$/, '') + '/';
+}
+
 function defaultMappingConfig() {
   return {
     prefixes: {
@@ -118,6 +125,7 @@ function defaultMappingConfig() {
       { localPrefixes: ['companion packs/', 'companion-packs/', 'companion_packs/'], r2Prefix: 'companion-packs/', role: 'companion-pack' },
       { localPrefixes: ['illustrations/'], r2Prefix: 'illustrations/', role: 'illustration' },
       { localPrefixes: ['characters/'], r2Prefix: 'characters/', role: 'character' },
+      { localPrefixes: ['freebies/'], r2Prefix: 'Freebies/', role: 'other', preserveSourcePath: true },
       { localPrefixes: ['resources/', 'ribbons/'], r2Prefix: 'resources/', role: 'resource' }
     ],
     fallback: {
@@ -154,8 +162,9 @@ function resolveMapping(relativePath, category, mappingConfig) {
       if (normalizedPath.startsWith(normalizedPrefix) || normalizedCategory === normalizedPrefix) {
         return {
           role: rule.role || 'other',
-          r2Prefix: normalizePrefix(rule.r2Prefix || mappingConfig.fallback.r2Prefix),
-          matchedPrefix: normalizedPrefix
+          r2Prefix: normalizeOutputPrefix(rule.r2Prefix || mappingConfig.fallback.r2Prefix),
+          matchedPrefix: normalizedPrefix,
+          preserveSourcePath: rule.preserveSourcePath === true
         };
       }
     }
@@ -163,8 +172,9 @@ function resolveMapping(relativePath, category, mappingConfig) {
 
   return {
     role: mappingConfig.fallback.role || 'other',
-    r2Prefix: normalizePrefix(mappingConfig.fallback.r2Prefix || 'resources/'),
-    matchedPrefix: ''
+    r2Prefix: normalizeOutputPrefix(mappingConfig.fallback.r2Prefix || 'resources/'),
+    matchedPrefix: '',
+    preserveSourcePath: false
   };
 }
 
@@ -177,6 +187,10 @@ function toObjectKey(relativePath, category, mappingConfig) {
     .filter(Boolean)
     .length;
   const trimmed = parts.length > matchedSegments ? parts.slice(matchedSegments) : parts;
+  if (mapping.preserveSourcePath) {
+    return `${mapping.r2Prefix}${trimmed.join('/')}`;
+  }
+
   const sanitized = trimmed.map((segment, index) => {
     const isLast = index === trimmed.length - 1;
     if (!isLast) {
@@ -305,5 +319,6 @@ if (require.main === module) {
 
 module.exports = {
   buildManifest,
-  parseArgs
+  parseArgs,
+  toObjectKey
 };
