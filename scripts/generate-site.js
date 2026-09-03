@@ -413,8 +413,7 @@ function createBookPagePresentationModel(book, bookModel, storyMasterRecord, cha
   const readingAge = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields.readingAge;
   const storyMasterThemes = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields.themes;
   const curatedThemes = Array.isArray(bookModel && bookModel.themes) ? bookModel.themes.filter(Boolean) : [];
-  const canUseStoryMasterWebsiteDescription = !curatedDescription
-    && websiteDescription
+  const canUseStoryMasterWebsiteDescription = websiteDescription
     && String(websiteDescription.value || '').trim();
   const canUseStoryMasterThemes = curatedThemes.length === 0 && storyMasterThemes && Array.isArray(storyMasterThemes.value) && storyMasterThemes.value.length > 0;
   const resolvedParticipants = [];
@@ -435,6 +434,12 @@ function createBookPagePresentationModel(book, bookModel, storyMasterRecord, cha
   }
   const resources = getCompanionResourcesForBook(book, companionResourceRegistry);
 
+  const storyFieldValue = (fieldName) => {
+    const field = storyMasterRecord && storyMasterRecord.fields && storyMasterRecord.fields[fieldName];
+    return field && String(field.value || '').trim() ? String(field.value).trim() : '';
+  };
+  const bookModelSummary = String(bookModel && bookModel.summary || '').trim();
+
   return {
     storyMasterWebsiteDescription: canUseStoryMasterWebsiteDescription
       ? {
@@ -444,11 +449,14 @@ function createBookPagePresentationModel(book, bookModel, storyMasterRecord, cha
             sourceSection: websiteDescription.sourceSection,
             sourceLabel: websiteDescription.sourceLabel,
             extractionMethod: websiteDescription.extractionMethod,
-            selectionReason: 'Book Model description is empty; use explicit Story Master Website Description.'
+            selectionReason: 'Story Master Website Description is the authoritative lead for this book page.'
           }
         }
       : null
     ,
+    storyMasterLongDescription: storyFieldValue('longDescription') || null,
+    storyMasterShortDescription: storyFieldValue('shortDescription') || null,
+    bookModelSummary: bookModelSummary || null,
     readingAge: readingAge && String(readingAge.value || '').trim() ? { value: String(readingAge.value).trim(), provenance: readingAge } : null,
     themes: canUseStoryMasterThemes ? { values: storyMasterThemes.value, provenance: storyMasterThemes } : null,
     characters: { resolvedParticipants, unresolvedParticipants },
@@ -3212,9 +3220,25 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     ? (invitationText || generatedInvitation)
     : (invitationText || generatedInvitation);
 
+  // Lead precedence: Story Master Website Description, then Book Model description, then generated invitation.
   const storyIntroLead = (presentationModel.storyMasterWebsiteDescription && presentationModel.storyMasterWebsiteDescription.value
-    || invitationText || synopsisText || generatedInvitation).trim();
-  const storyIntroBody = synopsisText || getBookDetailBody(normalizedBookForCopy);
+    || invitationText || generatedInvitation).trim();
+  const normalizeDescriptionText = (value) => String(value || '')
+    .toLowerCase()
+    .replace(/['’]/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+  const leadKey = normalizeDescriptionText(storyIntroLead);
+  // Body precedence: SM Long, SM Short, Book Model summary, Book Model description, generated body.
+  // Skip any candidate identical to the selected lead so visitors never see the same sentence twice.
+  const bodyCandidates = [
+    presentationModel.storyMasterLongDescription,
+    presentationModel.storyMasterShortDescription,
+    presentationModel.bookModelSummary,
+    invitationText,
+    synopsisText
+  ].filter((candidate) => Boolean(candidate) && normalizeDescriptionText(candidate) !== leadKey);
+  const storyIntroBody = bodyCandidates.length > 0 ? bodyCandidates[0] : getBookDetailBody(normalizedBookForCopy);
   const storyGuidanceBlock = presentationModel.themes
     ? `<section class="story-guidance" aria-label="This story gently explores"><p class="story-guidance-heading">This story gently explores</p><div class="story-guidance-group"><h3>Themes you'll find here</h3><p>${presentationModel.themes.values.map((theme) => `<a href="../themes.html?theme=${encodeURIComponent(String(theme).trim().toLowerCase())}">${escapeHtml(theme)}</a>`).join(' &bull; ')}</p></div></section>`
     : renderStoryGuidanceBlock(experienceBook || {});
@@ -3691,10 +3715,9 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
-function renderThemesPage(page, site, nav, config, banner, libraryIndex) {
-  const themeIndex = readJsonIfExists('generated/story-master-theme-book-index.json');
+function renderThemesPage(page, site, nav, config, banner, libraryIndex, themeDiscovery) {
   const booksById = new Map(((libraryIndex && libraryIndex.books) || []).map((book) => [String(book.id || '').toUpperCase(), book]));
-  const themes = ((themeIndex && themeIndex.records) || []).map((entry) => ({
+  const themes = ((themeDiscovery && themeDiscovery.values ? Array.from(themeDiscovery.values()) : []) || []).map((entry) => ({
     theme: entry.theme,
     key: String(entry.theme || '').trim().toLowerCase(),
     books: (entry.books || []).map((association) => {
@@ -3705,13 +3728,10 @@ function renderThemesPage(page, site, nav, config, banner, libraryIndex) {
   const themeData = JSON.stringify(themes).replace(/</g, '\\u003c');
   const directory = themes.map((entry) => `<a class="start-here-item" data-theme-entry data-theme-key="${escapeHtml(entry.key)}" href="themes.html?theme=${encodeURIComponent(entry.key)}"><h3>${escapeHtml(entry.theme)}</h3><p>${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}</p></a>`).join('');
   const options = themes.map((entry) => `<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.theme)} (${entry.books.length})</option>`).join('');
-  return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();entries.forEach(function(entry){entry.hidden=Boolean(query)&&String(entry.getAttribute('data-theme-key')||'').indexOf(query)===-1})}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">Read '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});filterDirectory('');render(key)})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
+  return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><p id="theme-status" class="story-metadata-line" aria-live="polite"></p><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var statusEl=document.getElementById('theme-status');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();var shown=0;entries.forEach(function(entry){var match=!query||String(entry.getAttribute('data-theme-key')||'').indexOf(query)!==-1;entry.hidden=!match;if(match){shown+=1}});if(query&&statusEl){statusEl.textContent=shown===1?'1 theme matches \u201C'+value+'\u201D.':shown+' themes match \u201C'+value+'\u201D.'}else if(statusEl){statusEl.textContent=''}}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){if(value&&statusEl){statusEl.textContent='No theme named \u201C'+value+'\u201D is used in these stories yet.'}results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">Read '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});if(key){render(key)}})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
 }
 
 function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex = null) {
-  if (page.slug === 'themes') {
-    return renderThemesPage(page, site, nav, config, banner, libraryIndex);
-  }
   if (page.slug === 'books') {
     return renderLayout(
       page.title,
@@ -6300,6 +6320,13 @@ function buildSite() {
   fs.writeFileSync(path.join(root, 'generated', 'story-master-character-book-index.json'), `${JSON.stringify({ records: Array.from(characterDiscovery, ([canonicalCharacterId, books]) => ({ canonicalCharacterId, books })) }, null, 2)}\n`, 'utf8');
   fs.writeFileSync(path.join(root, 'generated', 'story-master-theme-book-index.json'), `${JSON.stringify({ records: Array.from(themeDiscovery.values()) }, null, 2)}\n`, 'utf8');
   fs.writeFileSync(path.join(root, 'generated', 'companion-resource-character-index.json'), `${JSON.stringify({ records: Array.from(companionResourceCharacterIndex, ([canonicalCharacterId, resources]) => ({ canonicalCharacterId, resources })), unresolved: companionResourceCharacterUnresolved }, null, 2)}\n`, 'utf8');
+
+  // Render themes.html after the book loop so the populated in-memory themeDiscovery is available.
+  // (Rendering it in the page loop above would read a generated file that does not exist yet on a clean build.)
+  const themesPageDefinition = pageDefinitions.find((page) => page.slug === 'themes');
+  if (themesPageDefinition) {
+    writePageToOutputsAndTrack('themes.html', renderThemesPage(themesPageDefinition, site, nav, config, getBannerForPage(themesPageDefinition, banners), libraryIndex, themeDiscovery));
+  }
 
   const allEntities = (entityIndex.entities || []).slice().sort((a, b) => {
     if (a.type === b.type) {
