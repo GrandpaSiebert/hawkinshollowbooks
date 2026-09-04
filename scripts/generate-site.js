@@ -950,7 +950,7 @@ function toWarmExcerpt(value, fallback, maxLength = 180) {
   return `${firstSentence.slice(0, maxLength - 1).trim()}...`;
 }
 
-function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, bookDiscovery = []) {
+function resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, bookDiscovery = [], storyMasterIndex = null) {
   const allCharacters = (charactersData && charactersData.characters) || [];
   const graphCharacters = (entityIndex && entityIndex.byType && entityIndex.byType.characters) || [];
   const graphEnvironments = (entityIndex && entityIndex.byType && entityIndex.byType.environments) || [];
@@ -980,6 +980,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   const selfFirstName = String(character.name || '').split(' ')[0].toLowerCase();
   const characterFirstName = String(character.name || '').split(' ')[0] || 'This friend';
   const characterSlug = String(character.slug || '').toLowerCase();
+  const canonicalId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
   const getNeighborBlurb = (entry) => {
     const fallbackName = String(entry && entry.name ? entry.name : 'This friend').trim().split(' ')[0];
     const description = String(entry && entry.description ? entry.description : '').trim();
@@ -1036,6 +1037,31 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
     .map((entry) => toRelatedPersonFromCharacter(entry, 'neighborhood'));
 
+  const relatedPeopleFromStoryMasterParticipation = allCharacters
+    .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
+    .filter((entry) => {
+      const entryId = String(entry.identity && entry.identity.canonicalId || '').toUpperCase();
+      if (!entryId) return false;
+      // Check if any Story Master has both this character and the target character as resolved participants
+      return (storyMasterIndex && storyMasterIndex.records || []).some((record) => {
+        const resolvedChars = [];
+        for (const fieldName of ['mainCharacters', 'featuredCharacters', 'characterDependencies']) {
+          const field = record.fields && record.fields[fieldName];
+          if (field && Array.isArray(field.resolutions)) {
+            for (const r of field.resolutions) {
+              if (r.resolutionStatus === 'exact' || r.resolutionStatus === 'resolved-alias') {
+                resolvedChars.push(String(r.canonicalId || '').toUpperCase());
+              }
+            }
+          }
+        }
+        return resolvedChars.includes(canonicalId) && resolvedChars.includes(entryId);
+      });
+    })
+    .map((entry) => toRelatedPersonFromCharacter(entry, 'story-master-participation'));
+
+  // Preserve the pre-repair presentation order: reciprocal neighborhood first, then featured fallback.
+  // Only Story-Master-proven people are retained; the old order is used only as presentation ordering.
   const relatedPeopleFromReciprocalNeighborhood = allCharacters
     .filter((entry) => String(entry.slug || '').toLowerCase() !== characterSlug)
     .filter((entry) => {
@@ -1087,6 +1113,14 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     }
     return merged;
   };
+
+  const relatedPeopleFromOldPresentationOrder = mergeManyUniqueByName([
+    relatedPeopleFromReciprocalNeighborhood,
+    relatedPeopleFromFeaturedFallback
+  ], 24).filter((person) => {
+    const personId = String(person.name || '').toLowerCase();
+    return relatedPeopleFromStoryMasterParticipation.some((p) => String(p.name || '').toLowerCase() === personId);
+  });
 
   const placeLookup = new Map();
   for (const place of [...graphEnvironments, ...graphLandmarks]) {
@@ -1169,8 +1203,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   const relatedPeopleAll = mergeManyUniqueByName([
     relatedPeopleFromNeighborhood,
     relatedPeopleFromCanon,
-    relatedPeopleFromReciprocalNeighborhood,
-    relatedPeopleFromFeaturedFallback
+    relatedPeopleFromOldPresentationOrder
   ], 24);
 
   const relatedPeopleBySlug = relatedPeopleAll
@@ -1213,8 +1246,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   const relatedPlacesAll = mergeManyUniqueByName([
     relatedPlacesFromNeighborhood,
     relatedPlacesFromCanon,
-    relatedPlacesFromCharacterMentions,
-    relatedPlacesFromPeopleNeighborhoods
+    relatedPlacesFromCharacterMentions
   ], 24);
 
   const relatedRelationshipsAll = graphRelationships
@@ -6197,7 +6229,7 @@ function buildSite() {
   }));
   for (const character of featuredCharacters) {
     const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
-    const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || []);
+    const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || [], storyMasterIndex);
     writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
