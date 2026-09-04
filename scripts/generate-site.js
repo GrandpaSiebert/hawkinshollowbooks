@@ -3378,7 +3378,11 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
 </html>`;
 }
 
-function renderLandingPage(page, site, nav, config, banner) {
+function renderLandingPage(page, site, nav, config, banner, seriesData) {
+  const homepageSeries = ((seriesData && seriesData.series) || [])
+    .slice()
+    .sort((a, b) => (a.sortOrder || Number.MAX_SAFE_INTEGER) - (b.sortOrder || Number.MAX_SAFE_INTEGER));
+
   return renderLayout(
     page.title,
     site.tagline,
@@ -3389,7 +3393,7 @@ function renderLandingPage(page, site, nav, config, banner) {
         <p class="eyebrow">Welcome to</p>
         <h1>${site.siteName}</h1>
         <p class="welcome-home-line">Look who's home!</p>
-        <p>Hawkins Hollow is a neighborhood first and a catalog second. Visitors can meet people, explore places, and gather ideas for family reading before choosing a book. The goal is to help every child feel seen, calm, and curious from the first click.</p>
+        <p>Hawkins Hollow is a warm, connected story world where children grow through friendship, family, reading, feelings, discovery, and meaningful participation in everyday life.</p>
         <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
       </section>
 
@@ -3408,42 +3412,41 @@ function renderLandingPage(page, site, nav, config, banner) {
       <p class="eyebrow">Act Two</p>
       <h2 id="act-two">Where would you like to begin today?</h2>
       <p>Choose any path. You do not have to start in one place to belong here.</p>
-      <p>Some visitors begin with a character they already love, while others start with a place, a family activity, or a seasonal moment. This section helps each person find a next step that matches their day.</p>
       <div class="start-anywhere-grid">
         <a class="start-anywhere-item" href="books.html" aria-label="Read a Story">
           <p class="start-anywhere-icon" aria-hidden="true">📚</p>
           <h3>Read a Story</h3>
-          <p>Browse books, reading paths, and family-friendly story collections.</p>
+          <p>Browse stories, reading paths, and shared-reading collections.</p>
         </a>
 
         <a class="start-anywhere-item" href="characters.html" aria-label="Meet a Character">
           <p class="start-anywhere-icon" aria-hidden="true">👧</p>
           <h3>Meet a Character</h3>
-          <p>Get to know the friends and families who make Hawkins Hollow feel like home.</p>
+          <p>Meet the friends and families who make Hawkins Hollow feel like home.</p>
         </a>
 
         <a class="start-anywhere-item" href="map.html" aria-label="Visit a Place">
           <p class="start-anywhere-icon" aria-hidden="true">🌳</p>
           <h3>Visit a Place</h3>
-          <p>Explore the map and step into familiar places like Old Oak and the Reading Stump.</p>
+          <p>Explore familiar places and see where a walk through Hawkins Hollow might lead.</p>
         </a>
 
         <a class="start-anywhere-item" href="books.html" aria-label="Explore a Friendship">
           <p class="start-anywhere-icon" aria-hidden="true">❤️</p>
           <h3>Explore a Friendship</h3>
-          <p>Use universal search to discover relationships and connected journeys.</p>
+          <p>Follow relationships through connected stories and journeys.</p>
         </a>
 
         <a class="start-anywhere-item" href="resources.html" aria-label="Find a Family Activity">
           <p class="start-anywhere-icon" aria-hidden="true">🎁</p>
           <h3>Find a Family Activity</h3>
-          <p>Find resources and shared activities that help stories grow into conversations.</p>
+          <p>Find a shared activity, then continue into a related story.</p>
         </a>
 
         <a class="start-anywhere-item" href="community.html" aria-label="Celebrate a Season">
           <p class="start-anywhere-icon" aria-hidden="true">🎄</p>
           <h3>Celebrate a Season</h3>
-          <p>Wander seasonal moments, gatherings, and neighborhood traditions.</p>
+          <p>Discover seasonal story poems, gatherings, and neighborhood traditions.</p>
         </a>
       </div>
     </section>
@@ -3451,44 +3454,17 @@ function renderLandingPage(page, site, nav, config, banner) {
     <section class="content-card" aria-labelledby="series-spotlight">
       <p class="eyebrow">Choose a shelf</p>
       <h2 id="series-spotlight">Choose the kind of experience you want today</h2>
-      <p>Each series is a doorway into Hawkins Hollow. Choose one and begin there.</p>
-      <p>These shelves are organized by reading moment, so bedtime stories, first-reader practice, and deeper family conversations each have a clear home.</p>
+      <p>Each series is a different way into the same Hawkins Hollow world. Choose the kind of story, reading moment, or everyday discovery that fits today.</p>
       <div class="start-here-grid">
-        <article class="start-here-item">
-          <h3>Storybooks</h3>
-          <p>Gentle shared stories for children and grown-ups to read together.</p>
-          <p><a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a></p>
-        </article>
-
-        <article class="start-here-item">
-          <h3>First Readers</h3>
-          <p>Growing confidence, one story at a time.</p>
-          <p><a class="button" href="first-readers.html">Explore First Readers</a></p>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Second Readers</h3>
-          <p>Longer stories for growing reading independence.</p>
-          <p><a class="button" href="second-readers.html">Explore Second Readers</a></p>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Bedtime Library</h3>
-          <p>Quiet stories to end the day with calm and reassurance.</p>
-          <p><a class="button" href="bedtime-library.html">Enter the Bedtime Library</a></p>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Tender Times</h3>
-          <p>Stories for difficult feelings, comfort, and connection.</p>
-          <p><a class="button" href="tender-times.html">Explore Tender Times</a></p>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Growing Together</h3>
-          <p>Stories that help families grow side by side.</p>
-          <p><a class="button" href="growing-together.html">Explore Growing Together</a></p>
-        </article>
+        ${homepageSeries.map((series) => {
+          const presentation = getSeriesPresentationAuthority(series);
+          const editorial = getSeriesEditorial(series);
+          return `<article class="start-here-item">
+          <h3>${series.title}</h3>
+          <p>${presentation.lead}</p>
+          <p><a class="button" href="${getSeriesPageHref(series.slug)}">${editorial.invitationLabel}</a></p>
+        </article>`;
+        }).join('')}
       </div>
       <p><a href="books.html">See every series</a></p>
     </section>
@@ -6195,7 +6171,7 @@ function buildSite() {
     if (referenceIssue) {
       html = renderReferenceFallbackPage(page, referenceIssue, site, nav, constructionData, config, banner);
     } else if (page.slug === 'index') {
-      html = renderLandingPage(page, site, nav, config, banner);
+      html = renderLandingPage(page, site, nav, config, banner, seriesData);
     } else if (page.slug === 'characters') {
       html = renderCharactersPage(site, nav, charactersData, config, banner);
     } else if (page.template === 'article') {
