@@ -4,6 +4,12 @@
       "slug": "storybooks",
       "title": "Storybooks",
       "description": "Illustrated storybooks that welcome children and families into Hawkins Hollow through gentle adventures, familiar feelings, and shared reading time.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Warm illustrated read-aloud stories where everyday feelings, relationships, and growing-up moments become child-owned opportunities for kindness, communication, and repair.",
+        "shortDescription": "Invites young children and grown-ups into gentle, beautifully illustrated adventures rooted in friendship, family, and ordinary child-world moments.",
+        "audience": "Picture-book and Pre-K-K-friendly shared reading with simple vocabulary, strong repetition, clear feeling words.",
+        "promise": "Emotionally safe, relationship-centered story where a child meets a real but manageable challenge and practices communication, repair, belonging, patience, or gentle problem-solving."
+      },
       "editorial": {
         "welcomeHeading": "A Good Place to Begin",
         "welcomeText": "If this is your first visit to Hawkins Hollow, this story is a gentle place to begin.",
@@ -19,6 +25,12 @@
       "slug": "first-readers",
       "title": "First Readers",
       "description": "Simple, encouraging stories for children beginning to read with a helper.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Beginning-reader stories that build confidence with carefully controlled text, clear pictures, and real Hawkins Hollow adventures shaped around foundational reading skills.",
+        "shortDescription": "Give children a welcoming place to begin reading with greater independence through short pages, small cast, clear illustrations, and story-native sound/word/sequence work.",
+        "audience": "Beginning readers and read-together settings where a child is starting to take an active role in reading.",
+        "promise": "Clearly defined foundational reading skill inside a coherent, emotionally safe story, avoiding random word lists, crowded scenes, or worksheet disguised as a book."
+      },
       "editorial": {
         "welcomeHeading": "Ready to Read Together?",
         "welcomeText": "These stories use simple language for children beginning to read with a helper.",
@@ -34,6 +46,12 @@
       "slug": "second-readers",
       "title": "Second Readers",
       "description": "Longer stories for children growing in reading confidence and independence.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Three-chapter early reading adventures where a mystery, problem, question, or missing piece gives children a reason to read farther and think more deeply.",
+        "shortDescription": "Early chapter-book stories for children ready to stay with a question across a longer adventure, following clues and working through a child-sized mystery.",
+        "audience": "Children ready for longer, more independent early chapter-book reading, with clear chapter structure and manageable continuing cast.",
+        "promise": "Held together by a real child-sized mystery, problem, investigation, question, or evidence chain where the lead child's understanding changes through observation and participation."
+      },
       "editorial": {
         "welcomeHeading": "Ready for Longer Adventures?",
         "welcomeText": "These stories offer richer detail and longer paths for growing readers.",
@@ -49,6 +67,12 @@
       "slug": "basic-training",
       "title": "Basic Training",
       "description": "Skill-building stories that help children practice habits, confidence, and everyday courage.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Practical, story-driven adventures that help children feel more capable by noticing, trying, adjusting, and participating in the ordinary work of everyday life.",
+        "shortDescription": "Turns useful everyday skills into warm adventures where the story creates a real need to participate, with children watching characters choose tools, try tasks, and discover they can help.",
+        "audience": "Ages 4-8, designed for family read-alouds, beginning independent readers, homeschooling families, and caregivers seeking confidence-building practical stories.",
+        "promise": "Embeds one useful real-world skill inside a genuine Hawkins Hollow need, with the child owning the attempt, adjustment, self-check, and accomplishment."
+      },
       "editorial": {
         "welcomeHeading": "Practice with Purpose",
         "welcomeText": "These stories support everyday skills through caring characters and practical moments.",
@@ -64,6 +88,12 @@
       "slug": "growing-together",
       "title": "Growing Together",
       "description": "Stories about belonging, cooperation, and family relationships that deepen over time.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Substantial stories in which children discover wiser ways to participate in relationships, community, health, nature, and everyday life through lived experience.",
+        "shortDescription": "Follows children into real situations involving friendship, fairness, responsibility, leadership, inclusion, belonging, health, nature, routines, and community care.",
+        "audience": "Substantial 6x9 three-chapter reading experience for children able to follow a longer social or everyday-life situation.",
+        "promise": "Begins with a meaningful lived situation, deepens through discovery, and ends with the lead child practicing a wiser way to participate."
+      },
       "editorial": {
         "welcomeHeading": "Grow Side by Side",
         "welcomeText": "These stories help families grow through kindness, listening, and shared effort.",
@@ -79,6 +109,12 @@
       "slug": "bedtime-library",
       "title": "Bedtime Library",
       "description": "Quiet stories for winding down and ending the day with reassurance.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Quiet evening stories that gently lower the energy of the day and help children move from awake toward sleep-ready through rhythm, routine, place, and trusted closeness.",
+        "shortDescription": "Brings the Hollow to evening pace with one last thought, object, question, routine, or look at the settling world carrying a child toward enough, quiet, and rest.",
+        "audience": "Children listening with a trusted grown-up during the transition from daytime activity toward rest, with low-density text and quiet pacing.",
+        "promise": "Lowers emotional, verbal, and visual energy from beginning to end, with settling rather than solving plot and closeness, reassurance, and readiness for rest."
+      },
       "editorial": {
         "welcomeHeading": "For Quiet Evenings",
         "welcomeText": "Slow down, settle in, and choose a story for the end of the day.",
@@ -94,6 +130,12 @@
       "slug": "tender-times",
       "title": "Tender Times",
       "description": "Comforting stories for moments when children need reassurance, connection, and care.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Emotionally honest stories that help children carry worry, sadness, change, waiting, missing, or uncertainty with safe companionship instead of rushing the feeling away.",
+        "shortDescription": "Offers children a warm place to meet difficult feelings without being hurried toward a happy answer, through honest language, small participation, and steady relationships.",
+        "audience": "Children experiencing or exploring child-safe worry, sadness, change, waiting, missing, disappointment, absence, or tender uncertainty through shared reading with a trusted adult.",
+        "promise": "Lowers aloneness rather than simply reducing feeling, with the child emotionally central, receiving one small truthful way to participate, and supported without being asked to fix the hard thing."
+      },
       "editorial": {
         "welcomeHeading": "When Today Has Been Hard",
         "welcomeText": "These stories were written for moments when children need reassurance, comfort, and connection.",
@@ -109,6 +151,12 @@
       "slug": "holiday-story-poems",
       "title": "Holiday Story Poems",
       "description": "Seasonal poems and celebrations that mark special days in Hawkins Hollow.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "Warm holiday stories told in verse, created to be read aloud, shared, and remembered.",
+        "shortDescription": "Invites children and families into complete seasonal, holiday, family, and community stories told through gentle narrative verse and cinematic watercolor-and-ink illustrations.",
+        "audience": "Families celebrating seasonal traditions and gatherings.",
+        "promise": "Complete holiday and seasonal stories told through warm verse, with each child-centered read-aloud journey exploring kindness, courage, responsibility, memory, wonder, or belonging."
+      },
       "editorial": {
         "welcomeHeading": "Celebrate the Season",
         "welcomeText": "Follow holidays and traditions through story poems written for shared reading.",
@@ -124,6 +172,12 @@
       "slug": "hero-play-poems",
       "title": "Hero Play Poems",
       "description": "Imaginative poems where children explore courage, play, and pretend adventures.",
+      "presentationAuthority": {
+        "oneLineDescriptor": "True moments from history remembered through story, poetry, and a small Hawkins Hollow stage.",
+        "shortDescription": "Introduce young readers to real historical men and women through one defining, age-appropriate moment from each person's life, with the Hawkins Hollow cast presenting each memory as a small respectful community play.",
+        "audience": "Young children and families, educators, librarians, and caregivers who want an emotionally safe first doorway into history.",
+        "promise": "Honors one real historical figure through one accurate, age-appropriate defining moment, keeping history primary and carrying the hero's human quality into one concrete Hawkins Hollow action."
+      },
       "editorial": {
         "welcomeHeading": "Play the Hero",
         "welcomeText": "These poems celebrate imagination, bravery, and playful adventure.",

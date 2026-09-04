@@ -4544,8 +4544,8 @@ function getSeriesVoice(seriesSlug) {
       purpose: 'connects celebrations to gratitude, memory, and togetherness'
     },
     'hero-play-poems': {
-      moment: 'imagination-forward play poem',
-      purpose: 'encourages courage, creativity, and joyful pretend adventure'
+      moment: 'history-centered story poem',
+      purpose: 'honors one accurate, age-appropriate defining moment with history kept primary'
     }
   };
 
@@ -4803,6 +4803,21 @@ function getSeriesEditorial(series) {
   };
 }
 
+function getSeriesPresentationAuthority(series) {
+  const authority = series && series.presentationAuthority ? series.presentationAuthority : {};
+  const editorial = getSeriesEditorial(series);
+  const seriesVoice = getSeriesVoice(series && series.slug);
+  const title = series && series.title ? series.title : 'this collection';
+
+  return {
+    lead: authority.shortDescription || authority.oneLineDescriptor || series.description || `Welcome to ${title}, where each story opens a gentle path into Hawkins Hollow.`,
+    descriptor: authority.oneLineDescriptor || `This collection is built as a ${seriesVoice.moment} that ${seriesVoice.purpose}.`,
+    audience: authority.audience || editorial.audienceText,
+    promise: authority.promise || editorial.experienceText,
+    metaDescription: authority.shortDescription || authority.oneLineDescriptor || series.description || `Welcome to ${title} in Hawkins Hollow.`
+  };
+}
+
 function getSeriesPageHref(seriesSlug) {
   return String(seriesSlug || '').toLowerCase() === 'storybooks'
     ? 'storybook-shelf.html'
@@ -4832,6 +4847,13 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
   }
 
   const { welcomeHeading, welcomeText, displayOrder, rotationFrequency } = getSeriesEditorial(series);
+  const presentation = getSeriesPresentationAuthority(series);
+  const previewHeading = String(series && series.slug || '').toLowerCase() === 'hero-play-poems'
+    ? series.title
+    : welcomeHeading;
+  const previewText = String(series && series.slug || '').toLowerCase() === 'hero-play-poems'
+    ? presentation.descriptor
+    : welcomeText;
   const cardsMarkup = `<div class="storybook-list" aria-label="Series story recommendations" data-display-order="${displayOrder}" data-rotation-frequency="${rotationFrequency}" data-series-slug="${series && series.slug ? series.slug : ''}">
         ${seriesBooks
           .map(
@@ -4860,8 +4882,8 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
       </div>`;
 
   return `<div class="storybook-editorial">
-      <p class="eyebrow">${welcomeHeading}</p>
-      <p class="story-card-invitation story-card-welcome">${welcomeText}</p>
+    <p class="eyebrow">${previewHeading}</p>
+    <p class="story-card-invitation story-card-welcome">${previewText}</p>
     </div>
     ${cardsMarkup}`;
 }
@@ -4875,13 +4897,14 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
   const shelfHeadingId = `${page.slug}-shelf`;
   const continueHeadingId = `${page.slug}-continue`;
   const invitationLabel = editorial.invitationLabel || `Explore ${series.title}`;
-  const openingLead = series.description || `Welcome to ${series.title}, where each story opens a gentle path into Hawkins Hollow.`;
-  const openingBody = `${series.title} is built as a ${seriesVoice.moment} that ${seriesVoice.purpose}.`;
+  const presentation = getSeriesPresentationAuthority(series);
+  const openingLead = presentation.lead;
+  const openingBody = presentation.descriptor;
   const audienceSupport = `If you are unsure where to begin, choose one story that fits today and let the next step unfold naturally.`;
 
   return renderLayout(
     series.title,
-    series.description || `Welcome to ${series.title} in Hawkins Hollow.`,
+    presentation.metaDescription,
     `<section class="content-card" aria-labelledby="${collectionHeadingId}">
       <h2 id="${collectionHeadingId}">${series.title}</h2>
       <p>${openingLead}</p>
@@ -4891,8 +4914,8 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
 
     <section class="content-card" aria-labelledby="${audienceHeadingId}">
       <h2 id="${audienceHeadingId}">Who This Series Is For</h2>
-      <p><strong>Who it is for:</strong> ${editorial.audienceText}</p>
-      <p><strong>Experience:</strong> ${editorial.experienceText}</p>
+      <p><strong>Who it is for:</strong> ${presentation.audience}</p>
+      <p><strong>Experience:</strong> ${presentation.promise}</p>
       <p>${audienceSupport}</p>
     </section>
 
