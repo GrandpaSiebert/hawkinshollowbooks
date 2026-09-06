@@ -34,7 +34,13 @@ function isCanonicalDocument(sourcePath) {
   const normalized = String(sourcePath || '').replace(/\\/g, '/');
   if (!/\.docx$/i.test(normalized)) return false;
   return /^Books\//i.test(normalized) && /Story Master\.docx$/i.test(normalized)
-    || /^(Characters|Relationships|Environments|Landmarks)\//i.test(normalized);
+    || /^(Characters|Relationships|Environments|Landmarks)\//i.test(normalized)
+    || isFreebieManuscript(normalized);
+}
+
+// Freebie manuscripts carry the authoritative song and rhyme text, so they need real bytes, not placeholders.
+function isFreebieManuscript(key) {
+  return /^Freebies\/.+\.docx$/i.test(String(key || '').replace(/\\/g, '/'));
 }
 
 function isWorldCanonDocument(key) {
@@ -137,7 +143,9 @@ async function restoreLibraryCanon(options = {}) {
       if (isWorldCanonDocument(key)) {
         documentsByPath.set(key, { key, sourcePath: key });
       }
-      if (isFreebieObject(key)) {
+      if (isFreebieManuscript(key)) {
+        documentsByPath.set(key, { key, sourcePath: key });
+      } else if (isFreebieObject(key)) {
         catalogObjects.add(key);
       }
     }
@@ -189,4 +197,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, isFreebieObject, parseArgs };
+module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, isFreebieObject, isFreebieManuscript, parseArgs };
