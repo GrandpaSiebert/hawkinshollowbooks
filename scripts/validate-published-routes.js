@@ -5,6 +5,7 @@ const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
 const booksDataPath = path.join(root, 'data', 'books.json');
 const libraryIndexPath = path.join(root, 'generated', 'library-index.json');
+const freebieIndexPath = path.join(root, 'generated', 'freebie-index.json');
 const sitePath = path.join(root, 'data', 'site.json');
 
 function readJson(filePath) {
@@ -37,8 +38,15 @@ if (!fs.existsSync(buildDir) || !fs.existsSync(libraryIndexPath)) {
   fail('build-recovery/ or generated/library-index.json is missing. Run the site generator first.');
 } else {
   const site = readJson(sitePath);
-  const libraryBooks = readJson(libraryIndexPath).books || [];
+  const libraryRecords = readJson(libraryIndexPath).books || [];
+  const libraryBooks = libraryRecords.filter((record) => String(record.contentType || 'book') === 'book');
+  // Manuscript presence, not Library scanning, decides which songs and rhymes are publishable.
+  const freebieRecords = (fs.existsSync(freebieIndexPath) ? readJson(freebieIndexPath).records || [] : [])
+    .map((record) => ({ id: record.canonicalId, title: record.title, contentType: record.contentType }));
   const expectedRoutes = libraryBooks.map((libraryBook) => `books/${toBookPageSlug(libraryBook)}.html`);
+  const freebieRouteDir = (record) => (String(record.contentType) === 'rhyme' ? 'nursery-rhymes' : 'songs');
+  const expectedFreebieRoutes = freebieRecords.map((record) => `${freebieRouteDir(record)}/${toBookPageSlug(record)}.html`);
+  const expectedStubRoutes = freebieRecords.map((record) => `books/${toBookPageSlug(record)}.html`);
   const errors = [];
   const sitemapPath = path.join(buildDir, 'sitemap.xml');
   const sitemap = fs.existsSync(sitemapPath) ? fs.readFileSync(sitemapPath, 'utf8') : '';
@@ -62,11 +70,45 @@ if (!fs.existsSync(buildDir) || !fs.existsSync(libraryIndexPath)) {
     }
   }
 
+  for (let index = 0; index < freebieRecords.length; index += 1) {
+    const route = expectedFreebieRoutes[index];
+    const stubRoute = expectedStubRoutes[index];
+    const canonicalUrl = `${String(site.domain || '').replace(/\/$/, '')}/${route}`;
+    const stubCanonicalUrl = `${String(site.domain || '').replace(/\/$/, '')}/${stubRoute}`;
+    const filePath = path.join(buildDir, route);
+
+    if (!fs.existsSync(filePath)) {
+      errors.push(`missing detail page: ${route}`);
+    } else {
+      const html = fs.readFileSync(filePath, 'utf8');
+      if (!html.includes(`<link rel="canonical" href="${canonicalUrl}" />`)) {
+        errors.push(`canonical mismatch: ${route}`);
+      }
+      if (!sitemap.includes(`<loc>${canonicalUrl}</loc>`)) {
+        errors.push(`sitemap missing: ${route}`);
+      }
+    }
+
+    const stubPath = path.join(buildDir, stubRoute);
+    if (!fs.existsSync(stubPath)) {
+      errors.push(`missing legacy migration stub: ${stubRoute}`);
+      continue;
+    }
+    const stubHtml = fs.readFileSync(stubPath, 'utf8');
+    if (!stubHtml.includes(`<link rel="canonical" href="${canonicalUrl}" />`)) {
+      errors.push(`legacy stub must point at the new canonical URL: ${stubRoute}`);
+    }
+    if (sitemap.includes(`<loc>${stubCanonicalUrl}</loc>`)) {
+      errors.push(`legacy stub must not be listed as canonical content: ${stubRoute}`);
+    }
+  }
+
   const generatedBookFiles = fs.readdirSync(path.join(buildDir, 'books'))
     .filter((name) => name.endsWith('.html') && !name.endsWith('-characters.html'));
   const expectedSet = new Set(expectedRoutes.map((route) => path.basename(route)));
+  const stubSet = new Set(expectedStubRoutes.map((route) => path.basename(route)));
   for (const fileName of generatedBookFiles) {
-    if (!expectedSet.has(fileName)) {
+    if (!expectedSet.has(fileName) && !stubSet.has(fileName)) {
       errors.push(`unexpected book route: books/${fileName}`);
     }
   }
@@ -82,6 +124,6 @@ if (!fs.existsSync(buildDir) || !fs.existsSync(libraryIndexPath)) {
   if (errors.length > 0) {
     errors.forEach(fail);
   } else {
-    console.log(`Published route validation passed: ${expectedRoutes.length} book detail routes retain authoritative canonical-ID casing.`);
+    console.log(`Published route validation passed: ${expectedRoutes.length} book detail routes retain authoritative canonical-ID casing; ${expectedFreebieRoutes.length} song/nursery-rhyme routes are canonical with ${expectedStubRoutes.length} legacy migration stubs.`);
   }
 }

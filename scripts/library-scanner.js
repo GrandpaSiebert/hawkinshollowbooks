@@ -3,6 +3,8 @@ const path = require('path');
 
 const ID_WITH_TITLE_PATTERN = /\b(HH-[A-Z+]+-\d{4})\s+(.+?)\.(pdf|docx|png|jpe?g|json)$/i;
 const ID_PATTERN_GLOBAL = /\b(HH-[A-Z+]+-\d{4})\b/gi;
+// Audio deliverables carry an HH-SL sibling code that is not a canonical content identity.
+const MEDIA_DERIVED_ID_PATTERN = /^HH-SL-\d{4}$/i;
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -39,13 +41,28 @@ function parseSeriesFromBooksPath(relativePath) {
 }
 
 function extractPrimaryId(relativePath) {
-  const matches = Array.from(relativePath.matchAll(ID_PATTERN_GLOBAL));
+  const matches = Array.from(relativePath.matchAll(ID_PATTERN_GLOBAL))
+    .filter((match) => !MEDIA_DERIVED_ID_PATTERN.test(match[1]));
   if (matches.length === 0) {
     return null;
   }
 
   // Pick the last 4-digit ID in the path so range folders do not override the concrete book folder.
   return matches[matches.length - 1][1];
+}
+
+function getContentType(relativePath) {
+  const segments = relativePath.split('/');
+  if (segments[0] !== 'Freebies') {
+    return 'book';
+  }
+  if (/^Mode S\b/i.test(segments[1] || '')) {
+    return 'song';
+  }
+  if (/^Mode R\b/i.test(segments[1] || '')) {
+    return 'rhyme';
+  }
+  return 'book';
 }
 
 function inferTitleFromPath(relativePath, id) {
@@ -79,7 +96,8 @@ function normalizeTitleCandidate(candidate) {
     return null;
   }
 
-  return normalized;
+  // Freebie package folders separate the ID from the title with a dash.
+  return normalized.replace(/^[\u2014\u2013-]\s*/, '').trim() || null;
 }
 
 function extractRecordHints(relativePath, fileName) {
@@ -166,6 +184,7 @@ function buildBookIndex(files) {
       booksMap.set(hint.id, {
         id: hint.id,
         title: hint.title,
+        contentType: getContentType(file.path),
         series: seriesInfo ? seriesInfo.series : null,
         seriesCode: seriesInfo ? seriesInfo.seriesCode : null,
         folder: path.posix.dirname(file.path),

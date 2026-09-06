@@ -304,6 +304,20 @@ h2 {
   background: linear-gradient(180deg, #f1f5ec 0%, #e3ecd8 100%);
 }
 
+.freebie-title-illustration {
+  display: block;
+  width: 100%;
+  max-width: 520px;
+  height: auto;
+  border-radius: 12px;
+  margin: 0 0 1rem;
+}
+
+.freebie-stanza {
+  margin: 0 0 1rem;
+  line-height: 1.7;
+}
+
 .character-story-copy h3 {
   margin: 0;
   color: var(--accent);

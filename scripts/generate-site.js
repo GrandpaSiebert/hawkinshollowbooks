@@ -5,6 +5,8 @@ const { writeLibraryArtifacts } = require('./library-scanner');
 const { writeAmazonKdpArtifact } = require('./amazon-kdp-import');
 const { writeCharacterCanonArtifact } = require('./character-canon-import');
 const { writeWorldCanonArtifacts } = require('./world-canon-import');
+const { writeFreebieRoutingArtifact } = require('./freebie-routing-import');
+const { writeFreebieManuscriptArtifact } = require('./freebie-manuscript-import');
 const { project: projectStoryMasters } = require('./project-story-masters');
 
 const root = path.join(__dirname, '..');
@@ -1279,7 +1281,7 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
     .slice(0, 24);
 
   const relatedStoriesAll = featuredStories;
-  const relatedStoriesPreview = [];
+  const relatedStoriesPreview = relatedStoriesAll.slice(0, 6);
   const relatedPeoplePreview = relatedPeopleAll.slice(0, 6);
   const relatedPlacesPreview = relatedPlacesAll.slice(0, 6);
   const relatedRelationshipsPreview = relatedRelationshipsAll.slice(0, 3);
@@ -3469,6 +3471,25 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
       <p><a href="books.html">See every series</a></p>
     </section>
 
+    <section class="content-card" aria-labelledby="freebie-doorway">
+      <p class="eyebrow">Sing and say together</p>
+      <h2 id="freebie-doorway">Songs and rhymes from Hawkins Hollow</h2>
+      <p>Bring Hawkins Hollow into the room, the car, the classroom, or a quiet moment together with songs and nursery rhymes made for joining in.</p>
+      <div class="start-anywhere-grid">
+        <a class="start-anywhere-item" href="kids-songs.html" aria-label="Kids Songs">
+          <p class="start-anywhere-icon" aria-hidden="true">🎵</p>
+          <h3>Kids Songs</h3>
+          <p>Singable Hawkins Hollow songs with words to follow, easy ways to join in, and recordings when available.</p>
+        </a>
+
+        <a class="start-anywhere-item" href="nursery-rhymes.html" aria-label="Nursery Rhymes">
+          <p class="start-anywhere-icon" aria-hidden="true">🌙</p>
+          <h3>Nursery Rhymes</h3>
+          <p>Short Hawkins Hollow rhymes made to read, say, tap, and share together, with recordings when available.</p>
+        </a>
+      </div>
+    </section>
+
     <section class="content-card" aria-labelledby="act-three">
       <p class="eyebrow">Featured Paths</p>
       <h2 id="act-three">If this is your first visit</h2>
@@ -4028,6 +4049,201 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
   );
 }
 
+const FREEBIE_COLLECTIONS = {
+  song: {
+    contentType: 'song',
+    routeDir: 'songs',
+    indexRoute: 'kids-songs.html',
+    indexTitle: 'Hawkins Hollow Kids Songs',
+    indexTagline: 'Singable Hawkins Hollow songs for families to share out loud.',
+    itemNoun: 'song',
+    itemNounPlural: 'songs',
+    textHeading: 'Lyrics',
+    aboutHeading: 'About This Song',
+    cuesHeading: 'Ways to Join In',
+    listenLabel: 'Listen to this song'
+  },
+  rhyme: {
+    contentType: 'rhyme',
+    routeDir: 'nursery-rhymes',
+    indexRoute: 'nursery-rhymes.html',
+    indexTitle: 'Hawkins Hollow Nursery Rhymes',
+    indexTagline: 'Short, bouncy Hawkins Hollow rhymes for little ones to say together.',
+    itemNoun: 'nursery rhyme',
+    itemNounPlural: 'nursery rhymes',
+    textHeading: 'Rhyme',
+    aboutHeading: 'About This Rhyme',
+    cuesHeading: 'Ways to Join In',
+    listenLabel: 'Watch this nursery rhyme'
+  }
+};
+
+// These identify the piece rather than help a visitor decide, so they stay out of the compact About panel.
+const FREEBIE_ABOUT_HIDDEN_LABELS = new Set(['series', 'format', 'mode']);
+
+function getFreebieCollection(record) {
+  return FREEBIE_COLLECTIONS[String(record && record.contentType) === 'rhyme' ? 'rhyme' : 'song'];
+}
+
+function getFreebieSlug(record) {
+  const safeId = String(record.canonicalId || '')
+    .replace(/[^A-Za-z0-9+-]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  const safeTitle = String(record.title || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-|-$/g, '');
+  return safeTitle ? `${safeId}-${safeTitle}` : safeId;
+}
+
+function getFreebieDetailHref(record) {
+  return `${getFreebieCollection(record).routeDir}/${getFreebieSlug(record)}.html`;
+}
+
+function getFreebieLegacyBookHref(record) {
+  return `books/${getFreebieSlug(record)}.html`;
+}
+
+function getFreebieIllustrationHref(record) {
+  return record.illustrationSourcePath ? `assets/freebies/${record.canonicalId}.png` : '';
+}
+
+function renderFreebieTextSection(record, collection) {
+  const stanzas = (record.text || [])
+    .map((stanza) => {
+      const label = stanza.label ? `<p class="story-metadata-line">${escapeHtml(stanza.label)}</p>` : '';
+      const lines = (stanza.lines || []).map((line) => escapeHtml(line)).join('<br />');
+      return `${label}${lines ? `<p class="freebie-stanza">${lines}</p>` : ''}`;
+    })
+    .join('');
+
+  return `<section class="content-card" aria-labelledby="freebie-text">
+      <h2 id="freebie-text">${collection.textHeading}</h2>
+      <div class="freebie-text">${stanzas}</div>
+    </section>`;
+}
+
+function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
+  const collection = getFreebieCollection(record);
+  const title = String(record.title || record.canonicalId);
+  const illustrationHref = getFreebieIllustrationHref(record);
+  const youtubeUrl = routing && routing.youtubeUrl ? routing.youtubeUrl : '';
+
+  const aboutRows = (record.infoFields || [])
+    .filter((field) => !FREEBIE_ABOUT_HIDDEN_LABELS.has(field.key))
+    .map((field) => `<p><strong>${escapeHtml(field.label)}:</strong> ${escapeHtml(field.value)}</p>`)
+    .join('');
+  const cues = (record.cues || []).map((cue) => `<li>${escapeHtml(cue)}</li>`).join('');
+  const description = record.description
+    ? `<p>${escapeHtml(record.description)}</p>`
+    : '';
+
+  return renderLayout(
+    title,
+    record.description || `${title} is part of ${collection.indexTitle}.`,
+    `<section class="content-card" aria-labelledby="freebie-arrival">
+      <p class="eyebrow">${collection.indexTitle}</p>
+      <h1 id="freebie-arrival">${escapeHtml(title)}</h1>
+      <p class="story-metadata-line">${escapeHtml(record.canonicalId)}</p>
+      ${illustrationHref ? `<img class="freebie-title-illustration" src="../${illustrationHref}" alt="Title illustration for ${escapeHtml(title)}" loading="lazy" />` : ''}
+      ${description}
+      ${record.centralHook ? `<p><strong>The part everyone joins:</strong> ${escapeHtml(record.centralHook)}</p>` : ''}
+      ${youtubeUrl ? `<p><a class="button" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${collection.listenLabel}</a></p>` : ''}
+    </section>
+
+    ${renderFreebieTextSection(record, collection)}
+
+    <section class="content-card" aria-labelledby="freebie-about">
+      <h2 id="freebie-about">${collection.aboutHeading}</h2>
+      ${aboutRows}
+      ${cues ? `<h3>${collection.cuesHeading}</h3><ul>${cues}</ul>` : ''}
+    </section>
+
+    <section class="content-card" aria-labelledby="freebie-continue">
+      <h2 id="freebie-continue">Keep Exploring Hawkins Hollow</h2>
+      <p>
+        <a class="button" href="../${collection.indexRoute}">More ${collection.itemNounPlural}</a>
+        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../characters.html">Meet the neighbors</a>
+      </p>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/${getFreebieDetailHref(record)}`,
+    config,
+    banner,
+    '../'
+  );
+}
+
+function renderFreebieIndexPage(collection, records, routingById, site, nav, config, banner) {
+  const cards = records
+    .map((record) => {
+      const illustrationHref = getFreebieIllustrationHref(record);
+      const routing = routingById.get(record.canonicalId);
+      const hasVideo = Boolean(routing && routing.youtubeUrl);
+      const media = illustrationHref
+        ? `<img src="${illustrationHref}" alt="Title illustration for ${escapeHtml(record.title)}" loading="lazy" width="110" height="150" />`
+        : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+      return `<article class="character-story-card">
+        <div class="character-story-media">${media}</div>
+        <div class="character-story-copy">
+          <h3>${escapeHtml(record.title)}</h3>
+          <p class="story-metadata-line">${escapeHtml(record.canonicalId)}${hasVideo ? ' &middot; Recording available' : ''}</p>
+          ${record.description ? `<p>${escapeHtml(record.description)}</p>` : ''}
+          <p><a class="character-story-link" href="${getFreebieDetailHref(record)}">Open ${escapeHtml(record.title)} &rarr;</a></p>
+        </div>
+      </article>`;
+    })
+    .join('');
+
+  return renderLayout(
+    collection.indexTitle,
+    collection.indexTagline,
+    `<section class="content-card" aria-labelledby="freebie-index-doorway">
+      <p class="eyebrow">${collection.indexTitle}</p>
+      <h1 id="freebie-index-doorway">${collection.indexTitle}</h1>
+      <p>${collection.indexTagline}</p>
+      <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, a listening link appears on that page.</p>
+    </section>
+
+    <section class="content-card" aria-labelledby="freebie-index-list">
+      <h2 id="freebie-index-list">Choose a ${collection.itemNoun}</h2>
+      <div class="character-story-list">${cards}</div>
+    </section>`,
+    site,
+    nav,
+    `${site.domain}/${collection.indexRoute}`,
+    config,
+    banner
+  );
+}
+
+function renderFreebieMigrationStub(record, site) {
+  const destination = `${String(site.domain || '').replace(/\/$/, '')}/${getFreebieDetailHref(record)}`;
+  const relativeDestination = `../${getFreebieDetailHref(record)}`;
+  const title = escapeHtml(String(record.title || record.canonicalId));
+
+  return `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="refresh" content="0; url=${relativeDestination}" />
+<link rel="canonical" href="${destination}" />
+<meta name="robots" content="noindex, follow" />
+<title>${title} has moved</title>
+</head>
+<body>
+<p>${title} now lives on its own page.</p>
+<p><a href="${relativeDestination}">Continue to ${title}</a></p>
+</body>
+</html>
+`;
+}
+
 function renderCharactersPage(site, nav, charactersData, config, banner) {
   const cards = charactersData.characters
     .filter((character) => character.published !== false)
@@ -4126,9 +4342,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     const description = book.description ? `<p>${escapeHtml(book.description)}</p>` : '';
     return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
   }).join('');
-  const bookDiscoverySection = bookDiscoveryCards
-    ? `<section class="content-card" aria-labelledby="character-book-discovery"><h2 id="character-book-discovery">Stories with ${characterFirstName}</h2><div class="character-story-list">${bookDiscoveryCards}</div><p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p></section>`
-    : '';
+  const bookDiscoverySection = '';
 
   const relatedPlacesCards = (experience.relatedPlacesPreview || experience.relatedPlaces || [])
     .map((place) => {
@@ -4250,11 +4464,11 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
       ${peopleContinuationLink}
     </section>
 
-    <section class="content-card" aria-labelledby="character-wander">
+    ${(hasPlacesContinuation ? `<section class="content-card" aria-labelledby="character-wander">
       <h2 id="character-wander">${profile.placeHeading}</h2>
       ${relatedPlaceCards}
       ${placesContinuationLink}
-    </section>
+    </section>` : '')}
 
     ${relatedRelationshipCards ? `<section class="content-card" aria-labelledby="character-connections">
       <h2 id="character-connections">Connections around ${characterFirstName}</h2>
@@ -6025,6 +6239,24 @@ function copyStaticSiteAssets(outputDir) {
   }
 }
 
+function copyFreebieTitleIllustrations(outputDir, freebieRecords) {
+  const destDir = path.join(outputDir, 'assets', 'freebies');
+  let copied = 0;
+  for (const record of freebieRecords || []) {
+    if (!record.illustrationSourcePath) {
+      continue;
+    }
+    const sourcePath = path.join(root, 'Library', record.illustrationSourcePath);
+    if (!fs.existsSync(sourcePath)) {
+      continue;
+    }
+    ensureDir(destDir);
+    fs.copyFileSync(sourcePath, path.join(destDir, `${record.canonicalId}.png`));
+    copied += 1;
+  }
+  return copied;
+}
+
 function buildSite() {
   const libraryArtifacts = writeLibraryArtifacts(root);
   const amazonArtifacts = writeAmazonKdpArtifact(root);
@@ -6071,6 +6303,17 @@ function buildSite() {
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }
     : readJson('generated/amazon-index.json');
+  const routingArtifacts = writeFreebieRoutingArtifact(root);
+  const freebieArtifacts = writeFreebieManuscriptArtifact(root, libraryIndex);
+  const freebieRouting = readJson('generated/freebie-routing-index.json');
+  const freebieRoutingById = new Map((freebieRouting.records || []).map((record) => [record.canonicalId, record]));
+  const freebieRecords = freebieArtifacts.records;
+  console.log(
+    `Freebie routing index updated: ${routingArtifacts.summary.recordCount} records (${routingArtifacts.summary.withYouTubeUrl} with YouTube URLs).`
+  );
+  console.log(
+    `Freebie manuscripts extracted: ${freebieArtifacts.summary.songCount} songs, ${freebieArtifacts.summary.rhymeCount} nursery rhymes (${freebieArtifacts.summary.withheldCount} withheld).`
+  );
   const amazonLookup = buildAmazonLookup(amazonIndex);
   const mergedBookIndex = createMergedBookIndex(libraryIndex, amazonLookup);
   const mergedBookIndexPath = writeMergedBookIndex(root, mergedBookIndex);
@@ -6155,6 +6398,7 @@ function buildSite() {
 
   outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
+  outputDirs.forEach((outputDir) => copyFreebieTitleIllustrations(outputDir, freebieRecords));
 
   const sitemapRoutes = new Set();
   const writePageToOutputsAndTrack = (fileName, html) => {
@@ -6256,7 +6500,10 @@ function buildSite() {
     sitemapRoutes.add(path.join('characters', `${character.slug}-relationships.html`));
   }
 
-  const indexedBooks = (libraryIndex.books || []).slice().sort((a, b) => a.id.localeCompare(b.id));
+  const indexedBooks = (libraryIndex.books || [])
+    .filter((libraryBook) => String(libraryBook.contentType || 'book') === 'book')
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
   const bookModelByCanonicalId = new Map(
     (booksData.books || [])
       .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
@@ -6365,6 +6612,29 @@ function buildSite() {
   const themesPageDefinition = pageDefinitions.find((page) => page.slug === 'themes');
   if (themesPageDefinition) {
     writePageToOutputsAndTrack('themes.html', renderThemesPage(themesPageDefinition, site, nav, config, getBannerForPage(themesPageDefinition, banners), libraryIndex, themeDiscovery));
+  }
+
+  for (const collectionKey of ['song', 'rhyme']) {
+    const collection = FREEBIE_COLLECTIONS[collectionKey];
+    const collectionRecords = freebieRecords.filter((record) => record.contentType === collectionKey);
+    const collectionBanner = getBannerForPage({ slug: collection.indexRoute.replace(/\.html$/, '') }, banners);
+
+    writePageToOutputs(
+      collection.indexRoute,
+      renderFreebieIndexPage(collection, collectionRecords, freebieRoutingById, site, nav, config, collectionBanner)
+    );
+    sitemapRoutes.add(collection.indexRoute);
+
+    for (const record of collectionRecords) {
+      const detailHref = getFreebieDetailHref(record);
+      writePageToOutputs(
+        detailHref,
+        renderFreebieDetailPage(record, freebieRoutingById.get(record.canonicalId) || null, site, nav, config, collectionBanner)
+      );
+      sitemapRoutes.add(detailHref);
+      // Legacy book URLs stay reachable as redirect stubs and are deliberately excluded from the sitemap.
+      writePageToOutputs(getFreebieLegacyBookHref(record), renderFreebieMigrationStub(record, site));
+    }
   }
 
   const allEntities = (entityIndex.entities || []).slice().sort((a, b) => {
