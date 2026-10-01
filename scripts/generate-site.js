@@ -3469,8 +3469,12 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   const bannerSubtitle = banner ? banner.subtitle || '' : '';
   const bannerAlt = banner && banner.alt ? banner.alt : bannerTitle;
   const bannerIdAttr = banner && banner.bannerId ? ` data-banner-id="${banner.bannerId}"` : '';
+  const bannerSectionIdAttr = banner && banner.imageIsExternal ? bannerIdAttr : '';
+  const bannerImageSrc = banner && banner.image
+    ? (banner.imageIsExternal ? banner.image : `${pathPrefix}${banner.image}`)
+    : '';
   const bannerImage = banner && banner.image
-    ? `<img class="page-banner-image" src="${pathPrefix}${banner.image}" alt="${bannerAlt}"${bannerIdAttr} />`
+    ? `<img class="page-banner-image" src="${bannerImageSrc}" alt="${bannerAlt}"${bannerIdAttr} />`
     : '';
 
   return `<!DOCTYPE html>
@@ -3493,7 +3497,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
     </header>
 
     <main class="page-shell">
-      ${bannerTitle ? `<section class="page-banner">${bannerImage}<div class="page-banner-copy"><h1>${bannerTitle}</h1>${bannerSubtitle ? `<p>${bannerSubtitle}</p>` : ''}</div></section>` : ''}
+      ${bannerTitle ? `<section class="page-banner"${bannerSectionIdAttr}>${bannerImage}<div class="page-banner-copy"><h1>${bannerTitle}</h1>${bannerSubtitle ? `<p>${bannerSubtitle}</p>` : ''}</div></section>` : ''}
       ${content}
     </main>
 
@@ -4255,6 +4259,15 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   const collection = getFreebieCollection(record);
   const title = String(record.title || record.canonicalId);
   const illustrationHref = getFreebieIllustrationHref(record);
+  const detailBanner = illustrationHref
+    ? {
+        ...(banner || {}),
+        image: illustrationHref,
+        imageIsExternal: true,
+        bannerId: 'freebie-title-art',
+        alt: `Title illustration for ${title}`
+      }
+    : banner;
   const youtubeUrl = routing && routing.youtubeUrl ? routing.youtubeUrl : '';
 
   const aboutRows = (record.infoFields || [])
@@ -4273,7 +4286,6 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
       <p class="eyebrow">${collection.indexTitle}</p>
       <h1 id="freebie-arrival">${escapeHtml(title)}</h1>
       <p class="story-metadata-line">${escapeHtml(record.canonicalId)}</p>
-      ${illustrationHref ? `<img class="freebie-title-illustration" src="${escapeHtml(illustrationHref)}" alt="Title illustration for ${escapeHtml(title)}" loading="lazy" />` : ''}
       ${description}
       ${record.centralHook ? `<p><strong>The part everyone joins:</strong> ${escapeHtml(record.centralHook)}</p>` : ''}
       ${youtubeUrl ? `<p><a class="button" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${collection.listenLabel}</a></p>` : ''}
@@ -4299,7 +4311,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
     nav,
     `${site.domain}/${getFreebieDetailHref(record)}`,
     config,
-    banner,
+    detailBanner,
     '../'
   );
 }
