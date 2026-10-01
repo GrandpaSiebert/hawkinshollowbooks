@@ -190,6 +190,40 @@ test('supplements missing manifest artwork from the authenticated R2 object list
   }
 });
 
+test('restores world canon documents listed in R2 when the public manifest omits them', async () => {
+  const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'hh-world-canon-r2-'));
+  const originalFetch = global.fetch;
+  const documentPath = 'Environments/Barn Interior Visual Canon.docx';
+  const documentBytes = Buffer.from('world canon docx fixture');
+  const r2Client = {
+    async send(command) {
+      if (command.constructor.name === 'ListObjectsV2Command') {
+        return { Contents: [{ Key: documentPath }] };
+      }
+      if (command.constructor.name === 'GetObjectCommand') {
+        assert.equal(command.input.Key, documentPath);
+        return { Body: Readable.from([documentBytes]) };
+      }
+      throw new Error(`Unexpected R2 command: ${command.constructor.name}`);
+    }
+  };
+
+  try {
+    global.fetch = async () => ({ ok: true, json: async () => ({ records: [] }) });
+    const destination = path.join(tempRoot, 'Library');
+    await restoreLibraryCanon({
+      baseUrl: 'https://library.test',
+      destination,
+      credentials: { configured: false },
+      titleArtR2Client: r2Client
+    });
+    assert.deepEqual(fs.readFileSync(path.join(destination, documentPath)), documentBytes);
+  } finally {
+    global.fetch = originalFetch;
+    fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+});
+
 test('generates one uncropped canonical WebP derivative within the 1200px bound', async () => {
   const sourceBytes = await sharp({
     create: { width: 2400, height: 1200, channels: 3, background: { r: 20, g: 90, b: 160 } }

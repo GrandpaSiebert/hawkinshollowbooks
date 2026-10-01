@@ -161,20 +161,22 @@ async function restoreLibraryCanon(options = {}) {
   const documentsByPath = new Map(assets
     .filter((asset) => isCanonicalDocument(asset.sourcePath))
     .map((asset) => [asset.sourcePath, asset]));
+  const documentKeys = new Set(Array.from(documentsByPath.values(), (document) => document.key || document.sourcePath));
   // Manifest sourcePath is authoritative for original Library identity (preserves '+', casing, punctuation);
   // the CDN object key is lossy (slugified) and must never be reverse-engineered into a Library path.
   const manifestPlaceholderPaths = new Set(assets
     .map((asset) => asset.sourcePath)
     .filter((sourcePath) => sourcePath && !documentsByPath.has(sourcePath) && !isFreebieTitleArt(sourcePath)));
   const catalogObjects = new Set();
-  const titleArtR2Client = r2Client || (credentials.configured ? createR2Client(credentials) : null);
+  const titleArtR2Client = options.titleArtR2Client || r2Client || (credentials.configured ? createR2Client(credentials) : null);
 
   if (titleArtR2Client) {
     const bucket = options.bucket || defaultBucket;
     for (const key of await listR2ObjectKeys(titleArtR2Client, bucket)) {
       if (isFreebieTitleArtDerivative(key)) continue;
-      if (r2Client && isWorldCanonDocument(key)) {
-        documentsByPath.set(key, { key, sourcePath: key });
+      if (isWorldCanonDocument(key) && !documentKeys.has(key)) {
+        documentsByPath.set(key, { key, sourcePath: key, r2Only: true });
+        documentKeys.add(key);
       }
       if (r2Client && isFreebieManuscript(key)) {
         documentsByPath.set(key, { key, sourcePath: key });
@@ -196,8 +198,8 @@ async function restoreLibraryCanon(options = {}) {
   await mapWithConcurrency(documents, 8, async (document) => {
     const outputPath = toDestination(destination, document.sourcePath);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    if (r2Client) {
-      fs.writeFileSync(outputPath, await fetchR2Object(r2Client, options.bucket || defaultBucket, document.key));
+    if (r2Client || document.r2Only) {
+      fs.writeFileSync(outputPath, await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, document.key));
     } else {
       const sourceUrl = document.url || `${baseUrl}/${encodeURI(document.key)}`;
       const response = await fetch(sourceUrl);
