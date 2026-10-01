@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { SUPPORTED_IMAGE_EXTENSIONS, inspectImageAsset } = require('./image-asset');
 
 const root = path.join(__dirname, '..');
 const defaultBaseUrl = 'https://library.hawkinshollowbooks.com';
@@ -41,6 +42,20 @@ function isCanonicalDocument(sourcePath) {
 // Freebie manuscripts carry the authoritative song and rhyme text, so they need real bytes, not placeholders.
 function isFreebieManuscript(key) {
   return /^Freebies\/.+\.docx$/i.test(String(key || '').replace(/\\/g, '/'));
+}
+
+function isFreebieTitleArt(sourcePath) {
+  const normalized = String(sourcePath || '').replace(/\\/g, '/');
+  const basename = path.posix.basename(normalized);
+  return /^Freebies\//i.test(normalized)
+    && !/^Freebies\/Title Art\//i.test(normalized)
+    && /^HH-[SR]-\d{4}(?![A-Za-z0-9])[^/]*$/i.test(basename)
+    && SUPPORTED_IMAGE_EXTENSIONS.includes(path.posix.extname(basename).toLowerCase());
+}
+
+function isFreebieTitleArtDerivative(key) {
+  const normalized = String(key || '').replace(/\\/g, '/');
+  return /^Freebies\/Title Art\/HH-[SR]-\d{4}\.webp$/i.test(normalized);
 }
 
 function isWorldCanonDocument(key) {
@@ -114,9 +129,9 @@ async function listR2ObjectKeys(client, bucket) {
 async function restoreLibraryCanon(options = {}) {
   const baseUrl = String(options.baseUrl || defaultBaseUrl).replace(/\/+$/, '');
   const destination = path.resolve(options.destination || path.join(root, 'Library'));
-  const credentials = getR2Credentials();
+  const credentials = options.credentials || getR2Credentials();
   let manifest;
-  let r2Client = null;
+  let r2Client = options.r2Client || null;
   try {
     manifest = await fetchJson(`${baseUrl}/manifest/manifest.json`);
   } catch (publicError) {
@@ -127,6 +142,9 @@ async function restoreLibraryCanon(options = {}) {
     manifest = JSON.parse((await fetchR2Object(r2Client, options.bucket || defaultBucket, options.manifestKey || defaultManifestKey)).toString('utf8'));
   }
   const assets = (manifest.records || []).flatMap((record) => record.assets || []);
+  const freebieTitleArtByPath = new Map(assets
+    .filter((asset) => isFreebieTitleArt(asset.sourcePath))
+    .map((asset) => [asset.sourcePath, asset]));
   const documentsByPath = new Map(assets
     .filter((asset) => isCanonicalDocument(asset.sourcePath))
     .map((asset) => [asset.sourcePath, asset]));
@@ -134,18 +152,24 @@ async function restoreLibraryCanon(options = {}) {
   // the CDN object key is lossy (slugified) and must never be reverse-engineered into a Library path.
   const manifestPlaceholderPaths = new Set(assets
     .map((asset) => asset.sourcePath)
-    .filter((sourcePath) => sourcePath && !documentsByPath.has(sourcePath)));
+    .filter((sourcePath) => sourcePath && !documentsByPath.has(sourcePath) && !isFreebieTitleArt(sourcePath)));
   const catalogObjects = new Set();
+  const titleArtR2Client = r2Client || (credentials.configured ? createR2Client(credentials) : null);
 
-  if (r2Client) {
+  if (titleArtR2Client) {
     const bucket = options.bucket || defaultBucket;
-    for (const key of await listR2ObjectKeys(r2Client, bucket)) {
-      if (isWorldCanonDocument(key)) {
+    for (const key of await listR2ObjectKeys(titleArtR2Client, bucket)) {
+      if (isFreebieTitleArtDerivative(key)) continue;
+      if (r2Client && isWorldCanonDocument(key)) {
         documentsByPath.set(key, { key, sourcePath: key });
       }
-      if (isFreebieManuscript(key)) {
+      if (r2Client && isFreebieManuscript(key)) {
         documentsByPath.set(key, { key, sourcePath: key });
-      } else if (isFreebieObject(key)) {
+      } else if (isFreebieTitleArt(key)) {
+        if (!freebieTitleArtByPath.has(key)) {
+          freebieTitleArtByPath.set(key, { key, sourcePath: key, r2Only: true });
+        }
+      } else if (r2Client && isFreebieObject(key)) {
         catalogObjects.add(key);
       }
     }
@@ -167,6 +191,27 @@ async function restoreLibraryCanon(options = {}) {
       if (!response.ok) throw new Error(`Could not retrieve ${document.sourcePath}: HTTP ${response.status}`);
       fs.writeFileSync(outputPath, Buffer.from(await response.arrayBuffer()));
     }
+  }
+
+  for (const asset of freebieTitleArtByPath.values()) {
+    const outputPath = toDestination(destination, asset.sourcePath);
+    const useR2 = Boolean(asset.r2Only || r2Client);
+    const response = useR2
+      ? null
+      : await fetch(asset.url || `${baseUrl}/${encodeURI(asset.key || asset.sourcePath)}`);
+    if (response && !response.ok) {
+      throw new Error(`Could not retrieve freebie title illustration ${asset.sourcePath}: HTTP ${response.status}`);
+    }
+    const bytes = useR2
+      ? await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, asset.key)
+      : Buffer.from(await response.arrayBuffer());
+    if (!inspectImageAsset(bytes, asset.sourcePath)) {
+      console.warn(`Skipped invalid freebie title illustration: ${asset.sourcePath}`);
+      if (fs.existsSync(outputPath)) fs.rmSync(outputPath, { force: true });
+      continue;
+    }
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, bytes);
   }
 
   for (const objectKey of catalogObjects) {
@@ -197,4 +242,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, isFreebieObject, isFreebieManuscript, parseArgs };
+module.exports = { restoreLibraryCanon, isCanonicalDocument, isWorldCanonDocument, isFreebieObject, isFreebieManuscript, isFreebieTitleArt, isFreebieTitleArtDerivative, parseArgs };

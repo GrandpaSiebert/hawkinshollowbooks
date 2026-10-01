@@ -248,6 +248,35 @@ async function getRemoteHead(client, bucket, key) {
   }
 }
 
+async function uploadBufferAndVerify(client, bucket, asset, body) {
+  const { PutObjectCommand } = require('@aws-sdk/client-s3');
+  const bytes = Buffer.isBuffer(body) ? body : Buffer.from(body || []);
+  const sha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+  const sizeBytes = bytes.length;
+  if (sizeBytes === 0 || sizeBytes !== Number(asset.sizeBytes || 0) || sha256 !== asset.sha256) {
+    throw new Error(`Refusing invalid asset bytes for upload: ${asset.key}`);
+  }
+
+  await client.send(new PutObjectCommand({
+    Bucket: bucket,
+    Key: asset.key,
+    Body: bytes,
+    ContentType: asset.contentType,
+    CacheControl: cacheControlForAsset(asset),
+    Metadata: { sha256 }
+  }));
+
+  const verified = await getRemoteHead(client, bucket, asset.key);
+  if (!verified
+    || Number(verified.ContentLength || 0) !== sizeBytes
+    || String(verified.Metadata && verified.Metadata.sha256 || '') !== sha256
+    || String(verified.ContentType || '').split(';')[0].trim().toLowerCase() !== String(asset.contentType || '').toLowerCase()
+    || String(verified.CacheControl || '') !== cacheControlForAsset(asset)) {
+    throw new Error(`Upload verification failed (hash/size/headers mismatch): ${asset.key}`);
+  }
+  return verified;
+}
+
 async function mapWithConcurrency(items, limit, handler) {
   const results = [];
   let cursor = 0;
@@ -666,6 +695,11 @@ if (require.main === module) {
 }
 
 module.exports = {
+  cacheControlForAsset,
+  createR2Client,
+  getR2Credentials,
+  getRemoteHead,
   run,
-  parseArgs
+  parseArgs,
+  uploadBufferAndVerify
 };

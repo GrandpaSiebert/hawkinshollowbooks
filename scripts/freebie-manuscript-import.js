@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
+const { SUPPORTED_IMAGE_EXTENSIONS, inspectImageAsset } = require('./image-asset');
+const { getTitleArtKey, sha256 } = require('./freebie-title-art-media');
 
 const CANONICAL_ID_PATTERN = /^HH-([SR])-\d{4}$/i;
 
@@ -244,6 +246,38 @@ function selectPackageFile(record, extension) {
   }) || '';
 }
 
+function selectTitleIllustration(libraryRoot, record) {
+  const canonicalId = String(record.id || '').toUpperCase();
+  const files = Array.isArray(record.files) ? record.files : [];
+  const candidates = files
+    .filter((filePath) => {
+      const basename = path.posix.basename(String(filePath).replace(/\\/g, '/'));
+      return new RegExp(`^${canonicalId}(?![A-Za-z0-9])`, 'i').test(basename)
+        && SUPPORTED_IMAGE_EXTENSIONS.includes(path.extname(basename).toLowerCase());
+    })
+    .sort((left, right) => {
+      const leftExtension = path.extname(left).toLowerCase();
+      const rightExtension = path.extname(right).toLowerCase();
+      const extensionOrder = SUPPORTED_IMAGE_EXTENSIONS.indexOf(leftExtension) - SUPPORTED_IMAGE_EXTENSIONS.indexOf(rightExtension);
+      return extensionOrder || left.localeCompare(right);
+    });
+
+  for (const sourcePath of candidates) {
+    const absolutePath = path.join(libraryRoot, sourcePath);
+    if (!fs.existsSync(absolutePath)) continue;
+    const bytes = fs.readFileSync(absolutePath);
+    const image = inspectImageAsset(bytes, sourcePath);
+    if (!image) continue;
+    return {
+      sourcePath,
+      assetKey: getTitleArtKey(canonicalId),
+      sourceFormat: image.format,
+      sourceSha256: sha256(bytes)
+    };
+  }
+  return null;
+}
+
 function extractManuscript(libraryRoot, record) {
   const canonicalId = String(record.id || '').toUpperCase();
   const idMatch = CANONICAL_ID_PATTERN.exec(canonicalId);
@@ -272,7 +306,7 @@ function extractManuscript(libraryRoot, record) {
     return { canonicalId, contentType: schema.contentType, withheld: 'missing-authoritative-text' };
   }
 
-  const illustrationRelativePath = selectPackageFile(record, '.png');
+  const illustration = selectTitleIllustration(libraryRoot, record);
 
   return {
     canonicalId,
@@ -283,7 +317,15 @@ function extractManuscript(libraryRoot, record) {
     infoFields,
     text,
     cues,
-    illustrationSourcePath: illustrationRelativePath,
+    illustrationSourcePath: illustration ? illustration.sourcePath : '',
+    illustrationAssetKey: illustration ? illustration.assetKey : '',
+    illustrationSourceFormat: illustration ? illustration.sourceFormat : '',
+    illustrationSourceSha256: illustration ? illustration.sourceSha256 : '',
+    illustrationUrl: '',
+    illustrationPublished: false,
+    illustrationProvenance: illustration
+      ? { source: 'Library asset discovery', sourcePath: illustration.sourcePath, canonicalId }
+      : null,
     sourceDocument: manuscriptRelativePath,
     lyricHeading: usedHeading(schema.text),
     cuesHeading: usedHeading(schema.cues),

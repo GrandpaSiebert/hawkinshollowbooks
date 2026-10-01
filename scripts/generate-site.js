@@ -7,6 +7,7 @@ const { writeCharacterCanonArtifact } = require('./character-canon-import');
 const { writeWorldCanonArtifacts } = require('./world-canon-import');
 const { writeFreebieRoutingArtifact } = require('./freebie-routing-import');
 const { writeFreebieManuscriptArtifact } = require('./freebie-manuscript-import');
+const { attachPublishedTitleArt } = require('./freebie-title-art-media');
 const { project: projectStoryMasters } = require('./project-story-masters');
 
 const root = path.join(__dirname, '..');
@@ -4107,7 +4108,7 @@ function getFreebieLegacyBookHref(record) {
 }
 
 function getFreebieIllustrationHref(record) {
-  return record.illustrationSourcePath ? `assets/freebies/${record.canonicalId}.png` : '';
+  return record.illustrationPublished ? record.illustrationUrl : '';
 }
 
 function renderFreebieTextSection(record, collection) {
@@ -4147,7 +4148,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
       <p class="eyebrow">${collection.indexTitle}</p>
       <h1 id="freebie-arrival">${escapeHtml(title)}</h1>
       <p class="story-metadata-line">${escapeHtml(record.canonicalId)}</p>
-      ${illustrationHref ? `<img class="freebie-title-illustration" src="../${illustrationHref}" alt="Title illustration for ${escapeHtml(title)}" loading="lazy" />` : ''}
+      ${illustrationHref ? `<img class="freebie-title-illustration" src="${escapeHtml(illustrationHref)}" alt="Title illustration for ${escapeHtml(title)}" loading="lazy" />` : ''}
       ${description}
       ${record.centralHook ? `<p><strong>The part everyone joins:</strong> ${escapeHtml(record.centralHook)}</p>` : ''}
       ${youtubeUrl ? `<p><a class="button" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${collection.listenLabel}</a></p>` : ''}
@@ -6239,25 +6240,7 @@ function copyStaticSiteAssets(outputDir) {
   }
 }
 
-function copyFreebieTitleIllustrations(outputDir, freebieRecords) {
-  const destDir = path.join(outputDir, 'assets', 'freebies');
-  let copied = 0;
-  for (const record of freebieRecords || []) {
-    if (!record.illustrationSourcePath) {
-      continue;
-    }
-    const sourcePath = path.join(root, 'Library', record.illustrationSourcePath);
-    if (!fs.existsSync(sourcePath)) {
-      continue;
-    }
-    ensureDir(destDir);
-    fs.copyFileSync(sourcePath, path.join(destDir, `${record.canonicalId}.png`));
-    copied += 1;
-  }
-  return copied;
-}
-
-function buildSite() {
+async function buildSite() {
   const libraryArtifacts = writeLibraryArtifacts(root);
   const amazonArtifacts = writeAmazonKdpArtifact(root);
   console.log(
@@ -6307,12 +6290,16 @@ function buildSite() {
   const freebieArtifacts = writeFreebieManuscriptArtifact(root, libraryIndex);
   const freebieRouting = readJson('generated/freebie-routing-index.json');
   const freebieRoutingById = new Map((freebieRouting.records || []).map((record) => [record.canonicalId, record]));
-  const freebieRecords = freebieArtifacts.records;
+  const freebieTitleArtPublication = readJsonIfExists('generated/freebie-title-art-publication.json');
+  const freebieRecords = attachPublishedTitleArt(freebieArtifacts.records, freebieTitleArtPublication);
   console.log(
     `Freebie routing index updated: ${routingArtifacts.summary.recordCount} records (${routingArtifacts.summary.withYouTubeUrl} with YouTube URLs).`
   );
   console.log(
     `Freebie manuscripts extracted: ${freebieArtifacts.summary.songCount} songs, ${freebieArtifacts.summary.rhymeCount} nursery rhymes (${freebieArtifacts.summary.withheldCount} withheld).`
+  );
+  console.log(
+    `Freebie title-art publication attached: ${freebieRecords.filter((record) => record.illustrationPublished).length} verified external URLs.`
   );
   const amazonLookup = buildAmazonLookup(amazonIndex);
   const mergedBookIndex = createMergedBookIndex(libraryIndex, amazonLookup);
@@ -6398,7 +6385,6 @@ function buildSite() {
 
   outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
-  outputDirs.forEach((outputDir) => copyFreebieTitleIllustrations(outputDir, freebieRecords));
 
   const sitemapRoutes = new Set();
   const writePageToOutputsAndTrack = (fileName, html) => {
@@ -6661,4 +6647,7 @@ function buildSite() {
   console.log('Generated recovery site in build-recovery/');
 }
 
-buildSite();
+buildSite().catch((error) => {
+  console.error(`Site generation failed: ${error.message}`);
+  process.exitCode = 1;
+});
