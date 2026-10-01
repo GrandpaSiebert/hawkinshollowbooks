@@ -126,6 +126,19 @@ async function listR2ObjectKeys(client, bucket) {
   return keys;
 }
 
+async function mapWithConcurrency(items, limit, handler) {
+  const records = Array.from(items || []);
+  let cursor = 0;
+  const workers = Array.from({ length: Math.min(limit, records.length) }, async () => {
+    while (cursor < records.length) {
+      const index = cursor;
+      cursor += 1;
+      await handler(records[index], index);
+    }
+  });
+  await Promise.all(workers);
+}
+
 async function restoreLibraryCanon(options = {}) {
   const baseUrl = String(options.baseUrl || defaultBaseUrl).replace(/\/+$/, '');
   const destination = path.resolve(options.destination || path.join(root, 'Library'));
@@ -180,7 +193,7 @@ async function restoreLibraryCanon(options = {}) {
     throw new Error('The public library manifest contained no canonical DOCX source documents.');
   }
 
-  for (const document of documents) {
+  await mapWithConcurrency(documents, 8, async (document) => {
     const outputPath = toDestination(destination, document.sourcePath);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     if (r2Client) {
@@ -191,9 +204,9 @@ async function restoreLibraryCanon(options = {}) {
       if (!response.ok) throw new Error(`Could not retrieve ${document.sourcePath}: HTTP ${response.status}`);
       fs.writeFileSync(outputPath, Buffer.from(await response.arrayBuffer()));
     }
-  }
+  });
 
-  for (const asset of freebieTitleArtByPath.values()) {
+  await mapWithConcurrency(freebieTitleArtByPath.values(), 4, async (asset) => {
     const outputPath = toDestination(destination, asset.sourcePath);
     const useR2 = Boolean(asset.r2Only || r2Client);
     const response = useR2
@@ -208,11 +221,11 @@ async function restoreLibraryCanon(options = {}) {
     if (!inspectImageAsset(bytes, asset.sourcePath)) {
       console.warn(`Skipped invalid freebie title illustration: ${asset.sourcePath}`);
       if (fs.existsSync(outputPath)) fs.rmSync(outputPath, { force: true });
-      continue;
+      return;
     }
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, bytes);
-  }
+  });
 
   for (const objectKey of catalogObjects) {
     const outputPath = toDestination(destination, objectKey);
