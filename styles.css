@@ -591,6 +591,45 @@ h2 {
   color: var(--domain);
 }
 
+.freebie-search-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+  align-items: end;
+}
+
+.freebie-search-row .search-input {
+  min-width: 0;
+}
+
+.freebie-search-clear {
+  white-space: nowrap;
+}
+
+.character-story-card[hidden] {
+  display: none;
+}
+
+.freebie-search-status,
+.freebie-search-empty {
+  margin: 0.65rem 0 0;
+  color: var(--domain);
+}
+
+.freebie-search-empty {
+  font-weight: 700;
+}
+
+@media (max-width: 480px) {
+  .freebie-search-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .freebie-search-clear {
+    justify-self: end;
+  }
+}
+
 .entity-debug-panel {
   border-style: dashed;
   background: #fcf6e9;

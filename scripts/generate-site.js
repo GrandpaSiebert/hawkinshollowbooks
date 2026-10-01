@@ -8,6 +8,11 @@ const { writeWorldCanonArtifacts } = require('./world-canon-import');
 const { writeFreebieRoutingArtifact } = require('./freebie-routing-import');
 const { writeFreebieManuscriptArtifact } = require('./freebie-manuscript-import');
 const { attachPublishedTitleArt } = require('./freebie-title-art-media');
+const {
+  createFreebieDiscoveryRecords,
+  createFreebieDiscoveryVocabulary,
+  createFreebieSearchIndexRecord
+} = require('./freebie-discovery');
 const { project: projectStoryMasters } = require('./project-story-masters');
 
 const root = path.join(__dirname, '..');
@@ -1678,10 +1683,12 @@ function writeEntityIndex(siteRoot, entityIndex) {
   return outputPath;
 }
 
-function createSearchIndexFromEntityIndex(entityIndex) {
+function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords = [], freebieSearchVocabulary = {}) {
   const records = [];
+  const freebieIds = new Set((freebieDiscoveryRecords || []).map((record) => String(record.canonicalId || '').toUpperCase()));
 
   for (const book of (entityIndex.byType && entityIndex.byType.books) || []) {
+    if (freebieIds.has(String(book.id || '').toUpperCase())) continue;
     records.push({
       type: 'book',
       id: book.id,
@@ -1818,19 +1825,28 @@ function createSearchIndexFromEntityIndex(entityIndex) {
     });
   }
 
+  for (const freebie of freebieDiscoveryRecords || []) {
+    records.push(createFreebieSearchIndexRecord(freebie));
+  }
+
   return {
     generatedAt: new Date().toISOString(),
     summary: {
       totalRecords: records.length,
       byType: {
-        books: ((entityIndex.byType && entityIndex.byType.books) || []).length,
+        books: Math.max(0, ((entityIndex.byType && entityIndex.byType.books) || []).length - freebieIds.size),
         characters: ((entityIndex.byType && entityIndex.byType.characters) || []).length,
         relationships: ((entityIndex.byType && entityIndex.byType.relationships) || []).length,
         environments: ((entityIndex.byType && entityIndex.byType.environments) || []).length,
         landmarks: ((entityIndex.byType && entityIndex.byType.landmarks) || []).length,
         activities: ((entityIndex.byType && entityIndex.byType.activities) || []).length,
-        resources: ((entityIndex.byType && entityIndex.byType.resources) || []).length
+        resources: ((entityIndex.byType && entityIndex.byType.resources) || []).length,
+        songs: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'song').length,
+        nurseryRhymes: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'rhyme').length
       }
+    },
+    freebieSearch: {
+      vocabulary: freebieSearchVocabulary
     },
     records
   };
@@ -2711,9 +2727,9 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
 function renderSearchSection() {
   return `<section class="content-card" aria-labelledby="library-search">
       <h2 id="library-search">Search Hawkins Hollow</h2>
-      <p>Search across books, characters, places, relationships, and activities from one shared memory.</p>
+      <p>Search across books, songs, nursery rhymes, characters, places, relationships, and activities from one shared memory.</p>
       <label for="library-search-input"><strong>Search by title, name, ID, series, ASIN, or keywords</strong></label>
-      <input id="library-search-input" class="search-input" type="search" placeholder="Try: Lillian, Zy'ar, HH-B-0001" />
+      <input id="library-search-input" class="search-input" type="search" placeholder="Try: Lillian, puddle, HH-S-0025" />
       <p class="search-hint">We found a few different paths to explore around Hawkins Hollow.</p>
       <div id="library-search-results" class="search-results" aria-live="polite"></div>
     </section>
@@ -2743,6 +2759,8 @@ function renderSearchSection() {
           const labels = {
             book: '📚 Books',
             character: '👧 Characters',
+            song: '🎵 Kids Songs',
+            rhyme: '🎶 Nursery Rhymes',
             environment: '🌳 Places',
             landmark: '📍 Landmarks',
             relationship: '❤️ Relationships',
@@ -2768,12 +2786,14 @@ function renderSearchSection() {
           const order = {
             book: 1,
             character: 2,
-            environment: 3,
-            landmark: 4,
-            relationship: 5,
-            activity: 6,
-            resource: 7,
-            other: 8
+            song: 3,
+            rhyme: 4,
+            environment: 5,
+            landmark: 6,
+            relationship: 7,
+            activity: 8,
+            resource: 9,
+            other: 10
           };
           return order[type] || 99;
         }
@@ -2788,7 +2808,56 @@ function renderSearchSection() {
             (record.keywords || []).join(' ')
           ]
             .join(' ')
-            .toLowerCase();
+            .normalize('NFKD')
+            .replace(/[\\u0300-\\u036f]/g, '')
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ')
+            .trim()
+            .replace(/\\s+/g, ' ');
+        }
+
+        function getFreebieStructuredQueryKinds(query, vocabulary) {
+          const normalizedQuery = toSearchableText({ title: query });
+          const participantNames = (vocabulary.participants || []).map(function (person) {
+            return toSearchableText({ title: person.name });
+          });
+          const firstNameCounts = {};
+          participantNames.forEach(function (name) {
+            const firstName = name.split(' ')[0];
+            firstNameCounts[firstName] = (firstNameCounts[firstName] || 0) + 1;
+          });
+          const kinds = new Set();
+          if (participantNames.indexOf(normalizedQuery) !== -1
+            || (!normalizedQuery.includes(' ') && firstNameCounts[normalizedQuery] === 1)) {
+            kinds.add('participants');
+          }
+          const locationNames = (vocabulary.places || []).map(function (place) { return toSearchableText({ title: place.name }); })
+            .concat((vocabulary.literalLocations || []).map(function (name) { return toSearchableText({ title: name }); }));
+          if (locationNames.some(function (name) { return name === normalizedQuery || name.indexOf(normalizedQuery + ' ') === 0; })) {
+            kinds.add('locations');
+          }
+          return { normalizedQuery: normalizedQuery, kinds: kinds };
+        }
+
+        function matchesStructuredFreebieQuery(record, normalizedQuery, kinds) {
+          const participantMatch = kinds.has('participants') && (record.participants || []).some(function (person) {
+            const name = toSearchableText({ title: person.name });
+            return name === normalizedQuery || (!normalizedQuery.includes(' ') && name.split(' ')[0] === normalizedQuery);
+          });
+          const locations = (record.literalLocations || []).concat((record.canonicalLocations || []).map(function (place) { return place.name; }));
+          const locationMatch = kinds.has('locations') && locations.some(function (name) {
+            const normalizedName = toSearchableText({ title: name });
+            return normalizedName === normalizedQuery || normalizedName.indexOf(normalizedQuery + ' ') === 0;
+          });
+          return participantMatch || locationMatch;
+        }
+
+        function parseCatalogIdQuery(query) {
+          const compact = String(query || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+          const match = /^HH([A-Z+]+)(\\d{1,4})$/.exec(compact);
+          return match
+            ? 'HH-' + match[1] + '-' + match[2].padStart(4, '0')
+            : '';
         }
 
         function summarizeRecord(record, graphByNodeId, graphEdgesByNodeId) {
@@ -2796,6 +2865,13 @@ function renderSearchSection() {
           const nodeId = type && record.id ? (type + ':' + record.id) : '';
           const nodeEdges = nodeId && graphEdgesByNodeId[nodeId] ? graphEdgesByNodeId[nodeId] : [];
           const node = nodeId && graphByNodeId[nodeId] ? graphByNodeId[nodeId] : null;
+
+          if (type === 'song' || type === 'rhyme') {
+            return {
+              kind: type === 'song' ? 'Kids Song' : 'Nursery Rhyme',
+              summary: record.summary || 'A Hawkins Hollow song to explore.'
+            };
+          }
 
           if (type === 'book') {
             return {
@@ -2892,6 +2968,24 @@ function renderSearchSection() {
             const items = grouped[type].map(function (item) {
               const record = item.record || item;
               const details = item.details || { kind: record.type || 'Entity', summary: '' };
+              if (record.type === 'song' || record.type === 'rhyme') {
+                const media = record.imageUrl
+                  ? '<img src="' + escapeHtml(record.imageUrl) + '" alt="Title illustration for ' + escapeHtml(record.title) + '" loading="lazy" width="110" height="150" />'
+                  : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
+                const listenLabel = record.type === 'song' ? 'Listen to this song' : 'Watch this nursery rhyme';
+                const mediaLink = record.youtubeUrl
+                  ? '<p><a class="button" href="' + escapeHtml(record.youtubeUrl) + '" target="_blank" rel="noopener noreferrer">' + listenLabel + '</a></p>'
+                  : '';
+                return '<article class="character-story-card">'
+                  + '<div class="character-story-media">' + media + '</div>'
+                  + '<div class="character-story-copy">'
+                  + '<h3><a href="' + escapeHtml(record.href || '#') + '">' + escapeHtml(record.title || record.id || 'Untitled') + '</a></h3>'
+                  + '<p class="search-result-kind">' + escapeHtml(details.kind) + '</p>'
+                  + '<p class="story-metadata-line">' + escapeHtml(record.id || '') + '</p>'
+                  + (record.summary ? '<p>' + escapeHtml(record.summary) + '</p>' : '')
+                  + mediaLink
+                  + '</div></article>';
+              }
               const meta = [record.id, record.series].filter(Boolean).join(' | ');
               const href = record.href || '#';
               return '<article class="search-result-item">'
@@ -2920,6 +3014,9 @@ function renderSearchSection() {
             const payload = payloads[0] || { records: [] };
             const graph = payloads[1] || { nodes: [], edges: [] };
             const records = Array.isArray(payload.records) ? payload.records : [];
+            const freebieVocabulary = payload.freebieSearch && payload.freebieSearch.vocabulary
+              ? payload.freebieSearch.vocabulary
+              : { participants: [], places: [], literalLocations: [] };
             const graphByNodeId = (graph.nodes || []).reduce(function (map, node) {
               map[node.id] = node;
               return map;
@@ -2937,9 +3034,35 @@ function renderSearchSection() {
             }, {});
             renderMessage('Start typing to search the library index.');
             input.addEventListener('input', function () {
-              const query = input.value.trim().toLowerCase();
-              const terms = query.split(/\s+/).filter(Boolean);
+              const query = input.value.trim();
+              const normalizedQuery = toSearchableText({ title: query });
+              const terms = normalizedQuery.split(' ').filter(Boolean);
+              const catalogIdQuery = parseCatalogIdQuery(query);
+              const structuredQuery = getFreebieStructuredQueryKinds(query, freebieVocabulary);
+              const exactIdMatches = catalogIdQuery
+                ? records.filter(function (record) { return String(record.id || '').toUpperCase() === catalogIdQuery; })
+                : [];
+              if (exactIdMatches.length > 0) {
+                renderResults(exactIdMatches.map(function (record) {
+                  return { record: record, details: summarizeRecord(record, graphByNodeId, graphEdgesByNodeId) };
+                }), query);
+                return;
+              }
               const filtered = records.filter(function (record) {
+                if (record.type === 'song' || record.type === 'rhyme') {
+                  if (structuredQuery.kinds.size > 0) {
+                    return matchesStructuredFreebieQuery(record, structuredQuery.normalizedQuery, structuredQuery.kinds);
+                  }
+                  const freebieText = toSearchableText({
+                    type: record.type,
+                    id: record.id,
+                    title: record.title,
+                    series: record.series,
+                    asin: record.asin,
+                    keywords: record.keywords
+                  });
+                  return terms.every(function (term) { return freebieText.indexOf(term) !== -1; });
+                }
                 const searchable = toSearchableText(record);
                 return terms.every(function (term) {
                   return searchable.indexOf(term) !== -1;
@@ -3531,6 +3654,8 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
         <a class="button" href="storybook-shelf.html">Open the Storybook Shelf</a>
       </p>
     </section>
+
+    ${renderSearchSection()}
 
     <script>
       (function () {
@@ -4179,6 +4304,139 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   );
 }
 
+function renderFreebieSearchSection(collection) {
+  const inputId = `freebie-search-${collection.contentType}`;
+  return `<section class="content-card freebie-search" aria-labelledby="${inputId}-heading">
+      <h2 id="${inputId}-heading">Find a ${collection.itemNoun}</h2>
+      <div class="freebie-search-row">
+        <label class="visually-hidden" for="${inputId}">Search ${collection.itemNounPlural} by title, catalog ID, character, place, or theme</label>
+        <input id="${inputId}" class="search-input" type="search" autocomplete="off" placeholder="Title, ID, character, place, or theme" />
+        <button class="button freebie-search-clear" type="button">Clear</button>
+      </div>
+      <p class="freebie-search-status" role="status" aria-live="polite">Loading search…</p>
+      <p class="freebie-search-empty" hidden>No ${collection.itemNounPlural} matched that search. Try another word or clear your search.</p>
+    </section>
+
+    <script>
+      (function () {
+        function initialize() {
+        var collectionType = '${collection.contentType}';
+        var input = document.getElementById('${inputId}');
+        var clearButton = document.querySelector('.freebie-search-clear');
+        var status = document.querySelector('.freebie-search-status');
+        var emptyState = document.querySelector('.freebie-search-empty');
+        var cards = Array.prototype.slice.call(document.querySelectorAll('[data-freebie-search-card]'));
+        if (!input || !clearButton || !status || !emptyState) return;
+
+        function normalizeText(value) {
+          return String(value || '').normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '')
+            .toLowerCase().replace(/[^a-z0-9]+/g, ' ').trim().replace(/\\s+/g, ' ');
+        }
+
+        function parseIdQuery(value) {
+          var compact = String(value || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+          var expectedMode = collectionType === 'song' ? 'S' : 'R';
+          var match = /^HH([SR])(\\d{1,4})$/.exec(compact);
+          if (match) {
+            return { recognized: true, id: match[1] === expectedMode ? 'HH-' + match[1] + '-' + match[2].padStart(4, '0') : '' };
+          }
+          match = /^(\\d{1,4})$/.exec(compact);
+          return match
+            ? { recognized: true, id: 'HH-' + expectedMode + '-' + match[1].padStart(4, '0') }
+            : { recognized: false, id: '' };
+        }
+
+        var searchRecordById = new Map();
+        var searchVocabulary = { participants: [], uniqueParticipantFirstNames: [], places: [], literalLocations: [] };
+        var indexReady = false;
+        function updateResults() {
+          var query = input.value.trim();
+          if (!indexReady) {
+            status.textContent = 'Loading search…';
+            return;
+          }
+          var normalizedQuery = normalizeText(query);
+          var terms = normalizedQuery ? normalizedQuery.split(' ') : [];
+          var idQuery = parseIdQuery(query);
+          var structuredKinds = new Set();
+          var participantNames = searchVocabulary.participants.map(function (participant) { return normalizeText(participant.name); });
+          if (participantNames.indexOf(normalizedQuery) !== -1 || searchVocabulary.uniqueParticipantFirstNames.indexOf(normalizedQuery) !== -1) {
+            structuredKinds.add('participants');
+          }
+          var locationNames = searchVocabulary.places.map(function (place) { return normalizeText(place.name); })
+            .concat(searchVocabulary.literalLocations.map(normalizeText));
+          if (locationNames.some(function (name) { return name === normalizedQuery || name.indexOf(normalizedQuery + ' ') === 0; })) {
+            structuredKinds.add('locations');
+          }
+          var visibleCount = 0;
+          cards.forEach(function (card) {
+            var id = card.getAttribute('data-canonical-id') || '';
+            var searchRecord = searchRecordById.get(id) || {};
+            var participantMatch = structuredKinds.has('participants')
+              && (searchRecord.participants || []).some(function (participant) {
+                var name = normalizeText(participant.name);
+                return name === normalizedQuery || (!normalizedQuery.includes(' ') && name.split(' ')[0] === normalizedQuery);
+              });
+            var routeNames = (searchRecord.literalLocations || []).concat((searchRecord.canonicalLocations || []).map(function (place) { return place.name; }));
+            var locationMatch = structuredKinds.has('locations')
+              && routeNames.some(function (name) {
+                var normalizedName = normalizeText(name);
+                return normalizedName === normalizedQuery || normalizedName.indexOf(normalizedQuery + ' ') === 0;
+              });
+            var matches = !query || (idQuery.recognized
+              ? id === idQuery.id
+              : (structuredKinds.size > 0
+                ? participantMatch || locationMatch
+                : terms.every(function (term) { return String(searchRecord.searchText || '').includes(term); })));
+            card.hidden = !matches;
+            if (matches) visibleCount += 1;
+          });
+          status.textContent = query
+            ? 'Showing ' + visibleCount + ' of ' + cards.length + ' ${collection.itemNounPlural}.'
+            : 'Showing all ' + cards.length + ' ${collection.itemNounPlural}.';
+          emptyState.hidden = !query || visibleCount > 0;
+        }
+
+        fetch('generated/search-index.json')
+          .then(function (response) {
+            if (!response.ok) throw new Error('Search index unavailable');
+            return response.json();
+          })
+          .then(function (payload) {
+            searchVocabulary = payload.freebieSearch && payload.freebieSearch.vocabulary
+              ? payload.freebieSearch.vocabulary
+              : searchVocabulary;
+            (payload.records || []).filter(function (record) {
+              return record.type === collectionType;
+            }).forEach(function (record) {
+              searchRecordById.set(record.id, record);
+            });
+            indexReady = true;
+            updateResults();
+          })
+          .catch(function () {
+            input.disabled = true;
+            clearButton.disabled = true;
+            status.textContent = 'Search is unavailable right now. The full collection is still shown.';
+          });
+
+        input.addEventListener('input', updateResults);
+        clearButton.addEventListener('click', function () {
+          input.value = '';
+          updateResults();
+          input.focus();
+        });
+        }
+
+        if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initialize, { once: true });
+        } else {
+          initialize();
+        }
+      })();
+    </script>`;
+}
+
 function renderFreebieIndexPage(collection, records, routingById, site, nav, config, banner) {
   const cards = records
     .map((record) => {
@@ -4188,7 +4446,7 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
       const media = illustrationHref
         ? `<img src="${illustrationHref}" alt="Title illustration for ${escapeHtml(record.title)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
-      return `<article class="character-story-card">
+      return `<article class="character-story-card" data-freebie-search-card data-canonical-id="${escapeHtml(record.canonicalId)}">
         <div class="character-story-media">${media}</div>
         <div class="character-story-copy">
           <h3>${escapeHtml(record.title)}</h3>
@@ -4209,6 +4467,8 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
       <p>${collection.indexTagline}</p>
       <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, a listening link appears on that page.</p>
     </section>
+
+    ${renderFreebieSearchSection(collection)}
 
     <section class="content-card" aria-labelledby="freebie-index-list">
       <h2 id="freebie-index-list">Choose a ${collection.itemNoun}</h2>
@@ -6329,7 +6589,19 @@ async function buildSite() {
   const entityIndexPath = writeEntityIndex(root, entityIndex);
   const entityGraph = createEntityGraph(entityIndex);
   const entityGraphPath = writeEntityGraph(root, entityGraph);
-  const searchIndex = createSearchIndexFromEntityIndex(entityIndex);
+  const freebieDiscoveryRecords = createFreebieDiscoveryRecords(
+    freebieRecords,
+    charactersData.characters || [],
+    entityIndex,
+    getFreebieDetailHref,
+    freebieRoutingById
+  );
+  const freebieSearchVocabulary = createFreebieDiscoveryVocabulary(
+    freebieDiscoveryRecords,
+    charactersData.characters || [],
+    entityIndex
+  );
+  const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary);
   const searchIndexPath = writeSearchIndex(root, searchIndex);
   console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
   console.log(
