@@ -18,6 +18,13 @@ const {
   renderFreebieAssociationSections
 } = require('./freebie-page-associations');
 const { project: projectStoryMasters } = require('./project-story-masters');
+const {
+  createCanonicalBookRouteRegistry,
+  getBookCharactersRoute,
+  getCanonicalBookId,
+  getCanonicalBookRoute,
+  getPublishedRoutableBooks
+} = require('./canonical-book-routes');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -391,18 +398,10 @@ function getBookCoverBanner(book) {
   };
 }
 
-function getBookCharactersPageHref(book) {
-  return `books/${toBookPageSlug(book)}-characters.html`;
-}
-
 function getBookCompanionResourcesHref(book, hasResources = true) {
   return hasResources
     ? `../resources.html?story=${encodeURIComponent(String(getCanonicalBookId(book) || '').trim())}`
     : '../resources.html';
-}
-
-function getCanonicalBookId(book) {
-  return String((book && ((book.identity && book.identity.canonicalId) || book.canonicalId || book.code || book.id)) || '').trim();
 }
 
 function getBookLegacyAliases(book) {
@@ -3147,11 +3146,12 @@ function getSeriesBooksFromLibraryIndex(libraryIndex, seriesName) {
     .sort((a, b) => a.id.localeCompare(b.id));
 }
 
-function renderSeriesDoorwayFromLibraryIndex(libraryIndex, seriesName, audienceText, experienceText, reassuranceText, invitationLabel) {
-  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName);
+function renderSeriesDoorwayFromLibraryIndex(libraryIndex, seriesName, audienceText, experienceText, reassuranceText, invitationLabel, canonicalBookRouteRegistry) {
+  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName)
+    .filter((book) => Boolean(getCanonicalBookRoute(book, canonicalBookRouteRegistry)));
   const starter = books[0] || null;
   const starterLine = starter
-    ? `<p><strong>Start with:</strong> <a href="${getBookPageHref(starter)}">${getBookPublicTitle(starter) || getCanonicalBookId(starter)}</a></p>`
+    ? `<p><strong>Start with:</strong> <a href="${getCanonicalBookRoute(starter, canonicalBookRouteRegistry)}">${getBookPublicTitle(starter) || getCanonicalBookId(starter)}</a></p>`
     : '<p><strong>Start with:</strong> <a href="#library-search">Use search to find a story in this collection.</a></p>';
   const invitationTitle = invitationLabel || "When you're finished";
   const reassuranceLine = reassuranceText
@@ -3164,8 +3164,9 @@ function renderSeriesDoorwayFromLibraryIndex(libraryIndex, seriesName, audienceT
     ${reassuranceLine}`;
 }
 
-function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLookup) {
-  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName);
+function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLookup, canonicalBookRouteRegistry) {
+  const books = getSeriesBooksFromLibraryIndex(libraryIndex, seriesName)
+    .filter((book) => Boolean(getCanonicalBookRoute(book, canonicalBookRouteRegistry)));
 
   if (books.length === 0) {
     return '<p class="status-label">No books discovered yet in this series.</p>';
@@ -3175,7 +3176,7 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
     .map((book) => {
       const pdf = (book.files || []).find((file) => file.toLowerCase().endsWith('.pdf'));
       const fileCount = (book.files || []).length;
-      const detailHref = getBookPageHref(book);
+      const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
       const amazon = getAmazonRecordForBook(book, amazonLookup);
       const links = amazon && amazon.links ? amazon.links : {};
       const buttons = [
@@ -3205,7 +3206,7 @@ function renderSeriesCardsFromLibraryIndex(libraryIndex, seriesName, amazonLooku
 }
 
 function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, experienceContext = {}) {
-  const detailPath = getBookPageHref(book);
+  const detailPath = experienceContext.detailHref || getBookPageHref(book);
   const canonicalId = getCanonicalBookId(book);
   const normalizedBookForCopy = {
     ...book,
@@ -3221,6 +3222,8 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const environmentByCanonicalId = experienceContext.environmentByCanonicalId || new Map();
   const companionResourceRegistry = experienceContext.companionResourceRegistry || null;
   const presentationModel = experienceContext.presentationModel || {};
+  const storyCharacters = Array.isArray(experienceContext.storyCharacters) ? experienceContext.storyCharacters : [];
+  const storyCharactersPageHref = experienceContext.storyCharactersPageHref || '';
   const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
   const bannerBook = experienceBook || bookModelByCanonicalId.get(canonicalId.toUpperCase()) || book;
   const fileTypeSummary = ((book.fileTypes || [])
@@ -3316,9 +3319,6 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const resolvedEnvironment = experienceEnvironments
     .map((environmentId) => environmentByCanonicalId.get(String(environmentId || '').toUpperCase()))
     .find((environment) => Boolean(environment)) || null;
-  const projectedCharacters = (presentationModel.characters && presentationModel.characters.resolvedParticipants || []).map((participant) => participant.character);
-  const storyCharacters = projectedCharacters.length > 0 ? projectedCharacters : resolveStoryCharactersForBook(experienceBook || book, characterByCanonicalId);
-  const storyCharactersPageHref = storyCharacters.length > 0 ? `${toBookPageSlug(book)}-characters.html` : '';
   const rawSynopsisText = String((experienceBook && (experienceBook.summary || experienceBook.description)) || '').trim();
   const rawInvitationText = String((experienceBook && experienceBook.description) || '').trim();
   const synopsisText = isGenericStoryPlaceholder(rawSynopsisText) ? '' : rawSynopsisText;
@@ -3432,11 +3432,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     : isSpencerBook
       ? 'Meet Spencer'
       : 'Meet the characters';
-  const storyActionHref = primaryStoryCharacter
-    ? `${storyCharactersPageHref || `../characters/${primaryStoryCharacter.slug}.html`}`
-    : isSpencerBook
-      ? '../characters/spencer-field-mouse.html'
-      : '../characters.html';
+  const storyActionHref = storyCharactersPageHref;
   const amazonReadHref = (amazon && amazon.links && (amazon.links.paperback || amazon.links.hardcover || amazon.links.kindle))
     || (amazon && amazon.url)
     || seriesPageHref;
@@ -3456,7 +3452,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
       ${storyGuidanceBlock}
       <p>
         <a class="button" href="${amazonReadHref}"${amazonReadAttrs}>${amazonReadLabel}</a>
-        <a class="button" href="${storyActionHref}">${storyActionLabel}</a>
+        ${storyActionHref ? `<a class="button" href="${storyActionHref}">${storyActionLabel}</a>` : ''}
       </p>
     </section>`;
   const companionResourceSection = renderBookCompanionResourcesSection(experienceBook || book, companionResourceRegistry);
@@ -3475,7 +3471,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   );
 }
 
-function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '') {
+function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '', robots = '') {
   const devBanner = config.previewMode
     ? `<section class="dev-banner"><strong>${config.previewMessage}</strong><br />${config.previewSubmessage}</section>`
     : '';
@@ -3498,6 +3494,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>${title} | ${site.siteName}</title>
     <meta name="description" content="${description}" />
+    ${robots ? `<meta name="robots" content="${robots}" />` : ''}
     <link rel="canonical" href="${canonicalUrl}" />
     <link rel="stylesheet" href="${pathPrefix}styles.css" />
   </head>
@@ -5306,11 +5303,11 @@ function getSeriesPageHref(seriesSlug) {
     : `${seriesSlug}.html`;
 }
 
-function getBooksForSeries(series, booksData) {
+function getBooksForSeries(series, booksData, canonicalBookRouteRegistry) {
   const seriesSlug = series && series.slug ? series.slug : 'storybooks';
 
-  return (booksData.books || [])
-    .filter((book) => book.seriesSlug === seriesSlug)
+  return getPublishedRoutableBooks((booksData.books || [])
+    .filter((book) => book.seriesSlug === seriesSlug), canonicalBookRouteRegistry)
     .sort((a, b) => {
       const aOrder = Number.isFinite(a && a.sortOrder) ? a.sortOrder : Number.MAX_SAFE_INTEGER;
       const bOrder = Number.isFinite(b && b.sortOrder) ? b.sortOrder : Number.MAX_SAFE_INTEGER;
@@ -5321,8 +5318,8 @@ function getBooksForSeries(series, booksData) {
     });
 }
 
-function buildSeriesPreviewCards(booksData, series, amazonLookup) {
-  const seriesBooks = getBooksForSeries(series, booksData);
+function buildSeriesPreviewCards(booksData, series, amazonLookup, canonicalBookRouteRegistry) {
+  const seriesBooks = getBooksForSeries(series, booksData, canonicalBookRouteRegistry);
 
   if (!seriesBooks.length) {
     return `<article class="book-card"><h3>More stories are on the way</h3><p class="placeholder">New stories in this collection will appear here as the shelf grows.</p></article>`;
@@ -5340,6 +5337,7 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
         ${seriesBooks
           .map(
             (book) => {
+              const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
               const amazon = getAmazonRecordForBook(book, amazonLookup);
               const amazonHref = amazon && (amazon.url || (amazon.links && (amazon.links.paperback || amazon.links.kindle || amazon.links.hardcover)))
                 ? (amazon.url || amazon.links.paperback || amazon.links.kindle || amazon.links.hardcover)
@@ -5354,7 +5352,7 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
                 ${getStoryGuidanceLine(book, 3) ? `<p class="story-metadata-line">${getStoryGuidanceLine(book, 3)}</p>` : ''}
                 <div class="story-card-actions">
                   ${amazonHref ? `<a class="button" href="${amazonHref}" target="_blank" rel="noopener noreferrer">View on Amazon</a>` : ''}
-                  <a class="button" href="${getBookPageHref(book)}">Read this story</a>
+                  <a class="button" href="${detailHref}">Read this story</a>
                 </div>
               </div>
             </article>`;
@@ -5370,7 +5368,7 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup) {
     ${cardsMarkup}`;
 }
 
-function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup) {
+function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup, canonicalBookRouteRegistry) {
   const series = seriesData.series.find((entry) => entry.slug === page.seriesSlug);
   const editorial = getSeriesEditorial(series);
   const seriesVoice = getSeriesVoice(series && series.slug);
@@ -5405,7 +5403,7 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
       <h2 id="${shelfHeadingId}">Choose a Story</h2>
       <p>These stories can be read in any order. Begin with the one that feels right today.</p>
       <div class="storybook-shelf" aria-label="${series.title} stories to read in any order">
-        ${buildSeriesPreviewCards(booksData, series, amazonLookup)}
+        ${buildSeriesPreviewCards(booksData, series, amazonLookup, canonicalBookRouteRegistry)}
       </div>
       <script>
         (function () {
@@ -5536,9 +5534,9 @@ function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map())
   return storyMasterCharacters;
 }
 
-function renderStoryCharactersPage(book, storyCharacters, site, nav, config) {
+function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, config) {
   const bookTitle = getBookPublicTitle(book) || getCanonicalBookId(book);
-  const bookHref = getBookPageHref(book);
+  const bookHref = String(routes.detailHref || '').replace(/^books\//, '');
   const characterCards = storyCharacters.map((character) => `<a class="character-card" href="../characters/${character.slug}.html" aria-label="Meet ${character.name}">
         <div class="character-card-media">
           <img class="character-hero-thumb" src="../${String(character.heroImage || '').replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
@@ -5556,11 +5554,11 @@ function renderStoryCharactersPage(book, storyCharacters, site, nav, config) {
       <h2 id="story-characters-heading">Characters you will meet in this story</h2>
       <p>These are the specific friends listed for this book in the story master.</p>
       <div class="character-grid">${characterCards}</div>
-      <p><a class="button" href="${toBookPageSlug(book)}.html">Return to the book</a></p>
+      <p><a class="button" href="${bookHref}">Return to the book</a></p>
     </section>`,
     site,
     nav,
-    `${site.domain}/books/${toBookPageSlug(book)}-characters.html`,
+    `${site.domain}/${routes.charactersHref}`,
     config,
     null,
     '../'
@@ -5959,6 +5957,11 @@ function buildCanonicalResourceUrlFromSourcePath(sourcePath, indexContext) {
 }
 
 function getCompanionResourcePublishedUrl(resource) {
+  const status = getCompanionResourceStatus(resource).trim().toLowerCase();
+  if (!['published', 'public', 'live'].includes(status)) {
+    return '';
+  }
+
   const directCandidates = [
     resource && resource.publicUrl,
     resource && resource.publishedUrl,
@@ -6455,6 +6458,31 @@ function renderReferenceFallbackPage(page, issue, site, nav, constructionData, c
   );
 }
 
+function renderLegacyPreservedPage(source, site, nav, config, banner) {
+  const links = (source.links || []).map((link) =>
+    `<a href="${escapeHtml(link.href)}">${escapeHtml(link.label)}</a>`
+  ).join(' ');
+  const content = [
+    source.subtitle ? `<p>${escapeHtml(source.subtitle)}</p>` : '',
+    ...(source.summaryOrBodyCopy || []).map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`),
+    source.ageText ? `<p><strong>Age:</strong> ${escapeHtml(source.ageText)}</p>` : '',
+    links ? `<p>${links}</p>` : ''
+  ].filter(Boolean).join('\n');
+
+  return renderLayout(
+    source.pageTitle,
+    source.description,
+    `<section class="content-card">${content}</section>`,
+    site,
+    nav,
+    `${site.domain}/${source.route}`,
+    config,
+    banner,
+    '',
+    'noindex, follow'
+  );
+}
+
 function getReferenceIssue(page, seriesData, booksData) {
   if (page.template === 'series') {
     const exists = seriesData.series.some((entry) => entry.slug === page.seriesSlug);
@@ -6548,6 +6576,9 @@ async function buildSite() {
   const site = readJson('data/site.json');
   const nav = readJson('data/navigation.json');
   const pages = readJson('data/pages.json').pages;
+  const legacyContent = readJsonIfExists('data/legacy-content.json');
+  const legacyPageByRoute = new Map(((legacyContent && legacyContent.pages) || [])
+    .map((legacyPage) => [String(legacyPage.route || '').toLowerCase(), legacyPage]));
   const seriesData = readJson('data/series.json');
   const booksData = readJson('data/books.json');
   const charactersData = readJson('data/characters.json');
@@ -6574,6 +6605,11 @@ async function buildSite() {
       console.log(`Library folder unavailable in build environment. Using synthesized index from data/books.json (${libraryIndex.summary.indexedBooks} records).`);
     }
   }
+  const indexedBooks = (libraryIndex.books || [])
+    .filter((libraryBook) => String(libraryBook.contentType || 'book') === 'book')
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const canonicalBookRouteRegistry = createCanonicalBookRouteRegistry(indexedBooks, getBookPageHref);
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }
     : readJson('generated/amazon-index.json');
@@ -6692,7 +6728,10 @@ async function buildSite() {
 
   const pageReferenceIssues = new Map();
   for (const page of pageDefinitions) {
-    const issue = getReferenceIssue(page, seriesData, booksData);
+    const legacySource = page.status === 'legacy'
+      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
+      : null;
+    const issue = legacySource ? null : getReferenceIssue(page, seriesData, booksData);
     if (issue) {
       const fallbackAction = page.status === 'legacy' ? 'legacy' : 'under-construction';
       console.warn(
@@ -6716,8 +6755,13 @@ async function buildSite() {
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
     const referenceIssue = pageReferenceIssues.get(page.slug);
+    const legacySource = page.status === 'legacy'
+      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
+      : null;
     let html = '';
-    if (referenceIssue) {
+    if (legacySource) {
+      html = renderLegacyPreservedPage(legacySource, site, nav, config, banner);
+    } else if (referenceIssue) {
       html = renderReferenceFallbackPage(page, referenceIssue, site, nav, constructionData, config, banner);
     } else if (page.slug === 'index') {
       html = renderLandingPage(page, site, nav, config, banner, seriesData);
@@ -6726,7 +6770,7 @@ async function buildSite() {
     } else if (page.template === 'article') {
       html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex);
     } else if (page.template === 'series') {
-      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup);
+      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup, canonicalBookRouteRegistry);
     } else if (page.template === 'book-detail') {
       html = renderBookDetailPage(page, site, nav, booksData, config, banner);
     } else {
@@ -6812,10 +6856,6 @@ async function buildSite() {
     sitemapRoutes.add(path.join('characters', `${character.slug}-relationships.html`));
   }
 
-  const indexedBooks = (libraryIndex.books || [])
-    .filter((libraryBook) => String(libraryBook.contentType || 'book') === 'book')
-    .slice()
-    .sort((a, b) => a.id.localeCompare(b.id));
   const bookModelByCanonicalId = new Map(
     (booksData.books || [])
       .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
@@ -6890,9 +6930,18 @@ async function buildSite() {
       themeDiscovery.set(normalized, entry);
     }
     const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
+    const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
+    if (!detailHref) {
+      console.warn(`[book route warning] skipped indexed Book "${book.id || ''}": no unambiguous canonical route.`);
+      continue;
+    }
+    const charactersHref = storyCharacters.length > 0 ? getBookCharactersRoute(detailHref) : '';
     writePageToOutputs(
-      getBookPageHref(book),
+      detailHref,
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
+        detailHref,
+        storyCharacters,
+        storyCharactersPageHref: charactersHref.replace(/^books\//, ''),
         bookModelByCanonicalId,
         characterByCanonicalId,
         environmentByCanonicalId,
@@ -6900,13 +6949,13 @@ async function buildSite() {
         presentationModel
       })
     );
-    sitemapRoutes.add(getBookPageHref(book));
-    if (storyCharacters.length > 0) {
+    sitemapRoutes.add(detailHref);
+    if (charactersHref) {
       writePageToOutputs(
-        getBookCharactersPageHref(book),
-        renderStoryCharactersPage(storyBook || book, storyCharacters, site, nav, config)
+        charactersHref,
+        renderStoryCharactersPage(storyBook || book, storyCharacters, { detailHref, charactersHref }, site, nav, config)
       );
-      sitemapRoutes.add(getBookCharactersPageHref(book));
+      sitemapRoutes.add(charactersHref);
     }
   }
 
@@ -6955,7 +7004,11 @@ async function buildSite() {
     }
     return String(a.type).localeCompare(String(b.type));
   });
-  for (const entity of allEntities) {
+  const freebieEntityIds = new Set(freebieDiscoveryRecords
+    .map((record) => String(record.canonicalId || '').toUpperCase()));
+  const publicEntities = allEntities.filter((entity) => !(entity.type === 'book'
+    && freebieEntityIds.has(String(entity.id || '').toUpperCase())));
+  for (const entity of publicEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
     writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociationIndex));
     sitemapRoutes.add(pagePath);
@@ -6964,7 +7017,7 @@ async function buildSite() {
   writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
-  console.log(`Generated ${allEntities.length} universal entity pages.`);
+  console.log(`Generated ${publicEntities.length} universal entity pages (${allEntities.length - publicEntities.length} freebie Book profiles omitted).`);
   console.log(`Copied search index to build output from ${path.relative(root, searchIndexPath)}.`);
   console.log(`Merged book index saved to ${path.relative(root, mergedBookIndexPath)}.`);
   console.log(`Entity index saved to ${path.relative(root, entityIndexPath)}.`);
