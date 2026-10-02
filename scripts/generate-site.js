@@ -13,6 +13,10 @@ const {
   createFreebieDiscoveryVocabulary,
   createFreebieSearchIndexRecord
 } = require('./freebie-discovery');
+const {
+  createFreebiePageAssociationIndex,
+  renderFreebieAssociationSections
+} = require('./freebie-page-associations');
 const { project: projectStoryMasters } = require('./project-story-masters');
 
 const root = path.join(__dirname, '..');
@@ -2076,7 +2080,7 @@ function normalizeEntityLabel(value, fallback = '') {
   return label;
 }
 
-function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners) {
+function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociations = null) {
   const nodeId = `${entity.type}:${entity.id}`;
   const entityLabel = normalizeEntityLabel(entity.name || entity.title || entity.id, entity.id);
   const nodeMap = new Map(((entityGraph && entityGraph.nodes) || []).map((node) => [node.id, node]));
@@ -2284,6 +2288,14 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       alt: 'Places ribbon welcoming visitors into the neighborhoods, paths, and gathering spots of Hawkins Hollow.'
     };
     const placeName = entityLabel;
+    const placeAssociationKey = `${String(entity.type || '').toLowerCase()}:${String(entity.id || '').toUpperCase()}`;
+    const freebieAssociationSection = renderFreebieAssociationSections(
+      (freebiePageAssociations && freebiePageAssociations.byPlaceKey.get(placeAssociationKey)) || [],
+      {
+        hrefPrefix: '../../',
+        idPrefix: `place-${entity.type}-${entity.id}-freebies`
+      }
+    );
     const placeArtwork = getPlaceArtworkPathByName(placeName, entity.type === 'landmark' ? 'Landmark' : 'Place');
     const rawPlaceStoryText = String(storyText || '');
     const storyFunctionMatch = rawPlaceStoryText.match(/Story Function:\s*([\s\S]*)/i);
@@ -2441,6 +2453,8 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         <h2 id="place-stories">Stories that begin or pass through here</h2>
         ${storyCards}
       </section>
+
+      ${freebieAssociationSection}
 
       <section class="content-card" aria-labelledby="place-nearby">
         <h2 id="place-nearby">Nearby places to wander next</h2>
@@ -4581,11 +4595,15 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
 }
 
 // Experience templates transform content objects into visitor-centered journeys.
-function renderCharacterExperiencePage(experience, site, nav, config, banner) {
+function renderCharacterExperiencePage(experience, site, nav, config, banner, freebieAssociations = []) {
   const character = experience.character;
   const profile = experience.profile;
   const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
   const characterFirstName = characterName.split(' ')[0];
+  const freebieAssociationSection = renderFreebieAssociationSections(freebieAssociations, {
+    hrefPrefix: '../',
+    idPrefix: `character-${character.slug}-freebies`
+  });
 
   const relatedStoryCards = (experience.relatedStoriesPreview || experience.relatedStories || [])
     .map((story) => {
@@ -4730,6 +4748,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     </section>` : '')}
 
     ${bookDiscoverySection}
+  ${freebieAssociationSection}
 
     <section class="content-card" aria-labelledby="character-people">
       <h2 id="character-people">${profile.friendHeading}</h2>
@@ -6613,6 +6632,22 @@ async function buildSite() {
     charactersData.characters || [],
     entityIndex
   );
+  const freebiePageAssociationIndex = createFreebiePageAssociationIndex(
+    freebieDiscoveryRecords,
+    charactersData.characters || [],
+    entityIndex.entities || []
+  );
+  const associationReport = freebiePageAssociationIndex.report;
+  console.log(
+    `Freebie page associations: characters ${associationReport.characters.pagesWithAtLeastOneSong} pages with Songs (${associationReport.characters.totalSongAssociations} associations) / ${associationReport.characters.pagesWithAtLeastOneNurseryRhyme} pages with Nursery Rhymes (${associationReport.characters.totalNurseryRhymeAssociations} associations); environments ${associationReport.environmentPages.pagesWithAtLeastOneSong} pages with Songs (${associationReport.environmentPages.totalSongAssociations} associations) / ${associationReport.environmentPages.pagesWithAtLeastOneNurseryRhyme} pages with Nursery Rhymes (${associationReport.environmentPages.totalNurseryRhymeAssociations} associations); landmarks ${associationReport.landmarkPages.pagesWithAtLeastOneSong} pages with Songs (${associationReport.landmarkPages.totalSongAssociations} associations) / ${associationReport.landmarkPages.pagesWithAtLeastOneNurseryRhyme} pages with Nursery Rhymes (${associationReport.landmarkPages.totalNurseryRhymeAssociations} associations); ${associationReport.unattachedRouteLocationCount} literal Route locations unattached (${associationReport.unattachedRouteLocationValues.length} distinct): ${associationReport.unattachedRouteLocationValues.join(' | ')}.`
+  );
+  if (associationReport.unresolvedParticipants.length || associationReport.unresolvedLocations.length || associationReport.unresolvedFreebieDetailLinks.length) {
+    console.warn(`Unresolved canonical freebie associations: ${JSON.stringify({
+      participants: associationReport.unresolvedParticipants,
+      locations: associationReport.unresolvedLocations,
+      detailLinks: associationReport.unresolvedFreebieDetailLinks
+    })}`);
+  }
   const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary);
   const searchIndexPath = writeSearchIndex(root, searchIndex);
   console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
@@ -6745,7 +6780,14 @@ async function buildSite() {
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || [], storyMasterIndex);
     writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
-      renderCharacterExperiencePage(experienceAsset, site, nav, config, characterExperienceBanner)
+      renderCharacterExperiencePage(
+        experienceAsset,
+        site,
+        nav,
+        config,
+        characterExperienceBanner,
+        freebiePageAssociationIndex.byCharacterCanonicalId.get(canonicalCharacterId) || []
+      )
     );
     sitemapRoutes.add(path.join('characters', `${character.slug}.html`));
     writePageToOutputs(
@@ -6915,7 +6957,7 @@ async function buildSite() {
   });
   for (const entity of allEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
-    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners));
+    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociationIndex));
     sitemapRoutes.add(pagePath);
   }
 
