@@ -25,6 +25,13 @@ const {
   getCanonicalBookRoute,
   getPublishedRoutableBooks
 } = require('./canonical-book-routes');
+const {
+  getEntityMetaDescription,
+  getFreebieMetaDescription,
+  getVerifiedSocialImageUrl,
+  normalizeMetadataTitle,
+  normalizeMetaDescription
+} = require('./search-presentation-metadata');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -2082,6 +2089,13 @@ function normalizeEntityLabel(value, fallback = '') {
 function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociations = null) {
   const nodeId = `${entity.type}:${entity.id}`;
   const entityLabel = normalizeEntityLabel(entity.name || entity.title || entity.id, entity.id);
+  const publicCharacter = entity.type === 'character'
+    ? (readJson('data/characters.json').characters || [])
+      .find((character) => character.published === true && character.slug === entity.slug)
+    : null;
+  const entityDescription = getEntityMetaDescription(publicCharacter
+    ? { ...entity, description: publicCharacter.description }
+    : entity);
   const nodeMap = new Map(((entityGraph && entityGraph.nodes) || []).map((node) => [node.id, node]));
   const node = nodeMap.get(nodeId) || null;
   const edges = ((entityGraph && entityGraph.edges) || []).filter(
@@ -2287,6 +2301,12 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       alt: 'Places ribbon welcoming visitors into the neighborhoods, paths, and gathering spots of Hawkins Hollow.'
     };
     const placeName = entityLabel;
+    const otherPlaceType = entity.type === 'landmark' ? 'environment' : 'landmark';
+    const sameNamedOtherPlaceType = getEntitiesForType(entityIndex, otherPlaceType)
+      .some((candidate) => String(candidate.name || candidate.title || '').trim().toLowerCase() === placeName.toLowerCase());
+    const placeMetaDescription = sameNamedOtherPlaceType
+      ? `${placeName} is one of Hawkins Hollow's ${entity.type === 'landmark' ? 'landmarks' : 'places'}, with connected neighbors and stories to follow.`
+      : `Spend a little time in ${placeName} and keep wandering through Hawkins Hollow one welcoming step at a time.`;
     const placeAssociationKey = `${String(entity.type || '').toLowerCase()}:${String(entity.id || '').toUpperCase()}`;
     const freebieAssociationSection = renderFreebieAssociationSections(
       (freebiePageAssociations && freebiePageAssociations.byPlaceKey.get(placeAssociationKey)) || [],
@@ -2429,7 +2449,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
 
     return renderLayout(
       placeName,
-      `Spend a little time in ${placeName} and keep wandering through Hawkins Hollow one welcoming step at a time.`,
+      placeMetaDescription,
       `<section class="content-card" aria-labelledby="place-arrival">
         <p class="eyebrow">Meet the Places</p>
         ${placeHero}
@@ -2668,7 +2688,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
 
   return renderLayout(
     entityLabel,
-    `Entity profile for ${entityLabel}`,
+    entityDescription,
     `<section class="content-card">
       <h1>${entityLabel}</h1>
       ${identityRows.join('')}
@@ -3226,6 +3246,10 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   const storyCharactersPageHref = experienceContext.storyCharactersPageHref || '';
   const experienceBook = bookModelByCanonicalId.get(canonicalId.toUpperCase()) || null;
   const bannerBook = experienceBook || bookModelByCanonicalId.get(canonicalId.toUpperCase()) || book;
+  const routeOwnedSocialBanner = String(getCanonicalBookId(bannerBook) || '').toUpperCase() === canonicalId.toUpperCase()
+    && normalizeMetadataTitle(getBookPublicTitle(bannerBook)) === normalizeMetadataTitle(getBookPublicTitle(book))
+    ? getBookCoverBanner(bannerBook)
+    : null;
   const fileTypeSummary = ((book.fileTypes || [])
     .map((item) => `${item.extension.toUpperCase()}: ${item.count}`)
     .join(' | ')) || 'No file type data';
@@ -3467,11 +3491,37 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     `${site.domain}/${detailPath}`,
     config,
     getBookCoverBanner(bannerBook),
-    '../'
+    '../',
+    '',
+    { socialImageBanner: routeOwnedSocialBanner }
   );
 }
 
-function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '', robots = '') {
+function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '', robots = '', metadata = {}) {
+  const metadataTitle = metadata.title || title;
+  const pageTitle = `${metadataTitle} | ${site.siteName}`;
+  const normalizedDescription = normalizeMetaDescription(description, `${metadataTitle} in ${site.siteName}.`);
+  const metaDescription = normalizedDescription.length < 50
+    ? normalizeMetaDescription(`${metadataTitle} in ${site.siteName}. ${normalizedDescription}`, `${metadataTitle} in ${site.siteName}.`)
+    : normalizedDescription;
+  const isIndexable = !/(?:^|,)\s*noindex\b/i.test(String(robots || ''));
+  const socialBanner = Object.prototype.hasOwnProperty.call(metadata, 'socialImageBanner')
+    ? metadata.socialImageBanner
+    : banner;
+  const socialImage = isIndexable ? getVerifiedSocialImageUrl(socialBanner, site.domain, root) : '';
+  const socialMetadata = isIndexable
+    ? `<meta property="og:title" content="${escapeHtml(pageTitle)}" />
+    <meta property="og:description" content="${escapeHtml(metaDescription)}" />
+    <meta property="og:url" content="${escapeHtml(canonicalUrl)}" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="${escapeHtml(site.siteName)}" />
+    ${socialImage ? `<meta property="og:image" content="${escapeHtml(socialImage)}" />` : ''}
+    <meta name="twitter:card" content="${socialImage ? 'summary_large_image' : 'summary'}" />
+    <meta name="twitter:title" content="${escapeHtml(pageTitle)}" />
+    <meta name="twitter:description" content="${escapeHtml(metaDescription)}" />
+    <meta name="twitter:url" content="${escapeHtml(canonicalUrl)}" />
+    ${socialImage ? `<meta name="twitter:image" content="${escapeHtml(socialImage)}" />` : ''}`
+    : '';
   const devBanner = config.previewMode
     ? `<section class="dev-banner"><strong>${config.previewMessage}</strong><br />${config.previewSubmessage}</section>`
     : '';
@@ -3492,10 +3542,11 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${title} | ${site.siteName}</title>
-    <meta name="description" content="${description}" />
+    <title>${escapeHtml(pageTitle)}</title>
+    <meta name="description" content="${escapeHtml(metaDescription)}" />
     ${robots ? `<meta name="robots" content="${robots}" />` : ''}
     <link rel="canonical" href="${canonicalUrl}" />
+    ${socialMetadata}
     <link rel="stylesheet" href="${pathPrefix}styles.css" />
   </head>
   <body>
@@ -4269,12 +4320,15 @@ function renderFreebieTextSection(record, collection) {
 function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   const collection = getFreebieCollection(record);
   const title = String(record.title || record.canonicalId);
+  const metaDescription = getFreebieMetaDescription(record, collection);
+  const canonicalUrl = `${site.domain}/${getFreebieDetailHref(record)}`;
   const illustrationHref = getFreebieIllustrationHref(record);
   const detailBanner = illustrationHref
     ? {
         ...(banner || {}),
         image: illustrationHref,
         imageIsExternal: true,
+        imageVerified: record.illustrationPublished === true,
         bannerId: 'freebie-title-art',
         alt: `Title illustration for ${title}`
       }
@@ -4289,10 +4343,19 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   const description = record.description
     ? `<p>${escapeHtml(record.description)}</p>`
     : '';
+  const creativeWorkJsonLd = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: title,
+    identifier: record.canonicalId,
+    url: canonicalUrl,
+    description: metaDescription,
+    genre: collection.itemNoun
+  }).replace(/</g, '\\u003c');
 
   return renderLayout(
     title,
-    record.description || `${title} is part of ${collection.indexTitle}.`,
+    metaDescription,
     `<section class="content-card" aria-labelledby="freebie-arrival">
       <p class="eyebrow">${collection.indexTitle}</p>
       <h1 id="freebie-arrival">${escapeHtml(title)}</h1>
@@ -4317,13 +4380,16 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
         <a class="button" href="../books.html">Read a story</a>
         <a class="button" href="../characters.html">Meet the neighbors</a>
       </p>
-    </section>`,
+    </section>
+    <script type="application/ld+json">${creativeWorkJsonLd}</script>`,
     site,
     nav,
-    `${site.domain}/${getFreebieDetailHref(record)}`,
+    canonicalUrl,
     config,
     detailBanner,
-    '../'
+    '../',
+    '',
+    { socialImageBanner: illustrationHref ? detailBanner : null }
   );
 }
 
@@ -5380,11 +5446,14 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
   const presentation = getSeriesPresentationAuthority(series);
   const openingLead = presentation.lead;
   const openingBody = presentation.descriptor;
+  const metaDescription = String(series && series.slug || '').toLowerCase() === 'storybooks'
+    ? `${page.title}: ${presentation.metaDescription}`
+    : presentation.metaDescription;
   const audienceSupport = `If you are unsure where to begin, choose one story that fits today and let the next step unfold naturally.`;
 
   return renderLayout(
     series.title,
-    presentation.metaDescription,
+    metaDescription,
     `<section class="content-card" aria-labelledby="${collectionHeadingId}">
       <h2 id="${collectionHeadingId}">${series.title}</h2>
       <p>${openingLead}</p>
@@ -5536,7 +5605,12 @@ function resolveStoryCharactersForBook(book, characterByCanonicalId = new Map())
 
 function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, config) {
   const bookTitle = getBookPublicTitle(book) || getCanonicalBookId(book);
+  const routeTitle = String(routes.bookTitle || bookTitle);
   const bookHref = String(routes.detailHref || '').replace(/^books\//, '');
+  const castNames = storyCharacters.map((character) => String(character.name || '').trim()).filter(Boolean);
+  const metaDescription = castNames.length > 0
+    ? `Meet ${castNames.join(', ')} in ${routeTitle}. Follow their character pages and return to the book.`
+    : `Meet the characters in ${routeTitle}. Follow their character pages and return to the book.`;
   const characterCards = storyCharacters.map((character) => `<a class="character-card" href="../characters/${character.slug}.html" aria-label="Meet ${character.name}">
         <div class="character-card-media">
           <img class="character-hero-thumb" src="../${String(character.heroImage || '').replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
@@ -5549,7 +5623,7 @@ function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, con
 
   return renderLayout(
     `${bookTitle} Characters`,
-    `Characters you will meet in ${bookTitle}`,
+    metaDescription,
     `<section class="content-card" aria-labelledby="story-characters-heading">
       <h2 id="story-characters-heading">Characters you will meet in this story</h2>
       <p>These are the specific friends listed for this book in the story master.</p>
@@ -5561,7 +5635,9 @@ function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, con
     `${site.domain}/${routes.charactersHref}`,
     config,
     null,
-    '../'
+    '../',
+    '',
+    { title: `${routeTitle} Characters` }
   );
 }
 
@@ -6953,7 +7029,11 @@ async function buildSite() {
     if (charactersHref) {
       writePageToOutputs(
         charactersHref,
-        renderStoryCharactersPage(storyBook || book, storyCharacters, { detailHref, charactersHref }, site, nav, config)
+        renderStoryCharactersPage(storyBook || book, storyCharacters, {
+          detailHref,
+          charactersHref,
+          bookTitle: getBookPublicTitle(book) || getCanonicalBookId(book)
+        }, site, nav, config)
       );
       sitemapRoutes.add(charactersHref);
     }
