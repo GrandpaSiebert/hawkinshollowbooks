@@ -2,6 +2,7 @@ node_modules/
 build/
 build-recovery/
 generated/
+.indexnow/
 .vscode/
 Library/
 .env

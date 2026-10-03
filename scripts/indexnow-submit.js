@@ -131,18 +131,19 @@ function normalizeHost(hostOrUrl) {
   }
 }
 
-async function submit(payload, endpoint) {
-  const response = await fetch(endpoint, {
+async function submit(payload, endpoint = 'https://api.indexnow.org/indexnow', fetchImpl = fetch) {
+  const response = await fetchImpl(endpoint, {
     method: 'POST',
     headers: {
       'content-type': 'application/json; charset=utf-8'
     },
-    body: JSON.stringify(payload)
+    body: JSON.stringify(payload),
+    signal: AbortSignal.timeout(15000)
   });
 
   const bodyText = await response.text();
   return {
-    ok: response.ok,
+    ok: response.status === 200 || response.status === 202,
     status: response.status,
     statusText: response.statusText,
     bodyText
@@ -217,7 +218,9 @@ async function main() {
   }
 }
 
-main().catch((error) => {
-  console.error(`[indexnow] ${error.message}`);
+if (require.main === module) {
+  console.error('[indexnow] Direct URL/sitemap submissions are disabled. Use indexnow:prepare and the successful-deployment-gated indexnow:submit.');
   process.exitCode = 1;
-});
+}
+
+module.exports = { submit };

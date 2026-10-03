@@ -87,6 +87,29 @@ powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1 
 The publish script builds the site, commits any pending changes, and pushes to `origin/main`.
 GitHub Actions then deploys `build-recovery/` to Pages.
 
+### Deployment-aware IndexNow
+
+After a successful Pages deployment, the workflow notifies `https://api.indexnow.org/indexnow` only about added, materially changed, or removed indexable canonical pages. The existing root verification key file is public by protocol; it is not a private repository credential. IndexNow acknowledgement does not guarantee indexing.
+
+`scripts/indexnow-deployment.js` reads the sitemap, requires each page's exact HTTPS production canonical and absence of `noindex`, and SHA-256 fingerprints its parsed public HTML. Text, headings, links, images, metadata, and normalized JSON-LD participate. Comments, whitespace/layout-only attributes, stylesheet references, executable browser scripts, build-only timestamp metadata, and hidden developer provenance do not. Git changes, build timestamps, and template filenames never select URLs on their own. Migration stubs, retired freebie entity routes, verification files, infrastructure, and assets are ineligible.
+
+The first adoption run establishes the 1,499-page baseline without submitting existing URLs. Future runs compare actual snapshots and deduplicate added/updated/deleted candidates plus pending retries. Deleted URLs retain evidence in the previous snapshot or pending journal even after their HTML file disappears.
+
+The immutable `indexnow-production-state-<run>-<attempt>` Actions artifact contains `state.json`, `receipt.json`, and `plan.json`, retained for 90 days and never published in the website. Per-attempt names avoid rerun collisions; reruns can recover the previous attempt's pending journal. It is preferred over an evictable cache. Retrieval verifies the workflow, main branch, successful Pages step, deployment SHA/run ID, snapshot version, and content hashes. API/retrieval/integrity failures do not silently become first-run resets. A recent deployed run missing its state artifact blocks the next deployment: re-run that affected workflow to recover the journal. After retention has genuinely elapsed, a fresh baseline suppresses historical backfill; notifications no longer retained cannot be recovered automatically.
+
+Planning occurs after the normal build/validators; notification and production-state advancement occur only after Pages success. Production runs are serialized without cancelling an in-progress run. Failed builds/deployments neither notify nor advance state. The deployed snapshot and pending URLs are checkpointed before any request, then after each bounded batch (at most 10,000 URLs). Only HTTP 200/202 acknowledgement clears pending URLs; 202 explicitly records pending key validation. Malformed requests, key/host problems, throttling, network/5xx failures, and unattempted batches remain pending. There is one attempt per batch, stopping on failure, not an infinite retry loop.
+
+Notification failure warns and marks the notification step failed with `continue-on-error`; it does not undo successful Pages deployment. The state/receipt artifact is still retained. A subsequent successful deployment, workflow dispatch, or re-run retries pending canonical notifications. Artifact persistence failure is an actual workflow failure, not silently ignored; recover by re-running that deployment. Receipts include SHA, baseline/snapshot IDs, delta counts, submitted/accepted/pending counts, URLs, batches, protocol results, and timestamps, but no private tokens or raw response bodies.
+
+For an offline, non-submitting preview after building:
+
+```bash
+npm run indexnow:prepare
+npm run indexnow:submit:dry-run
+```
+
+Local preview cannot claim a trustworthy CI baseline. `indexnow:submit` requires the prepared deployment SHA/run and explicit Pages-success gate. The old direct URL/whole-sitemap CLI is intentionally blocked. Run generator integration tests serially: `node --test --test-concurrency=1`.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)

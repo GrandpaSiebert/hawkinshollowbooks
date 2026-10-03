@@ -8,12 +8,13 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -69,6 +70,11 @@ jobs:
         run: |
           cp e4b3aad43c3b4ece93f1a3b5b6962b38.txt build-recovery/e4b3aad43c3b4ece93f1a3b5b6962b38.txt
 
+      - name: Prepare deployment-aware IndexNow delta
+        run: npm run indexnow:prepare
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
@@ -80,3 +86,24 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
+      - name: Finalize deployment-aware IndexNow
+        id: indexnow
+        if: steps.deployment.outcome == 'success'
+        continue-on-error: true
+        run: npm run indexnow:submit
+        env:
+          DEPLOYMENT_SUCCEEDED: 'true'
+
+      - name: Retain production IndexNow state and receipt
+        if: always() && steps.deployment.outcome == 'success'
+        uses: actions/upload-artifact@v4
+        with:
+          name: indexnow-production-state-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .indexnow/state.json
+            .indexnow/receipt.json
+            .indexnow/plan.json
+          include-hidden-files: true
+          retention-days: 90
+          if-no-files-found: error
