@@ -1413,7 +1413,11 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner) {
     nav,
     `${site.domain}/characters/${character.slug}.html`,
     config,
-    banner
+    banner,
+    '',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -2527,7 +2531,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
       placeBanner,
-      '../../'
+      '../../',
+      '',
+      {},
+      'body'
     );
   }
 
@@ -2682,7 +2689,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
       null,
-      '../../'
+      '../../',
+      '',
+      {},
+      'body'
     );
   }
 
@@ -2753,7 +2763,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
     config,
     null,
-    '../../'
+    '../../',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -3497,7 +3510,11 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   );
 }
 
-function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '', robots = '', metadata = {}) {
+function renderLayout(title, description, content, site, nav, canonicalUrl, config, banner, pathPrefix = '', robots = '', metadata = {}, headingOwner = 'banner') {
+  if (!['banner', 'body'].includes(headingOwner)) {
+    throw new Error(`Unknown primary heading owner: ${headingOwner}`);
+  }
+  const bannerTitleTag = headingOwner === 'body' ? 'span' : 'h1';
   const metadataTitle = metadata.title || title;
   const pageTitle = `${metadataTitle} | ${site.siteName}`;
   const normalizedDescription = normalizeMetaDescription(description, `${metadataTitle} in ${site.siteName}.`);
@@ -3559,7 +3576,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
     </header>
 
     <main class="page-shell">
-      ${bannerTitle ? `<section class="page-banner"${bannerSectionIdAttr}>${bannerImage}<div class="page-banner-copy"><h1>${bannerTitle}</h1>${bannerSubtitle ? `<p>${bannerSubtitle}</p>` : ''}</div></section>` : ''}
+      ${bannerTitle ? `<section class="page-banner"${bannerSectionIdAttr}>${bannerImage}<div class="page-banner-copy"><${bannerTitleTag}>${bannerTitle}</${bannerTitleTag}>${bannerSubtitle ? `<p>${bannerSubtitle}</p>` : ''}</div></section>` : ''}
       ${content}
     </main>
 
@@ -3924,7 +3941,11 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
     nav,
     `${site.domain}/`,
     config,
-    banner
+    banner,
+    '',
+    '',
+    {},
+    'body'
   );
 }
 function escapeHtml(value) {
@@ -4389,7 +4410,8 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
     detailBanner,
     '../',
     '',
-    { socialImageBanner: illustrationHref ? detailBanner : null }
+    { socialImageBanner: illustrationHref ? detailBanner : null },
+    'body'
   );
 }
 
@@ -4567,7 +4589,11 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
     nav,
     `${site.domain}/${collection.indexRoute}`,
     config,
-    banner
+    banner,
+    '',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -4852,7 +4878,10 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     `${site.domain}/characters/${character.slug}.html`,
     config,
     banner,
-    '../'
+    '../',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -5025,7 +5054,10 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
     `${site.domain}/characters/${character.slug}-${continuationType}.html`,
     config,
     banner,
-    '../'
+    '../',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -6505,7 +6537,11 @@ function renderUnderConstructionPage(page, site, nav, constructionData, config, 
     nav,
     `${site.domain}/`,
     config,
-    banner
+    banner,
+    '',
+    '',
+    {},
+    'body'
   );
 }
 
@@ -6530,7 +6566,11 @@ function renderReferenceFallbackPage(page, issue, site, nav, constructionData, c
     nav,
     `${site.domain}/${page.slug}.html`,
     config,
-    banner
+    banner,
+    '',
+    '',
+    {},
+    'body'
   );
 }
 
