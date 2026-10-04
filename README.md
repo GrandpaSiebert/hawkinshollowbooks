@@ -136,6 +136,13 @@ quality targets, not a claim about Bing's official threshold.
 Run the focused regression with `node --test test/search-titles.test.js`.
 Run all generator tests serially with `node --test --test-concurrency=1`.
 
+Character story trails use the current build's in-memory Book presentation and
+canonical reverse-participant projection. The persisted
+`generated/story-master-character-book-index.json` is output, never a prerequisite
+for Character rendering. The clean/warmed regression removes only that prior
+artifact before the first build and compares both builds' HTML, crawlable graph,
+sitemap, canonical registry, and discovery records.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)

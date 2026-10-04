@@ -6836,7 +6836,6 @@ async function buildSite() {
 
   projectStoryMasters(null, 'full-corpus', false);
   const storyMasterIndex = readJsonIfExists('generated/story-master-index.json');
-  const storyMasterCharacterBookIndex = readJsonIfExists('generated/story-master-character-book-index.json');
 
   const pageDefinitions = pages.map((page) => ({ ...page }));
   const existingSlugs = new Set(pageDefinitions.map((page) => page.slug));
@@ -6921,8 +6920,56 @@ async function buildSite() {
       .map((record) => [String(record && record.discoveryId || record && record.id || '').toUpperCase(), record])
       .filter((entry) => Boolean(entry[0]))
   );
-  const characterBookDiscoveryById = new Map(((storyMasterCharacterBookIndex && storyMasterCharacterBookIndex.records) || []).map((record) => {
-    const books = (record.books || []).map((association) => {
+  const bookModelByCanonicalId = bookModelByDiscoveryId;
+  const storyMasterPresentationReport = [];
+  const characterDiscovery = new Map();
+  const themeDiscovery = new Map();
+  const characterByCanonicalId = new Map(
+    (charactersData.characters || [])
+      .map((character) => [String(((character.identity && character.identity.canonicalId) || '').trim()).toUpperCase(), character])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const bookDiscoveryPlan = [];
+  for (const book of indexedBooks) {
+    const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
+    const presentationModel = createBookPagePresentationModel(
+      book,
+      storyBook,
+      storyMasterByDiscoveryId.get(String(book.id || '').toUpperCase()) || null,
+      characterByCanonicalId,
+      companionResourceRegistry
+    );
+    if (presentationModel.storyMasterWebsiteDescription) {
+      storyMasterPresentationReport.push({
+        discoveryId: String(book.id || '').toUpperCase(),
+        field: 'websiteDescription',
+        ...presentationModel.storyMasterWebsiteDescription.provenance
+      });
+    }
+    for (const participant of presentationModel.characters.resolvedParticipants) {
+      const entries = characterDiscovery.get(participant.canonicalId) || [];
+      entries.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book), sourceField: participant.provenance.sourceField, sourceDocument: participant.provenance.sourceDocument, sourceSection: participant.provenance.sourceSection, sourceLabel: participant.provenance.sourceLabel });
+      characterDiscovery.set(participant.canonicalId, entries);
+    }
+    for (const theme of (presentationModel.themes && presentationModel.themes.values) || []) {
+      const normalized = String(theme || '').trim().toLowerCase();
+      if (!normalized) continue;
+      const entry = themeDiscovery.get(normalized) || { theme, books: [] };
+      entry.books.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book) });
+      themeDiscovery.set(normalized, entry);
+    }
+    const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
+    const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
+    if (!detailHref) {
+      console.warn(`[book route warning] skipped indexed Book "${book.id || ''}": no unambiguous canonical route.`);
+      continue;
+    }
+    const charactersHref = storyCharacters.length > 0 ? getBookCharactersRoute(detailHref) : '';
+    bookDiscoveryPlan.push({ book, storyBook, presentationModel, storyCharacters, detailHref, charactersHref });
+  }
+
+  const characterBookDiscoveryById = new Map(Array.from(characterDiscovery, ([canonicalCharacterId, associations]) => {
+    const books = associations.map((association) => {
       const libraryBook = libraryBookById.get(String(association.bookId || '').toUpperCase());
       const bookModel = bookModelByDiscoveryId.get(String(association.bookId || '').toUpperCase());
       if (!libraryBook) return null;
@@ -6943,7 +6990,7 @@ async function buildSite() {
         description: storyMasterDescription
       };
     }).filter(Boolean).sort((first, second) => String(first.href).localeCompare(String(second.href)));
-    return [String(record.canonicalCharacterId || '').toUpperCase(), books];
+    return [String(canonicalCharacterId || '').toUpperCase(), books];
   }));
   for (const character of featuredCharacters) {
     const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
@@ -6982,19 +7029,6 @@ async function buildSite() {
     sitemapRoutes.add(path.join('characters', `${character.slug}-relationships.html`));
   }
 
-  const bookModelByCanonicalId = new Map(
-    (booksData.books || [])
-      .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
-      .filter((entry) => Boolean(entry[0]))
-  );
-  const storyMasterPresentationReport = [];
-  const characterDiscovery = new Map();
-  const themeDiscovery = new Map();
-  const characterByCanonicalId = new Map(
-    (charactersData.characters || [])
-      .map((character) => [String(((character.identity && character.identity.canonicalId) || '').trim()).toUpperCase(), character])
-      .filter((entry) => Boolean(entry[0]))
-  );
   const characterByName = new Map(
     (charactersData.characters || [])
       .map((character) => [normalizeCharacterNameKey(character.name), character])
@@ -7027,41 +7061,7 @@ async function buildSite() {
       .map((environment) => [String(environment.id || '').trim().toUpperCase(), environment])
       .filter((entry) => Boolean(entry[0]))
   );
-  for (const book of indexedBooks) {
-    const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
-    const presentationModel = createBookPagePresentationModel(
-      book,
-      storyBook,
-      storyMasterByDiscoveryId.get(String(book.id || '').toUpperCase()) || null,
-      characterByCanonicalId,
-      companionResourceRegistry
-    );
-    if (presentationModel.storyMasterWebsiteDescription) {
-      storyMasterPresentationReport.push({
-        discoveryId: String(book.id || '').toUpperCase(),
-        field: 'websiteDescription',
-        ...presentationModel.storyMasterWebsiteDescription.provenance
-      });
-    }
-    for (const participant of presentationModel.characters.resolvedParticipants) {
-      const entries = characterDiscovery.get(participant.canonicalId) || [];
-      entries.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book), sourceField: participant.provenance.sourceField, sourceDocument: participant.provenance.sourceDocument, sourceSection: participant.provenance.sourceSection, sourceLabel: participant.provenance.sourceLabel });
-      characterDiscovery.set(participant.canonicalId, entries);
-    }
-    for (const theme of (presentationModel.themes && presentationModel.themes.values) || []) {
-      const normalized = String(theme || '').trim().toLowerCase();
-      if (!normalized) continue;
-      const entry = themeDiscovery.get(normalized) || { theme, books: [] };
-      entry.books.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book) });
-      themeDiscovery.set(normalized, entry);
-    }
-    const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
-    const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
-    if (!detailHref) {
-      console.warn(`[book route warning] skipped indexed Book "${book.id || ''}": no unambiguous canonical route.`);
-      continue;
-    }
-    const charactersHref = storyCharacters.length > 0 ? getBookCharactersRoute(detailHref) : '';
+  for (const { book, storyBook, presentationModel, storyCharacters, detailHref, charactersHref } of bookDiscoveryPlan) {
     writePageToOutputs(
       detailHref,
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
