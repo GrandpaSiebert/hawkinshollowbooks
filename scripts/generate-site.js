@@ -32,6 +32,7 @@ const {
   normalizeMetadataTitle,
   normalizeMetaDescription
 } = require('./search-presentation-metadata');
+const { finalizeSearchTitles, getFreebieSearchTitle } = require('./search-titles');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -3517,6 +3518,12 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   const bannerTitleTag = headingOwner === 'body' ? 'span' : 'h1';
   const metadataTitle = metadata.title || title;
   const pageTitle = `${metadataTitle} | ${site.siteName}`;
+  const documentTitle = metadata.documentTitle === undefined
+    ? (metadataTitle.includes(site.siteName) ? metadataTitle : pageTitle)
+    : metadata.documentTitle;
+  if (typeof documentTitle !== 'string' || !documentTitle.trim()) {
+    throw new Error(`Invalid document/search title: ${canonicalUrl}`);
+  }
   const normalizedDescription = normalizeMetaDescription(description, `${metadataTitle} in ${site.siteName}.`);
   const metaDescription = normalizedDescription.length < 50
     ? normalizeMetaDescription(`${metadataTitle} in ${site.siteName}. ${normalizedDescription}`, `${metadataTitle} in ${site.siteName}.`)
@@ -3559,7 +3566,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(pageTitle)}</title>
+    <title>${escapeHtml(documentTitle)}</title>
     <meta name="description" content="${escapeHtml(metaDescription)}" />
     ${robots ? `<meta name="robots" content="${robots}" />` : ''}
     <link rel="canonical" href="${canonicalUrl}" />
@@ -4410,7 +4417,10 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
     detailBanner,
     '../',
     '',
-    { socialImageBanner: illustrationHref ? detailBanner : null },
+    {
+      socialImageBanner: illustrationHref ? detailBanner : null,
+      documentTitle: getFreebieSearchTitle(record, site.siteName)
+    },
     'body'
   );
 }
@@ -5669,7 +5679,7 @@ function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, con
     null,
     '../',
     '',
-    { title: `${routeTitle} Characters` }
+    { title: `${routeTitle} Characters`, documentTitle: `${routeTitle} Characters` }
   );
 }
 
@@ -7135,6 +7145,7 @@ async function buildSite() {
   }
 
   writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
+  finalizeSearchTitles(outputDirs, site);
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
   console.log(`Generated ${publicEntities.length} universal entity pages (${allEntities.length - publicEntities.length} freebie Book profiles omitted).`);

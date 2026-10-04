@@ -110,6 +110,32 @@ npm run indexnow:submit:dry-run
 
 Local preview cannot claim a trustworthy CI baseline. `indexnow:submit` requires the prepared deployment SHA/run and explicit Pages-success gate. The old direct URL/whole-sitemap CLI is intentionally blocked. Run generator integration tests serially: `node --test --test-concurrency=1`.
 
+### Document/search titles
+
+The generator keeps HTML document titles separate from canonical work titles,
+visible headings, and the existing OG/Twitter title. Short Song/Rhyme titles
+retain branding when it fits the 60-character design target; longer titles omit
+branding first. Only titles still over 60 receive equivalent whole-phrase
+abbreviations. An exact trailing catalog sequence may be omitted; arbitrary
+numbers, words, and character ranges are never truncated.
+
+`scripts/search-title-overrides.js` contains reviewed metadata-only exceptions
+keyed by canonical HH ID, with the expected source title and a rationale.
+Changed source titles invalidate their override rather than silently reusing it.
+Book-character document titles use the indexed route title plus `Characters`,
+without branding; their existing H1 and social-title ownership remain separate.
+
+After rendering, `scripts/search-titles.js` checks every sitemap canonical and
+adds a semantic page-family label only to colliding document titles. Both output
+trees receive only the corrected `<title>` text, not rewritten body markup.
+Generation fails for accidental collisions, invalid/empty titles, ellipsis
+shortening, or titles over 70 without a documented exact-title exception.
+60 is preferred; 61-65 and 66-70 are reported for review. These are internal
+quality targets, not a claim about Bing's official threshold.
+
+Run the focused regression with `node --test test/search-titles.test.js`.
+Run all generator tests serially with `node --test --test-concurrency=1`.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)

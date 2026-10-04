@@ -98,6 +98,11 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
   const output = path.join(repoRoot, 'build-recovery');
   const beforeUrls = indexedCanonicals(output);
   const beforeSearch = JSON.parse(fs.readFileSync(path.join(repoRoot, 'generated/search-index.json'), 'utf8'));
+  const beforeSocialTitles = new Map(beforeUrls.map((url) => {
+    const route = decodeURIComponent(new URL(url).pathname).replace(/^\//, '') || 'index.html';
+    const attributes = metadataAttributes(fs.readFileSync(path.join(output, route), 'utf8'));
+    return [url, attributes.get('og:title')];
+  }));
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], { cwd: repoRoot, stdio: 'pipe' });
   const urls = indexedCanonicals(output);
   assert.deepEqual(urls, beforeUrls, 'metadata must not change sitemap canonical routes');
@@ -123,12 +128,13 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
     assert.equal(isEditorialDescriptionSentence(description), false, `${relative}: editorial metadata`);
     assert.equal(seenDescriptions.has(description), false, `${relative}: duplicate description`);
     seenDescriptions.add(description);
-    assert.equal(attributes.get('og:title'), title);
+    assert.ok(attributes.get('og:title'), `${relative}: missing social title`);
+    assert.equal(attributes.get('og:title'), beforeSocialTitles.get(url), `${relative}: social title changed`);
     assert.equal(attributes.get('og:description'), description);
     assert.equal(attributes.get('og:url'), url);
     assert.equal(attributes.get('og:type'), 'website');
     assert.equal(attributes.get('og:site_name'), 'Hawkins Hollow');
-    assert.equal(attributes.get('twitter:title'), title);
+    assert.equal(attributes.get('twitter:title'), attributes.get('og:title'));
     assert.equal(attributes.get('twitter:description'), description);
     assert.equal(attributes.get('twitter:url'), url);
     assert.equal(attributes.has('twitter:site'), false);
