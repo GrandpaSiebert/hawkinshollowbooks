@@ -82,7 +82,7 @@ test('generator omits unpublished and unroutable series records without rewritin
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-S-0001'));
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-R-0001'));
   const sitemap = readBuildHtml('sitemap.xml');
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 1499);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 1392);
   assert.doesNotMatch(sitemap, /entities\/book\/hh-[sr]-/i);
 
   const porchLight = readBuildHtml('the-porch-light.html');

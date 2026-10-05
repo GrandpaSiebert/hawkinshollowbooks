@@ -299,11 +299,11 @@ test('workflow plans after build and persists only after successful Pages deploy
   assert.doesNotMatch(packageJson.scripts['indexnow:submit'], /--from-sitemap/);
 });
 
-test('existing production artifact has 1499 eligible pages and unchanged fingerprints across reads', () => {
+test('existing build artifact has 1392 eligible pages and unchanged fingerprints across reads', () => {
   const output = path.join(__dirname, '..', 'build-recovery');
   const first = snapshotFromBuild(output);
   const second = snapshotFromBuild(output);
-  assert.equal(first.pages.length, 1499);
+  assert.equal(first.pages.length, 1392);
   assert.equal(first.id, second.id);
   assert.equal(planDelta(second, state(first)).candidates.length, 0);
 });

@@ -108,9 +108,9 @@ test('clean first build and warmed second build share current structured Charact
   assert.deepEqual(clean.discovery, JSON.parse(originalDiscovery), 'current projection preserves established structured eligibility');
   assert.deepEqual(clean.registry, before.registry, 'canonical IDs must not change');
   assert.equal(clean.sitemap, before.sitemap, 'routes/canonicals and sitemap membership must not change');
-  assert.deepEqual(clean.unreachable, before.unreachable, 'original disconnected population is out of scope');
-  assert.equal(clean.unreachable.length, 107);
-  assert.equal(clean.zeroInbound.length, 98);
+  assert.deepEqual(clean.unreachable, before.unreachable, 'public eligibility must remain first-build deterministic');
+  assert.equal(clean.unreachable.length, 0);
+  assert.equal(clean.zeroInbound.length, 0);
 
   const characters = JSON.parse(fs.readFileSync(path.join(root, 'data', 'characters.json'), 'utf8')).characters;
   const usefulStories = Object.entries(clean.pages).filter(([route, page]) => (
@@ -148,5 +148,5 @@ test('clean first build and warmed second build share current structured Charact
   protectedFiles.forEach((file, index) => (
     assert.deepEqual(fs.readFileSync(path.join(root, file)), originalSources[index], file)
   ));
-  t.diagnostic('Clean/warmed identical: 18 populated story trails, 295 cards, 78 reachable Books, 69 reachable cast pages; original 107/98 retained.');
+  t.diagnostic('Clean/warmed identical: 18 populated story trails, 295 cards, 78 reachable Books, 69 reachable cast pages; no unreachable or zero-inbound sitemap destinations.');
 });

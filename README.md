@@ -143,6 +143,36 @@ for Character rendering. The clean/warmed regression removes only that prior
 artifact before the first build and compares both builds' HTML, crawlable graph,
 sitemap, canonical registry, and discovery records.
 
+### Public-surface eligibility
+
+`scripts/public-surface-eligibility.js` separates internal canonical entities
+from generated, indexable, sitemap, search, and navigation eligibility. Book
+entity shells and unfinished Reading Order remain accessible with
+`noindex, follow`, but are not sitemap/search destinations. Pop-pop's entity is
+a preserved secondary authoring/canon surface pending editorial decision;
+the public Character profile remains the visitor/search destination.
+
+Character Stories, Places, People, and Relationships continuations use the
+same current-build structured-collection policy for generation and profile
+navigation. Empty continuations are withdrawn, not redirected. Both output
+trees are reset on each build; named withdrawn routes are also explicitly
+removed (failure to remove a stale file fails generation). Pages deployments
+replace the artifact, so absent routes naturally return 404.
+
+Storybook Series consolidates into Storybook Shelf using the existing immediate
+meta-refresh compatibility stub, destination canonical, `noindex, follow`, and
+ordinary fallback link. GitHub Pages does not supply a configurable HTTP 301;
+this compatibility route returns HTTP 200 before browser navigation. No
+`robots.txt` disallow is added. The generated public-surface index records every
+policy decision, and global search filters destinations through that policy.
+Book details remain searchable; Character search opens public profiles, with
+Storybook Shelf and the public Resources catalog also explicitly searchable.
+
+Document-title allocation reserves retained secondary identities and the
+consolidated series alias, preserving existing primary search titles even when
+those secondary routes leave the sitemap. Internal entity records, IDs, source
+canon, association rules, and Stage 4C/4D behavior are unchanged.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)

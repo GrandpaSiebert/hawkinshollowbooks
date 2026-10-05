@@ -32,7 +32,8 @@ const {
   normalizeMetadataTitle,
   normalizeMetaDescription
 } = require('./search-presentation-metadata');
-const { finalizeSearchTitles, getFreebieSearchTitle } = require('./search-titles');
+const { finalizeSearchTitles, getFreebieSearchTitle, readSearchTitlePage } = require('./search-titles');
+const { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility } = require('./public-surface-eligibility');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -1698,7 +1699,7 @@ function writeEntityIndex(siteRoot, entityIndex) {
   return outputPath;
 }
 
-function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords = [], freebieSearchVocabulary = {}) {
+function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords = [], freebieSearchVocabulary = {}, surfaces = new Map()) {
   const records = [];
   const freebieIds = new Set((freebieDiscoveryRecords || []).map((record) => String(record.canonicalId || '').toUpperCase()));
 
@@ -1737,7 +1738,9 @@ function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords =
       id: character.id,
       title: character.name,
       series: 'Characters',
-      href: character.href || '',
+      href: character.published !== false && character.slug
+        ? `characters/${character.slug}.html`
+        : character.href || '',
       asin: '',
       amazonUrl: '',
       purchaseLinks: { paperback: '', hardcover: '', kindle: '' },
@@ -1844,26 +1847,43 @@ function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords =
     records.push(createFreebieSearchIndexRecord(freebie));
   }
 
+  for (const [type, id, title, href] of [
+    ['series', 'storybooks', 'Storybook Shelf', 'storybook-shelf.html'],
+    ['resource', 'resources', 'Family Resources', 'resources.html']
+  ]) {
+    records.push({
+      type, id, title, href, series: '', asin: '', amazonUrl: '',
+      purchaseLinks: { paperback: '', hardcover: '', kindle: '' },
+      keywords: [title]
+    });
+  }
+  const eligibleRecords = records.filter((record) => {
+    const eligibility = surfaces.get(record.href);
+    if (!eligibility) throw new Error(`Search destination lacks public eligibility: ${record.href}`);
+    return eligibility.search;
+  });
+  const countType = (type) => eligibleRecords.filter((record) => record.type === type).length;
   return {
     generatedAt: new Date().toISOString(),
     summary: {
-      totalRecords: records.length,
+      totalRecords: eligibleRecords.length,
       byType: {
-        books: Math.max(0, ((entityIndex.byType && entityIndex.byType.books) || []).length - freebieIds.size),
-        characters: ((entityIndex.byType && entityIndex.byType.characters) || []).length,
-        relationships: ((entityIndex.byType && entityIndex.byType.relationships) || []).length,
-        environments: ((entityIndex.byType && entityIndex.byType.environments) || []).length,
-        landmarks: ((entityIndex.byType && entityIndex.byType.landmarks) || []).length,
-        activities: ((entityIndex.byType && entityIndex.byType.activities) || []).length,
-        resources: ((entityIndex.byType && entityIndex.byType.resources) || []).length,
-        songs: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'song').length,
-        nurseryRhymes: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'rhyme').length
+        books: countType('book'),
+        characters: countType('character'),
+        relationships: countType('relationship'),
+        environments: countType('environment'),
+        landmarks: countType('landmark'),
+        activities: countType('activity'),
+        resources: countType('resource'),
+        series: countType('series'),
+        songs: countType('song'),
+        nurseryRhymes: countType('rhyme')
       }
     },
     freebieSearch: {
       vocabulary: freebieSearchVocabulary
     },
-    records
+    records: eligibleRecords
   };
 }
 
@@ -4608,9 +4628,13 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
 }
 
 function renderFreebieMigrationStub(record, site) {
-  const destination = `${String(site.domain || '').replace(/\/$/, '')}/${getFreebieDetailHref(record)}`;
   const relativeDestination = `../${getFreebieDetailHref(record)}`;
-  const title = escapeHtml(String(record.title || record.canonicalId));
+  return renderCompatibilityRedirect(record.title || record.canonicalId, getFreebieDetailHref(record), relativeDestination, site);
+}
+
+function renderCompatibilityRedirect(label, destinationRoute, relativeDestination, site) {
+  const destination = `${String(site.domain || '').replace(/\/$/, '')}/${destinationRoute}`;
+  const title = escapeHtml(String(label));
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -4800,10 +4824,11 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     ? `<div class="character-story-list">${relatedPlacesCards}</div>`
     : '<p>Favorite places will be added as new memories are shared.</p>';
 
-  const hasStoryContinuation = (experience.relatedStoriesAll || []).length > 0;
-  const hasPeopleContinuation = (experience.relatedPeopleAll || []).length > 0;
-  const hasPlacesContinuation = (experience.relatedPlacesAll || []).length > 0;
-  const hasRelationshipsContinuation = (experience.relatedRelationshipsAll || []).length > 0;
+  const hasContinuation = (continuationType) => getPublicSurfaceEligibility({ experience, continuationType }).navigation;
+  const hasStoryContinuation = hasContinuation('stories');
+  const hasPeopleContinuation = hasContinuation('people');
+  const hasPlacesContinuation = hasContinuation('places');
+  const hasRelationshipsContinuation = hasContinuation('relationships');
 
   const storyContinuationLink = hasStoryContinuation
     ? `<p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p>`
@@ -6810,9 +6835,6 @@ async function buildSite() {
       detailLinks: associationReport.unresolvedFreebieDetailLinks
     })}`);
   }
-  const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary);
-  const searchIndexPath = writeSearchIndex(root, searchIndex);
-  console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
   console.log(
     `Merged book index updated: ${mergedBookIndex.summary.recordCount} records (${mergedBookIndex.summary.withAmazonDataCount} with Amazon data).`
   );
@@ -6870,12 +6892,28 @@ async function buildSite() {
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
 
   const sitemapRoutes = new Set();
-  const writePageToOutputsAndTrack = (fileName, html) => {
-    if (fileName !== 'sitemap.xml') {
-      sitemapRoutes.add(fileName);
+  const publicSurfaces = new Map();
+  const titleReservations = [];
+  const writePublicPage = (fileName, html, eligibility = getPublicSurfaceEligibility({ route: fileName })) => {
+    const route = fileName.replace(/\\/g, '/');
+    publicSurfaces.set(route, eligibility);
+    if (!eligibility.generated) {
+      // A locked stale file must fail the build rather than republish a withdrawn URL.
+      for (const outputDir of outputDirs) fs.rmSync(path.join(outputDir, fileName), { force: true });
+      return;
+    }
+    if (eligibility.sitemap) sitemapRoutes.add(route);
+    if (eligibility.state === 'secondary' && !/<meta name="robots"/i.test(html)) {
+      titleReservations.push(readSearchTitlePage(html, route));
+      html = html.replace('</head>', `<meta name="robots" content="${eligibility.robots}" />\n</head>`);
+    }
+    if (eligibility.redirectTo) {
+      titleReservations.push({ ...readSearchTitlePage(html, route), reservationOnly: true });
+      html = renderCompatibilityRedirect('Storybook Series', eligibility.redirectTo, eligibility.redirectTo, site);
     }
     writePageToOutputs(fileName, html);
   };
+  const writePageToOutputsAndTrack = writePublicPage;
 
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
@@ -6903,10 +6941,7 @@ async function buildSite() {
     }
 
     const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
-    writePageToOutputs(pageRoute, html);
-    if (page.status !== 'legacy') {
-      sitemapRoutes.add(pageRoute);
-    }
+    writePublicPage(pageRoute, html, getPublicSurfaceEligibility({ route: pageRoute, legacy: page.status === 'legacy' }));
   }
 
   const featuredCharacters = charactersData.characters
@@ -6995,7 +7030,7 @@ async function buildSite() {
   for (const character of featuredCharacters) {
     const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || [], storyMasterIndex);
-    writePageToOutputs(
+    writePublicPage(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(
         experienceAsset,
@@ -7006,27 +7041,14 @@ async function buildSite() {
         freebiePageAssociationIndex.byCharacterCanonicalId.get(canonicalCharacterId) || []
       )
     );
-    sitemapRoutes.add(path.join('characters', `${character.slug}.html`));
-    writePageToOutputs(
-      path.join('characters', `${character.slug}-stories.html`),
-      renderCharacterContinuationPage(experienceAsset, 'stories', site, nav, config, characterExperienceBanner)
-    );
-    sitemapRoutes.add(path.join('characters', `${character.slug}-stories.html`));
-    writePageToOutputs(
-      path.join('characters', `${character.slug}-places.html`),
-      renderCharacterContinuationPage(experienceAsset, 'places', site, nav, config, characterExperienceBanner)
-    );
-    sitemapRoutes.add(path.join('characters', `${character.slug}-places.html`));
-    writePageToOutputs(
-      path.join('characters', `${character.slug}-people.html`),
-      renderCharacterContinuationPage(experienceAsset, 'people', site, nav, config, characterExperienceBanner)
-    );
-    sitemapRoutes.add(path.join('characters', `${character.slug}-people.html`));
-    writePageToOutputs(
-      path.join('characters', `${character.slug}-relationships.html`),
-      renderCharacterContinuationPage(experienceAsset, 'relationships', site, nav, config, characterExperienceBanner)
-    );
-    sitemapRoutes.add(path.join('characters', `${character.slug}-relationships.html`));
+    for (const continuationType of Object.keys(CONTINUATION_COLLECTIONS)) {
+      const eligibility = getPublicSurfaceEligibility({ experience: experienceAsset, continuationType });
+      writePublicPage(
+        path.join('characters', `${character.slug}-${continuationType}.html`),
+        eligibility.generated ? renderCharacterContinuationPage(experienceAsset, continuationType, site, nav, config, characterExperienceBanner) : '',
+        eligibility
+      );
+    }
   }
 
   const characterByName = new Map(
@@ -7062,7 +7084,7 @@ async function buildSite() {
       .filter((entry) => Boolean(entry[0]))
   );
   for (const { book, storyBook, presentationModel, storyCharacters, detailHref, charactersHref } of bookDiscoveryPlan) {
-    writePageToOutputs(
+    writePublicPage(
       detailHref,
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
         detailHref,
@@ -7075,9 +7097,8 @@ async function buildSite() {
         presentationModel
       })
     );
-    sitemapRoutes.add(detailHref);
     if (charactersHref) {
-      writePageToOutputs(
+      writePublicPage(
         charactersHref,
         renderStoryCharactersPage(storyBook || book, storyCharacters, {
           detailHref,
@@ -7085,7 +7106,6 @@ async function buildSite() {
           bookTitle: getBookPublicTitle(book) || getCanonicalBookId(book)
         }, site, nav, config)
       );
-      sitemapRoutes.add(charactersHref);
     }
   }
 
@@ -7110,19 +7130,17 @@ async function buildSite() {
     const collectionRecords = freebieRecords.filter((record) => record.contentType === collectionKey);
     const collectionBanner = getBannerForPage({ slug: collection.indexRoute.replace(/\.html$/, '') }, banners);
 
-    writePageToOutputs(
+    writePublicPage(
       collection.indexRoute,
       renderFreebieIndexPage(collection, collectionRecords, freebieRoutingById, site, nav, config, collectionBanner)
     );
-    sitemapRoutes.add(collection.indexRoute);
 
     for (const record of collectionRecords) {
       const detailHref = getFreebieDetailHref(record);
-      writePageToOutputs(
+      writePublicPage(
         detailHref,
         renderFreebieDetailPage(record, freebieRoutingById.get(record.canonicalId) || null, site, nav, config, collectionBanner)
       );
-      sitemapRoutes.add(detailHref);
       // Legacy book URLs stay reachable as redirect stubs and are deliberately excluded from the sitemap.
       writePageToOutputs(getFreebieLegacyBookHref(record), renderFreebieMigrationStub(record, site));
     }
@@ -7136,19 +7154,33 @@ async function buildSite() {
   });
   const freebieEntityIds = new Set(freebieDiscoveryRecords
     .map((record) => String(record.canonicalId || '').toUpperCase()));
-  const publicEntities = allEntities.filter((entity) => !(entity.type === 'book'
-    && freebieEntityIds.has(String(entity.id || '').toUpperCase())));
-  for (const entity of publicEntities) {
+  let publicEntityCount = 0;
+  for (const entity of allEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
-    writePageToOutputs(pagePath, renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociationIndex));
-    sitemapRoutes.add(pagePath);
+    const eligibility = getPublicSurfaceEligibility({
+      entity,
+      freebieEntity: freebieEntityIds.has(String(entity.id || '').toUpperCase())
+    });
+    writePublicPage(pagePath, eligibility.generated
+      ? renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociationIndex)
+      : '', eligibility);
+    if (eligibility.generated) publicEntityCount += 1;
   }
 
+  const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary, publicSurfaces);
+  const searchIndexPath = writeSearchIndex(root, searchIndex);
+  const surfaceIndexPath = path.join(root, 'generated', 'public-surface-index.json');
+  fs.writeFileSync(surfaceIndexPath, `${JSON.stringify({ records: Array.from(publicSurfaces, ([route, eligibility]) => ({ route, ...eligibility })) }, null, 2)}\n`);
+  for (const outputDir of outputDirs) {
+    fs.copyFileSync(searchIndexPath, path.join(outputDir, 'generated', 'search-index.json'));
+    fs.copyFileSync(surfaceIndexPath, path.join(outputDir, 'generated', 'public-surface-index.json'));
+  }
+  console.log(`Search index updated: ${searchIndex.summary.totalRecords} eligible primary records.`);
   writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
-  finalizeSearchTitles(outputDirs, site);
+  finalizeSearchTitles(outputDirs, site, titleReservations);
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
-  console.log(`Generated ${publicEntities.length} universal entity pages (${allEntities.length - publicEntities.length} freebie Book profiles omitted).`);
+  console.log(`Generated ${publicEntityCount} universal entity pages (${allEntities.length - publicEntityCount} freebie Book profiles omitted).`);
   console.log(`Copied search index to build output from ${path.relative(root, searchIndexPath)}.`);
   console.log(`Merged book index saved to ${path.relative(root, mergedBookIndexPath)}.`);
   console.log(`Entity index saved to ${path.relative(root, entityIndexPath)}.`);

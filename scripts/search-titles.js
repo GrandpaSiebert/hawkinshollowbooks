@@ -125,12 +125,12 @@ function attribute(node, name) {
   return (node.attrs || []).find((entry) => entry.name === name)?.value || '';
 }
 
-function readSearchTitlePage(html, route) {
+function readSearchTitlePage(html, route, allowNoindex = false) {
   const document = parse5.parse(html);
   const titles = getElements(document, 'title');
   const canonicals = getElements(document, 'link').filter((link) => attribute(link, 'rel').split(/\s+/).includes('canonical'));
   const robots = getElements(document, 'meta').filter((meta) => attribute(meta, 'name').toLowerCase() === 'robots');
-  if (titles.length !== 1 || canonicals.length !== 1 || robots.some((meta) => /\bnoindex\b/i.test(attribute(meta, 'content')))) {
+  if (titles.length !== 1 || canonicals.length !== 1 || (!allowNoindex && robots.some((meta) => /\bnoindex\b/i.test(attribute(meta, 'content'))))) {
     throw new Error(`Invalid indexable canonical document: ${route}`);
   }
   return {
@@ -145,7 +145,7 @@ function escapeTitle(title) {
   return title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-function finalizeSearchTitles(outputDirs, site) {
+function finalizeSearchTitles(outputDirs, site, reservations = []) {
   const sitemap = fs.readFileSync(path.join(outputDirs[0], 'sitemap.xml'), 'utf8');
   const urls = Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1]);
   if (!urls.length) throw new Error('Cannot validate search titles without sitemap pages.');
@@ -159,14 +159,17 @@ function finalizeSearchTitles(outputDirs, site) {
     if (record.canonical !== canonical) throw new Error(`Search-title canonical mismatch: ${route}`);
     return record;
   });
-  const resolved = resolveSearchTitles(records, site.siteName);
+  // Retained secondary identities and consolidated aliases keep primary title allocation stable.
+  const allocationRecords = records.concat(reservations);
+  const resolved = resolveSearchTitles(allocationRecords, site.siteName);
   for (const outputDir of outputDirs) {
     for (let i = 0; i < resolved.length; i += 1) {
       const record = resolved[i];
+      if (record.reservationOnly) continue;
       const file = path.join(outputDir, record.route);
       const html = fs.readFileSync(file, 'utf8');
-      const current = readSearchTitlePage(html, record.route);
-      if (current.title !== records[i].title || current.canonical !== record.canonical) {
+      const current = readSearchTitlePage(html, record.route, i >= records.length);
+      if (current.title !== allocationRecords[i].title || current.canonical !== record.canonical) {
         throw new Error(`Search-title output disagreement: ${outputDir}: ${record.route}`);
       }
       if (current.title !== record.title) {

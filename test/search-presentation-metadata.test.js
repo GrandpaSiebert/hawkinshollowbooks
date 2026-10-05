@@ -106,7 +106,7 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], { cwd: repoRoot, stdio: 'pipe' });
   const urls = indexedCanonicals(output);
   assert.deepEqual(urls, beforeUrls, 'metadata must not change sitemap canonical routes');
-  assert.equal(urls.length, 1499);
+  assert.equal(urls.length, 1392);
   assert.equal(new Set(urls).size, urls.length);
 
   const seenCanonicals = new Set();
