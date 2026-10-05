@@ -55,6 +55,7 @@ jobs:
         run: npm run build
         env:
           REQUIRE_FREEBIE_TITLE_ART_PUBLICATION: 'true'
+          HH_ENTITY_ID_STRICT: '1'
 
       - name: Verify required pages exist
         run: |

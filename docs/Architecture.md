@@ -45,7 +45,7 @@ Each layer protects one responsibility.
 - generated/relationship-canon-index.json
 - generated/environment-canon-index.json
 - generated/landmark-canon-index.json
-- generated/entity-id-registry.json
+- generated/entity-id-registry.json (derived copy of the authoritative data/entity-id-registry.json)
 - generated/entity-index.json
 - generated/entity-graph.json
 - generated/search-index.json

@@ -173,6 +173,26 @@ consolidated series alias, preserving existing primary search titles even when
 those secondary routes leave the sitemap. Internal entity records, IDs, source
 canon, association rules, and Stage 4C/4D behavior are unchanged.
 
+### Persistent canonical entity IDs
+
+Relationship, Environment and Landmark IDs (`REL-`, `ENV-`, `LND-`) come from the
+checked-in `data/entity-id-registry.json`, a persisted source-path to ID mapping
+(`scripts/entity-id-registry.js`). `generated/entity-id-registry.json` is only a
+derived copy; the build never allocates from generated or filesystem state.
+
+- Known path: keeps its ID forever, whatever the enumeration order or other sources.
+- New path: next monotonic number for its prefix (holes are never refilled), in
+  code-unit path order; the build writes the registry, which must be committed.
+  `HH_ENTITY_ID_STRICT=1` makes unregistered sources an error instead.
+- Absent source: its ID stays reserved. `"state": "reserved"` marks an authoritative
+  but unpublished source (Farmhouse Exterior is `ENV-0032`).
+- Rename/move: a new source appearing while an unreserved source disappears fails the
+  build. Rename the registry key to migrate, or move the ID into `retired` to retire it.
+- Duplicate IDs or sources, malformed or missing registry, or a `nextByType` at or
+  below any assigned or retired ID also fail the build.
+
+Run `node --test test/entity-id-stability.test.js`.
+
 ## Library scanner outputs
 
 - `generated/library-scan.json` full directory and file inventory (folders, filenames, extensions, sizes, timestamps)

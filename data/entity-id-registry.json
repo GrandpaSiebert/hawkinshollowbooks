@@ -1,0 +1,298 @@
+{
+  "version": 1,
+  "nextByType": {
+    "environment": 35,
+    "landmark": 33,
+    "relationship": 29
+  },
+  "entries": {
+    "environment:Environments/Barn Interior Visual Canon.docx": {
+      "id": "ENV-0001"
+    },
+    "environment:Environments/Barn Lane Visual Canon.docx": {
+      "id": "ENV-0002"
+    },
+    "environment:Environments/Barn Loft Visual Canon.docx": {
+      "id": "ENV-0003"
+    },
+    "environment:Environments/Barn Path Visual Canon.docx": {
+      "id": "ENV-0004"
+    },
+    "environment:Environments/Barnyard Visual Canon.docx": {
+      "id": "ENV-0005"
+    },
+    "environment:Environments/Blackberry Lane Visual Canon.docx": {
+      "id": "ENV-0006"
+    },
+    "environment:Environments/Cobb Farm Orchard Visual Canon.docx": {
+      "id": "ENV-0007"
+    },
+    "environment:Environments/Community Porch Visual Canon.docx": {
+      "id": "ENV-0008"
+    },
+    "environment:Environments/Creek Bridge Visual Canon.docx": {
+      "id": "ENV-0009"
+    },
+    "environment:Environments/Farmhouse Exterior Visual Canon.docx": {
+      "id": "ENV-0032",
+      "state": "reserved"
+    },
+    "environment:Environments/Farmhouse Porch Visual Canon.docx": {
+      "id": "ENV-0010"
+    },
+    "environment:Environments/Fence Line Visual Canon.docx": {
+      "id": "ENV-0011"
+    },
+    "environment:Environments/Firefly Field Visual Canon.docx": {
+      "id": "ENV-0012"
+    },
+    "environment:Environments/Firefly Hill Visual Canon.docx": {
+      "id": "ENV-0013"
+    },
+    "environment:Environments/Front Gate Visual Canon.docx": {
+      "id": "ENV-0014"
+    },
+    "environment:Environments/Garden Row Visual Canon.docx": {
+      "id": "ENV-0015"
+    },
+    "environment:Environments/Garden Visual Canon.docx": {
+      "id": "ENV-0016"
+    },
+    "environment:Environments/Kitchen Visual Canon.docx": {
+      "id": "ENV-0017"
+    },
+    "environment:Environments/Listening Stump Visual Canon.docx": {
+      "id": "ENV-0018"
+    },
+    "environment:Environments/Mailbox Path Visual Canon.docx": {
+      "id": "ENV-0019"
+    },
+    "environment:Environments/Mudroom Visual Canon.docx": {
+      "id": "ENV-0020"
+    },
+    "environment:Environments/Old Oak Visual Canon.docx": {
+      "id": "ENV-0021"
+    },
+    "environment:Environments/Old Stump School Visual Canon.docx": {
+      "id": "ENV-0022"
+    },
+    "environment:Environments/Pond Edge Visual Canon.docx": {
+      "id": "ENV-0023"
+    },
+    "environment:Environments/Reading Knook Visual Canon.docx": {
+      "id": "ENV-0024"
+    },
+    "environment:Environments/Reading Stump Visual Canon.docx": {
+      "id": "ENV-0025"
+    },
+    "environment:Environments/Red Barn Gate Visual Canon.docx": {
+      "id": "ENV-0026"
+    },
+    "environment:Environments/Stone Footbridge Visual Canon.docx": {
+      "id": "ENV-0027"
+    },
+    "environment:Environments/Story Stump Visual Canon.docx": {
+      "id": "ENV-0028"
+    },
+    "environment:Environments/Treehouse Visual Canon.docx": {
+      "id": "ENV-0029"
+    },
+    "environment:Environments/Willow Circle Visual Canon.docx": {
+      "id": "ENV-0030"
+    },
+    "landmark:Landmarks/Barn Path Visual Canon.docx": {
+      "id": "LND-0001"
+    },
+    "landmark:Landmarks/Bench Visual Canon.docx": {
+      "id": "LND-0002"
+    },
+    "landmark:Landmarks/Chicken Yard Visual Canon.docx": {
+      "id": "LND-0003"
+    },
+    "landmark:Landmarks/Clover Field Visual Canon.docx": {
+      "id": "LND-0004"
+    },
+    "landmark:Landmarks/Community Garden Visual Canon.docx": {
+      "id": "LND-0005"
+    },
+    "landmark:Landmarks/Council Circle Visual Canon.docx": {
+      "id": "LND-0006"
+    },
+    "landmark:Landmarks/Creek Bank Visual Canon.docx": {
+      "id": "LND-0007"
+    },
+    "landmark:Landmarks/Garden Bench Visual Canon.docx": {
+      "id": "LND-0008"
+    },
+    "landmark:Landmarks/Garden Path Visual Canon.docx": {
+      "id": "LND-0009"
+    },
+    "landmark:Landmarks/Latch Visual Canon.docx": {
+      "id": "LND-0010"
+    },
+    "landmark:Landmarks/Low Gate Visual Canon.docx": {
+      "id": "LND-0011"
+    },
+    "landmark:Landmarks/Mailbox Post Visual Canon.docx": {
+      "id": "LND-0012"
+    },
+    "landmark:Landmarks/Moonlit Meadow Visual Canon.docx": {
+      "id": "LND-0013"
+    },
+    "landmark:Landmarks/Orchard Baskets Visual Canon.docx": {
+      "id": "LND-0014"
+    },
+    "landmark:Landmarks/Orchard Bend  Visual Canon.docx": {
+      "id": "LND-0015"
+    },
+    "landmark:Landmarks/Orchard Path Visual Canon.docx": {
+      "id": "LND-0016"
+    },
+    "landmark:Landmarks/Orchard Row Visual Canon.docx": {
+      "id": "LND-0017"
+    },
+    "landmark:Landmarks/Orchard Stump Visual Canon.docx": {
+      "id": "LND-0018"
+    },
+    "landmark:Landmarks/Pasture Fence Visual Canon.docx": {
+      "id": "LND-0019"
+    },
+    "landmark:Landmarks/Path Bend Visual Canon.docx": {
+      "id": "LND-0020"
+    },
+    "landmark:Landmarks/Pond Shore Visual Canon.docx": {
+      "id": "LND-0021"
+    },
+    "landmark:Landmarks/Pond Stones Visual Canon.docx": {
+      "id": "LND-0022"
+    },
+    "landmark:Landmarks/Porch Rail Visual Canon.docx": {
+      "id": "LND-0023"
+    },
+    "landmark:Landmarks/Porch Steps Visual Canon.docx": {
+      "id": "LND-0024"
+    },
+    "landmark:Landmarks/Quiet Stump Visual Canon.docx": {
+      "id": "LND-0025"
+    },
+    "landmark:Landmarks/Rail Visual Canon.docx": {
+      "id": "LND-0026"
+    },
+    "landmark:Landmarks/Red Barn Doorway Visual Canon.docx": {
+      "id": "LND-0027"
+    },
+    "landmark:Landmarks/Riverside Bend Visual Canon.docx": {
+      "id": "LND-0028"
+    },
+    "landmark:Landmarks/Schoolyard Visual Canon.docx": {
+      "id": "LND-0029"
+    },
+    "landmark:Landmarks/Smooth Stones Visual Canon.docx": {
+      "id": "LND-0030"
+    },
+    "landmark:Landmarks/Story Chair Visual Canon.docx": {
+      "id": "LND-0031"
+    },
+    "landmark:Landmarks/Tool Bench Visual Canon.docx": {
+      "id": "LND-0032"
+    },
+    "relationship:Relationships/Ale-Cal Visual Canon.docx": {
+      "id": "REL-0001"
+    },
+    "relationship:Relationships/Ayd-Ale Visual Canon.docx": {
+      "id": "REL-0002"
+    },
+    "relationship:Relationships/Ayd-Bra Visual Canon.docx": {
+      "id": "REL-0003"
+    },
+    "relationship:Relationships/Bax-Lea Visual Canon.docx": {
+      "id": "REL-0004"
+    },
+    "relationship:Relationships/Bla-Aus Visual Canon.docx": {
+      "id": "REL-0005"
+    },
+    "relationship:Relationships/Bra-Aus Visual Canon.docx": {
+      "id": "REL-0006"
+    },
+    "relationship:Relationships/Cal-Ben Visual Canon.docx": {
+      "id": "REL-0007"
+    },
+    "relationship:Relationships/Emm-Har-Spe Visual Canon.docx": {
+      "id": "REL-0008"
+    },
+    "relationship:Relationships/G[a-Ali Visual Canon.docx": {
+      "id": "REL-0009"
+    },
+    "relationship:Relationships/Gar-Lex Visual Canon.docx": {
+      "id": "REL-0010"
+    },
+    "relationship:Relationships/Gma-Gpa Visual Canon.docx": {
+      "id": "REL-0011"
+    },
+    "relationship:Relationships/Gpa-Ash Visual Canon.docx": {
+      "id": "REL-0012"
+    },
+    "relationship:Relationships/Har-Spe Visual Canon.docx": {
+      "id": "REL-0013"
+    },
+    "relationship:Relationships/Hay-Bra Visual Canon.docx": {
+      "id": "REL-0014"
+    },
+    "relationship:Relationships/Hay-Kay Visual Canon.docx": {
+      "id": "REL-0015"
+    },
+    "relationship:Relationships/Kay-Ash Visual Canon.docx": {
+      "id": "REL-0016"
+    },
+    "relationship:Relationships/Kayla-Bra Visual Canon.docx": {
+      "id": "REL-0017"
+    },
+    "relationship:Relationships/Lil-Zyl Visual Canon.docx": {
+      "id": "REL-0018"
+    },
+    "relationship:Relationships/Mimi-Pop Visual Canon.docx": {
+      "id": "REL-0019"
+    },
+    "relationship:Relationships/Pop-Lex Visual Canon.docx": {
+      "id": "REL-0020"
+    },
+    "relationship:Relationships/Sky-Ara Visual Canon.docx": {
+      "id": "REL-0021"
+    },
+    "relationship:Relationships/Sky-Ash Visual Canon.docx": {
+      "id": "REL-0022"
+    },
+    "relationship:Relationships/Sky-Ben Visual Canon.docx": {
+      "id": "REL-0023"
+    },
+    "relationship:Relationships/Sky-Cal Visual Canon.docx": {
+      "id": "REL-0024"
+    },
+    "relationship:Relationships/Sky-Kay Visual Canon.docx": {
+      "id": "REL-0025"
+    },
+    "relationship:Relationships/Sky-Kay-Ash Visual Canon.docx": {
+      "id": "REL-0026"
+    },
+    "relationship:Relationships/Spe-Emm Visual Canon.docx": {
+      "id": "REL-0027"
+    },
+    "relationship:Relationships/Trinity-Mimi Visual Canon.docx": {
+      "id": "REL-0028"
+    }
+  },
+  "retired": {
+    "ENV-0031": {
+      "reason": "Allocated by a former build to an Office lock file (~$ temp file), never a canonical source.",
+      "formerSource": "Environments/~$stening Stump Visual Canon.docx"
+    },
+    "ENV-0033": {
+      "reason": "Allocated by a former build to an Office lock file (~$ temp file), never a canonical source.",
+      "formerSource": "Environments/~$rmhouse Exterior Visual Canon.docx"
+    },
+    "ENV-0034": {
+      "reason": "Allocated by a former build to an Office lock file (~$ temp file), never a canonical source.",
+      "formerSource": "Environments/~$bb Farm Orchard Visual Canon.docx"
+    }
+  }
+}

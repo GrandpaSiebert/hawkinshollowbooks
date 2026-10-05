@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
+const {
+  REGISTRY_RELATIVE_PATH,
+  loadRegistry,
+  resolveIds,
+  serializeRegistry,
+  writeIfChanged
+} = require('./entity-id-registry');
 
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
@@ -124,36 +131,6 @@ function toDisplayNameFromText(rawText, fallbackName) {
   return headingName.length > 1 ? headingName : fallbackName;
 }
 
-function readRegistry(registryPath) {
-  if (!fs.existsSync(registryPath)) {
-    return {
-      nextByType: {
-        relationship: 1,
-        environment: 1,
-        landmark: 1
-      },
-      entries: {}
-    };
-  }
-
-  try {
-    return JSON.parse(fs.readFileSync(registryPath, 'utf8'));
-  } catch {
-    return {
-      nextByType: {
-        relationship: 1,
-        environment: 1,
-        landmark: 1
-      },
-      entries: {}
-    };
-  }
-}
-
-function writeRegistry(registryPath, registry) {
-  fs.writeFileSync(registryPath, `${JSON.stringify(registry, null, 2)}\n`, 'utf8');
-}
-
 function readJsonIfExists(filePath) {
   if (!fs.existsSync(filePath)) {
     return null;
@@ -166,30 +143,7 @@ function readJsonIfExists(filePath) {
   }
 }
 
-function getTypePrefix(type) {
-  if (type === 'relationship') {
-    return 'REL';
-  }
-  if (type === 'environment') {
-    return 'ENV';
-  }
-  return 'LND';
-}
-
-function ensureStableId(registry, type, sourceDocumentPath) {
-  const key = `${type}:${sourceDocumentPath}`;
-  if (registry.entries[key] && registry.entries[key].id) {
-    return registry.entries[key].id;
-  }
-
-  const next = registry.nextByType[type] || 1;
-  const id = `${getTypePrefix(type)}-${String(next).padStart(4, '0')}`;
-  registry.nextByType[type] = next + 1;
-  registry.entries[key] = { id };
-  return id;
-}
-
-function extractCanonRecords(type, files, siteRoot, mentionLookups, registry) {
+function extractCanonRecords(type, files, siteRoot, mentionLookups, idsByPath) {
   return files
     .filter((file) => file.extension === 'docx')
     .filter((file) => !isSkippableCanonFile(file))
@@ -198,7 +152,7 @@ function extractCanonRecords(type, files, siteRoot, mentionLookups, registry) {
       const rawText = fs.existsSync(absoluteDocPath) ? extractDocxRawText(absoluteDocPath) : '';
       const fallbackName = toDisplayNameFromPath(file.path);
       const name = toDisplayNameFromText(rawText, fallbackName);
-      const id = ensureStableId(registry, type, file.path);
+      const id = idsByPath[file.path];
 
       return {
         type,
@@ -283,9 +237,18 @@ function writeWorldCanonArtifacts(siteRoot, charactersData, libraryScan, outputD
   }
 
   const registryPath = path.join(outputDir, 'entity-id-registry.json');
-  const registry = readRegistry(registryPath);
+  const authoritativeRegistryPath = path.join(siteRoot, REGISTRY_RELATIVE_PATH);
 
   const files = (libraryScan && libraryScan.files) || [];
+  const canonSources = (category) => files
+    .filter((file) => file.category === category && file.extension === 'docx' && !isSkippableCanonFile(file))
+    .map((file) => file.path);
+  const resolution = resolveIds(loadRegistry(authoritativeRegistryPath), {
+    relationship: canonSources('Relationships'),
+    environment: canonSources('Environments'),
+    landmark: canonSources('Landmarks')
+  }, { allowNewAllocations: process.env.HH_ENTITY_ID_STRICT !== '1' });
+  const ids = resolution.ids;
   const characterNames = ((charactersData && charactersData.characters) || []).map((character) => character.name);
   const environmentNames = files
     .filter((file) => file.category === 'Environments')
@@ -307,24 +270,30 @@ function writeWorldCanonArtifacts(siteRoot, charactersData, libraryScan, outputD
     files.filter((file) => file.category === 'Relationships'),
     siteRoot,
     mentionLookups,
-    registry
+    ids.relationship
   );
   const environmentRecords = extractCanonRecords(
     'environment',
     files.filter((file) => file.category === 'Environments'),
     siteRoot,
     mentionLookups,
-    registry
+    ids.environment
   );
   const landmarkRecords = extractCanonRecords(
     'landmark',
     files.filter((file) => file.category === 'Landmarks'),
     siteRoot,
     mentionLookups,
-    registry
+    ids.landmark
   );
 
-  writeRegistry(registryPath, registry);
+  if (resolution.allocated.length) {
+    writeIfChanged(authoritativeRegistryPath, serializeRegistry(resolution.registry));
+    for (const entry of resolution.allocated) {
+      console.warn(`New canonical ID ${entry.id} allocated for ${entry.sourcePath}; commit ${REGISTRY_RELATIVE_PATH}.`);
+    }
+  }
+  writeIfChanged(registryPath, serializeRegistry(resolution.registry));
 
   const worldCanonIndex = {
     generatedAt: new Date().toISOString(),
