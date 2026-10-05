@@ -9,6 +9,10 @@ const {
   writeIfChanged
 } = require('./entity-id-registry');
 
+const LANDMARK_MENTION_SUPPRESSIONS = new Set([
+  'Environments/Farmhouse Exterior Visual Canon.docx'
+]);
+
 function ensureDir(dir) {
   fs.mkdirSync(dir, { recursive: true });
 }
@@ -166,7 +170,9 @@ function extractCanonRecords(type, files, siteRoot, mentionLookups, idsByPath) {
         mentions: {
           characters: detectMentions(rawText, mentionLookups.characters),
           environments: detectMentions(rawText, mentionLookups.environments),
-          landmarks: detectMentions(rawText, mentionLookups.landmarks)
+          landmarks: LANDMARK_MENTION_SUPPRESSIONS.has(file.path)
+            ? []
+            : detectMentions(rawText, mentionLookups.landmarks)
         }
       };
     })

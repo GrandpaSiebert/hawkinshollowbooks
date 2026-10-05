@@ -28,6 +28,12 @@ function elements(node, tag, result = []) {
 function attr(node, name) {
   return (node.attrs || []).find((entry) => entry.name === name)?.value || '';
 }
+function visibleText(node) {
+  if (node.nodeName === '#text') return node.value;
+  if (node.tagName && ['script', 'style', 'noscript'].includes(node.tagName)) return '';
+  if ((node.attrs || []).some((entry) => entry.name === 'hidden')) return '';
+  return (node.childNodes || []).map(visibleText).join(' ');
+}
 function html(route) {
   return fs.readFileSync(path.join(output, route), 'utf8');
 }
@@ -111,6 +117,69 @@ test('approved 107 public surfaces are classified precisely without losing prima
   assert.equal(search.summary.totalRecords, search.records.length);
   assert.equal(search.summary.byType.songs, 500);
   assert.equal(search.summary.byType.nurseryRhymes, 500);
+});
+
+test('published Farmhouse Exterior is the ordinary public ENV-0032 Environment surface', () => {
+  const route = 'entities/environment/env-0032-farmhouse-exterior.html';
+  const canonical = `https://hawkinshollowbooks.com/${route}`;
+  const entityIndex = JSON.parse(fs.readFileSync(path.join(root, 'generated/entity-index.json'), 'utf8'));
+  const graph = JSON.parse(fs.readFileSync(path.join(root, 'generated/entity-graph.json'), 'utf8'));
+  const registry = JSON.parse(fs.readFileSync(path.join(root, 'data/entity-id-registry.json'), 'utf8'));
+  const surfaces = JSON.parse(fs.readFileSync(path.join(root, 'generated/public-surface-index.json'), 'utf8')).records;
+  const search = JSON.parse(fs.readFileSync(path.join(root, 'generated/search-index.json'), 'utf8'));
+  const sitemap = html('sitemap.xml');
+  const entity = entityIndex.byType.environments.find((record) => record.sourceDocument === 'Environments/Farmhouse Exterior Visual Canon.docx');
+  const surface = surfaces.find((record) => record.route === route);
+  const searchRecords = search.records.filter((record) => record.href === route);
+  const document = parse5.parse(html(route));
+  const farmhouseEntry = registry.entries['environment:Environments/Farmhouse Exterior Visual Canon.docx'];
+
+  assert.deepEqual(farmhouseEntry, { id: 'ENV-0032' });
+  assert.equal(entity.id, 'ENV-0032');
+  assert.equal(entity.slug, 'farmhouse-exterior');
+  assert.equal(entity.href, route);
+  assert.deepEqual(entity.mentions.landmarks, []);
+  assert.deepEqual(graph.edges.filter((edge) => edge.from === 'environment:ENV-0032'
+    && edge.relationshipType === 'mentions-landmark'), []);
+  assert.ok(surface.generated && surface.indexable && surface.sitemap && surface.search && surface.navigation);
+  assert.equal(surface.robots, '');
+  assert.equal((sitemap.match(new RegExp(`<loc>${canonical}</loc>`, 'g')) || []).length, 1);
+  assert.equal(searchRecords.length, 1);
+  assert.equal(searchRecords[0].id, 'ENV-0032');
+  assert.equal((html('map.html').match(new RegExp(`href="${route}"`, 'g')) || []).length, 1);
+
+  const nodes = [];
+  const collect = (node, result) => {
+    if (node.tagName) result.push(node);
+    for (const child of node.childNodes || []) collect(child, result);
+  };
+  collect(document, nodes);
+  const meta = (name, property) => nodes.find((node) => node.tagName === 'meta'
+    && attr(node, 'name') === name && attr(node, 'property') === property);
+  const canonicalLink = nodes.find((node) => node.tagName === 'link' && attr(node, 'rel') === 'canonical');
+  const h1 = elements(document, 'h1');
+  const title = nodes.find((node) => node.tagName === 'title');
+  const description = meta('description', '');
+  assert.equal(h1.length, 1);
+  assert.ok(title);
+  assert.ok(title.childNodes.map(visibleText).join('').length <= 70);
+  assert.ok(description);
+  assert.ok(attr(description, 'content').length > 0 && attr(description, 'content').length <= 160);
+  assert.equal(attr(canonicalLink, 'href'), canonical);
+  assert.equal(attr(meta('', 'og:title'), 'content'), title.childNodes.map(visibleText).join(''));
+  assert.equal(attr(meta('', 'og:description'), 'content'), attr(description, 'content'));
+  assert.equal(attr(meta('', 'og:url'), 'content'), canonical);
+  assert.ok(meta('twitter:card', ''));
+  assert.equal(attr(meta('twitter:url', ''), 'content'), canonical);
+  const jsonLdCount = (nodes) => nodes.filter((node) => node.tagName === 'script' && attr(node, 'type') === 'application/ld+json').length;
+  const existingEnvironment = parse5.parse(html('entities/environment/env-0030-willow-circle.html'));
+  const existingEnvironmentNodes = [];
+  collect(existingEnvironment, existingEnvironmentNodes);
+  assert.equal(jsonLdCount(nodes), jsonLdCount(existingEnvironmentNodes), 'Farmhouse follows existing Environment JSON-LD treatment');
+
+  const body = nodes.find((node) => node.tagName === 'body');
+  const copy = visibleText(body).replace(/\s+/g, ' ');
+  assert.doesNotMatch(copy, /\b(?:quality control|production note|visual canon|sourceDocument|extractor)\b/i);
 });
 
 test('consolidation uses the established immediate-refresh mechanism and no generated anchors target withdrawn continuations or series alias', () => {

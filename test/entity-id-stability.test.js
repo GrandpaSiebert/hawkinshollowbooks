@@ -64,11 +64,11 @@ test('established sources resolve to their exact persisted IDs, matching product
   const fallback = JSON.parse(fs.readFileSync(path.join(root, 'data', 'world-canon-fallback.json'), 'utf8'));
   const result = resolveIds(reg, sourceSet(reg));
   assert.deepEqual(result.allocated, []);
-  assert.equal(Object.keys(result.ids.environment).length, 30);
+  assert.equal(Object.keys(result.ids.environment).length, 31);
   assert.equal(Object.keys(result.ids.landmark).length, 32);
   assert.equal(Object.keys(result.ids.relationship).length, 28);
   const expectedEnvironments = sourcesOf(reg, 'environment').sort();
-  assert.equal(expectedEnvironments.length, 30);
+  assert.equal(expectedEnvironments.length, 31);
   const byId = Object.fromEntries(Object.entries(result.ids.environment).map(([source, id]) => [id, source]));
   for (let number = 1; number <= 30; number += 1) {
     assert.ok(byId[`ENV-${String(number).padStart(4, '0')}`], `ENV-${number} must remain assigned`);
@@ -104,9 +104,8 @@ test('strict production resolution accepts every registered source without mutat
     const environments = JSON.parse(fs.readFileSync(path.join(dir, 'generated', 'environment-canon-index.json'), 'utf8'));
     const farmhouse = environments.records.find((record) => record.sourceDocument === FARMHOUSE);
     assert.equal(farmhouse.id, 'ENV-0032');
-    assert.deepEqual(productionEnvironmentIds(reg), withoutFarmhouse(
-      Object.fromEntries(environments.records.map((record) => [record.sourceDocument, record.id]))
-    ));
+    assert.deepEqual(productionEnvironmentIds(reg),
+      Object.fromEntries(environments.records.map((record) => [record.sourceDocument, record.id])));
   } finally {
     fs.rmSync(dir, { recursive: true, force: true });
   }
@@ -180,7 +179,7 @@ test('removing a source keeps its ID reserved and never recycles it', () => {
   const removed = resolveIds(reg, sources);
   assert.equal(removed.registry.entries[`environment:${gone}`].id, goneId);
   assert.deepEqual(removed.missing.map((entry) => entry.id), [goneId]);
-  assert.equal(Object.keys(removed.ids.environment).length, 29);
+  assert.equal(Object.keys(removed.ids.environment).length, 30);
 
   const withNew = clone(sources);
   withNew.environment.push('Environments/Brand New Visual Canon.docx');
@@ -287,26 +286,26 @@ test('missing, malformed and inconsistent registries fail instead of silently re
 test('Farmhouse Exterior resolves to ENV-0032 without changing any established Environment ID', () => {
   const reg = registry();
   const farmhouse = reg.entries[`environment:${FARMHOUSE}`];
-  assert.deepEqual(farmhouse, { id: 'ENV-0032', state: 'reserved' });
+  assert.deepEqual(farmhouse, { id: 'ENV-0032' });
   assert.equal(reg.entries['environment:Environments/Farmhouse Porch Visual Canon.docx'].id, 'ENV-0010');
 
   const production = productionEnvironmentIds(reg);
-  const without = resolveIds(reg, sourceSet(reg));
-  assert.deepEqual(without.ids.environment, production, 'production source set (Farmhouse absent) is unchanged');
-  assert.equal(without.ids.environment[FARMHOUSE], undefined);
+  assert.equal(Object.keys(production).length, 31);
+  assert.equal(production[FARMHOUSE], 'ENV-0032');
+  const resolved = resolveIds(reg, sourceSet(reg));
+  assert.deepEqual(resolved.ids.environment, production, 'publishing Farmhouse changes no established Environment ID');
+  assert.deepEqual(resolved.allocated, []);
 
-  const withFarmhouse = resolveIds(reg, sourceSet(reg, { includeReserved: true }));
-  assert.equal(withFarmhouse.ids.environment[FARMHOUSE], 'ENV-0032');
-  assert.deepEqual(withoutFarmhouse(withFarmhouse.ids.environment), production, 'inserting Farmhouse changes no established ID');
-  assert.deepEqual(withFarmhouse.allocated, []);
+  const withoutFarmhouseSources = sourceSet(reg);
+  withoutFarmhouseSources.environment = withoutFarmhouseSources.environment.filter((source) => source !== FARMHOUSE);
+  const absent = resolveIds(reg, withoutFarmhouseSources);
+  assert.deepEqual(absent.ids.environment, withoutFarmhouse(production));
+  assert.deepEqual(absent.missing, [{ type: 'environment', sourcePath: FARMHOUSE, id: 'ENV-0032' }]);
+  assert.equal(absent.registry.entries[`environment:${FARMHOUSE}`].id, 'ENV-0032', 'ENV-0032 remains assigned');
 
-  const removedAgain = resolveIds(withFarmhouse.registry, sourceSet(reg));
-  assert.deepEqual(removedAgain.ids.environment, production, 'removing Farmhouse again changes no established ID');
-  assert.equal(removedAgain.registry.entries[`environment:${FARMHOUSE}`].id, 'ENV-0032', 'ENV-0032 stays reserved');
-
-  const newWhileReserved = sourceSet(reg);
-  newWhileReserved.environment.push('Environments/Another Place Visual Canon.docx');
-  const next = resolveIds(reg, newWhileReserved);
+  const newWithFarmhouse = sourceSet(reg);
+  newWithFarmhouse.environment.push('Environments/Another Place Visual Canon.docx');
+  const next = resolveIds(reg, newWithFarmhouse);
   assert.equal(next.ids.environment['Environments/Another Place Visual Canon.docx'], 'ENV-0035');
   assert.deepEqual(next.ids.environment, { ...production, 'Environments/Another Place Visual Canon.docx': 'ENV-0035' });
 });
@@ -315,13 +314,15 @@ test('the former path-sorted sequential allocation is what would have renumbered
   const reg = registry();
   const empty = { version: 1, nextByType: { environment: 1, landmark: 1, relationship: 1 }, entries: {}, retired: {} };
   const production = productionEnvironmentIds(reg);
-  const legacyWithoutFarmhouse = resolveIds(empty, { environment: sourcesOf(reg, 'environment') }).ids.environment;
-  assert.deepEqual(legacyWithoutFarmhouse, production, 'a registry-less build matches production only while Farmhouse is absent');
-  const legacyWithFarmhouse = resolveIds(empty, { environment: sourcesOf(reg, 'environment', { includeReserved: true }) }).ids.environment;
+  const publishedWithoutFarmhouse = withoutFarmhouse(production);
+  const sourcesWithoutFarmhouse = sourcesOf(reg, 'environment').filter((source) => source !== FARMHOUSE);
+  const legacyWithoutFarmhouse = resolveIds(empty, { environment: sourcesWithoutFarmhouse }).ids.environment;
+  assert.deepEqual(legacyWithoutFarmhouse, publishedWithoutFarmhouse, 'legacy sequential assignment matched published sources before Farmhouse');
+  const legacyWithFarmhouse = resolveIds(empty, { environment: sourcesOf(reg, 'environment') }).ids.environment;
   assert.equal(legacyWithFarmhouse[FARMHOUSE], 'ENV-0010');
-  const shifted = Object.keys(production).filter((source) => legacyWithFarmhouse[source] !== production[source]);
+  const shifted = Object.keys(publishedWithoutFarmhouse).filter((source) => legacyWithFarmhouse[source] !== production[source]);
   assert.equal(shifted.length, 21);
-  const protectedIds = resolveIds(reg, sourceSet(reg, { includeReserved: true })).ids.environment;
+  const protectedIds = resolveIds(reg, sourceSet(reg)).ids.environment;
   assert.equal(Object.keys(production).filter((source) => protectedIds[source] !== production[source]).length, 0);
 });
 

@@ -185,7 +185,7 @@ derived copy; the build never allocates from generated or filesystem state.
   code-unit path order; the build writes the registry, which must be committed.
   `HH_ENTITY_ID_STRICT=1` makes unregistered sources an error instead.
 - Absent source: its ID stays reserved. `"state": "reserved"` marks an authoritative
-  but unpublished source (Farmhouse Exterior is `ENV-0032`).
+  but unpublished source; remove that marker when the source is published.
 - Rename/move: a new source appearing while an unreserved source disappears fails the
   build. Rename the registry key to migrate, or move the ID into `retired` to retire it.
 - Duplicate IDs or sources, malformed or missing registry, or a `nextByType` at or
