@@ -94,7 +94,11 @@ test('all generated canonicals have meaningful unique search titles without coll
   const beforeSearch = JSON.parse(fs.readFileSync(path.join(root, 'generated', 'search-index.json'), 'utf8')).records;
   const beforeFreebies = JSON.parse(fs.readFileSync(path.join(root, 'generated', 'freebie-index.json'), 'utf8')).records;
 
-  execFileSync(process.execPath, [path.join(root, 'scripts', 'generate-site.js')], { cwd: root, stdio: 'pipe' });
+  execFileSync(process.execPath, [path.join(root, 'scripts', 'generate-site.js')], {
+    cwd: root,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
+    stdio: 'pipe'
+  });
 
   sourceFiles.forEach((file, index) => assert.deepEqual(fs.readFileSync(path.join(root, file)), sourceContents[index], file));
   assert.deepEqual(JSON.parse(fs.readFileSync(path.join(root, 'generated', 'search-index.json'), 'utf8')).records, beforeSearch);

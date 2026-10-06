@@ -9,6 +9,7 @@ const repoRoot = path.join(__dirname, '..');
 before(() => {
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts', 'generate-site.js')], {
     cwd: repoRoot,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
     stdio: 'pipe'
   });
 });

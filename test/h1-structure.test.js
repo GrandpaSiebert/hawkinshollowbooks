@@ -32,6 +32,7 @@ function getAttribute(node, name) {
 test('generated indexable canonical pages each have exactly one non-empty H1', () => {
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts', 'generate-site.js')], {
     cwd: repoRoot,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
     stdio: 'pipe'
   });
 

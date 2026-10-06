@@ -52,6 +52,7 @@ test('canonical route registry excludes unpublished, unroutable, and ambiguous r
 test('generator omits unpublished and unroutable series records without rewriting their titles', () => {
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts', 'generate-site.js')], {
     cwd: repoRoot,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
     stdio: 'pipe'
   });
 

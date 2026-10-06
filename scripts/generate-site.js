@@ -34,6 +34,7 @@ const {
 } = require('./search-presentation-metadata');
 const { finalizeSearchTitles, getFreebieSearchTitle, readSearchTitlePage } = require('./search-titles');
 const { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility } = require('./public-surface-eligibility');
+const { writeSitemapLastmod } = require('./sitemap-lastmod');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -7178,6 +7179,8 @@ async function buildSite() {
   console.log(`Search index updated: ${searchIndex.summary.totalRecords} eligible primary records.`);
   writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
   finalizeSearchTitles(outputDirs, site, titleReservations);
+  const lastmodLedger = writeSitemapLastmod(outputDirs);
+  console.log(`Sitemap lastmod dates prepared for ${lastmodLedger.entries.length} eligible public URLs.`);
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
   console.log(`Generated ${publicEntityCount} universal entity pages (${allEntities.length - publicEntityCount} freebie Book profiles omitted).`);

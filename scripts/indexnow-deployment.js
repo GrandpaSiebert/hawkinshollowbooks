@@ -4,6 +4,7 @@ const crypto = require('crypto');
 const parse5 = require('parse5');
 const AdmZip = require('adm-zip');
 const { submit } = require('./indexnow-submit');
+const { validateLedger } = require('./sitemap-lastmod-ledger');
 
 const ORIGIN = 'https://hawkinshollowbooks.com';
 const HOST = 'hawkinshollowbooks.com';
@@ -146,6 +147,7 @@ function validateState(state) {
     || !/^[a-f0-9]{40}$/.test(state.deploymentSha) || !/^\d+$/.test(String(state.runId))
     || !Array.isArray(state.pending)) throw new Error('Invalid production state.');
   validateSnapshot(state.snapshot);
+  if (Object.hasOwn(state, 'lastmod')) validateLedger(state.lastmod, state.snapshot.pages);
   for (const entry of state.pending) {
     canonicalPageUrl(entry.url);
     if (!['added', 'updated', 'deleted'].includes(entry.operation) || !/^[a-f0-9]{64}$/.test(entry.fingerprint)) {
@@ -157,12 +159,18 @@ function validateState(state) {
 }
 
 function stateId(state) {
-  return digest(JSON.stringify({ snapshotId: state.snapshot.id, deploymentSha: state.deploymentSha,
-    runId: state.runId, pending: state.pending }));
+  const material = { snapshotId: state.snapshot.id, deploymentSha: state.deploymentSha,
+    runId: state.runId, pending: state.pending };
+  if (Object.hasOwn(state, 'lastmod')) material.lastmod = state.lastmod;
+  return digest(JSON.stringify(material));
 }
 
-function makeState(snapshot, deploymentSha, runId, pending) {
+function makeState(snapshot, deploymentSha, runId, pending, lastmod) {
   const state = { formatVersion: FORMAT_VERSION, deploymentSucceeded: true, deploymentSha, runId: String(runId), snapshot, pending };
+  if (lastmod !== undefined) {
+    validateLedger(lastmod, snapshot.pages);
+    state.lastmod = lastmod;
+  }
   state.id = stateId(state);
   return validateState(state);
 }
@@ -212,10 +220,11 @@ async function finalizeDeployment(options) {
   if (options.buildSucceeded !== true || options.deploymentSucceeded !== true) {
     return { state: previousState, receipt: null, status: 'not-deployed' };
   }
+  if (options.lastmod !== undefined) validateLedger(options.lastmod, current.pages);
   const batchSize = options.batchSize || 10000;
   if (!Number.isInteger(batchSize) || batchSize < 1 || batchSize > 10000) throw new Error('Invalid IndexNow batch size.');
   const plan = planDelta(current, previousState);
-  let state = makeState(current, deploymentSha, runId, plan.candidates);
+  let state = makeState(current, deploymentSha, runId, plan.candidates, options.lastmod);
   const receipt = { formatVersion: FORMAT_VERSION, deploymentSha, runId: String(runId), deploymentSucceeded: true,
     previousBaselineId: plan.previousBaselineId, currentBaselineId: state.id, snapshotId: current.id,
     firstRun: plan.firstRun, reason: plan.reason, counts: plan.counts,
@@ -258,7 +267,7 @@ async function finalizeDeployment(options) {
       timestamp: new Date().toISOString() });
     if (result.ok) {
       const acknowledged = new Set(urlList);
-      state = makeState(current, deploymentSha, runId, state.pending.filter((entry) => !acknowledged.has(entry.url)));
+      state = makeState(current, deploymentSha, runId, state.pending.filter((entry) => !acknowledged.has(entry.url)), options.lastmod);
       receipt.acceptedUrlCount += urlList.length;
     }
     receipt.pendingUrlCount = state.pending.length;
@@ -355,10 +364,36 @@ async function main() {
   const directory = path.join(root, '.indexnow');
   const deploymentSha = process.env.GITHUB_SHA || '';
   const runId = process.env.GITHUB_RUN_ID || '';
+  if (command === 'restore') {
+    const restored = await restoreProductionState({ repository: process.env.GITHUB_REPOSITORY,
+      token: process.env.GITHUB_TOKEN, runId });
+    if (!restored.state) throw new Error('No verified successful Pages state exists to establish the Stage 4D tracking baseline.');
+    writeJson(path.join(directory, 'previous-state.json'), restored.state);
+    writeJson(path.join(directory, 'restoration.json'), {
+      artifactId: restored.artifactId,
+      sourceRunId: String(restored.sourceRunId),
+      createdAt: restored.createdAt,
+      stateId: restored.state.id
+    });
+    console.log(JSON.stringify({ restoredStateId: restored.state.id, artifactId: restored.artifactId,
+      sourceRunId: restored.sourceRunId, snapshotId: restored.state.snapshot.id,
+      canonicalPages: restored.state.snapshot.pages.length }, null, 2));
+    return;
+  }
   if (command === 'prepare') {
     const current = snapshotFromBuild(path.join(root, 'build-recovery'));
     const restored = process.env.GITHUB_ACTIONS === 'true'
-      ? await restoreProductionState({ repository: process.env.GITHUB_REPOSITORY, token: process.env.GITHUB_TOKEN, runId })
+      ? (() => {
+        const statePath = path.join(directory, 'previous-state.json');
+        const restorationPath = path.join(directory, 'restoration.json');
+        if (!fs.existsSync(statePath) || !fs.existsSync(restorationPath)) {
+          throw new Error('Trusted production state must be restored before build and deployment preparation.');
+        }
+        const state = validateState(readJson(statePath));
+        const restoration = readJson(restorationPath);
+        if (restoration.stateId !== state.id) throw new Error('Restored production state provenance mismatch.');
+        return { state, artifactId: restoration.artifactId };
+      })()
       : { state: null, artifactId: null, reason: 'Local preparation only; no trusted CI production state supplied.' };
     const plan = planDelta(current, restored.state);
     if (!restored.state) plan.reason = restored.reason;
@@ -375,16 +410,18 @@ async function main() {
     console.log(JSON.stringify({ ...plan, mode: 'dry-run', keyLocation: KEY_LOCATION }, null, 2));
     return;
   }
-  if (command !== 'finalize') throw new Error('Use prepare, preview, or finalize.');
+  if (command !== 'finalize') throw new Error('Use restore, prepare, preview, or finalize.');
   if (process.env.DEPLOYMENT_SUCCEEDED !== 'true') throw new Error('Pages success is required; no submission or baseline advancement performed.');
   const current = validateSnapshot(readJson(path.join(directory, 'snapshot.json')));
   const previousState = readJson(path.join(directory, 'previous-state.json'));
+  const lastmod = validateLedger(readJson(path.join(directory, 'lastmod-candidate.json')), current.pages);
   const prepared = readJson(path.join(directory, 'plan.json'));
   if (prepared.deploymentSha !== deploymentSha || prepared.runId !== runId || prepared.currentSnapshotId !== current.id) {
     throw new Error('Prepared snapshot belongs to another deployment.');
   }
   if (fs.readFileSync(path.join(root, `${PUBLIC_KEY}.txt`), 'utf8').trim() !== PUBLIC_KEY) throw new Error('Existing public key file is invalid.');
   const result = await finalizeDeployment({ current, previousState, deploymentSha, runId,
+    lastmod,
     buildSucceeded: true, deploymentSucceeded: true,
     checkpoint: async (state, receipt) => {
       receipt.reason = prepared.reason;

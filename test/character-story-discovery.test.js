@@ -86,6 +86,7 @@ function snapshot() {
 function generate() {
   execFileSync(process.execPath, [path.join(root, 'scripts', 'generate-site.js')], {
     cwd: root,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
     stdio: 'pipe'
   });
 }

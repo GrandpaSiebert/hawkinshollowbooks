@@ -103,7 +103,11 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
     const attributes = metadataAttributes(fs.readFileSync(path.join(output, route), 'utf8'));
     return [url, attributes.get('og:title')];
   }));
-  execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], { cwd: repoRoot, stdio: 'pipe' });
+  execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], {
+    cwd: repoRoot,
+    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
+    stdio: 'pipe'
+  });
   const urls = indexedCanonicals(output);
   assert.deepEqual(urls, beforeUrls, 'metadata must not change sitemap canonical routes');
   assert.equal(urls.length, 1392);

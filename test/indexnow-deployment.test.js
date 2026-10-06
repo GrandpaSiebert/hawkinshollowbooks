@@ -283,7 +283,8 @@ test('legacy whole-sitemap command cannot bypass deployment delta eligibility', 
 
 test('workflow plans after build and persists only after successful Pages deployment', () => {
   const workflow = fs.readFileSync(path.join(__dirname, '../.github/workflows/deploy-pages.yml'), 'utf8');
-  const ordered = ['- name: Build site', '- name: Prepare deployment-aware IndexNow delta', '- name: Upload artifact',
+  const ordered = ['- name: Restore trusted production state and select deployment date', '- name: Build site',
+    '- name: Prepare deployment-aware IndexNow delta', '- name: Upload artifact',
     '- name: Deploy to GitHub Pages', '- name: Finalize deployment-aware IndexNow', '- name: Retain production IndexNow state and receipt'];
   const positions = ordered.map((name) => workflow.indexOf(name));
   assert.ok(positions.every((position) => position >= 0));
@@ -294,7 +295,10 @@ test('workflow plans after build and persists only after successful Pages deploy
   assert.match(workflow, /if: always\(\) && steps\.deployment\.outcome == 'success'/);
   assert.match(workflow, /retention-days: 90/);
   assert.match(workflow, /include-hidden-files: true/);
-  assert.doesNotMatch(workflow, /--from-sitemap|lastmod/i);
+  assert.match(workflow, /HH_ENTITY_ID_STRICT: '1'/);
+  assert.match(workflow, /HH_SITEMAP_DEPLOYMENT_DATE/);
+  assert.doesNotMatch(workflow, /--from-sitemap/);
+  assert.match(workflow, /node scripts\/indexnow-deployment\.js restore/);
   const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '../package.json'), 'utf8'));
   assert.doesNotMatch(packageJson.scripts['indexnow:submit'], /--from-sitemap/);
 });
