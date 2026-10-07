@@ -207,6 +207,8 @@ function createFreebieDiscoveryRecords(records, characters, entityIndex, getDeta
     ].filter(Boolean).map((value) => String(value).trim());
     const contentType = String(record.contentType || '');
     const typeLabel = contentType === 'song' ? 'Kids Song' : 'Nursery Rhyme';
+    const videoId = String(routing && routing.videoId || '');
+    const youtubeVideoId = /^[A-Za-z0-9_-]{11}$/.test(videoId) ? videoId : '';
 
     return {
       canonicalId: String(record.canonicalId || '').toUpperCase(),
@@ -225,7 +227,8 @@ function createFreebieDiscoveryRecords(records, characters, entityIndex, getDeta
       centralHook: String(record.centralHook || ''),
       illustrationUrl: record.illustrationPublished ? record.illustrationUrl : '',
       illustrationPublished: Boolean(record.illustrationPublished),
-      youtubeUrl: routing && /^https?:\/\//i.test(String(routing.youtubeUrl || '')) ? routing.youtubeUrl : '',
+      youtubeVideoId,
+      youtubeUrl: youtubeVideoId ? `https://youtu.be/${youtubeVideoId}` : '',
       keywords: searchableValues,
       searchText: normalizeSearchText(searchableValues.join(' ')),
       provenance: {

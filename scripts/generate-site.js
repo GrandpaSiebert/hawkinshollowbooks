@@ -5,7 +5,7 @@ const { writeLibraryArtifacts } = require('./library-scanner');
 const { writeAmazonKdpArtifact } = require('./amazon-kdp-import');
 const { writeCharacterCanonArtifact } = require('./character-canon-import');
 const { writeWorldCanonArtifacts } = require('./world-canon-import');
-const { writeFreebieRoutingArtifact } = require('./freebie-routing-import');
+const { readFreebieYoutubeRouting } = require('./freebie-routing-import');
 const { writeFreebieManuscriptArtifact } = require('./freebie-manuscript-import');
 const { attachPublishedTitleArt } = require('./freebie-title-art-media');
 const {
@@ -85,13 +85,16 @@ function resetDir(dir) {
   ensureDir(dir);
 }
 
-function copyDir(srcDir, destDir) {
+function copyDir(srcDir, destDir, excludedFiles = new Set()) {
   ensureDir(destDir);
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
+    if (entry.isFile() && excludedFiles.has(entry.name)) {
+      continue;
+    }
     const srcPath = path.join(srcDir, entry.name);
     const destPath = path.join(destDir, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath);
+      copyDir(srcPath, destPath, excludedFiles);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -4366,6 +4369,59 @@ function renderFreebieTextSection(record, collection) {
     </section>`;
 }
 
+function renderFreebieVideoPlayer(videoId, label, title) {
+  if (!/^[A-Za-z0-9_-]{11}$/.test(String(videoId || ''))) return '';
+  return `<p><button class="button freebie-video-launch" type="button" aria-haspopup="dialog" data-video-id="${videoId}" data-video-title="${escapeHtml(title)}">${label}</button></p>
+    <dialog class="freebie-player-dialog" aria-labelledby="freebie-player-heading" aria-modal="true">
+      <div class="freebie-player-header">
+        <h2 id="freebie-player-heading">${escapeHtml(title)}</h2>
+        <form method="dialog"><button class="button freebie-player-close" type="submit">Close video</button></form>
+      </div>
+      <div class="freebie-player-frame"></div>
+    </dialog>
+    <script>
+      (function () {
+        var dialog = document.querySelector('.freebie-player-dialog');
+        var frame = document.querySelector('.freebie-player-frame');
+        var closeButton = document.querySelector('.freebie-player-close');
+        var opener = null;
+        if (!dialog || !frame || !closeButton || typeof dialog.showModal !== 'function') return;
+
+        document.addEventListener('keydown', function (event) {
+          if (event.key === 'Escape' && dialog.open) {
+            event.preventDefault();
+            dialog.close();
+          }
+        });
+        document.querySelectorAll('.freebie-video-launch').forEach(function (button) {
+          button.addEventListener('click', function () {
+            var videoId = button.getAttribute('data-video-id') || '';
+            if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) return;
+            opener = button;
+            var iframe = document.createElement('iframe');
+            iframe.src = 'https://www.youtube-nocookie.com/embed/' + videoId + '?autoplay=1';
+            iframe.title = 'YouTube video player for ' + (button.getAttribute('data-video-title') || 'Hawkins Hollow');
+            iframe.allow = 'encrypted-media; picture-in-picture; fullscreen';
+            iframe.referrerPolicy = 'strict-origin-when-cross-origin';
+            iframe.loading = 'eager';
+            frame.replaceChildren(iframe);
+            dialog.showModal();
+            closeButton.focus();
+          });
+        });
+
+        dialog.addEventListener('click', function (event) {
+          if (event.target === dialog) dialog.close();
+        });
+        dialog.addEventListener('close', function () {
+          frame.replaceChildren();
+          if (opener) opener.focus();
+          opener = null;
+        });
+      })();
+    </script>`;
+}
+
 function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   const collection = getFreebieCollection(record);
   const title = String(record.title || record.canonicalId);
@@ -4382,7 +4438,9 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
         alt: `Title illustration for ${title}`
       }
     : banner;
-  const youtubeUrl = routing && routing.youtubeUrl ? routing.youtubeUrl : '';
+  const videoId = routing && /^[A-Za-z0-9_-]{11}$/.test(String(routing.videoId || ''))
+    ? routing.videoId
+    : '';
 
   const aboutRows = (record.infoFields || [])
     .filter((field) => !FREEBIE_ABOUT_HIDDEN_LABELS.has(field.key))
@@ -4411,7 +4469,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
       <p class="story-metadata-line">${escapeHtml(record.canonicalId)}</p>
       ${description}
       ${record.centralHook ? `<p><strong>The part everyone joins:</strong> ${escapeHtml(record.centralHook)}</p>` : ''}
-      ${youtubeUrl ? `<p><a class="button" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${collection.listenLabel}</a></p>` : ''}
+      ${videoId ? renderFreebieVideoPlayer(videoId, collection.contentType === 'song' ? 'Play Song' : 'Watch Rhyme', title) : ''}
     </section>
 
     ${renderFreebieTextSection(record, collection)}
@@ -4584,7 +4642,7 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
     .map((record) => {
       const illustrationHref = getFreebieIllustrationHref(record);
       const routing = routingById.get(record.canonicalId);
-      const hasVideo = Boolean(routing && routing.youtubeUrl);
+      const hasVideo = Boolean(routing && /^[A-Za-z0-9_-]{11}$/.test(String(routing.videoId || '')));
       const media = illustrationHref
         ? `<img src="${illustrationHref}" alt="Title illustration for ${escapeHtml(record.title)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
@@ -4607,7 +4665,7 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
       <p class="eyebrow">${collection.indexTitle}</p>
       <h1 id="freebie-index-doorway">${collection.indexTitle}</h1>
       <p>${collection.indexTagline}</p>
-      <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, a listening link appears on that page.</p>
+      <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, an in-site player appears on that page.</p>
     </section>
 
     ${renderFreebieSearchSection(collection)}
@@ -6700,7 +6758,7 @@ function copyStaticSiteAssets(outputDir) {
     copyDir(path.join(root, 'assets'), path.join(outputDir, 'assets'));
   }
   if (fs.existsSync(path.join(root, 'generated'))) {
-    copyDir(path.join(root, 'generated'), path.join(outputDir, 'generated'));
+    copyDir(path.join(root, 'generated'), path.join(outputDir, 'generated'), new Set(['freebie-routing-index.json']));
   }
   ensureDir(path.join(outputDir, 'images'));
   if (!fs.existsSync(path.join(outputDir, 'images', 'placeholder-banner.jpg'))) {
@@ -6765,15 +6823,12 @@ async function buildSite() {
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }
     : readJson('generated/amazon-index.json');
-  const routingArtifacts = writeFreebieRoutingArtifact(root);
+  const freebieRoutingRecords = readFreebieYoutubeRouting();
   const freebieArtifacts = writeFreebieManuscriptArtifact(root, libraryIndex);
-  const freebieRouting = readJson('generated/freebie-routing-index.json');
-  const freebieRoutingById = new Map((freebieRouting.records || []).map((record) => [record.canonicalId, record]));
+  const freebieRoutingById = new Map(freebieRoutingRecords.map((record) => [record.canonicalId, record]));
   const freebieTitleArtPublication = readJsonIfExists('generated/freebie-title-art-publication.json');
   const freebieRecords = attachPublishedTitleArt(freebieArtifacts.records, freebieTitleArtPublication);
-  console.log(
-    `Freebie routing index updated: ${routingArtifacts.summary.recordCount} records (${routingArtifacts.summary.withYouTubeUrl} with YouTube URLs).`
-  );
+  console.log(`Checked-in freebie YouTube routing loaded: ${freebieRoutingRecords.length} validated mappings.`);
   console.log(
     `Freebie manuscripts extracted: ${freebieArtifacts.summary.songCount} songs, ${freebieArtifacts.summary.rhymeCount} nursery rhymes (${freebieArtifacts.summary.withheldCount} withheld).`
   );

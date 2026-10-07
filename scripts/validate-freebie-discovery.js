@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { normalizeSearchText } = require('./freebie-discovery');
+const { readFreebieYoutubeRouting } = require('./freebie-routing-import');
 
 const root = path.join(__dirname, '..');
 const outputs = ['build', 'build-recovery'];
@@ -40,6 +41,15 @@ function validate() {
   }
 
   const searchIndex = JSON.parse(fs.readFileSync(searchIndexPath, 'utf8'));
+  const youtubeMappings = readFreebieYoutubeRouting();
+  const youtubeById = new Map(youtubeMappings.map((mapping) => [mapping.canonicalId, mapping.videoId]));
+  const youtubeCounts = {
+    songs: youtubeMappings.filter((mapping) => mapping.canonicalId.startsWith('HH-S-')).length,
+    rhymes: youtubeMappings.filter((mapping) => mapping.canonicalId.startsWith('HH-R-')).length
+  };
+  if (youtubeMappings.length !== 250 || youtubeCounts.songs !== 125 || youtubeCounts.rhymes !== 125) {
+    fail(`YouTube routing source has ${youtubeCounts.songs} Songs and ${youtubeCounts.rhymes} Rhymes; expected 125 of each`);
+  }
   const freebieIndex = JSON.parse(fs.readFileSync(freebieIndexPath, 'utf8'));
   const entityIndex = JSON.parse(fs.readFileSync(entityIndexPath, 'utf8'));
   const charactersData = JSON.parse(fs.readFileSync(path.join(root, 'data', 'characters.json'), 'utf8'));
@@ -139,13 +149,39 @@ function validate() {
       for (const record of freebieRecords.filter((entry) => entry.type === type)) {
         const detailPath = path.join(outputRoot, ...record.href.split('/'));
         if (!fs.existsSync(detailPath)) fail(`${output}/${record.href} does not exist`);
+        const detailHtml = fs.readFileSync(detailPath, 'utf8');
+        const videoId = youtubeById.get(record.id);
+        if (videoId) {
+          if (!detailHtml.includes(`class="button freebie-video-launch"`)
+            || !detailHtml.includes(`data-video-id="${videoId}"`)
+            || !detailHtml.includes('<dialog class="freebie-player-dialog"')
+            || /<iframe\b/i.test(detailHtml)) {
+            fail(`${output}/${record.href} has a missing/invalid lazy video player control`);
+          }
+        } else if (/class="button freebie-video-launch"/.test(detailHtml)) {
+          fail(`${output}/${record.href} has a player control without a routing mapping`);
+        }
+      }
+    }
+    if (fs.existsSync(path.join(outputRoot, 'generated', 'freebie-routing-index.json'))) {
+      fail(`${output}/ exposes an unnecessary generated YouTube routing index`);
+    }
+    const workbookName = 'Hawkins Hollow Website to YouTube Routing Master';
+    for (const file of fs.readdirSync(outputRoot, { recursive: true })) {
+      const filePath = path.join(outputRoot, file);
+      if (!fs.statSync(filePath).isFile()) continue;
+      if (/\.html?$/i.test(filePath)) {
+        const html = fs.readFileSync(filePath, 'utf8');
+        if (html.includes(workbookName) || /[A-Z]:\\Users\\/i.test(html)) {
+          fail(`${output}/${path.relative(outputRoot, filePath)} leaks a local workbook path`);
+        }
       }
     }
   }
 
   const songCount = freebieRecords.filter((record) => record.type === 'song').length;
   const rhymeCount = freebieRecords.filter((record) => record.type === 'rhyme').length;
-  console.log(`Freebie discovery validation passed: ${songCount} Songs, ${rhymeCount} Rhymes; ${bookCount} book and ${characterCount} character search records preserved; no Pages delivery WebPs.`);
+  console.log(`Freebie discovery validation passed: ${songCount} Songs, ${rhymeCount} Rhymes; ${youtubeMappings.length} validated YouTube mappings; ${bookCount} book and ${characterCount} character search records preserved; no Pages delivery WebPs.`);
 }
 
 validate();

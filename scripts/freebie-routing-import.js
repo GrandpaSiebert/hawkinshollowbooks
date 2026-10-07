@@ -1,116 +1,160 @@
 const fs = require('fs');
 const path = require('path');
-const XLSX = require('xlsx');
 
-const ROUTING_WORKBOOK = 'Hawkins Hollow Website to YouTube Routing Master.xlsx';
-const CANONICAL_ID_PATTERN = /^HH-[SR]-\d{4}$/i;
+const ROOT = path.join(__dirname, '..');
+const DEFAULT_WORKBOOK = path.join(
+  ROOT,
+  'Library',
+  'Hawkins Hollow Website to YouTube Routing Master (version 1).xlsb.xlsx'
+);
+const DEFAULT_ROUTING_SOURCE = path.join(ROOT, 'data', 'freebie-youtube-routing.json');
+const CANONICAL_ID = /^HH-([SR])-(\d{4})$/;
+const VIDEO_ID = /^[A-Za-z0-9_-]{11}$/;
+const EXPECTED_IDS = Array.from({ length: 125 }, (_, index) => index + 1)
+  .flatMap((number) => ['S', 'R'].map((mode) => `HH-${mode}-${String(number).padStart(4, '0')}`))
+  .sort();
 
-// Row 0 is the sheet banner and row 1 is the column header, so records begin at row 2.
-const HEADER_ROW_INDEX = 1;
-const COLUMN = {
-  canonicalId: 0,
-  title: 1,
-  type: 2,
-  websiteUrl: 3,
-  youtubeUrl: 4,
-  playlist: 5,
-  status: 6
-};
+function parseYouTubeVideoId(value) {
+  let url;
+  try {
+    url = new URL(String(value || '').trim());
+  } catch {
+    throw new Error(`Invalid YouTube URL: ${value}`);
+  }
 
-function ensureDir(dir) {
-  fs.mkdirSync(dir, { recursive: true });
+  if (url.protocol !== 'https:' || url.username || url.password || url.port || url.hash) {
+    throw new Error(`Unsupported YouTube URL: ${value}`);
+  }
+
+  const host = url.hostname.toLowerCase();
+  let videoId = '';
+  if (host === 'youtu.be' && /^\/[A-Za-z0-9_-]{11}\/?$/.test(url.pathname)) {
+    videoId = url.pathname.split('/')[1];
+  } else if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'music.youtube.com'].includes(host)) {
+    const match = /^\/(embed|shorts)\/([A-Za-z0-9_-]{11})\/?$/.exec(url.pathname);
+    if (match) {
+      videoId = match[2];
+    } else if (url.pathname === '/watch') {
+      const ids = url.searchParams.getAll('v');
+      if (ids.length === 1 && VIDEO_ID.test(ids[0])) videoId = ids[0];
+    }
+  }
+
+  if (!videoId || !VIDEO_ID.test(videoId)) {
+    throw new Error(`Unsupported YouTube URL: ${value}`);
+  }
+  return videoId;
 }
 
-function cell(row, index) {
-  return String((row && row[index]) || '').replace(/\s+/g, ' ').trim();
+function validateMappings(mappings, { requireComplete = false } = {}) {
+  if (!Array.isArray(mappings)) throw new Error('Routing source must contain a mappings array');
+
+  const ids = new Set();
+  const videoIds = new Set();
+  const normalized = mappings.map((mapping) => {
+    const canonicalId = String(mapping && mapping.canonicalId || '').trim().toUpperCase();
+    const videoId = String(mapping && mapping.videoId || '').trim();
+    const match = CANONICAL_ID.exec(canonicalId);
+    if (!match) throw new Error(`Invalid canonical ID: ${canonicalId || '(empty)'}`);
+    if (!VIDEO_ID.test(videoId)) throw new Error(`Invalid YouTube video ID for ${canonicalId}`);
+    if (ids.has(canonicalId)) throw new Error(`Duplicate canonical ID: ${canonicalId}`);
+    if (videoIds.has(videoId)) throw new Error(`Duplicate YouTube video ID: ${videoId}`);
+    ids.add(canonicalId);
+    videoIds.add(videoId);
+    return { canonicalId, videoId };
+  }).sort((left, right) => (left.canonicalId < right.canonicalId ? -1 : (left.canonicalId > right.canonicalId ? 1 : 0)));
+
+  if (requireComplete) {
+    const missing = EXPECTED_IDS.filter((id) => !ids.has(id));
+    const unexpected = Array.from(ids).filter((id) => !EXPECTED_IDS.includes(id));
+    if (missing.length || unexpected.length || normalized.length !== EXPECTED_IDS.length) {
+      throw new Error(
+        `Routing workbook must contain exactly the first 125 Songs and Rhymes; `
+        + `missing=${missing.join(',') || 'none'}; unexpected=${unexpected.join(',') || 'none'}`
+      );
+    }
+  }
+
+  return normalized;
 }
 
-function normalizeUrl(value) {
-  const url = cell([value], 0);
-  return /^https?:\/\//i.test(url) ? url : '';
-}
-
-function parseRoutingWorkbook(workbookPath) {
+function parseRoutingWorkbook(workbookPath = DEFAULT_WORKBOOK) {
+  const XLSX = require('xlsx');
   const workbook = XLSX.readFile(workbookPath);
-  const records = new Map();
-  const sheets = [];
+  const mappings = [];
+  const workbookIds = new Set();
 
   for (const sheetName of workbook.SheetNames) {
+    const mode = /song/i.test(sheetName) ? 'S' : (/rhyme/i.test(sheetName) ? 'R' : '');
+    if (!mode) continue;
     const rows = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName], {
       header: 1,
       defval: '',
       blankrows: false
     });
 
-    let sheetRecordCount = 0;
-    for (let index = HEADER_ROW_INDEX + 1; index < rows.length; index += 1) {
+    for (let index = 3; index < rows.length; index += 1) {
       const row = rows[index];
-      const canonicalId = cell(row, COLUMN.canonicalId).toUpperCase();
-      if (!CANONICAL_ID_PATTERN.test(canonicalId) || records.has(canonicalId)) {
-        continue;
+      const canonicalId = String(row[0] || '').replace(/\s+/g, ' ').trim().toUpperCase();
+      if (!canonicalId) continue;
+      if (!CANONICAL_ID.test(canonicalId)) continue;
+      const sequence = Number(canonicalId.slice(-4));
+      if (sequence < 1 || sequence > 125) continue;
+      if (workbookIds.has(canonicalId)) throw new Error(`Duplicate canonical ID in workbook: ${canonicalId}`);
+      workbookIds.add(canonicalId);
+
+      const match = CANONICAL_ID.exec(canonicalId);
+      if (match[1] !== mode) throw new Error(`${canonicalId} appears on the wrong worksheet: ${sheetName}`);
+      if (!/^Live$/i.test(String(row[6] || '').trim())) {
+        throw new Error(`${canonicalId} is not marked Live`);
       }
-
-      records.set(canonicalId, {
+      mappings.push({
         canonicalId,
-        routingTitle: cell(row, COLUMN.title),
-        type: cell(row, COLUMN.type),
-        websiteUrl: normalizeUrl(cell(row, COLUMN.websiteUrl)),
-        youtubeUrl: normalizeUrl(cell(row, COLUMN.youtubeUrl)),
-        playlist: cell(row, COLUMN.playlist),
-        status: cell(row, COLUMN.status),
-        sourceWorkbook: ROUTING_WORKBOOK,
-        sourceSheet: sheetName
+        videoId: parseYouTubeVideoId(row[4])
       });
-      sheetRecordCount += 1;
     }
-
-    sheets.push({ sheetName, recordCount: sheetRecordCount });
   }
 
-  return { records: Array.from(records.values()).sort((a, b) => a.canonicalId.localeCompare(b.canonicalId)), sheets };
+  return validateMappings(mappings, { requireComplete: true });
 }
 
-function writeFreebieRoutingArtifact(siteRoot, outputDir = path.join(siteRoot, 'generated')) {
-  const workbookPath = path.join(siteRoot, 'Library', ROUTING_WORKBOOK);
-  const artifactPath = path.join(outputDir, 'freebie-routing-index.json');
-  ensureDir(outputDir);
-
-  if (!fs.existsSync(workbookPath)) {
-    const empty = {
-      generatedAt: new Date().toISOString(),
-      sourceWorkbook: ROUTING_WORKBOOK,
-      missingWorkbook: true,
-      summary: { recordCount: 0, withYouTubeUrl: 0, sheets: [] },
-      records: []
-    };
-    fs.writeFileSync(artifactPath, `${JSON.stringify(empty, null, 2)}\n`, 'utf8');
-    return { artifactPath, summary: { ...empty.summary, missingWorkbook: true } };
+function readFreebieYoutubeRouting(filePath = DEFAULT_ROUTING_SOURCE) {
+  const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)
+    || Object.keys(parsed).length !== 1 || !Object.hasOwn(parsed, 'mappings')) {
+    throw new Error('Routing source must contain only a mappings array');
   }
+  if (!Array.isArray(parsed.mappings)) throw new Error('Routing source must contain only a mappings array');
+  for (const mapping of parsed.mappings) {
+    if (!mapping || Object.keys(mapping).length !== 2
+      || !Object.hasOwn(mapping, 'canonicalId') || !Object.hasOwn(mapping, 'videoId')) {
+      throw new Error('Each routing mapping must contain only canonicalId and videoId');
+    }
+  }
+  return validateMappings(parsed.mappings);
+}
 
-  const { records, sheets } = parseRoutingWorkbook(workbookPath);
-  const summary = {
-    recordCount: records.length,
-    withYouTubeUrl: records.filter((record) => Boolean(record.youtubeUrl)).length,
-    songRecords: records.filter((record) => /^HH-S-/i.test(record.canonicalId)).length,
-    rhymeRecords: records.filter((record) => /^HH-R-/i.test(record.canonicalId)).length,
-    sheets
-  };
+function writeFreebieYoutubeRoutingFromWorkbook(
+  workbookPath = DEFAULT_WORKBOOK,
+  outputPath = DEFAULT_ROUTING_SOURCE
+) {
+  const mappings = parseRoutingWorkbook(workbookPath);
+  fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+  fs.writeFileSync(outputPath, `${JSON.stringify({ mappings }, null, 2)}\n`, 'utf8');
+  return mappings;
+}
 
-  fs.writeFileSync(
-    artifactPath,
-    `${JSON.stringify({
-      generatedAt: new Date().toISOString(),
-      sourceWorkbook: ROUTING_WORKBOOK,
-      authorityClass: 'Website to YouTube Routing Master',
-      summary,
-      records
-    }, null, 2)}\n`,
-    'utf8'
-  );
-
-  return { artifactPath, summary: { ...summary, missingWorkbook: false } };
+if (require.main === module) {
+  const workbookPath = process.argv[2] ? path.resolve(process.argv[2]) : DEFAULT_WORKBOOK;
+  const outputPath = process.argv[3] ? path.resolve(process.argv[3]) : DEFAULT_ROUTING_SOURCE;
+  const mappings = writeFreebieYoutubeRoutingFromWorkbook(workbookPath, outputPath);
+  console.log(`Wrote ${mappings.length} validated YouTube mappings to ${path.relative(ROOT, outputPath)}.`);
 }
 
 module.exports = {
-  writeFreebieRoutingArtifact
+  parseRoutingWorkbook,
+  parseYouTubeVideoId,
+  readFreebieYoutubeRouting,
+  validateMappings,
+  writeFreebieYoutubeRoutingFromWorkbook
 };

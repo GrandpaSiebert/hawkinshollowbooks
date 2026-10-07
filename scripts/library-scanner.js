@@ -146,7 +146,9 @@ function walkDirectory(startDir, onDirectory, onFile) {
 }
 
 function isIgnoredLibraryFile(fileName) {
-  return String(fileName || '').startsWith('~$');
+  const name = String(fileName || '');
+  return name.startsWith('~$')
+    || /^Hawkins Hollow Website to YouTube Routing Master(?: \(version \d+\))?(?:\.xlsb)?\.xlsx$/i.test(name);
 }
 
 function buildCategorySummary(files) {
