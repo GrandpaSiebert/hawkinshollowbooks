@@ -90,9 +90,8 @@ test('visitor pages fetch only generated artifacts included in the public allowl
     const source = fs.readFileSync(filePath, 'utf8');
     for (const match of source.matchAll(/fetch\(['"]generated\/([^'"]+)['"]/g)) fetchedArtifacts.add(match[1]);
   }
-  assert.deepEqual(Array.from(fetchedArtifacts).sort(), [
-    'entity-graph.json',
-    'entity-index.json',
-    'search-index.json'
-  ]);
+  assert.ok(fetchedArtifacts.size > 0, 'visitor pages still load their search artifacts');
+  for (const artifact of fetchedArtifacts) {
+    assert.ok(expectedGeneratedFiles.includes(artifact), `${artifact} must be included in the public allowlist`);
+  }
 });

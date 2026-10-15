@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
+const sharp = require('sharp');
 const { writeLibraryArtifacts } = require('./library-scanner');
 const { writeAmazonKdpArtifact } = require('./amazon-kdp-import');
 const { writeCharacterCanonArtifact } = require('./character-canon-import');
@@ -253,7 +254,12 @@ function getPlaceArtworkLookup() {
 }
 
 function getPlaceArtworkPathByName(placeName, placeKind = '') {
-  const key = normalizePlaceNameForArtwork(placeName);
+  const artworkAliases = {
+    'reading nook': 'reading knook',
+    'council circle hollow gathering': 'council circle'
+  };
+  const normalizedName = normalizePlaceNameForArtwork(placeName);
+  const key = artworkAliases[normalizedName] || normalizedName;
   if (!key) {
     return '';
   }
@@ -267,6 +273,32 @@ function getPlaceArtworkPathByName(placeName, placeKind = '') {
 
   const direct = lookup.environments.get(key) || lookup.landmarks.get(key) || '';
   return direct;
+}
+
+function getPlaceThumbnailPath(place) {
+  const kind = place.type === 'landmark' ? 'Landmark' : 'Place';
+  return getPlaceArtworkPathByName(place.name, kind)
+    ? `assets/place-thumbnails/${toSlug(`${place.type}-${place.id}`)}.webp`
+    : '';
+}
+
+async function writePlaceThumbnails(entityIndex) {
+  const places = [...(entityIndex.byType.environments || []), ...(entityIndex.byType.landmarks || [])];
+  for (const place of places) {
+    const thumbnailPath = getPlaceThumbnailPath(place);
+    if (!thumbnailPath) continue;
+    const source = getPlaceArtworkPathByName(place.name, place.type === 'landmark' ? 'Landmark' : 'Place');
+    const bytes = await sharp(path.join(root, source.replace(/^\//, '')))
+      .rotate()
+      .resize({ width: 480, height: 320, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 78 })
+      .toBuffer();
+    for (const outputDir of outputDirs) {
+      const destination = path.join(outputDir, thumbnailPath);
+      ensureDir(path.dirname(destination));
+      fs.writeFileSync(destination, bytes);
+    }
+  }
 }
 
 function toBookPageSlug(book) {
@@ -1213,6 +1245,8 @@ function createEntityIndex(
       id: character.code || character.slug,
       slug: character.slug,
       name: character.name,
+      description: character.description || '',
+      heroImage: character.heroImage || '',
       role: character.role || '',
       href: entityHref,
       entityPageHref: entityHref,
@@ -1894,7 +1928,12 @@ function renderUniversalEntityPage(
         return;
       }
       seenNeighborIds.add(candidate.id);
-      placeNeighborCandidates.push(candidate);
+      const character = getEntityByTypeAndId(entityIndex, 'character', candidate.id);
+      placeNeighborCandidates.push({
+        ...candidate,
+        description: character?.description || candidate.description || '',
+        heroImage: character?.heroImage || ''
+      });
     };
 
     connectedCandidates.forEach(addNeighbor);
@@ -2036,17 +2075,15 @@ function renderUniversalEntityPage(
       ? '<p>More regular neighbors will appear here as this place keeps welcoming visitors.</p>'
       : `<div class="character-neighbor-list">${previewNeighbors.map((candidate) => {
         const name = normalizeEntityLabel(candidate.name || 'Neighbor', candidate.id);
-        const firstName = name.split(' ')[0];
-        const note = toWarmExcerpt(
-          candidate.excerpt || candidate.description,
-          `${firstName} is often part of what makes ${placeName} feel familiar.`,
-          160
-        );
+        const note = candidate.description || '';
+        const portrait = candidate.heroImage
+          ? `<img class="place-neighbor-portrait" src="../../${escapeHtml(candidate.heroImage.replace(/^\//, ''))}" alt="${escapeHtml(name)}" width="96" height="96" loading="lazy" />`
+          : '';
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         return `<article class="character-neighbor-card">
-          <p class="character-neighbor-tag">Regular neighbor</p>
+          ${portrait}
           <h3>${href ? `<a href="${href}">${name}</a>` : name}</h3>
-          <p>${note}</p>
+          ${note ? `<p>${escapeHtml(note)}</p>` : ''}
         </article>`;
       }).join('')}</div>`;
 
@@ -3783,8 +3820,12 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
         const name = place.name || place.title || place.id || 'Unnamed Place';
         const href = place.entityPageHref || place.href || '';
         const kind = place.type === 'environment' ? 'Place' : 'Landmark';
+        const thumbnail = getPlaceThumbnailPath(place);
+        const media = thumbnail
+          ? `<div class="map-place-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(name)}" width="480" height="320" loading="lazy" /></div>`
+          : '';
         return href
-          ? `<a class="map-place-card" href="${escapeHtml(href)}"><p class="map-place-kind">${escapeHtml(kind)}</p><h3>${escapeHtml(name)}</h3><p>Open this location</p></a>`
+          ? `<a class="map-place-card" href="${escapeHtml(href)}">${media}<div class="map-place-copy"><p class="map-place-kind">${escapeHtml(kind)}</p><h3>${escapeHtml(name)}</h3><p>Visit this place &rarr;</p></div></a>`
           : '';
       })
       .filter((markup) => Boolean(markup))
@@ -3811,59 +3852,7 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       <h2 id="map-places">Places Around Hawkins Hollow</h2>
       <p class="search-hint">Choose a familiar place and see where the neighborhood leads next.</p>
       <div id="map-places-grid" class="map-grid" aria-live="polite">${mapPlaces || '<p>No places are available yet.</p>'}</div>
-    </section>
-
-    <script>
-      (function () {
-        var target = document.getElementById('map-places-grid');
-        if (!target) {
-          return;
-        }
-
-        function escapeHtml(value) {
-          return String(value)
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/\"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-        }
-
-        function renderMessage(message) {
-          target.innerHTML = '<p>' + escapeHtml(message) + '</p>';
-        }
-
-        fetch('generated/entity-index.json')
-          .then(function (response) { return response.json(); })
-          .then(function (payload) {
-            var byType = payload && payload.byType ? payload.byType : {};
-            var environments = Array.isArray(byType.environments) ? byType.environments : [];
-            var landmarks = Array.isArray(byType.landmarks) ? byType.landmarks : [];
-            var places = environments.concat(landmarks).sort(function (a, b) {
-              return String(a.name || a.title || a.id).localeCompare(String(b.name || b.title || b.id));
-            });
-
-            if (places.length === 0) {
-              renderMessage('No places are available yet.');
-              return;
-            }
-
-            target.innerHTML = places.map(function (place) {
-              var name = place.name || place.title || place.id || 'Unnamed Place';
-              var href = place.entityPageHref || place.href || '#';
-              var kind = place.type === 'environment' ? 'Place' : 'Landmark';
-              return '<a class="map-place-card" href="' + escapeHtml(href) + '">'
-                + '<p class="map-place-kind">' + escapeHtml(kind) + '</p>'
-                + '<h3>' + escapeHtml(name) + '</h3>'
-                + '<p>Open this location</p>'
-                + '</a>';
-            }).join('');
-          })
-          .catch(function () {
-            renderMessage('The map could not be loaded right now.');
-          });
-      })();
-    </script>`,
+    </section>`,
       site,
       nav,
       `${site.domain}/${page.slug}.html`,
@@ -6715,6 +6704,7 @@ async function buildSite() {
 
   outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
+  await writePlaceThumbnails(entityIndex);
 
   const sitemapRoutes = new Set();
   const writePageToOutputsAndTrack = (fileName, html) => {
