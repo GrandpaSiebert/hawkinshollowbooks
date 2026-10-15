@@ -221,8 +221,10 @@ function renderFreebieAssociationSections(records, options = {}) {
           <p><a class="character-story-link" href="${escapeHtml(detailHref)}">Open ${label} &rarr;</a></p>
         </div>
       </article>`;
-    }).join('');
-    return `<h3 id="${sectionId}-${idSuffix}">${heading}</h3><div class="character-story-list freebie-association-list">${cards}</div>`;
+    });
+    const preview = cards.slice(0, 6).join('');
+    const more = cards.length > 6 ? `<details class="association-more"><summary>Explore ${cards.length - 6} more ${heading.toLowerCase()}</summary><div class="character-story-list freebie-association-list">${cards.slice(6).join('')}</div></details>` : '';
+    return `<h3 id="${sectionId}-${idSuffix}">${heading}</h3><div class="character-story-list freebie-association-list">${preview}</div>${more}`;
   };
 
   return `<section class="content-card freebie-associations" aria-labelledby="${sectionId}-heading">

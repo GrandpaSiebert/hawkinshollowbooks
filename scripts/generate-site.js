@@ -1,3 +1,4 @@
+const { renderDiscoveryHub, renderCompleteBookshelf, renderKeepExploring } = require('./visitor-discovery');
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
@@ -1244,6 +1245,7 @@ function createEntityIndex(
       type: 'character',
       id: character.code || character.slug,
       slug: character.slug,
+      identity: character.identity,
       name: character.name,
       description: character.description || '',
       heroImage: character.heroImage || '',
@@ -2172,7 +2174,7 @@ function renderUniversalEntityPage(
         <p><strong>This visit should feel:</strong> Familiar, welcoming, and connected to the same neighborhood walk.</p>
         <p>
           <a class="button" href="../../map.html">Return to the map</a>
-          <a class="button" href="../../community.html">Visit the community</a>
+          <a class="button" href="../../start-here.html#where-shall-we-go">Where Shall We Go Today?</a>
         </p>
       </section>
 
@@ -2734,86 +2736,7 @@ function renderSearchSection() {
 }
 
 function renderStartHereDiscoverySections(discoveryIndex) {
-  if (!discoveryIndex || !Array.isArray(discoveryIndex.records)) return '';
-  const records = discoveryIndex.records;
-  const entryTypes = [
-    ['book', 'Read a Story'],
-    ['character', 'Meet a Character'],
-    ['environment', 'Visit a Place'],
-    ['landmark', 'Visit a Landmark'],
-    ['song', 'Sing a Song'],
-    ['rhyme', 'Share a Nursery Rhyme']
-  ];
-  const entryCards = entryTypes.map(([type, label]) => {
-    const record = records.find((entry) => entry.type === type && entry.href);
-    return record
-      ? `<article class="start-here-item" data-discovery-path="${escapeHtml(`${label} ${record.title}`.toLowerCase())}">
-          <h3>${label}</h3>
-          <p>${escapeHtml(record.title)}</p>
-          <a class="button" href="${escapeHtml(record.href)}">Explore ${escapeHtml(record.title)}</a>
-        </article>`
-      : '';
-  }).join('');
-
-  const interestRecords = new Map();
-  for (const record of records) {
-    if (!['book', 'song', 'rhyme'].includes(record.type) || !record.href) continue;
-    for (const tag of record.tags || []) {
-      if (tag.kind !== 'interest') continue;
-      const matches = interestRecords.get(tag.label) || [];
-      matches.push(record);
-      interestRecords.set(tag.label, matches);
-    }
-  }
-  const usedHrefs = new Set();
-  const interestChoices = Array.from(interestRecords.entries())
-    .sort((first, second) => second[1].length - first[1].length || first[0].localeCompare(second[0]))
-    .filter(([, matches]) => matches.some((record) => !usedHrefs.has(record.href)))
-    .slice(0, 4)
-    .map(([interest, matches]) => {
-      const recommendations = matches.filter((record) => !usedHrefs.has(record.href)).slice(0, 2);
-      recommendations.forEach((record) => usedHrefs.add(record.href));
-      return `<details class="discovery-interest-choice">
-        <summary>Explore ${escapeHtml(interest)}</summary>
-        <ul>${recommendations.map((record) => `<li><a href="${escapeHtml(record.href)}">${escapeHtml(record.title)}</a></li>`).join('')}</ul>
-      </details>`;
-    }).join('');
-
-  return `<section class="content-card" aria-labelledby="where-shall-we-go">
-      <h2 id="where-shall-we-go">Where Shall We Go Today?</h2>
-      <p>The paths below are ready to explore without using a filter.</p>
-      <p>
-        <a href="characters.html">Characters</a> &middot;
-        <a href="map.html">Places</a> &middot;
-        <a href="books.html">Books</a> &middot;
-        <a href="kids-songs.html">Kids Songs</a> &middot;
-        <a href="nursery-rhymes.html">Nursery Rhymes</a> &middot;
-        <a href="themes.html">Themes</a> &middot;
-        <a href="resources.html">Resources</a>
-      </p>
-      <label for="discovery-filter"><strong>Show matching paths</strong></label>
-      <input id="discovery-filter" class="search-input" type="search" autocomplete="off" />
-      <div class="start-here-grid" id="discovery-paths">${entryCards}</div>
-      <script>
-        (function () {
-          var input = document.getElementById('discovery-filter');
-          var paths = Array.prototype.slice.call(document.querySelectorAll('[data-discovery-path]'));
-          if (!input) return;
-          input.addEventListener('input', function () {
-            var query = input.value.trim().toLowerCase();
-            paths.forEach(function (path) {
-              path.hidden = query && path.getAttribute('data-discovery-path').indexOf(query) === -1;
-            });
-          });
-        })();
-      </script>
-    </section>
-
-    <section class="content-card" aria-labelledby="what-sounds-good">
-      <h2 id="what-sounds-good">What Sounds Good Right Now?</h2>
-      <p>Choose an idea named in the books, songs, and rhymes to find a place to begin.</p>
-      ${interestChoices}
-    </section>`;
+  return renderDiscoveryHub(discoveryIndex);
 }
 
 function buildAmazonLookup(amazonIndex) {
@@ -3154,7 +3077,7 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
   return renderLayout(
     `${getBookPublicTitle(book) || canonicalId}`,
     pageDescription,
-    `${experienceIntroCard}${storyIntroCard}${resourcePreview}${companionResourceSection}${continuationCard}
+    `${experienceIntroCard}${storyIntroCard}${resourcePreview}${companionResourceSection}${renderKeepExploring(experienceContext.discoveryIndex, experienceContext.detailHref, "../")}${continuationCard}
     <script type="application/ld+json">${jsonLd}</script>`,
     site,
     nav,
@@ -3260,7 +3183,8 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
         <h1>${site.siteName}</h1>
         <p class="welcome-home-line">Look who's home!</p>
         <p>Hawkins Hollow is a warm, connected story world where children grow through friendship, family, reading, feelings, discovery, and meaningful participation in everyday life.</p>
-        <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
+        <a class="button discovery-home-entry" href="start-here.html#where-shall-we-go">Where Shall We Go Today? &rarr;</a>
+        <a class="button" href="books.html">Browse the Complete Bookshelf</a>
       </section>
 
       <section class="content-card seasonal-note" id="seasonal-note" aria-live="polite">
@@ -3640,6 +3564,8 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       <p>Hawkins Hollow stories are organized by reading experience. Begin with the shelf that fits your moment today.</p>
     </section>
 
+    ${renderCompleteBookshelf(publicDiscoveryIndex)}
+
     <section class="content-card" aria-labelledby="books-doorway">
       <h2 id="books-doorway">Where to begin</h2>
       <p>If this is your first visit, you do not need to choose everything at once. Pick one series and let the next step come naturally.</p>
@@ -3737,60 +3663,7 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
     return renderLayout(
       page.title,
       'Welcome to Hawkins Hollow, a gentle storybook world built around family, belonging, courage, kindness, and the quiet moments that help children grow.',
-      `<section class="content-card start-here-intro">
-      <p>Welcome to Hawkins Hollow, a gentle storybook world built around family, belonging, courage, kindness, and the quiet moments that help children grow.</p>
-      <p>These books are written to be shared—between children and the grown-ups who love them, between beginning readers and patient listeners, and between families looking for stories that feel warm, familiar, and safe.</p>
-    </section>
-
-    <section class="content-card start-here-series" aria-labelledby="choose-a-place-to-begin">
-      <h2 id="choose-a-place-to-begin">Not sure where to begin?</h2>
-      <p>Choose the experience that feels right today. You are not choosing a page. You are choosing a moment.</p>
-      <div class="start-here-grid">
-        <article class="start-here-item">
-          <h3>Storybooks</h3>
-          <p><strong>If you're reading with a young child:</strong> Begin with a shared illustrated story and settle in together.</p>
-          <a class="button" href="storybook-shelf.html">Visit the Storybook Shelf</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>First Readers</h3>
-          <p><strong>If your child is building reading confidence:</strong> Start with a short story that feels encouraging and familiar.</p>
-          <a class="button" href="first-readers.html">Explore First Readers</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Second Readers</h3>
-          <p><strong>If your family wants a richer reading adventure:</strong> Choose a longer path with more details and discussion.</p>
-          <a class="button" href="second-readers.html">Explore Second Readers</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Bedtime Library</h3>
-          <p><strong>If you're looking for a bedtime story:</strong> Come this way for quiet pacing and reassuring endings.</p>
-          <a class="button" href="bedtime-library.html">Enter the Bedtime Library</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Growing Together</h3>
-          <p><strong>If your family wants encouragement:</strong> Follow stories about belonging, cooperation, and care.</p>
-          <a class="button" href="growing-together.html">Explore Growing Together</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Tender Times</h3>
-          <p><strong>If someone in your family needs comfort:</strong> Walk this path gently and at your own pace.</p>
-          <a class="button" href="tender-times.html">Explore Tender Times</a>
-        </article>
-
-        <article class="start-here-item">
-          <h3>Wander Freely</h3>
-          <p><strong>If you simply want to explore:</strong> Start with a place, then follow what sounds interesting.</p>
-          <a class="button" href="map.html">Open the Map</a>
-        </article>
-      </div>
-    </section>
-
-    ${renderStartHereDiscoverySections(publicDiscoveryIndex)}
+      `${renderStartHereDiscoverySections(publicDiscoveryIndex)}
 
     <section class="content-card start-here-grownups" aria-labelledby="for-the-grown-ups">
       <h2 id="for-the-grown-ups">For the Grown-Ups</h2>
@@ -4533,14 +4406,8 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       </p>
     </section>
 
-    ${(relatedStoryCards ? `<section class="content-card" aria-labelledby="character-together">
-      <h2 id="character-together">${profile.storyHeading}</h2>
-      <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
-      <div class="character-story-list">${relatedStoryCards}</div>
-      ${storyContinuationLink}
-    </section>` : '')}
-
     ${bookDiscoverySection}
+    ${storyContinuationLink}
   ${freebieAssociationSection}
 
     <section class="content-card" aria-labelledby="character-people">
@@ -6436,6 +6303,9 @@ function projectPublicDiscoveryIndex(discoveryIndex) {
       href: record.href,
       summary: record.summary,
       image: record.image,
+      series: record.series,
+      seriesSlug: record.seriesSlug,
+      readingGuidance: record.readingGuidance,
       tags: (record.tags || []).map((tag) => ({
         kind: tag.kind,
         label: tag.label
@@ -6640,124 +6510,8 @@ async function buildSite() {
     const entity = publicEntityByTypeAndId.get(`${record.type}:${String(record.id || '').toUpperCase()}`);
     return entity && getPublicSurfaceEligibility({ entity }).search;
   });
-  const publicDiscoveryIndex = createPublicDiscoveryIndex(
-    publicSearchRecords.filter((record) => record.type !== 'page'),
-    publicEntityIndex,
-    publicEntityGraph,
-    freebieDiscoveryRecords
-  );
-  const publicDiscoveryIndexPath = path.join(root, 'generated', 'public-discovery-index.json');
-  fs.writeFileSync(publicDiscoveryIndexPath, `${JSON.stringify(publicDiscoveryIndex, null, 2)}\n`, 'utf8');
-  console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
-  console.log(
-    `Merged book index updated: ${mergedBookIndex.summary.recordCount} records (${mergedBookIndex.summary.withAmazonDataCount} with Amazon data).`
-  );
-  console.log(
-    `Character canon index updated: ${characterCanonArtifacts.summary.recordCount} records (${characterCanonArtifacts.summary.withSourceDocumentCount} with source documents).`
-  );
-  console.log(
-    `World canon index updated: ${worldCanonArtifacts.summary.totalRecords} records (relationships ${worldCanonArtifacts.summary.relationships}, environments ${worldCanonArtifacts.summary.environments}, landmarks ${worldCanonArtifacts.summary.landmarks}).`
-  );
-  console.log(`Entity index updated: ${entityIndex.summary.totalEntities} entities.`);
-  if (entityIndex.canonicalAuthoritySelection) {
-    const relationshipAuthority = entityIndex.canonicalAuthoritySelection.relationships;
-    const environmentAuthority = entityIndex.canonicalAuthoritySelection.environments;
-    console.log(
-      `Canonical authority selection: relationships -> ${relationshipAuthority.authority} via ${relationshipAuthority.source}; environments -> ${environmentAuthority.authority} via ${environmentAuthority.source}.`
-    );
-  }
-  console.log(
-    `Entity graph updated: ${entityGraph.summary.nodeCount} nodes, ${entityGraph.summary.edgeCount} edges (${entityGraph.summary.unresolvedMentionCount} unresolved mentions).`
-  );
-
   projectStoryMasters(null, 'full-corpus', false);
   const storyMasterIndex = readJsonIfExists('generated/story-master-index.json');
-
-  const pageDefinitions = pages.map((page) => ({ ...page }));
-  const existingSlugs = new Set(pageDefinitions.map((page) => page.slug));
-  for (const item of nav.items) {
-    const slug = item.href.replace(/\.html$/, '');
-    if (!existingSlugs.has(slug)) {
-      pageDefinitions.push({
-        slug,
-        title: item.label,
-        template: 'under-construction'
-      });
-      existingSlugs.add(slug);
-    }
-  }
-
-  const pageReferenceIssues = new Map();
-  for (const page of pageDefinitions) {
-    const legacySource = page.status === 'legacy'
-      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
-      : null;
-    const issue = legacySource ? null : getReferenceIssue(page, seriesData, booksData);
-    if (issue) {
-      const fallbackAction = page.status === 'legacy' ? 'legacy' : 'under-construction';
-      console.warn(
-        `[recovery warning] page "${page.slug}": missing ${issue.type} reference "${issue.slug}"; fallback action: ${fallbackAction}`
-      );
-      pageReferenceIssues.set(page.slug, issue);
-    }
-  }
-
-  outputDirs.forEach((outputDir) => resetDir(outputDir));
-  outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
-  await writePlaceThumbnails(entityIndex);
-
-  const sitemapRoutes = new Set();
-  const writePageToOutputsAndTrack = (fileName, html) => {
-    if (fileName !== 'sitemap.xml') {
-      sitemapRoutes.add(fileName);
-    }
-    writePageToOutputs(fileName, html);
-  };
-
-  const publicPageSurfaces = [];
-  for (const page of pageDefinitions) {
-    const banner = getBannerForPage(page, banners);
-    const referenceIssue = pageReferenceIssues.get(page.slug);
-    const legacySource = page.status === 'legacy'
-      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
-      : null;
-    let html = '';
-    if (legacySource) {
-      html = renderLegacyPreservedPage(legacySource, site, nav, config, banner);
-    } else if (referenceIssue) {
-      html = renderReferenceFallbackPage(page, referenceIssue, site, nav, constructionData, config, banner);
-    } else if (page.slug === 'storybook-series') {
-      html = renderCompatibilityRedirect(site, {
-        route: 'storybook-series.html',
-        targetRoute: 'storybook-shelf.html'
-      });
-    } else if (page.slug === 'index') {
-      html = renderLandingPage(page, site, nav, config, banner, seriesData);
-    } else if (page.slug === 'characters') {
-      html = renderCharactersPage(site, nav, charactersData, config, banner);
-    } else if (page.template === 'article') {
-      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex, publicDiscoveryIndex);
-    } else if (page.template === 'series') {
-      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup, canonicalBookRouteRegistry);
-    } else if (page.template === 'book-detail') {
-      html = renderBookDetailPage(page, site, nav, booksData, config, banner);
-    } else {
-      html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner, mergedBookIndex);
-    }
-
-    const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
-    writePageToOutputs(pageRoute, html);
-    const eligibility = getPublicSurfaceEligibility({ route: pageRoute, legacy: page.status === 'legacy' });
-    publicPageSurfaces.push({ route: pageRoute, ...eligibility });
-    if (eligibility.sitemap) sitemapRoutes.add(pageRoute);
-  }
-
-  const featuredCharacters = charactersData.characters
-    .filter((character) => character.published !== false)
-    .sort((a, b) => a.sortOrder - b.sortOrder);
-  const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
-  const publicContinuationSurfaces = [];
-  const characterContinuationSearchRecords = [];
   const libraryBookById = new Map((libraryIndex.books || []).map((book) => [String(book.id || '').toUpperCase(), book]));
   const bookModelByDiscoveryId = new Map((booksData.books || []).map((book) => [getCanonicalBookId(book).toUpperCase(), book]));
   const storyMasterByDiscoveryId = new Map(
@@ -6846,6 +6600,146 @@ async function buildSite() {
     }).filter(Boolean).sort((first, second) => String(first.href).localeCompare(String(second.href)));
     return [canonicalCharacterId, books];
   }));
+  const discoveryBookMetadata = new Map(indexedBooks.map(book => {
+    const id = String(book.id || '').toUpperCase();
+    const model = bookModelByCanonicalId.get(id) || {};
+    const presentation = bookPresentationModelsById.get(id) || {};
+    const collection = (seriesData.series || []).find(series => series.slug === model.seriesSlug || series.title === book.series) || {};
+    const aligned = normalizeCharacterNameKey(model.title) === normalizeCharacterNameKey(book.title);
+    return [id, { series: book.series || '', seriesSlug: model.seriesSlug || '',
+      summary: (presentation.storyMasterWebsiteDescription || presentation.storyMasterShortDescription || {}).value || model.description || (collection.description ? 'From the ' + book.series + ' collection: ' + collection.description : ''),
+      readingGuidance: (presentation.readingAge || {}).value || (collection.presentationAuthority || {}).audience || (collection.editorial || {}).audienceText || '',
+      image: aligned ? model.coverImage || '' : '', feelings: model.feelings || [] }];
+  }));
+  const discoveryBookThemes = new Map(indexedBooks.map(book => {
+    const id = String(book.id || '').toUpperCase();
+    return [id, [...((bookPresentationModelsById.get(id).themes || {}).values || []), ...((bookModelByCanonicalId.get(id) || {}).themes || [])]];
+  }));
+  const publicDiscoveryIndex = createPublicDiscoveryIndex(
+    publicSearchRecords.filter((record) => record.type !== 'page'),
+    publicEntityIndex,
+    publicEntityGraph,
+    freebieDiscoveryRecords,
+    Array.from(characterDiscovery, ([canonicalCharacterId, books]) => ({ canonicalCharacterId, characterName: (characterByCanonicalId.get(canonicalCharacterId) || {}).name, books })),
+    discoveryBookThemes,
+    discoveryBookMetadata
+  );
+  for (const record of publicDiscoveryIndex.records) {
+    if (['environment', 'landmark'].includes(record.type) && !record.image) {
+      const entity = publicEntityByTypeAndId.get(record.type + ':' + String(record.id).toUpperCase());
+      if (entity) record.image = getPlaceThumbnailPath(entity);
+    }
+  }
+  const publicDiscoveryIndexPath = path.join(root, 'generated', 'public-discovery-index.json');
+  fs.writeFileSync(publicDiscoveryIndexPath, `${JSON.stringify(publicDiscoveryIndex, null, 2)}\n`, 'utf8');
+  console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
+  console.log(
+    `Merged book index updated: ${mergedBookIndex.summary.recordCount} records (${mergedBookIndex.summary.withAmazonDataCount} with Amazon data).`
+  );
+  console.log(
+    `Character canon index updated: ${characterCanonArtifacts.summary.recordCount} records (${characterCanonArtifacts.summary.withSourceDocumentCount} with source documents).`
+  );
+  console.log(
+    `World canon index updated: ${worldCanonArtifacts.summary.totalRecords} records (relationships ${worldCanonArtifacts.summary.relationships}, environments ${worldCanonArtifacts.summary.environments}, landmarks ${worldCanonArtifacts.summary.landmarks}).`
+  );
+  console.log(`Entity index updated: ${entityIndex.summary.totalEntities} entities.`);
+  if (entityIndex.canonicalAuthoritySelection) {
+    const relationshipAuthority = entityIndex.canonicalAuthoritySelection.relationships;
+    const environmentAuthority = entityIndex.canonicalAuthoritySelection.environments;
+    console.log(
+      `Canonical authority selection: relationships -> ${relationshipAuthority.authority} via ${relationshipAuthority.source}; environments -> ${environmentAuthority.authority} via ${environmentAuthority.source}.`
+    );
+  }
+  console.log(
+    `Entity graph updated: ${entityGraph.summary.nodeCount} nodes, ${entityGraph.summary.edgeCount} edges (${entityGraph.summary.unresolvedMentionCount} unresolved mentions).`
+  );
+
+
+  const pageDefinitions = pages.map((page) => ({ ...page }));
+  const existingSlugs = new Set(pageDefinitions.map((page) => page.slug));
+  for (const item of nav.items) {
+    const slug = item.href.replace(/\.html$/, '');
+    if (!existingSlugs.has(slug)) {
+      pageDefinitions.push({
+        slug,
+        title: item.label,
+        template: 'under-construction'
+      });
+      existingSlugs.add(slug);
+    }
+  }
+
+  const pageReferenceIssues = new Map();
+  for (const page of pageDefinitions) {
+    const legacySource = page.status === 'legacy'
+      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
+      : null;
+    const issue = legacySource ? null : getReferenceIssue(page, seriesData, booksData);
+    if (issue) {
+      const fallbackAction = page.status === 'legacy' ? 'legacy' : 'under-construction';
+      console.warn(
+        `[recovery warning] page "${page.slug}": missing ${issue.type} reference "${issue.slug}"; fallback action: ${fallbackAction}`
+      );
+      pageReferenceIssues.set(page.slug, issue);
+    }
+  }
+
+  outputDirs.forEach((outputDir) => resetDir(outputDir));
+  outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
+  await writePlaceThumbnails(entityIndex);
+
+  const sitemapRoutes = new Set();
+  const writePageToOutputsAndTrack = (fileName, html) => {
+    if (fileName !== 'sitemap.xml') {
+      sitemapRoutes.add(fileName);
+    }
+    writePageToOutputs(fileName, html);
+  };
+
+  const publicPageSurfaces = [];
+  for (const page of pageDefinitions) {
+    const banner = getBannerForPage(page, banners);
+    const referenceIssue = pageReferenceIssues.get(page.slug);
+    const legacySource = page.status === 'legacy'
+      ? legacyPageByRoute.get(`${page.slug}.html`.toLowerCase())
+      : null;
+    let html = '';
+    if (legacySource) {
+      html = renderLegacyPreservedPage(legacySource, site, nav, config, banner);
+    } else if (referenceIssue) {
+      html = renderReferenceFallbackPage(page, referenceIssue, site, nav, constructionData, config, banner);
+    } else if (page.slug === 'storybook-series') {
+      html = renderCompatibilityRedirect(site, {
+        route: 'storybook-series.html',
+        targetRoute: 'storybook-shelf.html'
+      });
+    } else if (page.slug === 'index') {
+      html = renderLandingPage(page, site, nav, config, banner, seriesData);
+    } else if (page.slug === 'characters') {
+      html = renderCharactersPage(site, nav, charactersData, config, banner);
+    } else if (page.template === 'article') {
+      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex, publicDiscoveryIndex);
+    } else if (page.template === 'series') {
+      html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup, canonicalBookRouteRegistry);
+    } else if (page.template === 'book-detail') {
+      html = renderBookDetailPage(page, site, nav, booksData, config, banner);
+    } else {
+      html = renderUnderConstructionPage(page, site, nav, constructionData, config, banner, mergedBookIndex);
+    }
+
+    const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
+    writePageToOutputs(pageRoute, html);
+    const eligibility = getPublicSurfaceEligibility({ route: pageRoute, legacy: page.status === 'legacy' });
+    publicPageSurfaces.push({ route: pageRoute, ...eligibility });
+    if (eligibility.sitemap) sitemapRoutes.add(pageRoute);
+  }
+
+  const featuredCharacters = charactersData.characters
+    .filter((character) => character.published !== false)
+    .sort((a, b) => a.sortOrder - b.sortOrder);
+  const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
+  const publicContinuationSurfaces = [];
+  const characterContinuationSearchRecords = [];
   for (const character of featuredCharacters) {
     const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || [], storyMasterIndex);
@@ -6960,6 +6854,7 @@ async function buildSite() {
       detailHref,
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
         detailHref,
+        discoveryIndex: publicDiscoveryIndex,
         storyCharacters,
         storyCharactersPageHref: charactersHref.replace(/^books\//, ''),
         bookModelByCanonicalId,

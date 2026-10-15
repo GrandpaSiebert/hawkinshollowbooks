@@ -301,3 +301,24 @@ test('relationship continuations use primary Character profiles and do not repea
   }
   assert.ok(relationshipRoutes.length, 'public relationship pages are covered');
 });
+
+
+test('illustrated hub, full bookshelf, and character journeys expose the completed visitor paths', () => {
+  const index = JSON.parse(fs.readFileSync(path.join(output, 'generated/public-discovery-index.json'), 'utf8'));
+  const hub = parse5.parse(fs.readFileSync(path.join(output, 'start-here.html'), 'utf8'));
+  const shelf = parse5.parse(fs.readFileSync(path.join(output, 'books.html'), 'utf8'));
+  const doors = elements(hub, 'article').filter(node => attribute(node,'class').split(' ').includes('discovery-card'));
+  assert.equal(doors.length,6);
+  assert.ok(doors.every(node => elements(node,'img').length === 1), 'each static doorway has an illustration');
+  assert.equal(elements(shelf,'div').filter(node => node.attrs?.some(attr => attr.name === 'data-shelf-series')).length,79);
+  const books=index.records.filter(record => record.type === 'book');
+  assert.ok(books.every(record => record.image && record.summary && record.readingGuidance), 'every book has a cover, description or attributed collection introduction, and source reading guidance');
+  assert.equal(new Set(books.map(record => record.series)).size,9);
+  assert.ok(index.records.filter(record => record.type === 'character').every(record => record.related.length));
+  assert.ok(index.facets.filter(facet => facet.kind === 'interest').every(facet => !/website freebie|clearly inferred|present in manuscript/i.test(facet.label)));
+  for (const character of index.records.filter(record => record.type === 'character')) {
+    const html=fs.readFileSync(path.join(output, character.href),'utf8');
+    assert.ok(!html.includes('id="character-together"'), 'the repeated book section is absent');
+    assert.ok(html.includes('start-here.html'), 'character journey returns to discovery');
+  }
+});

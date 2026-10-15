@@ -835,3 +835,22 @@ h2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
+
+/* Shared visitor discovery and complete bookshelf. */
+.discovery-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr)); gap:1.25rem; }
+.discovery-card { height:100%; overflow:hidden; border:1px solid #d9c7aa; border-radius:14px; background:#fffaf0; }
+.discovery-card > div { padding:1rem; }
+.discovery-card img { display:block; width:100%; height:180px; object-fit:contain; background:#f0e6d2; }
+.discovery-doorways .discovery-card img { height:155px; }
+.discovery-card h3 { margin:.2rem 0 .6rem; }
+.discovery-card p { margin:.5rem 0; }
+.discovery-controls { display:flex; flex-wrap:wrap; align-items:end; gap:1rem; margin:1.25rem 0; }
+.discovery-controls label { display:flex; flex-direction:column; flex:1 1 200px; gap:.4rem; font-weight:600; }
+.discovery-controls input,.discovery-controls select { width:100%; min-height:44px; padding:.65rem; border:1px solid #907654; border-radius:6px; background:#fffdf6; color:#382c22; font:inherit; box-sizing:border-box; }
+.discovery-controls button,#discovery-more { min-height:44px; padding:.65rem 1rem; cursor:pointer; }
+.discovery-grid [hidden],.discovery-controls[hidden],[data-shelf-series][hidden],[hidden] { display:none !important; }
+.discovery-interest-choice { margin:.65rem 0; padding:.8rem; border:1px solid #d9c7aa; border-radius:8px; }
+.discovery-interest-choice summary { cursor:pointer; font-weight:600; }
+.discovery-home-entry { font-size:1.1rem; }
+.discovery-guidance { font-size:.9rem; }
+@media (max-width:600px) { .discovery-grid { grid-template-columns:1fr; } .discovery-doorways { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; } .discovery-doorways .discovery-card img { height:110px; } .discovery-doorways .discovery-card > div { padding:.65rem; } .discovery-doorways h3 { font-size:1.05rem; } }

@@ -1,4 +1,15 @@
 const { isPublicEntityEligible } = require('./public-surface-eligibility');
+function interestLabel(value) {
+  const text = String(value || '').trim();
+  if (/website freebie|present in manuscript|clearly inferred/i.test(text)) return '';
+  return text.split(/\s*[—;]\s*|\s+through\s+/i)[0].replace(/^and\s+/i, '').trim();
+}
+function ageLabel(value) {
+  const match = String(value || '').match(/ages?\s*(\d+)\s*[–—-]\s*(\d+)/i);
+  if (match) return 'Ages ' + match[1] + '–' + match[2];
+  const newborn = String(value || '').match(/newborn through age\s*(\d+)/i);
+  return newborn ? 'Newborn–' + newborn[1] : '';
+}
 
 function createPublicEntityIndex(entityIndex, isBookPublicationEligible) {
   const publicBook = (book) => !isBookPublicationEligible
@@ -46,10 +57,11 @@ function createPublicDiscoveryIndex(
   entityGraph,
   freebieRecords,
   characterBookIndex = [],
-  bookThemesById = new Map()
+  bookThemesById = new Map(),
+  bookMetadataById = new Map()
 ) {
   const entityByHref = new Map((entityIndex.entities || [])
-    .map((entity) => [entity.entityPageHref || entity.href || '', entity])
+    .flatMap((entity) => [entity.entityPageHref, entity.href, entity.legacyHref].filter(Boolean).map(href => [href, entity]))
     .filter(([href]) => Boolean(href)));
   const freebieById = new Map((freebieRecords || [])
     .map((record) => [String(record.canonicalId || '').toUpperCase(), record]));
@@ -66,7 +78,7 @@ function createPublicDiscoveryIndex(
     `${record.type}:${String(record.id || '').toUpperCase()}`
   ]));
   const entityByCanonicalId = new Map((entityIndex.entities || [])
-    .map((entity) => [String(entity.identity && entity.identity.canonicalId || entity.id || '').toUpperCase(), entity]));
+    .flatMap((entity) => [entity.identity && entity.identity.canonicalId, entity.id].filter(Boolean).map(id => [String(id).toUpperCase(), entity])));
   const relatedByNode = new Map();
   const addRelated = (from, to) => {
     if (!from || !to || from === to || !searchByNode.has(from) || !searchByNode.has(to)) return;
@@ -91,22 +103,26 @@ function createPublicDiscoveryIndex(
   };
 
   for (const edge of (entityGraph && entityGraph.edges) || []) {
-    addRelated(edge.from, edge.to);
-    addRelated(edge.to, edge.from);
+    const resolve = node => { const split = node.indexOf(':'); return searchNodeForEntity(node.slice(0, split), node.slice(split + 1)); };
+    const from = resolve(edge.from); const to = resolve(edge.to);
+    addRelated(from, to);
+    addRelated(to, from);
   }
   for (const record of freebieRecords || []) {
     const from = searchNodeForEntity(record.contentType, record.canonicalId);
     for (const participant of record.participants || []) {
-      addRelated(from, searchNodeForEntity('character', participant.canonicalId, participant.name));
+      const to = searchNodeForEntity('character', participant.canonicalId, participant.name);
+      addRelated(from, to); addRelated(to, from);
     }
     for (const place of record.canonicalLocations || []) {
-      addRelated(from, searchNodeForEntity(place.type, place.id));
+      const to = searchNodeForEntity(place.type, place.id);
+      addRelated(from, to); addRelated(to, from);
     }
   }
   for (const characterEntry of characterBookIndex || []) {
     const characterNode = searchNodeForEntity('character', characterEntry.canonicalCharacterId, characterEntry.characterName);
     for (const book of characterEntry.books || []) {
-      const bookNode = searchNodeForEntity('book', book.canonicalId);
+      const bookNode = searchNodeForEntity('book', book.canonicalId || book.bookId);
       addRelated(bookNode, characterNode);
       addRelated(characterNode, bookNode);
     }
@@ -117,6 +133,7 @@ function createPublicDiscoveryIndex(
     .map((record) => {
       const entity = entityByHref.get(record.href) || {};
       const freebie = freebieById.get(String(record.id || '').toUpperCase()) || {};
+      const metadata = bookMetadataById.get(String(record.id || '').toUpperCase()) || {};
       const href = record.type === 'character' && entity.slug
         ? `characters/${entity.slug}.html`
         : record.href;
@@ -124,15 +141,18 @@ function createPublicDiscoveryIndex(
         ...(Array.isArray(record.theme) ? record.theme : [record.theme])
           .concat(bookThemesById.get(String(record.id || '').toUpperCase()) || [])
           .filter((tag) => typeof tag === 'string' && tag.trim())
-          .map((label) => ({ kind: 'interest', label: label.trim() })),
-        record.ageLane && { kind: 'age', label: record.ageLane },
+          .map((label) => ({ kind: 'interest', label: interestLabel(label) }))
+          .filter(tag => tag.label && tag.label.length <= 64),
+        ...(metadata.feelings || []).map(label => ({ kind: 'feeling', label })),
+        ageLabel(record.ageLane || metadata.readingGuidance) && { kind: 'age', label: ageLabel(record.ageLane || metadata.readingGuidance) },
         freebie.skill && { kind: 'activity', label: freebie.skill },
-        freebie.emotionalHook && { kind: 'feeling', label: freebie.emotionalHook }
+        false
       ].filter(Boolean);
-      const related = Array.from(relatedByNode.get(`${record.type}:${String(record.id || '').toUpperCase()}`) || [])
+      const relatedCandidates = Array.from(relatedByNode.get(`${record.type}:${String(record.id || '').toUpperCase()}`) || [])
         .map((nodeId) => searchByNode.get(nodeId))
         .filter(Boolean)
-        .slice(0, 4)
+        .sort((a,b) => a.type.localeCompare(b.type))
+        .filter((item, i, all) => all.findIndex(other => other.href === item.href) === i)
         .map((item) => {
           const entity = entityByCanonicalId.get(String(item.id || '').toUpperCase());
           const href = item.type === 'character' && entity && entity.slug
@@ -140,20 +160,33 @@ function createPublicDiscoveryIndex(
             : item.href;
           return { type: item.type, title: item.title, href };
         });
+      const selected = []; const selectedTypes = new Set();
+      for (const item of relatedCandidates) { if (!selectedTypes.has(item.type)) { selected.push(item); selectedTypes.add(item.type); } }
+      for (const item of relatedCandidates) { if (selected.length >= 8) break; if (!selected.includes(item)) selected.push(item); }
+      const related = selected.slice(0, 8);
       const image = freebie.illustrationPublished
         ? freebie.illustrationUrl
-        : (entity.coverImage || entity.heroImage || entity.image || '');
+        : (metadata.image || entity.coverImage || entity.heroImage || entity.image || '');
       return {
         type: record.type,
         id: record.id,
         title: record.title,
         href,
-        summary: freebie.description || entity.description || '',
+        summary: metadata.summary || freebie.description || entity.description || '',
+        series: metadata.series || '',
+        seriesSlug: metadata.seriesSlug || '',
+        readingGuidance: metadata.readingGuidance || '',
         image: String(image || '').replace(/\\/g, '/'),
         tags: Array.from(new Map(tags.map((tag) => [`${tag.kind}:${tag.label.toLowerCase()}`, tag])).values()),
         related
       };
     });
+  const canonicalLabels = new Map();
+  for (const record of records) for (const tag of record.tags) {
+    const key = tag.kind + ":" + tag.label.toLowerCase();
+    if (!canonicalLabels.has(key)) canonicalLabels.set(key, tag.label);
+    tag.label = canonicalLabels.get(key);
+  }
   const facetCounts = new Map();
   for (const record of records) {
     for (const tag of record.tags) {
