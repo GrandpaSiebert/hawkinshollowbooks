@@ -299,7 +299,8 @@ async function restoreProductionState({ repository, token, runId, fetchImpl = fe
     if ((payload.artifacts || []).length < 100 || artifacts.length > 0) break;
     if (pageNumber === 20) throw new Error('Artifact history exceeded bounded retrieval; baseline not reset.');
   }
-  artifacts.sort((first, second) => second.id - first.id);
+  // Artifact IDs can be allocated out of chronological order across uploads.
+  artifacts.sort((first, second) => Date.parse(second.created_at) - Date.parse(first.created_at) || second.id - first.id);
   let selected = null;
   for (const artifact of artifacts) {
     const sourceRun = await json(`${base}/actions/runs/${artifact.workflow_run.id}`);

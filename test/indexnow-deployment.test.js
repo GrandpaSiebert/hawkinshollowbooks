@@ -326,3 +326,18 @@ test('a rerun restores its previous successful attempt journal without overwriti
   assert.equal(restored.state.runId, '1');
   assert.ok(calls.some((call) => call.url.includes('filter=all')));
 });
+
+
+test('production state restoration chooses creation time when artifact IDs arrive out of order', async () => {
+  const network = artifactNetwork();
+  const fetchImpl = async (url, options) => {
+    if (url.includes('/actions/artifacts?')) return { ok:true, status:200, json:async () => ({artifacts:[
+      {id:9,name:'indexnow-production-state-1-1',expired:false,workflow_run:{id:1},created_at:'2026-10-02T00:01:00Z'},
+      {id:4,name:'indexnow-production-state-1-2',expired:false,workflow_run:{id:1},created_at:'2026-10-02T00:03:00Z'}
+    ]}) };
+    return network(url.replace('/artifacts/4/zip','/artifacts/9/zip'), options);
+  };
+  const restored = await restoreProductionState({repository:'owner/repository',token:'PRIVATE_TOKEN',runId:'3',fetchImpl});
+  assert.equal(restored.artifactId,4);
+  assert.equal(restored.createdAt,'2026-10-02T00:03:00Z');
+});
