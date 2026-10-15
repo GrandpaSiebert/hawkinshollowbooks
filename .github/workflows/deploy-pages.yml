@@ -46,13 +46,13 @@ jobs:
       # GitHub-hosted runners start with a fresh checkout; never target an owner's local Library.
       - name: Restore canonical inputs into the ephemeral runner Library
         env:
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.R2_READONLY_ACCOUNT_ID }}
-          R2_ACCESS_KEY_ID: ${{ secrets.R2_READONLY_ACCESS_KEY_ID }}
-          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_READONLY_SECRET_ACCESS_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
           R2_BUCKET: hawkins-hollow-library
         run: |
           if [[ -z "$CLOUDFLARE_ACCOUNT_ID" || -z "$R2_ACCESS_KEY_ID" || -z "$R2_SECRET_ACCESS_KEY" ]]; then
-            echo "Dedicated read-only R2 credentials are required to restore canonical inputs." >&2
+            echo "Configured R2 credentials are required for read-only restoration of canonical inputs." >&2
             exit 1
           fi
           if [ -e "$GITHUB_WORKSPACE/Library" ] || [ -L "$GITHUB_WORKSPACE/Library" ]; then

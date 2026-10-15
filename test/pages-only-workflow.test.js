@@ -18,15 +18,20 @@ function stepBlock(name) {
   return workflow.slice(start, next < 0 ? workflow.length : next);
 }
 
-test('Pages deployment restores shared canonical inputs using read-only R2 credentials', () => {
+test('Pages deployment restores shared canonical inputs read-only using existing R2 secret names', () => {
   const restore = stepBlock('Restore canonical inputs into the ephemeral runner Library');
   assert.match(restore, /if \[ -e "\$GITHUB_WORKSPACE\/Library" \] \|\| \[ -L "\$GITHUB_WORKSPACE\/Library" \]/);
   assert.match(restore, /restore-library-canon\.js --r2-only --destination "\$GITHUB_WORKSPACE\/Library"/);
   assert.doesNotMatch(restore, /--public-only/);
-  assert.match(restore, /secrets\.R2_READONLY_ACCOUNT_ID/);
-  assert.match(restore, /secrets\.R2_READONLY_ACCESS_KEY_ID/);
-  assert.match(restore, /secrets\.R2_READONLY_SECRET_ACCESS_KEY/);
-  assert.doesNotMatch(workflow, /secrets\.(?:CLOUDFLARE_ACCOUNT_ID|R2_ACCESS_KEY_ID|R2_SECRET_ACCESS_KEY|AWS_ACCESS_KEY_ID|AWS_SECRET_ACCESS_KEY)/i);
+  assert.match(restore, /secrets\.CLOUDFLARE_ACCOUNT_ID/);
+  assert.match(restore, /secrets\.R2_ACCESS_KEY_ID/);
+  assert.match(restore, /secrets\.R2_SECRET_ACCESS_KEY/);
+  assert.doesNotMatch(workflow, /secrets\.R2_READONLY_/);
+  const validationWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'build-only-validation.yml'), 'utf8');
+  for (const name of ['CLOUDFLARE_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY']) {
+    assert.ok(validationWorkflow.includes(`secrets.${name}`));
+  }
+  assert.doesNotMatch(validationWorkflow, /secrets\.R2_READONLY_|publish-library\.js|publish-freebie-title-art\.js|wrangler/i);
   assert.doesNotMatch(libraryRestore, /PutObjectCommand|DeleteObjectCommand|UploadPartCommand/i);
   assert.doesNotMatch(workflow, /publish:freebie-title-art|publish-freebie-title-art\.js|publish-library\.js|wrangler/i);
 });
