@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const root = path.join(__dirname, '..', 'build');
+const root = path.join(__dirname, '..', 'build-recovery');
 const port = 8080;
 
 const mimeTypes = {

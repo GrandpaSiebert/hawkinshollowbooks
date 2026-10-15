@@ -5,8 +5,11 @@ const root = path.join(__dirname, '..');
 const contractPath = path.join(root, 'docs', 'architecture', 'canonical-id-contract.md');
 const defaultReportPath = path.join(root, 'generated', 'validation', 'canonical-id-report.json');
 const authorityRegistryPath = path.join(root, 'data', 'canonical-authority-registry.json');
-const sourceRegistryPath = path.join(root, 'data', 'canonical-source-registry.json');
-const bookIdRegex = /^HH-[A-Z]-[0-9]{4}$/;
+const bookIdRegex = /^HH-(?:[A-Z]|C\+|HR)-[0-9]{4}$/;
+
+function isValidBookId(value) {
+  return bookIdRegex.test(value);
+}
 
 const legacyPresentationRegexes = [
   /^SB[0-9]{3,4}$/i,
@@ -103,159 +106,30 @@ function initializeCoverage() {
 function initializeSourceSummary() {
   return {
     books: { dataRecords: 0, worldCanonRecords: null, canonicalAuthority: 'Book Model', activeCanonicalSource: 'data/books.json' },
-    characters: { dataRecords: 0, worldCanonRecords: null, canonicalAuthority: 'Character Canon', activeCanonicalSource: 'data/characters.json' },
-    environments: { dataRecords: 0, worldCanonRecords: 0, canonicalAuthority: 'World Canon', activeCanonicalSource: 'data/environments.json' },
-    relationships: { dataRecords: 0, worldCanonRecords: 0, canonicalAuthority: 'World Canon', activeCanonicalSource: 'data/relationships.json' }
-  };
-}
-
-function getDefaultAuthorityRegistry() {
-  return {
-    version: 1,
-    entities: {
-      books: {
-        canonicalAuthority: 'Book Model',
-        canonicalSource: 'data/books.json',
-        canonicalPath: 'books',
-        compatibilitySource: null,
-        compatibilityPath: null
-      },
-      characters: {
-        canonicalAuthority: 'Character Canon',
-        canonicalSource: 'data/characters.json',
-        canonicalPath: 'characters',
-        compatibilitySource: null,
-        compatibilityPath: null
-      },
-      environments: {
-        canonicalAuthority: 'World Canon',
-        canonicalSource: 'generated/world-canon-index.json',
-        canonicalPath: 'byType.environments',
-        compatibilitySource: 'data/environments.json',
-        compatibilityPath: 'environments'
-      },
-      relationships: {
-        canonicalAuthority: 'World Canon',
-        canonicalSource: 'generated/world-canon-index.json',
-        canonicalPath: 'byType.relationships',
-        compatibilitySource: 'data/relationships.json',
-        compatibilityPath: 'relationships'
-      }
-    }
+    characters: { dataRecords: 0, worldCanonRecords: null, canonicalAuthority: 'Character Directory', activeCanonicalSource: 'data/characters.json' },
+    environments: { dataRecords: 0, worldCanonRecords: null, canonicalAuthority: 'World Canon', activeCanonicalSource: 'generated/world-canon-index.json' },
+    relationships: { dataRecords: 0, worldCanonRecords: null, canonicalAuthority: 'World Canon', activeCanonicalSource: 'generated/world-canon-index.json' }
   };
 }
 
 function loadCanonicalAuthorityRegistry() {
-  const registryPath = fs.existsSync(authorityRegistryPath)
-    ? authorityRegistryPath
-    : sourceRegistryPath;
-
-  if (!fs.existsSync(registryPath)) {
-    return getDefaultAuthorityRegistry();
+  if (!fs.existsSync(authorityRegistryPath)) {
+    throw new Error('Missing canonical authority registry: data/canonical-authority-registry.json');
   }
-
-  try {
-    const parsed = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
-    if (!parsed || typeof parsed !== 'object' || !parsed.entities) {
-      return getDefaultAuthorityRegistry();
-    }
-    return parsed;
-  } catch {
-    return getDefaultAuthorityRegistry();
+  const parsed = JSON.parse(fs.readFileSync(authorityRegistryPath, 'utf8'));
+  if (!parsed || typeof parsed !== 'object' || !parsed.entities || typeof parsed.entities !== 'object') {
+    throw new Error('Invalid canonical authority registry: expected an entities object.');
   }
-}
-
-function loadRegistryFile(filePath) {
-  if (!fs.existsSync(filePath)) {
-    return null;
-  }
-
-  try {
-    const parsed = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-    return parsed && typeof parsed === 'object' ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function detectRegistryDrift(authorityRegistry, legacyRegistry) {
-  const drifts = [];
-  if (!authorityRegistry || !legacyRegistry) {
-    return drifts;
-  }
-
-  const authorityEntities = authorityRegistry.entities && typeof authorityRegistry.entities === 'object'
-    ? authorityRegistry.entities
-    : {};
-  const legacyEntities = legacyRegistry.entities && typeof legacyRegistry.entities === 'object'
-    ? legacyRegistry.entities
-    : {};
-
-  for (const [entityKey, authorityConfig] of Object.entries(authorityEntities)) {
-    const legacyConfig = legacyEntities[entityKey];
-    if (!legacyConfig || typeof legacyConfig !== 'object') {
-      drifts.push({
-        entityKey,
-        field: 'entity',
-        authorityValue: 'present',
-        legacyValue: 'missing'
-      });
-      continue;
-    }
-
-    const fields = ['canonicalAuthority', 'canonicalSource', 'canonicalPath', 'compatibilitySource', 'compatibilityPath'];
-    for (const field of fields) {
-      const authorityValue = Object.prototype.hasOwnProperty.call(authorityConfig, field)
-        ? authorityConfig[field]
-        : null;
-      const legacyValue = Object.prototype.hasOwnProperty.call(legacyConfig, field)
-        ? legacyConfig[field]
-        : null;
-      if (authorityValue !== legacyValue) {
-        drifts.push({
-          entityKey,
-          field,
-          authorityValue,
-          legacyValue
-        });
-      }
-    }
-  }
-
-  return drifts;
-}
-
-function appendRegistryDriftErrors(state, driftItems) {
-  for (const drift of driftItems) {
-    state.errors.push(messageRecord(
-      'error',
-      'Preflight - Governance',
-      'data/canonical-source-registry.json',
-      `${drift.entityKey}.${drift.field}`,
-      `Registry entity "${drift.entityKey}"`,
-      JSON.stringify(drift.legacyValue),
-      'Deprecated source registry has drifted from canonical authority registry.',
-      `Run node scripts/project-canonical-source-registry.js so this value matches ${JSON.stringify(drift.authorityValue)}.`
-    ));
-  }
+  return parsed;
 }
 
 function getRegistryEntityConfig(registry, entityKey) {
   const entities = registry && registry.entities ? registry.entities : {};
-  const configured = entities[entityKey] || {};
-  const defaults = getDefaultAuthorityRegistry().entities[entityKey] || {};
-
-  return {
-    canonicalAuthority: configured.canonicalAuthority || defaults.canonicalAuthority || 'Unspecified Authority',
-    canonicalSource: configured.canonicalSource || defaults.canonicalSource || '',
-    canonicalPath: configured.canonicalPath || defaults.canonicalPath || '',
-    compatibilitySource: Object.prototype.hasOwnProperty.call(configured, 'compatibilitySource')
-      ? configured.compatibilitySource
-      : defaults.compatibilitySource,
-    compatibilityPath: Object.prototype.hasOwnProperty.call(configured, 'compatibilityPath')
-      ? configured.compatibilityPath
-      : defaults.compatibilityPath
-  };
+  const configured = entities[entityKey];
+  if (!configured || !configured.canonicalAuthority || !configured.canonicalSource || !configured.canonicalPath) {
+    throw new Error(`Canonical authority registry is missing the ${entityKey} source contract.`);
+  }
+  return configured;
 }
 
 function resolvePathValue(sourceObject, sourcePath) {
@@ -277,18 +151,6 @@ function resolvePathValue(sourceObject, sourcePath) {
 function selectAuthoritativeRecords(entityKey, registryConfig, sourcePayloadsByFile) {
   const canonicalPayload = sourcePayloadsByFile[registryConfig.canonicalSource] || null;
   const canonicalRecords = resolvePathValue(canonicalPayload, registryConfig.canonicalPath);
-  if (Array.isArray(canonicalRecords) && canonicalRecords.length > 0) {
-    return canonicalRecords;
-  }
-
-  if (registryConfig.compatibilitySource && registryConfig.compatibilityPath) {
-    const compatibilityPayload = sourcePayloadsByFile[registryConfig.compatibilitySource] || null;
-    const compatibilityRecords = resolvePathValue(compatibilityPayload, registryConfig.compatibilityPath);
-    if (Array.isArray(compatibilityRecords) && compatibilityRecords.length > 0) {
-      return compatibilityRecords;
-    }
-  }
-
   return Array.isArray(canonicalRecords) ? canonicalRecords : [];
 }
 
@@ -309,12 +171,10 @@ function getCanonicalIdForLookup(record, entityKey) {
   return genericIdentity.canonicalId || String(record.id || '').trim();
 }
 
-function buildCanonicalLookupMaps(booksData, charactersData, environmentsData, relationshipsData, worldCanonIndex, authorityRegistry) {
+function buildCanonicalLookupMaps(booksData, charactersData, worldCanonIndex, authorityRegistry) {
   const sourcePayloadsByFile = {
     'data/books.json': booksData || {},
     'data/characters.json': charactersData || {},
-    'data/environments.json': environmentsData || {},
-    'data/relationships.json': relationshipsData || {},
     'generated/world-canon-index.json': worldCanonIndex || {}
   };
 
@@ -473,20 +333,6 @@ function getCharacterIdentity(character) {
   };
 }
 
-function getEnvironmentIdentity(environment) {
-  const identity = getEntityIdentity(environment);
-
-  if (typeof (environment && environment.code) === 'string' && environment.code.trim()) {
-    identity.legacyAliases = Array.from(new Set([...identity.legacyAliases, environment.code.trim()]));
-  }
-
-  return {
-    canonicalId: identity.canonicalId,
-    legacyAliases: identity.legacyAliases,
-    hasTopLevelCode: typeof (environment && environment.code) === 'string' && environment.code.trim().length > 0
-  };
-}
-
 function getGenericCanonicalCoverage(records, getter) {
   const values = Array.isArray(records) ? records : [];
   const total = values.length;
@@ -556,7 +402,7 @@ function validateBooks(records, state) {
           'Presentation identifier detected in canonical field.',
           `${suggested} (format HH-[MODE]-NNNN)`
         ));
-      } else if (!bookIdRegex.test(canonicalId)) {
+      } else if (!isValidBookId(canonicalId)) {
         state.errors.push(messageRecord(
           'error',
           'Layer 1 - Identity Format',
@@ -565,7 +411,7 @@ function validateBooks(records, state) {
           `Book "${title}"`,
           canonicalId,
           'Canonical publication ID does not match required contract format.',
-          'HH-[MODE]-NNNN (regex ^HH-[A-Z]-[0-9]{4}$)'
+          'HH-[MODE]-NNNN (regex ^HH-(?:[A-Z]|C\\+|HR)-[0-9]{4}$)'
         ));
       }
     }
@@ -688,66 +534,46 @@ function validateCharacters(records, state) {
   state.coverage.characters.remaining = Math.max(0, state.coverage.characters.total - state.coverage.characters.canonical);
 }
 
-function validateEnvironments(records, state) {
-  const environments = Array.isArray(records && records.environments) ? records.environments : [];
-  state.coverage.environments.total = environments.length;
-  state.coverage.environments.canonical = 0;
+function validateWorldCanonRecords(entityKey, records, state) {
+  const entities = Array.isArray(records) ? records : [];
+  const coverage = state.coverage[entityKey];
+  coverage.total = entities.length;
+  coverage.canonical = 0;
+  const label = entityKey === 'environments' ? 'Environment' : 'Relationship';
+  const prefix = entityKey === 'environments' ? 'environment' : 'relationship';
 
-  environments.forEach((environment, index) => {
-    const name = String(environment && (environment.name || environment.slug || '')).trim() || `environments[${index}]`;
-    const identity = getEnvironmentIdentity(environment);
-    const canonicalId = identity.canonicalId;
-    const compatibilityCode = identity.legacyAliases[0] || '';
-
+  entities.forEach((entity, index) => {
+    const name = String(entity && (entity.name || entity.slug || '')).trim() || `${prefix}[${index}]`;
+    const canonicalId = String(entity && entity.id || '').trim();
     if (!canonicalId) {
       state.errors.push(messageRecord(
         'error',
         'Layer 1 - Identity Format',
-        'data/environments.json',
-        'identity.canonicalId',
-        `Environment "${name}"`,
-        compatibilityCode,
-        'Missing canonical identifier for environment record.',
-        'Provide an immutable canonical ID (example HH-ENV-0001).'
+        'generated/world-canon-index.json',
+        'id',
+        `${label} "${name}"`,
+        '',
+        'Missing canonical identifier in current Library-derived World Canon record.',
+        'Provide the persisted identifier assigned by the Library entity ID registry.'
       ));
-    } else {
-      state.canonicalIdsChecked += 1;
-      state.coverage.environments.canonical += 1;
-
-      registerCanonicalIdentity(state, canonicalId, `Environment "${name}"`, 'data/environments.json', 'identity.canonicalId');
-
-      if (isLegacyPresentationId(canonicalId)) {
-        state.errors.push(messageRecord(
-          'error',
-          'Layer 6 - Legacy Compatibility',
-          'data/environments.json',
-          'identity.canonicalId',
-          `Environment "${name}"`,
-          canonicalId,
-          'Presentation identifier detected in environment canonical field.',
-          'Environment identities must be immutable canonical IDs, not presentation codes.'
-        ));
-      }
+      return;
     }
 
-    if (identity.hasTopLevelCode) {
-      state.warnings.push(messageRecord(
-        'warning',
-        'Layer 6 - Legacy Compatibility',
-        'data/environments.json',
-        'code',
-        `Environment "${name}"`,
-        environment.code,
-        'Legacy presentation code exists as a top-level field.',
-        'Keep temporarily for compatibility, then remove once consumers switch to identity.canonicalId.'
-      ));
-    }
+    state.canonicalIdsChecked += 1;
+    coverage.canonical += 1;
+    registerCanonicalIdentity(
+      state,
+      canonicalId,
+      `${label} "${name}"`,
+      'generated/world-canon-index.json',
+      'id'
+    );
   });
 
-  state.coverage.environments.remaining = Math.max(0, state.coverage.environments.total - state.coverage.environments.canonical);
+  coverage.remaining = Math.max(0, coverage.total - coverage.canonical);
 }
 
-function populateCoverageFromData(charactersData, environmentsData, relationshipsData, worldCanonIndex, authorityRegistry, state) {
+function populateCoverageFromData(charactersData, worldCanonIndex, authorityRegistry, state) {
   const worldCanonEnvironments = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || [];
   const worldCanonRelationships = (worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || [];
   const booksConfig = getRegistryEntityConfig(authorityRegistry, 'books');
@@ -761,14 +587,8 @@ function populateCoverageFromData(charactersData, environmentsData, relationship
   state.sourceSummary.characters.dataRecords = Array.isArray(charactersData && charactersData.characters)
     ? charactersData.characters.length
     : 0;
-  state.sourceSummary.environments.dataRecords = Array.isArray(environmentsData && environmentsData.environments)
-    ? environmentsData.environments.length
-    : 0;
-  state.sourceSummary.relationships.dataRecords = Array.isArray(relationshipsData && relationshipsData.relationships)
-    ? relationshipsData.relationships.length
-    : 0;
-  state.sourceSummary.environments.worldCanonRecords = worldCanonEnvironments.length;
-  state.sourceSummary.relationships.worldCanonRecords = worldCanonRelationships.length;
+  state.sourceSummary.environments.dataRecords = worldCanonEnvironments.length;
+  state.sourceSummary.relationships.dataRecords = worldCanonRelationships.length;
   state.sourceSummary.books.activeCanonicalSource = booksConfig.canonicalSource;
   state.sourceSummary.characters.activeCanonicalSource = charactersConfig.canonicalSource;
   state.sourceSummary.environments.activeCanonicalSource = environmentsConfig.canonicalSource;
@@ -790,15 +610,6 @@ function populateCoverageFromData(charactersData, environmentsData, relationship
     (entry) => entry && entry.identity && entry.identity.canonicalId
   );
 
-  state.coverage.environments = getGenericCanonicalCoverage(
-    environmentsData && environmentsData.environments,
-    (entry) => entry && entry.identity && entry.identity.canonicalId
-  );
-
-  state.coverage.relationships = getGenericCanonicalCoverage(
-    relationshipsData && relationshipsData.relationships,
-    (entry) => entry && entry.identity && entry.identity.canonicalId
-  );
 }
 
 function printCoverage(state) {
@@ -895,7 +706,6 @@ function writeMachineReport(state, reportPath, strict) {
     status: state.errors.length > 0 ? 'FAIL' : 'PASS',
     mode: strict ? 'strict' : 'report-only',
     layers: [
-      'Preflight - Governance',
       'Layer 1 - Identity Format',
       'Layer 2 - Identity Uniqueness',
       'Layer 3 - World Resolution',
@@ -910,10 +720,8 @@ function writeMachineReport(state, reportPath, strict) {
       warnings: state.warnings.length,
       errors: state.errors.length
     },
-    canonicalAuthorityRegistryPath: path.relative(root, fs.existsSync(authorityRegistryPath) ? authorityRegistryPath : sourceRegistryPath),
+    canonicalAuthorityRegistryPath: path.relative(root, authorityRegistryPath),
     canonicalAuthorityRegistry: state.authorityRegistry,
-    canonicalSourceRegistryPath: path.relative(root, sourceRegistryPath),
-    canonicalSourceRegistry: state.authorityRegistry,
     sourceSummary: state.sourceSummary,
     adoption: state.coverage,
     coverage: state.coverage,
@@ -929,12 +737,8 @@ function writeMachineReport(state, reportPath, strict) {
 function run(options) {
   const booksData = loadJson(path.join('data', 'books.json'));
   const charactersData = loadJson(path.join('data', 'characters.json'));
-  const environmentsData = loadJson(path.join('data', 'environments.json'));
-  const relationshipsData = loadJson(path.join('data', 'relationships.json'));
   const worldCanonIndex = loadJson(path.join('generated', 'world-canon-index.json'));
   const authorityRegistry = loadCanonicalAuthorityRegistry();
-  const authorityRegistryRaw = loadRegistryFile(authorityRegistryPath);
-  const sourceRegistryRaw = loadRegistryFile(sourceRegistryPath);
 
   const state = {
     canonicalIdsChecked: 0,
@@ -951,24 +755,19 @@ function run(options) {
     globalCanonicalOwners: new Map()
   };
 
-  if (authorityRegistryRaw && sourceRegistryRaw) {
-    appendRegistryDriftErrors(state, detectRegistryDrift(authorityRegistryRaw, sourceRegistryRaw));
-  }
-
   const lookupMaps = buildCanonicalLookupMaps(
     booksData,
     charactersData,
-    environmentsData,
-    relationshipsData,
     worldCanonIndex,
     authorityRegistry
   );
 
-  populateCoverageFromData(charactersData, environmentsData, relationshipsData, worldCanonIndex, authorityRegistry, state);
+  populateCoverageFromData(charactersData, worldCanonIndex, authorityRegistry, state);
   validateWorldResolutionStage1(booksData, lookupMaps, state);
   validateBooks(booksData, state);
   validateCharacters(charactersData, state);
-  validateEnvironments(environmentsData, state);
+  validateWorldCanonRecords('environments', worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments, state);
+  validateWorldCanonRecords('relationships', worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships, state);
   writeMachineReport(state, options.reportPath, options.strict);
   printHumanReport(state, options.strict);
 
@@ -987,5 +786,6 @@ if (require.main === module) {
 
 module.exports = {
   run,
-  parseArgs
+  parseArgs,
+  isValidBookId
 };

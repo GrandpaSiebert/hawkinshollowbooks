@@ -67,14 +67,40 @@ function familyLabel(route) {
   return '';
 }
 
-function distinguishTitle(record, siteName) {
+function canonicalIdFromRoute(route) {
+  const match = String(route).match(/(?:^|\/)(HH-[A-Z]+\+?-\d{4})(?:-|\.html|\/|$)/i);
+  return match ? match[1].toUpperCase() : '';
+}
+
+function distinguishTitle(record, siteName, forceDistinction = false) {
   const label = familyLabel(record.route);
   if (!label) throw new Error(`No semantic title distinction for ${record.route}`);
   const suffix = ` | ${siteName}`;
   const base = record.title.endsWith(suffix) ? record.title.slice(0, -suffix.length) : record.title;
+  if (!forceDistinction
+    && base.toLowerCase().endsWith(` ${label.toLowerCase()}`)
+    && titleLength(base) <= MAXIMUM_LENGTH) {
+    return base;
+  }
+  const canonicalId = canonicalIdFromRoute(record.route);
+  if (/^HH-[SR]-\d{4}$/.test(canonicalId)) {
+    const conciseFreebie = getFreebieSearchTitle({ canonicalId, title: base }, siteName);
+    if (!forceDistinction && titleLength(conciseFreebie) <= MAXIMUM_LENGTH) return conciseFreebie;
+    const identifiedFreebie = `${conciseFreebie} | ${canonicalId}`;
+    if (titleLength(identifiedFreebie) <= MAXIMUM_LENGTH) return identifiedFreebie;
+  }
   const concise = `${base} | ${label}`;
   const branded = `${concise}${suffix}`;
-  return titleLength(branded) <= PREFERRED_LENGTH ? branded : concise;
+  if (titleLength(branded) <= PREFERRED_LENGTH) return branded;
+  if (titleLength(concise) <= MAXIMUM_LENGTH) return concise;
+
+  if (!canonicalId) throw new Error(`No short unique title distinction for ${record.route}`);
+  const identified = `${base} | ${canonicalId}`;
+  if (titleLength(identified) <= MAXIMUM_LENGTH) return identified;
+
+  const compact = `${canonicalId} | ${label}`;
+  const brandedCompact = `${compact}${suffix}`;
+  return titleLength(brandedCompact) <= MAXIMUM_LENGTH ? brandedCompact : compact;
 }
 
 function resolveSearchTitles(records, siteName) {
@@ -86,7 +112,10 @@ function resolveSearchTitles(records, siteName) {
   }
   const result = records.map((record) => ({
     ...record,
-    title: titles.get(record.title).length > 1 ? distinguishTitle(record, siteName) : record.title
+    title: titles.get(record.title).length > 1
+      || (titleLength(record.title) > MAXIMUM_LENGTH && familyLabel(record.route))
+      ? distinguishTitle(record, siteName, titles.get(record.title).length > 1)
+      : record.title
   }));
   const seen = new Map();
   for (const record of result) {
@@ -145,6 +174,31 @@ function escapeTitle(title) {
   return title.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+function replacePresentationTitle(html, title) {
+  const escaped = escapeTitle(title);
+  let updated = html.replace(/<title>[\s\S]*?<\/title>/i, () => `<title>${escaped}</title>`);
+  for (const [attribute, name] of [['property', 'og:title'], ['name', 'twitter:title']]) {
+    const expression = new RegExp(`(<meta\\s+${attribute}="${name}"\\s+content=")[^"]*(")`, 'i');
+    updated = updated.replace(expression, (_, prefix, suffix) => `${prefix}${escaped}${suffix}`);
+  }
+  return updated;
+}
+
+function listHtmlRoutes(outputDir) {
+  const routes = [];
+  function visit(directory) {
+    for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+      const file = path.join(directory, entry.name);
+      if (entry.isDirectory()) visit(file);
+      else if (entry.isFile() && entry.name.toLowerCase().endsWith('.html')) {
+        routes.push(path.relative(outputDir, file).split(path.sep).join('/'));
+      }
+    }
+  }
+  visit(outputDir);
+  return routes;
+}
+
 function finalizeSearchTitles(outputDirs, site, reservations = []) {
   const sitemap = fs.readFileSync(path.join(outputDirs[0], 'sitemap.xml'), 'utf8');
   const urls = Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1]);
@@ -172,9 +226,32 @@ function finalizeSearchTitles(outputDirs, site, reservations = []) {
       if (current.title !== allocationRecords[i].title || current.canonical !== record.canonical) {
         throw new Error(`Search-title output disagreement: ${outputDir}: ${record.route}`);
       }
-      if (current.title !== record.title) {
-        fs.writeFileSync(file, html.replace(/<title>[\s\S]*?<\/title>/i, () => `<title>${escapeTitle(record.title)}</title>`), 'utf8');
+      const updated = replacePresentationTitle(html, record.title);
+      if (updated !== html) fs.writeFileSync(file, updated, 'utf8');
+    }
+
+    for (const route of listHtmlRoutes(outputDir)) {
+      const file = path.join(outputDir, route);
+      const html = fs.readFileSync(file, 'utf8');
+      if (!/<(?:!doctype\s+html|html|head|body)\b/i.test(html)) continue;
+      const document = parse5.parse(html);
+
+      const titles = getElements(document, 'title');
+      if (titles.length !== 1) {
+        throw new Error(`Invalid generated HTML title count (${titles.length}): ${outputDir}: ${route}`);
       }
+      const title = getText(titles[0]);
+      if (titleLength(title) <= MAXIMUM_LENGTH) continue;
+
+      const canonicalId = canonicalIdFromRoute(route);
+      const label = familyLabel(route);
+      if (!canonicalId || !label) {
+        throw new Error(`No short unique title distinction for generated page: ${route}`);
+      }
+      const fallback = `${canonicalId} | ${label} | ${site.siteName}`;
+      const compactFallback = `${canonicalId} | ${label}`;
+      const replacement = titleLength(fallback) <= MAXIMUM_LENGTH ? fallback : compactFallback;
+      fs.writeFileSync(file, replacePresentationTitle(html, replacement), 'utf8');
     }
   }
   const reviews = resolved.filter((record) => titleLength(record.title) > PREFERRED_LENGTH);

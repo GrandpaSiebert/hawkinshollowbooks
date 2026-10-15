@@ -1,0 +1,76 @@
+name: Hawkins Hollow build-only validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  validate:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.20.2
+          cache: npm
+
+      - name: Set deterministic candidate sitemap date
+        run: echo "HH_SITEMAP_DEPLOYMENT_DATE=$(git log -1 --format=%cs)" >> "$GITHUB_ENV"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Restore trusted Pages state (read-only)
+        run: node scripts/indexnow-deployment.js restore
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Restore canonical inputs using read-only R2 credentials
+        env:
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.R2_READONLY_ACCOUNT_ID }}
+          R2_ACCESS_KEY_ID: ${{ secrets.R2_READONLY_ACCESS_KEY_ID }}
+          R2_SECRET_ACCESS_KEY: ${{ secrets.R2_READONLY_SECRET_ACCESS_KEY }}
+          R2_BUCKET: hawkins-hollow-library
+        run: |
+          if [[ -z "$CLOUDFLARE_ACCOUNT_ID" || -z "$R2_ACCESS_KEY_ID" || -z "$R2_SECRET_ACCESS_KEY" ]]; then
+            echo "Dedicated read-only R2 credentials are required to restore unlisted World Canon inputs." >&2
+            exit 1
+          fi
+          if [[ -e "$GITHUB_WORKSPACE/Library" || -L "$GITHUB_WORKSPACE/Library" ]]; then
+            echo "Refusing to restore into an existing Library directory." >&2
+            exit 1
+          fi
+          node scripts/restore-library-canon.js --r2-only --destination "$GITHUB_WORKSPACE/Library"
+
+      - name: Verify published title-art dependencies (read-only)
+        run: node scripts/verify-freebie-title-art-readonly.js
+
+      - name: Run complete serial regression suite
+        run: node --test --test-concurrency=1 test/*.test.js
+        env:
+          REQUIRE_FREEBIE_TITLE_ART_PUBLICATION: 'true'
+          HH_ENTITY_ID_STRICT: '1'
+          HH_SITEMAP_DEPLOYMENT_DATE: ${{ env.HH_SITEMAP_DEPLOYMENT_DATE }}
+
+      - name: Build and validate site once after tests
+        run: npm run build
+        env:
+          REQUIRE_FREEBIE_TITLE_ART_PUBLICATION: 'true'
+          HH_ENTITY_ID_STRICT: '1'
+          HH_SITEMAP_DEPLOYMENT_DATE: ${{ env.HH_SITEMAP_DEPLOYMENT_DATE }}
+
+      - name: Verify final build output
+        run: |
+          test -f build-recovery/books.html
+          test -f build-recovery/start-here.html
+          test -f build-recovery/.nojekyll
+          test "$(cat build-recovery/CNAME)" = "hawkinshollowbooks.com"
+          test -f build-recovery/e4b3aad43c3b4ece93f1a3b5b6962b38.txt

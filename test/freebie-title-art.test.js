@@ -119,6 +119,7 @@ test('restores real manifest title-art bytes and leaves invalid candidates absen
     return restoreLibraryCanon({
       baseUrl: 'https://library.test',
       destination,
+      publicOnly: true,
       credentials: { configured: false }
     });
   }
@@ -166,6 +167,9 @@ test('supplements missing manifest artwork from the authenticated R2 object list
         };
       }
       if (command.constructor.name === 'GetObjectCommand') {
+        if (command.input.Key === 'manifest/manifest.json') {
+          return { Body: Readable.from([Buffer.from(JSON.stringify(manifest))]) };
+        }
         const bytes = command.input.Key === imagePath ? imageBytes : Buffer.from('docx');
         return { Body: Readable.from([bytes]) };
       }
@@ -174,11 +178,14 @@ test('supplements missing manifest artwork from the authenticated R2 object list
   };
 
   try {
-    global.fetch = async () => ({ ok: true, json: async () => manifest });
+    global.fetch = async () => {
+      throw new Error('R2-only restore must not fetch the public manifest.');
+    };
     const destination = path.join(tempRoot, 'Library');
     await restoreLibraryCanon({
       baseUrl: 'https://library.test',
       destination,
+      r2Only: true,
       credentials: { configured: false },
       r2Client
     });
@@ -201,6 +208,9 @@ test('restores world canon documents listed in R2 when the public manifest omits
         return { Contents: [{ Key: documentPath }] };
       }
       if (command.constructor.name === 'GetObjectCommand') {
+        if (command.input.Key === 'manifest/manifest.json') {
+          return { Body: Readable.from([Buffer.from(JSON.stringify({ records: [] }))]) };
+        }
         assert.equal(command.input.Key, documentPath);
         return { Body: Readable.from([documentBytes]) };
       }
@@ -214,8 +224,9 @@ test('restores world canon documents listed in R2 when the public manifest omits
     await restoreLibraryCanon({
       baseUrl: 'https://library.test',
       destination,
+      r2Only: true,
       credentials: { configured: false },
-      titleArtR2Client: r2Client
+      r2Client
     });
     assert.deepEqual(fs.readFileSync(path.join(destination, documentPath)), documentBytes);
   } finally {

@@ -111,7 +111,7 @@ function writeCharacterCanonArtifact(siteRoot, charactersData, libraryScan, outp
   const output = {
     generatedAt: new Date().toISOString(),
     source: {
-      charactersFile: 'data/characters.json',
+      characterDirectoryFile: 'data/characters.json',
       libraryScanFile: 'generated/library-scan.json'
     },
     summary: {

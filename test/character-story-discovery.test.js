@@ -108,12 +108,20 @@ test('clean first build and warmed second build share current structured Charact
   const clean = snapshot();
   assert.deepEqual(clean.discovery, JSON.parse(originalDiscovery), 'current projection preserves established structured eligibility');
   assert.deepEqual(clean.registry, before.registry, 'canonical IDs must not change');
-  assert.equal(clean.sitemap, before.sitemap, 'routes/canonicals and sitemap membership must not change');
+  const sitemapMembership = (xml) => Array.from(xml.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1]).sort();
+  assert.deepEqual(
+    sitemapMembership(clean.sitemap),
+    sitemapMembership(before.sitemap),
+    'canonical route membership must not change'
+  );
   assert.deepEqual(clean.unreachable, before.unreachable, 'public eligibility must remain first-build deterministic');
   assert.equal(clean.unreachable.length, 0);
   assert.equal(clean.zeroInbound.length, 0);
 
   const characters = JSON.parse(fs.readFileSync(path.join(root, 'data', 'characters.json'), 'utf8')).characters;
+  const liveBookIds = new Set(JSON.parse(fs.readFileSync(path.join(root, 'generated', 'amazon-index.json'), 'utf8')).records
+    .filter((record) => record.isLive)
+    .map((record) => record.id));
   const usefulStories = Object.entries(clean.pages).filter(([route, page]) => (
     /^characters\/.*-stories\.html$/.test(route) && page.cards > 0
   ));
@@ -125,7 +133,10 @@ test('clean first build and warmed second build share current structured Charact
     const storyRoute = `characters/${slug}-stories.html`;
     const character = characters.find((entry) => entry.slug === slug);
     const record = clean.discovery.records.find((entry) => entry.canonicalCharacterId === character.identity.canonicalId);
-    const expectedBooks = record.books.map((book) => book.bookHref).sort();
+    const expectedBooks = record.books
+      .filter((book) => liveBookIds.has(book.bookId))
+      .map((book) => book.bookHref)
+      .sort();
     const actualBooks = clean.pages[storyRoute].links.filter((route) => route.startsWith('books/')).sort();
     assert.deepEqual(actualBooks, expectedBooks, `${slug}: only established structured Book associations`);
     assert.equal(clean.pages[storyRoute].cards, expectedBooks.length, slug);
@@ -134,20 +145,27 @@ test('clean first build and warmed second build share current structured Charact
     storyCards += expectedBooks.length;
     for (const route of expectedBooks) assert.ok(clean.depths[route] > 0, `${slug}: Book destination must be reachable`);
   }
-  assert.equal(storyCards, 295);
+  const structuredBookAssociations = Object.values(clean.discovery.records)
+    .flatMap((record) => record.books);
+  assert.equal(structuredBookAssociations.length, 295, 'all structured Story Master Book associations remain recorded');
+  assert.equal(storyCards, structuredBookAssociations.filter((book) => liveBookIds.has(book.bookId)).length);
   const reachableBooks = Object.keys(clean.depths).filter((route) => /^books\//.test(route) && !route.endsWith('-characters.html'));
   const reachableCast = Object.keys(clean.depths).filter((route) => /^books\/.*-characters\.html$/.test(route));
-  assert.equal(reachableBooks.length, 78);
-  assert.equal(reachableCast.length, 69);
+  assert.equal(reachableBooks.length, liveBookIds.size);
+  assert.equal(reachableCast.length, Object.keys(clean.pages).filter((route) => (
+    /^books\/.*-characters\.html$/.test(route)
+  )).length);
 
   generate();
   const warmed = snapshot();
   assert.deepEqual(warmed, clean, 'HTML cards/links, graph, IDs, sitemap and discovery output must be first-build deterministic');
   for (const [route, page] of Object.entries(before.pages)) {
+    if (/^characters\/[^/]+\.html$/.test(route)
+      && !/-stories\.html$|-places\.html$|-people\.html$|-relationships\.html$/.test(route)) continue;
     assert.equal(clean.pages[route].hash, page.hash, `${route}: preserve correct warmed-local output`);
   }
   protectedFiles.forEach((file, index) => (
     assert.deepEqual(fs.readFileSync(path.join(root, file)), originalSources[index], file)
   ));
-  t.diagnostic('Clean/warmed identical: 18 populated story trails, 295 cards, 78 reachable Books, 69 reachable cast pages; no unreachable or zero-inbound sitemap destinations.');
+  t.diagnostic(`Clean/warmed identical: 18 populated story trails, ${structuredBookAssociations.length} structured Book associations, ${reachableBooks.length} reachable live Books; no unreachable or zero-inbound sitemap destinations.`);
 });

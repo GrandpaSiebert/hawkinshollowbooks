@@ -42,21 +42,25 @@ Format:
 
 `HH-[MODE]-NNNN`
 
-Examples:
+Examples and series distinctions:
 
-- `HH-A-0001`
-- `HH-B-0001`
-- `HH-C-0047`
+- `HH-C-0001` — Second Readers.
+- `HH-C+-0001` — Growing Together.
+- `HH-F-0001` — Holiday Story Poems.
+- `HH-HR-0001` — Hero Play Poems.
+- Existing single-letter mode IDs, such as `HH-A-0001` and `HH-B-0001`, remain valid.
 
 Where:
 
 - `HH` is the Hawkins Hollow namespace.
-- `[MODE]` is the production mode code.
-- `NNNN` is a zero-padded sequence within that mode.
+- `[MODE]` is a valid single-letter mode or one of the established multi-character modes `C+` and `HR`.
+- `NNNN` is a zero-padded four-digit sequence within that mode.
+- `HH-C` and `HH-C+` are distinct modes and series; they must not be normalized or treated as interchangeable.
+- `HH-F` and `HH-HR` are distinct modes and series; they must not be normalized or treated as interchangeable.
 
 Regex for publication IDs:
 
-`^HH-[A-Z]-[0-9]{4}$`
+`^HH-(?:[A-Z]|C\+|HR)-[0-9]{4}$`
 
 ### Other canonical entity families
 

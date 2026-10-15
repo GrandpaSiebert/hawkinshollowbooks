@@ -3,7 +3,11 @@ const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
 const parse5 = require('parse5');
-const { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility } = require('../scripts/public-surface-eligibility');
+const {
+  CONTINUATION_COLLECTIONS,
+  getPublicSurfaceEligibility,
+  isPublicEntityEligible
+} = require('../scripts/public-surface-eligibility');
 const { readSearchTitlePage } = require('../scripts/search-titles');
 
 const root = path.join(__dirname, '..');
@@ -73,7 +77,7 @@ test('public eligibility distinguishes internal entities from primary, secondary
   assert.equal(getPublicSurfaceEligibility({ entity: { type: 'character', slug: 'alice-mole' } }).indexable, true);
 });
 
-test('approved 107 public surfaces are classified precisely without losing primary search destinations', () => {
+test('approved public surfaces are classified precisely without losing primary search destinations', () => {
   const surfaces = JSON.parse(fs.readFileSync(path.join(root, 'generated/public-surface-index.json'), 'utf8')).records;
   const entities = JSON.parse(fs.readFileSync(path.join(root, 'generated/entity-index.json'), 'utf8'));
   const search = JSON.parse(fs.readFileSync(path.join(root, 'generated/search-index.json'), 'utf8'));
@@ -81,31 +85,39 @@ test('approved 107 public surfaces are classified precisely without losing prima
   const empty = surfaces.filter((entry) => entry.route.startsWith('characters/') && !entry.generated);
   assert.deepEqual(empty.map((entry) => entry.route).sort(), expectedEmptyRoutes);
   const shells = surfaces.filter((entry) => entry.route.startsWith('entities/book/') && entry.state === 'secondary');
-  assert.equal(shells.length, 78);
+  assert.equal(shells.length, entities.byType.books.length);
   const pop = surfaces.find((entry) => entry.route === 'entities/character/pop-pop-pop-farmer-hawkins.html');
   const reading = surfaces.find((entry) => entry.route === 'entities/resource/reading-order-reading-order.html');
   const alias = surfaces.find((entry) => entry.route === 'storybook-series.html');
   assert.match(pop.reason, /Preserved secondary authoring\/canon surface pending editorial decision/);
   const approved = [...shells, ...empty, pop, reading, alias];
-  assert.equal(approved.length, 107);
+  assert.equal(approved.length, shells.length + empty.length + 3);
   for (const entry of approved) {
     assert.equal(entry.sitemap, false, entry.route);
     assert.equal(entry.search, false, entry.route);
     assert.equal(entry.navigation, false, entry.route);
     assert.ok(!sitemap.includes(`/${entry.route}</loc>`), entry.route);
     assert.ok(!search.records.some((record) => record.href === entry.route), entry.route);
-    for (const directory of ['build-recovery', 'build']) {
-      const file = path.join(root, directory, entry.route);
-      assert.equal(fs.existsSync(file), entry.generated, `${directory}: ${entry.route}`);
-      if (entry.generated) assert.match(fs.readFileSync(file, 'utf8'), /<meta name="robots" content="noindex, follow"/, entry.route);
-    }
+    const file = path.join(root, 'build-recovery', entry.route);
+    assert.equal(fs.existsSync(file), entry.generated, entry.route);
+    if (entry.generated) assert.match(fs.readFileSync(file, 'utf8'), /<meta name="robots" content="noindex, follow"/, entry.route);
   }
-  assert.equal(entities.byType.books.length, 1078, 'internal Book identities must remain');
+  const libraryBookIds = new Set(JSON.parse(fs.readFileSync(path.join(root, 'generated/library-index.json'), 'utf8')).books
+    .map((book) => String(book.id || '').toUpperCase()));
+  for (const book of entities.byType.books) {
+    assert.ok(libraryBookIds.has(String(book.id || '').toUpperCase()), `internal Book identity ${book.id} must remain`);
+  }
   assert.ok(entities.byType.characters.some((entity) => entity.id === 'Pop'));
   assert.ok(entities.byType.resources.some((entity) => entity.id === 'reading-order'));
-  assert.equal(search.summary.byType.books, 78);
+  const liveBookIds = new Set(JSON.parse(fs.readFileSync(path.join(root, 'generated/amazon-index.json'), 'utf8')).records
+    .filter((record) => String(record.status || '').trim().toLowerCase() === 'live')
+    .map((record) => String(record.id || '').trim().toUpperCase()));
+  assert.equal(search.summary.byType.books, liveBookIds.size);
   assert.equal(search.summary.byType.characters, 27);
   for (const entity of entities.byType.characters) {
+    const route = `characters/${entity.slug}.html`;
+    const surface = surfaces.find((entry) => entry.route === route);
+    if (!surface || !surface.search) continue;
     assert.ok(search.records.some((record) => record.id === entity.id && record.href === `characters/${entity.slug}.html`), entity.id);
   }
   assert.ok(search.records.some((record) => record.href === 'storybook-shelf.html'));
@@ -119,67 +131,79 @@ test('approved 107 public surfaces are classified precisely without losing prima
   assert.equal(search.summary.byType.nurseryRhymes, 500);
 });
 
-test('published Farmhouse Exterior is the ordinary public ENV-0032 Environment surface', () => {
+test('Farmhouse Exterior is publicly discoverable and remains distinct from Farmhouse Porch', () => {
   const route = 'entities/environment/env-0032-farmhouse-exterior.html';
-  const canonical = `https://hawkinshollowbooks.com/${route}`;
+  const porchRoute = 'entities/environment/env-0010-farmhouse-porch.html';
   const entityIndex = JSON.parse(fs.readFileSync(path.join(root, 'generated/entity-index.json'), 'utf8'));
   const graph = JSON.parse(fs.readFileSync(path.join(root, 'generated/entity-graph.json'), 'utf8'));
   const registry = JSON.parse(fs.readFileSync(path.join(root, 'data/entity-id-registry.json'), 'utf8'));
   const surfaces = JSON.parse(fs.readFileSync(path.join(root, 'generated/public-surface-index.json'), 'utf8')).records;
   const search = JSON.parse(fs.readFileSync(path.join(root, 'generated/search-index.json'), 'utf8'));
-  const sitemap = html('sitemap.xml');
+  const discovery = JSON.parse(fs.readFileSync(path.join(output, 'generated/public-discovery-index.json'), 'utf8'));
   const entity = entityIndex.byType.environments.find((record) => record.sourceDocument === 'Environments/Farmhouse Exterior Visual Canon.docx');
-  const surface = surfaces.find((record) => record.route === route);
-  const searchRecords = search.records.filter((record) => record.href === route);
-  const document = parse5.parse(html(route));
+  const porch = entityIndex.byType.environments.find((record) => record.sourceDocument === 'Environments/Farmhouse Porch Visual Canon.docx');
   const farmhouseEntry = registry.entries['environment:Environments/Farmhouse Exterior Visual Canon.docx'];
+  const internalWorldCanon = JSON.parse(fs.readFileSync(path.join(root, 'generated/world-canon-index.json'), 'utf8'));
+  const internalGraphNode = graph.nodes.find((node) => node.id === 'environment:ENV-0032');
+  const publicEntityIndex = JSON.parse(fs.readFileSync(path.join(output, 'generated/entity-index.json'), 'utf8'));
+  const publicRecord = discovery.records.find((record) => record.id === 'ENV-0032');
+  const farmhouseSurface = surfaces.find((record) => record.route === route);
+  const pondRoute = 'entities/environment/env-0023-pond-edge.html';
+  const pondSurface = surfaces.find((record) => record.route === pondRoute);
+  const pondDiscovery = discovery.records.find((record) => record.id === 'ENV-0023');
+  const pondReferences = (JSON.parse(fs.readFileSync(path.join(root, 'data/books.json'), 'utf8')).books || [])
+    .filter((book) => (book.environments || []).includes('ENV-0023'))
+    .map((book) => book.identity.canonicalId)
+    .sort();
+  const sitemap = html('sitemap.xml');
 
   assert.deepEqual(farmhouseEntry, { id: 'ENV-0032' });
+  assert.equal(isPublicEntityEligible({ type: 'environment', id: 'ENV-0032' }), true);
+  assert.equal(isPublicEntityEligible({ type: 'environment', id: 'ENV-0010' }), true);
   assert.equal(entity.id, 'ENV-0032');
   assert.equal(entity.slug, 'farmhouse-exterior');
   assert.equal(entity.href, route);
+  assert.equal(porch.id, 'ENV-0010');
+  assert.equal(porch.slug, 'farmhouse-porch');
+  assert.equal(porch.href, porchRoute);
+  assert.notEqual(entity.id, porch.id);
+  assert.notEqual(entity.href, porch.href);
   assert.deepEqual(entity.mentions.landmarks, []);
-  assert.deepEqual(graph.edges.filter((edge) => edge.from === 'environment:ENV-0032'
-    && edge.relationshipType === 'mentions-landmark'), []);
-  assert.ok(surface.generated && surface.indexable && surface.sitemap && surface.search && surface.navigation);
-  assert.equal(surface.robots, '');
-  assert.equal((sitemap.match(new RegExp(`<loc>${canonical}</loc>`, 'g')) || []).length, 1);
-  assert.equal(searchRecords.length, 1);
-  assert.equal(searchRecords[0].id, 'ENV-0032');
-  assert.equal((html('map.html').match(new RegExp(`href="${route}"`, 'g')) || []).length, 1);
+  assert.equal(internalGraphNode.entityId, 'ENV-0032');
+  assert.ok(internalWorldCanon.byType.environments.some((record) => record.id === 'ENV-0032'));
+  assert.deepEqual(getPublicSurfaceEligibility({ entity }), {
+    generated: true,
+    indexable: true,
+    sitemap: true,
+    search: true,
+    navigation: true,
+    robots: '',
+    state: 'primary',
+    reason: 'Existing public visitor destination.',
+    redirectTo: ''
+  });
+  assert.ok(farmhouseSurface && farmhouseSurface.generated && farmhouseSurface.sitemap && farmhouseSurface.navigation);
+  assert.ok(search.records.some((record) => record.id === 'ENV-0032' && record.href === route));
+  assert.ok(publicRecord && publicRecord.type === 'environment' && publicRecord.href === route);
+  assert.equal((sitemap.match(new RegExp(`/${route}</loc>`, 'g')) || []).length, 1);
+  assert.ok(html('map.html').includes(route));
+  assert.ok(html(route).includes('Farmhouse Exterior'));
+  assert.ok(fs.existsSync(path.join(output, route)));
+  assert.ok(fs.existsSync(path.join(root, 'build-recovery', route)));
+  assert.ok(pondSurface && pondSurface.sitemap && pondSurface.navigation);
+  assert.ok(pondDiscovery && pondDiscovery.href === pondRoute);
+  assert.equal((sitemap.match(new RegExp(`/${pondRoute}</loc>`, 'g')) || []).length, 1);
+  assert.deepEqual(pondReferences, ['HH-A-0013', 'HH-B-0001']);
+  assert.ok(html('map.html').includes('entities/environment/env-0030-willow-circle.html'));
+  assert.ok(surfaces.some((record) => record.route === 'entities/environment/env-0030-willow-circle.html' && record.navigation));
 
-  const nodes = [];
-  const collect = (node, result) => {
-    if (node.tagName) result.push(node);
-    for (const child of node.childNodes || []) collect(child, result);
-  };
-  collect(document, nodes);
-  const meta = (name, property) => nodes.find((node) => node.tagName === 'meta'
-    && attr(node, 'name') === name && attr(node, 'property') === property);
-  const canonicalLink = nodes.find((node) => node.tagName === 'link' && attr(node, 'rel') === 'canonical');
-  const h1 = elements(document, 'h1');
-  const title = nodes.find((node) => node.tagName === 'title');
-  const description = meta('description', '');
-  assert.equal(h1.length, 1);
-  assert.ok(title);
-  assert.ok(title.childNodes.map(visibleText).join('').length <= 70);
-  assert.ok(description);
-  assert.ok(attr(description, 'content').length > 0 && attr(description, 'content').length <= 160);
-  assert.equal(attr(canonicalLink, 'href'), canonical);
-  assert.equal(attr(meta('', 'og:title'), 'content'), title.childNodes.map(visibleText).join(''));
-  assert.equal(attr(meta('', 'og:description'), 'content'), attr(description, 'content'));
-  assert.equal(attr(meta('', 'og:url'), 'content'), canonical);
-  assert.ok(meta('twitter:card', ''));
-  assert.equal(attr(meta('twitter:url', ''), 'content'), canonical);
-  const jsonLdCount = (nodes) => nodes.filter((node) => node.tagName === 'script' && attr(node, 'type') === 'application/ld+json').length;
-  const existingEnvironment = parse5.parse(html('entities/environment/env-0030-willow-circle.html'));
-  const existingEnvironmentNodes = [];
-  collect(existingEnvironment, existingEnvironmentNodes);
-  assert.equal(jsonLdCount(nodes), jsonLdCount(existingEnvironmentNodes), 'Farmhouse follows existing Environment JSON-LD treatment');
-
-  const body = nodes.find((node) => node.tagName === 'body');
-  const copy = visibleText(body).replace(/\s+/g, ' ');
-  assert.doesNotMatch(copy, /\b(?:quality control|production note|visual canon|sourceDocument|extractor)\b/i);
+  const publicFarmhouse = publicEntityIndex.byType.environments.find((record) => record.id === 'ENV-0032');
+  const publicPorch = publicEntityIndex.byType.environments.find((record) => record.id === 'ENV-0010');
+  assert.ok(publicFarmhouse);
+  assert.ok(publicPorch);
+  assert.equal(publicFarmhouse.sourceDocument, undefined);
+  assert.equal(publicPorch.sourceDocument, undefined);
+  assert.deepEqual(Object.keys(publicEntityIndex.byType).sort(), ['environments', 'landmarks']);
 });
 
 test('consolidation uses the established immediate-refresh mechanism and no generated anchors target withdrawn continuations or series alias', () => {

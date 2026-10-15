@@ -4,30 +4,22 @@
     "books": {
       "canonicalAuthority": "Book Model",
       "canonicalSource": "data/books.json",
-      "canonicalPath": "books",
-      "compatibilitySource": null,
-      "compatibilityPath": null
+      "canonicalPath": "books"
     },
     "characters": {
-      "canonicalAuthority": "Character Canon",
+      "canonicalAuthority": "Character Directory",
       "canonicalSource": "data/characters.json",
-      "canonicalPath": "characters",
-      "compatibilitySource": null,
-      "compatibilityPath": null
+      "canonicalPath": "characters"
     },
     "environments": {
       "canonicalAuthority": "World Canon",
       "canonicalSource": "generated/world-canon-index.json",
-      "canonicalPath": "byType.environments",
-      "compatibilitySource": "data/environments.json",
-      "compatibilityPath": "environments"
+      "canonicalPath": "byType.environments"
     },
     "relationships": {
       "canonicalAuthority": "World Canon",
       "canonicalSource": "generated/world-canon-index.json",
-      "canonicalPath": "byType.relationships",
-      "compatibilitySource": "data/relationships.json",
-      "compatibilityPath": "relationships"
+      "canonicalPath": "byType.relationships"
     }
   }
 }

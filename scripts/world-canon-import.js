@@ -187,59 +187,8 @@ function writeWorldCanonArtifacts(siteRoot, charactersData, libraryScan, outputD
   const environmentsPath = path.join(outputDir, 'environment-canon-index.json');
   const landmarksPath = path.join(outputDir, 'landmark-canon-index.json');
 
-  if (libraryScan && libraryScan.missingLibrary) {
-    const existingWorldCanonIndex = readJsonIfExists(worldCanonPath);
-    if (existingWorldCanonIndex && existingWorldCanonIndex.byType) {
-      const generatedAt = new Date().toISOString();
-      const relationshipRecords = (existingWorldCanonIndex.byType.relationships || []).slice();
-      const environmentRecords = (existingWorldCanonIndex.byType.environments || []).slice();
-      const landmarkRecords = (existingWorldCanonIndex.byType.landmarks || []).slice();
-      const preservedWorldCanonIndex = {
-        ...existingWorldCanonIndex,
-        generatedAt,
-        source: {
-          charactersFile: 'data/characters.json',
-          libraryScanFile: 'generated/library-scan.json'
-        },
-        summary: {
-          relationships: relationshipRecords.length,
-          environments: environmentRecords.length,
-          landmarks: landmarkRecords.length,
-          totalRecords: relationshipRecords.length + environmentRecords.length + landmarkRecords.length
-        },
-        byType: {
-          relationships: relationshipRecords,
-          environments: environmentRecords,
-          landmarks: landmarkRecords
-        }
-      };
-
-      fs.writeFileSync(worldCanonPath, `${JSON.stringify(preservedWorldCanonIndex, null, 2)}\n`, 'utf8');
-      fs.writeFileSync(
-        relationshipsPath,
-        `${JSON.stringify({ generatedAt, records: relationshipRecords }, null, 2)}\n`,
-        'utf8'
-      );
-      fs.writeFileSync(
-        environmentsPath,
-        `${JSON.stringify({ generatedAt, records: environmentRecords }, null, 2)}\n`,
-        'utf8'
-      );
-      fs.writeFileSync(
-        landmarksPath,
-        `${JSON.stringify({ generatedAt, records: landmarkRecords }, null, 2)}\n`,
-        'utf8'
-      );
-
-      return {
-        worldCanonPath,
-        relationshipsPath,
-        environmentsPath,
-        landmarksPath,
-        registryPath: path.join(outputDir, 'entity-id-registry.json'),
-        summary: preservedWorldCanonIndex.summary
-      };
-    }
+  if (!libraryScan || libraryScan.missingLibrary) {
+    throw new Error('Cannot generate World Canon without a current Library scan.');
   }
 
   const registryPath = path.join(outputDir, 'entity-id-registry.json');
@@ -304,7 +253,7 @@ function writeWorldCanonArtifacts(siteRoot, charactersData, libraryScan, outputD
   const worldCanonIndex = {
     generatedAt: new Date().toISOString(),
     source: {
-      charactersFile: 'data/characters.json',
+      characterDirectoryFile: 'data/characters.json',
       libraryScanFile: 'generated/library-scan.json'
     },
     summary: {

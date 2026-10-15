@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const { SUPPORTED_IMAGE_EXTENSIONS, inspectImageAsset } = require('./image-asset');
 
 const root = path.join(__dirname, '..');
@@ -12,7 +13,11 @@ function parseArgs(argv) {
     baseUrl: process.env.LIBRARY_BASE_URL || defaultBaseUrl,
     destination: path.join(root, 'Library'),
     bucket: process.env.R2_BUCKET || defaultBucket,
-    manifestKey: process.env.LIBRARY_MANIFEST_KEY || defaultManifestKey
+    manifestKey: process.env.LIBRARY_MANIFEST_KEY || defaultManifestKey,
+    publicOnly: false,
+    r2Only: false,
+    manifestFile: null,
+    coverSourceIds: []
   };
 
   for (let index = 0; index < argv.length; index += 1) {
@@ -25,9 +30,25 @@ function parseArgs(argv) {
     } else if (argv[index] === '--bucket' && argv[index + 1]) {
       options.bucket = argv[index + 1];
       index += 1;
+    } else if (argv[index] === '--public-only') {
+      options.publicOnly = true;
+    } else if (argv[index] === '--r2-only') {
+      options.r2Only = true;
+    } else if (argv[index] === '--manifest-file' && argv[index + 1]) {
+      options.manifestFile = path.resolve(argv[index + 1]);
+      index += 1;
+    } else if (argv[index] === '--cover-source-id' && argv[index + 1]) {
+      options.coverSourceIds.push(String(argv[index + 1]).trim().toUpperCase());
+      index += 1;
     }
   }
 
+  if (options.publicOnly && (options.r2Only || options.manifestFile)) {
+    throw new Error('--public-only cannot be combined with --r2-only or --manifest-file.');
+  }
+  if (options.coverSourceIds.length && !options.r2Only) {
+    throw new Error('--cover-source-id requires --r2-only.');
+  }
   return options;
 }
 
@@ -142,18 +163,31 @@ async function mapWithConcurrency(items, limit, handler) {
 async function restoreLibraryCanon(options = {}) {
   const baseUrl = String(options.baseUrl || defaultBaseUrl).replace(/\/+$/, '');
   const destination = path.resolve(options.destination || path.join(root, 'Library'));
-  const credentials = options.credentials || getR2Credentials();
-  let manifest;
-  let r2Client = options.r2Client || null;
-  try {
-    manifest = await fetchJson(`${baseUrl}/manifest/manifest.json`);
-  } catch (publicError) {
-    if (!credentials.configured) {
-      throw new Error(`Public manifest fetch failed (${publicError.message}) and R2 credentials are not configured.`);
-    }
-    r2Client = createR2Client(credentials);
-    manifest = JSON.parse((await fetchR2Object(r2Client, options.bucket || defaultBucket, options.manifestKey || defaultManifestKey)).toString('utf8'));
+  const manifestFile = options.manifestFile ? path.resolve(options.manifestFile) : null;
+  if (!options.publicOnly && !manifestFile && !options.r2Only) {
+    throw new Error('Select an explicit restore source: --manifest-file, --r2-only, or --public-only.');
   }
+  if (options.publicOnly && manifestFile) {
+    throw new Error('Public-only restore cannot also use a local manifest file.');
+  }
+  const credentials = options.publicOnly
+    ? { accountId: '', accessKeyId: '', secretAccessKey: '', configured: false }
+    : (options.credentials || getR2Credentials());
+  if (options.r2Only && !options.r2Client && !credentials.configured) {
+    throw new Error('R2-only restore requires configured read-only R2 credentials.');
+  }
+  const r2Client = options.publicOnly
+    ? null
+    : (options.r2Client || (options.r2Only ? createR2Client(credentials) : null));
+  const manifest = manifestFile
+    ? JSON.parse(fs.readFileSync(manifestFile, 'utf8'))
+    : (options.publicOnly
+      ? await fetchJson(`${baseUrl}/manifest/manifest.json`)
+      : JSON.parse((await fetchR2Object(
+        r2Client,
+        options.bucket || defaultBucket,
+        options.manifestKey || defaultManifestKey
+      )).toString('utf8')));
   const assets = (manifest.records || []).flatMap((record) => record.assets || []);
   const freebieTitleArtByPath = new Map(assets
     .filter((asset) => isFreebieTitleArt(asset.sourcePath))
@@ -168,7 +202,9 @@ async function restoreLibraryCanon(options = {}) {
     .map((asset) => asset.sourcePath)
     .filter((sourcePath) => sourcePath && !documentsByPath.has(sourcePath) && !isFreebieTitleArt(sourcePath)));
   const catalogObjects = new Set();
-  const titleArtR2Client = options.titleArtR2Client || r2Client || (credentials.configured ? createR2Client(credentials) : null);
+  const titleArtR2Client = options.publicOnly
+    ? null
+    : (options.titleArtR2Client || r2Client || (credentials.configured ? createR2Client(credentials) : null));
 
   if (titleArtR2Client) {
     const bucket = options.bucket || defaultBucket;
@@ -190,9 +226,41 @@ async function restoreLibraryCanon(options = {}) {
     }
   }
   const documents = Array.from(documentsByPath.values());
+  const coverSourceIds = new Set((options.coverSourceIds || [])
+    .map((id) => String(id || '').trim().toUpperCase())
+    .filter(Boolean));
+  const requestedCovers = [];
+  for (const record of manifest.records || []) {
+    const recordId = String(record.id || record.canonicalId || '').trim().toUpperCase();
+    if (!coverSourceIds.has(recordId)) continue;
+    const covers = (record.assets || []).filter((asset) => {
+      const sourcePath = String(asset.sourcePath || '');
+      const basename = path.posix.basename(sourcePath.replace(/\\/g, '/'));
+      return (String(asset.role || '').toLowerCase() === 'cover' || /cover/i.test(basename))
+        && SUPPORTED_IMAGE_EXTENSIONS.includes(path.posix.extname(basename).toLowerCase());
+    });
+    if (covers.length !== 1) {
+      throw new Error(`Expected exactly one manifest front-cover asset for requested canonical Book ID ${recordId}; found ${covers.length}.`);
+    }
+    requestedCovers.push(covers[0]);
+  }
+  for (const id of coverSourceIds) {
+    if (!(manifest.records || []).some((record) => String(record.id || record.canonicalId || '').trim().toUpperCase() === id)) {
+      throw new Error(`Requested cover source ID ${id} is not present in the manifest.`);
+    }
+  }
 
   if (documents.length === 0) {
-    throw new Error('The public library manifest contained no canonical DOCX source documents.');
+    throw new Error('The selected manifest contained no canonical DOCX source documents.');
+  }
+  if (!r2Client && !options.publicOnly) {
+    throw new Error('A local manifest restore requires an explicit R2 client for its object reads.');
+  }
+  if (requestedCovers.length > 0 && !titleArtR2Client) {
+    throw new Error('Requested canonical Book covers require read-only R2 object access.');
+  }
+  if (requestedCovers.some((asset) => !asset.key)) {
+    throw new Error('A requested canonical Book cover is missing its manifest object key.');
   }
 
   await mapWithConcurrency(documents, 8, async (document) => {
@@ -200,22 +268,44 @@ async function restoreLibraryCanon(options = {}) {
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     if (r2Client || document.r2Only) {
       fs.writeFileSync(outputPath, await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, document.key));
-    } else {
+    } else if (options.publicOnly) {
       const sourceUrl = document.url || `${baseUrl}/${encodeURI(document.key)}`;
       const response = await fetch(sourceUrl);
       if (!response.ok) throw new Error(`Could not retrieve ${document.sourcePath}: HTTP ${response.status}`);
       fs.writeFileSync(outputPath, Buffer.from(await response.arrayBuffer()));
+    } else {
+      throw new Error(`No explicit object source is available for ${document.sourcePath}.`);
     }
+  });
+
+  await mapWithConcurrency(requestedCovers, 4, async (asset) => {
+    const outputPath = toDestination(destination, asset.sourcePath);
+    const bytes = await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, asset.key);
+    const sha256 = crypto.createHash('sha256').update(bytes).digest('hex');
+    if (Number.isFinite(asset.sizeBytes) && bytes.length !== asset.sizeBytes) {
+      throw new Error(`Requested cover size does not match manifest metadata: ${asset.sourcePath}.`);
+    }
+    if (asset.sha256 && sha256.toLowerCase() !== String(asset.sha256).toLowerCase()) {
+      throw new Error(`Requested cover SHA-256 does not match manifest metadata: ${asset.sourcePath}.`);
+    }
+    if (!inspectImageAsset(bytes, asset.sourcePath)) {
+      throw new Error(`Requested cover is not a valid supported image: ${asset.sourcePath}.`);
+    }
+    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
+    fs.writeFileSync(outputPath, bytes);
   });
 
   await mapWithConcurrency(freebieTitleArtByPath.values(), 4, async (asset) => {
     const outputPath = toDestination(destination, asset.sourcePath);
     const useR2 = Boolean(asset.r2Only || r2Client);
-    const response = useR2
+    const response = useR2 || !options.publicOnly
       ? null
       : await fetch(asset.url || `${baseUrl}/${encodeURI(asset.key || asset.sourcePath)}`);
     if (response && !response.ok) {
       throw new Error(`Could not retrieve freebie title illustration ${asset.sourcePath}: HTTP ${response.status}`);
+    }
+    if (!useR2 && !options.publicOnly) {
+      throw new Error(`No explicit object source is available for ${asset.sourcePath}.`);
     }
     const bytes = useR2
       ? await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, asset.key)
@@ -246,7 +336,10 @@ async function restoreLibraryCanon(options = {}) {
   }
 
   const placeholderCount = catalogObjects.size + manifestPlaceholderPaths.size;
-  console.log(`Restored ${documents.length} canonical Library DOCX files and ${placeholderCount} catalog paths from ${r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : baseUrl}.`);
+  const sourceDescription = options.publicOnly
+    ? baseUrl
+    : (r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : `local manifest ${manifestFile}`);
+  console.log(`Restored ${documents.length} canonical Library DOCX files and ${placeholderCount} catalog paths from ${sourceDescription}.`);
   return { documentCount: documents.length, catalogObjectCount: placeholderCount, destination };
 }
 

@@ -5,6 +5,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const {
   createCanonicalBookRouteRegistry,
+  createKdpLiveBookIdSet,
   getBookCharactersRoute,
   getCanonicalBookRoute,
   getPublishedRoutableBooks
@@ -26,33 +27,41 @@ function getHtmlFiles(directory) {
   });
 }
 
-test('canonical route registry excludes unpublished, unroutable, and ambiguous records', () => {
+test('canonical route registry includes KDP-Live books regardless of catalog flag and excludes non-Live books', () => {
   const indexedBooks = [
     { identity: { canonicalId: 'HH-ROUTED' }, pageHref: 'books/indexed-route.html' },
     { identity: { canonicalId: 'HH-CONFLICT' }, pageHref: 'books/indexed-conflict-route.html' },
     { identity: { canonicalId: 'HH-AMBIGUOUS' }, pageHref: 'books/first-route.html' },
     { identity: { canonicalId: 'HH-AMBIGUOUS' }, pageHref: 'books/second-route.html' },
-    { identity: { canonicalId: 'HH-INVALID' }, pageHref: '../outside.html' }
+    { identity: { canonicalId: 'HH-INVALID' }, pageHref: '../outside.html' },
+    { identity: { canonicalId: 'HH-DRAFT' }, pageHref: 'books/draft.html' }
   ];
-  const routes = createCanonicalBookRouteRegistry(indexedBooks, (book) => book.pageHref);
+  const liveBookIds = createKdpLiveBookIdSet([
+    { id: 'HH-ROUTED', status: ' Live ', formats: { websiteListed: false } },
+    { id: 'HH-CONFLICT', status: 'live' },
+    { id: 'HH-AMBIGUOUS', status: 'live' },
+    { id: 'HH-INVALID', status: 'live' },
+    { id: 'HH-DRAFT', status: 'draft' }
+  ]);
+  const routes = createCanonicalBookRouteRegistry(indexedBooks, (book) => book.pageHref, liveBookIds);
   const seriesBooks = getPublishedRoutableBooks([
-    { identity: { canonicalId: 'HH-ROUTED' }, published: true },
     { identity: { canonicalId: 'HH-ROUTED' }, published: false },
     { identity: { canonicalId: 'HH-CONFLICT' }, title: 'A different presentation title', published: true },
     { identity: { canonicalId: 'HH-INVALID' }, published: true },
-    { identity: { canonicalId: 'HH-AMBIGUOUS' }, published: true }
+    { identity: { canonicalId: 'HH-AMBIGUOUS' }, published: true },
+    { identity: { canonicalId: 'HH-DRAFT' }, published: true }
   ], routes);
 
   assert.equal(getCanonicalBookRoute(seriesBooks[0], routes), 'books/indexed-route.html');
   assert.deepEqual(seriesBooks.map((book) => book.identity.canonicalId), ['HH-ROUTED', 'HH-CONFLICT']);
   assert.equal(getCanonicalBookRoute(seriesBooks[1], routes), 'books/indexed-conflict-route.html');
+  assert.equal(routes.has('HH-DRAFT'), false);
   assert.equal(getBookCharactersRoute('books/indexed-route.html'), 'books/indexed-route-characters.html');
 });
 
-test('generator omits unpublished and unroutable series records without rewriting their titles', () => {
+test('generator omits non-Live and unroutable series records without rewriting their titles', () => {
   execFileSync(process.execPath, [path.join(repoRoot, 'scripts', 'generate-site.js')], {
     cwd: repoRoot,
-    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
     stdio: 'pipe'
   });
 
@@ -69,8 +78,9 @@ test('generator omits unpublished and unroutable series records without rewritin
   }
 
   const storybookShelf = readBuildHtml('storybook-shelf.html');
-  assert.doesNotMatch(storybookShelf, /href="books\/HH-A-0011-brandons-listening-ears\.html"/);
-  assert.doesNotMatch(storybookShelf, /href="books\/HH-A-0011-brandon-s-listening-ears\.html"/);
+  const brandonsStoryHref = 'books/HH-A-0011-brandons-listening-ears.html';
+  assert.match(storybookShelf, /href="books\/HH-A-0011-brandons-listening-ears\.html"/);
+  assert.ok(fs.existsSync(path.join(buildRoot, brandonsStoryHref)));
 
   assert.equal(fs.readdirSync(path.join(buildRoot, 'songs')).filter((file) => file.endsWith('.html')).length, 500);
   assert.equal(fs.readdirSync(path.join(buildRoot, 'nursery-rhymes')).filter((file) => file.endsWith('.html')).length, 500);
@@ -83,7 +93,7 @@ test('generator omits unpublished and unroutable series records without rewritin
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-S-0001'));
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-R-0001'));
   const sitemap = readBuildHtml('sitemap.xml');
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 1392);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 1393);
   assert.doesNotMatch(sitemap, /entities\/book\/hh-[sr]-/i);
 
   const porchLight = readBuildHtml('the-porch-light.html');

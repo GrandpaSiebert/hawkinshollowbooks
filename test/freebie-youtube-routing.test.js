@@ -12,7 +12,7 @@ const { isIgnoredLibraryFile } = require('../scripts/library-scanner');
 const { createFreebieDiscoveryRecords, createFreebieSearchIndexRecord } = require('../scripts/freebie-discovery');
 
 const root = path.join(__dirname, '..');
-const outputs = ['build', 'build-recovery'];
+const outputs = ['build-recovery'];
 
 function sourceMappings() {
   return readFreebieYoutubeRouting(path.join(root, 'data', 'freebie-youtube-routing.json'));
@@ -141,7 +141,7 @@ test('generated pages have lazy, correctly mapped accessible controls and keep r
           assert.match(html, /<dialog class="freebie-player-dialog" aria-labelledby="freebie-player-heading" aria-modal="true"/);
           assert.match(html, /aria-haspopup="dialog"/);
           assert.doesNotMatch(html, /<iframe\b/i);
-          assert.doesNotMatch(html, /<a[^>]+href="https:\/\/youtu\.be\//i);
+          assert.match(html, /<a[^>]+href="https:\/\/youtu\.be\/[A-Za-z0-9_-]{11}"[^>]*>(?:Listen to this song|Watch this nursery rhyme)<\/a>/i);
           assert.match(html, new RegExp(type === 'song' ? '>Play Song<' : '>Watch Rhyme<'));
           controls += 1;
         } else {

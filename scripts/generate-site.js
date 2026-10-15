@@ -19,11 +19,14 @@ const {
 } = require('./freebie-page-associations');
 const { project: projectStoryMasters } = require('./project-story-masters');
 const {
+  APPROVED_COMPATIBILITY_REDIRECTS,
   createCanonicalBookRouteRegistry,
+  createKdpLiveBookIdSet,
   getBookCharactersRoute,
   getCanonicalBookId,
   getCanonicalBookRoute,
-  getPublishedRoutableBooks
+  getPublishedRoutableBooks,
+  isKdpLiveBook
 } = require('./canonical-book-routes');
 const {
   getEntityMetaDescription,
@@ -32,16 +35,29 @@ const {
   normalizeMetadataTitle,
   normalizeMetaDescription
 } = require('./search-presentation-metadata');
-const { finalizeSearchTitles, getFreebieSearchTitle, readSearchTitlePage } = require('./search-titles');
-const { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility } = require('./public-surface-eligibility');
+const {
+  createPublicDiscoveryIndex,
+  createPublicEntityGraph,
+  createPublicEntityIndex
+} = require('./public-discovery-index');
+const {
+  CONTINUATION_COLLECTIONS,
+  getPublicSurfaceEligibility,
+  isPublicEntityEligible
+} = require('./public-surface-eligibility');
+const { finalizeSearchTitles } = require('./search-titles');
 const { writeSitemapLastmod } = require('./sitemap-lastmod');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
-const previewBuildDir = path.join(root, 'build');
-const outputDirs = [buildDir, previewBuildDir];
+const outputDirs = [buildDir];
+const PUBLIC_GENERATED_ARTIFACTS = Object.freeze([
+  'entity-graph.json',
+  'entity-index.json',
+  'public-discovery-index.json',
+  'search-index.json'
+]);
 const authorityRegistryPath = path.join(root, 'data', 'canonical-authority-registry.json');
-const sourceRegistryPath = path.join(root, 'data', 'canonical-source-registry.json');
 let libraryIndexBookLookupCache = null;
 const storyMasterCharacterNameCache = new Map();
 
@@ -85,16 +101,13 @@ function resetDir(dir) {
   ensureDir(dir);
 }
 
-function copyDir(srcDir, destDir, excludedFiles = new Set()) {
+function copyDir(srcDir, destDir) {
   ensureDir(destDir);
   for (const entry of fs.readdirSync(srcDir, { withFileTypes: true })) {
-    if (entry.isFile() && excludedFiles.has(entry.name)) {
-      continue;
-    }
     const srcPath = path.join(srcDir, entry.name);
     const destPath = path.join(destDir, entry.name);
     if (entry.isDirectory()) {
-      copyDir(srcPath, destPath, excludedFiles);
+      copyDir(srcPath, destPath);
     } else {
       fs.copyFileSync(srcPath, destPath);
     }
@@ -114,120 +127,25 @@ function readJsonIfExists(relativePath) {
   return JSON.parse(fs.readFileSync(filePath, 'utf8'));
 }
 
-function getDefaultCanonicalAuthorityRegistry() {
-  return {
-    version: 1,
-    entities: {
-      books: {
-        canonicalAuthority: 'Book Model',
-        canonicalSource: 'data/books.json',
-        canonicalPath: 'books',
-        compatibilitySource: null,
-        compatibilityPath: null
-      },
-      characters: {
-        canonicalAuthority: 'Character Canon',
-        canonicalSource: 'data/characters.json',
-        canonicalPath: 'characters',
-        compatibilitySource: null,
-        compatibilityPath: null
-      },
-      environments: {
-        canonicalAuthority: 'World Canon',
-        canonicalSource: 'generated/world-canon-index.json',
-        canonicalPath: 'byType.environments',
-        compatibilitySource: 'data/environments.json',
-        compatibilityPath: 'environments'
-      },
-      relationships: {
-        canonicalAuthority: 'World Canon',
-        canonicalSource: 'generated/world-canon-index.json',
-        canonicalPath: 'byType.relationships',
-        compatibilitySource: 'data/relationships.json',
-        compatibilityPath: 'relationships'
-      }
-    }
-  };
-}
-
 function loadCanonicalAuthorityRegistry() {
-  const registryPath = fs.existsSync(authorityRegistryPath)
-    ? authorityRegistryPath
-    : sourceRegistryPath;
-
-  if (!fs.existsSync(registryPath)) {
-    return getDefaultCanonicalAuthorityRegistry();
+  if (!fs.existsSync(authorityRegistryPath)) {
+    throw new Error('Missing canonical authority registry: data/canonical-authority-registry.json');
   }
-
-  try {
-    const parsed = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
-    if (!parsed || typeof parsed !== 'object' || !parsed.entities) {
-      return getDefaultCanonicalAuthorityRegistry();
-    }
-    return parsed;
-  } catch {
-    return getDefaultCanonicalAuthorityRegistry();
+  const parsed = JSON.parse(fs.readFileSync(authorityRegistryPath, 'utf8'));
+  if (!parsed || typeof parsed !== 'object' || !parsed.entities || typeof parsed.entities !== 'object') {
+    throw new Error('Invalid canonical authority registry: expected an entities object.');
   }
-}
-
-function projectLegacySourceRegistry(authorityRegistry) {
-  const entities = authorityRegistry && authorityRegistry.entities ? authorityRegistry.entities : {};
-  const projectedEntities = {};
-
-  for (const [entityKey, config] of Object.entries(entities)) {
-    projectedEntities[entityKey] = {
-      canonicalAuthority: config && config.canonicalAuthority ? config.canonicalAuthority : 'Unspecified Authority',
-      canonicalSource: config && config.canonicalSource ? config.canonicalSource : '',
-      canonicalPath: config && config.canonicalPath ? config.canonicalPath : '',
-      compatibilitySource: Object.prototype.hasOwnProperty.call(config || {}, 'compatibilitySource')
-        ? config.compatibilitySource
-        : null,
-      compatibilityPath: Object.prototype.hasOwnProperty.call(config || {}, 'compatibilityPath')
-        ? config.compatibilityPath
-        : null
-    };
-  }
-
-  return {
-    version: authorityRegistry && authorityRegistry.version ? authorityRegistry.version : 1,
-    deprecated: true,
-    projectionOf: 'data/canonical-authority-registry.json',
-    entities: projectedEntities
-  };
-}
-
-function writeLegacySourceRegistryProjection(authorityRegistry) {
-  const projected = projectLegacySourceRegistry(authorityRegistry);
-  const nextText = `${JSON.stringify(projected, null, 2)}\n`;
-  const currentText = fs.existsSync(sourceRegistryPath)
-    ? fs.readFileSync(sourceRegistryPath, 'utf8')
-    : null;
-
-  if (currentText === nextText) {
-    return false;
-  }
-
-  fs.writeFileSync(sourceRegistryPath, nextText, 'utf8');
-  return true;
+  return parsed;
 }
 
 function getRegistryEntityConfig(authorityRegistry, entityKey) {
-  const defaults = getDefaultCanonicalAuthorityRegistry().entities[entityKey] || {};
   const configured = authorityRegistry && authorityRegistry.entities && authorityRegistry.entities[entityKey]
     ? authorityRegistry.entities[entityKey]
     : {};
-
-  return {
-    canonicalAuthority: configured.canonicalAuthority || defaults.canonicalAuthority || 'Unspecified Authority',
-    canonicalSource: configured.canonicalSource || defaults.canonicalSource || '',
-    canonicalPath: configured.canonicalPath || defaults.canonicalPath || '',
-    compatibilitySource: Object.prototype.hasOwnProperty.call(configured, 'compatibilitySource')
-      ? configured.compatibilitySource
-      : defaults.compatibilitySource,
-    compatibilityPath: Object.prototype.hasOwnProperty.call(configured, 'compatibilityPath')
-      ? configured.compatibilityPath
-      : defaults.compatibilityPath
-  };
+  if (!configured.canonicalAuthority || !configured.canonicalSource || !configured.canonicalPath) {
+    throw new Error(`Canonical authority registry is missing the ${entityKey} source contract.`);
+  }
+  return configured;
 }
 
 function resolvePathValue(sourceObject, sourcePath) {
@@ -251,28 +169,11 @@ function selectEntitySourceRecords(entityKey, authorityRegistry, sourceObjectsBy
 
   const canonicalObject = sourceObjectsByFile[config.canonicalSource] || null;
   const canonicalRecords = resolvePathValue(canonicalObject, config.canonicalPath);
-  if (Array.isArray(canonicalRecords) && canonicalRecords.length > 0) {
-    return {
-      records: canonicalRecords,
-      authority: config.canonicalAuthority,
-      activeSource: `${config.canonicalSource} (${config.canonicalPath})`
-    };
+  if (!Array.isArray(canonicalRecords) || canonicalRecords.length === 0) {
+    throw new Error(`Current Library-derived ${entityKey} records are missing from ${config.canonicalSource}.`);
   }
-
-  if (config.compatibilitySource && config.compatibilityPath) {
-    const compatibilityObject = sourceObjectsByFile[config.compatibilitySource] || null;
-    const compatibilityRecords = resolvePathValue(compatibilityObject, config.compatibilityPath);
-    if (Array.isArray(compatibilityRecords) && compatibilityRecords.length > 0) {
-      return {
-        records: compatibilityRecords,
-        authority: config.canonicalAuthority,
-        activeSource: `${config.compatibilitySource} (${config.compatibilityPath})`
-      };
-    }
-  }
-
   return {
-    records: Array.isArray(canonicalRecords) ? canonicalRecords : [],
+    records: canonicalRecords,
     authority: config.canonicalAuthority,
     activeSource: `${config.canonicalSource} (${config.canonicalPath})`
   };
@@ -365,19 +266,7 @@ function getPlaceArtworkPathByName(placeName, placeKind = '') {
   }
 
   const direct = lookup.environments.get(key) || lookup.landmarks.get(key) || '';
-  if (direct) {
-    return direct;
-  }
-
-  const environmentArtworkAliases = {
-    'farmhouse exterior': 'farmhouse porch'
-  };
-  const aliasKey = environmentArtworkAliases[key] || '';
-  if (!aliasKey) {
-    return '';
-  }
-
-  return lookup.environments.get(aliasKey) || lookup.landmarks.get(aliasKey) || '';
+  return direct;
 }
 
 function toBookPageSlug(book) {
@@ -396,6 +285,25 @@ function toBookPageSlug(book) {
 
 function getBookPageHref(book) {
   return `books/${toBookPageSlug(book)}.html`;
+}
+
+function renderCompatibilityRedirect(site, redirect) {
+  const targetHref = path.relative(path.dirname(redirect.route), redirect.targetRoute).replace(/\\/g, '/');
+  const targetUrl = `${String(site.domain || '').replace(/\/$/, '')}/${redirect.targetRoute}`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="refresh" content="0; url=${targetHref}" />
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="${targetUrl}" />
+  <title>Page moved | Hawkins Hollow</title>
+</head>
+<body>
+  <p>This page has moved. <a href="${targetHref}">Continue to the current page</a>.</p>
+</body>
+</html>`;
 }
 
 function getBookCoverBanner(book) {
@@ -709,44 +617,6 @@ function createSearchIndex(libraryIndex, amazonLookup) {
   };
 }
 
-function synthesizeLibraryIndexFromBooksData(booksData, seriesData) {
-  const seriesBySlug = new Map(((seriesData && seriesData.series) || [])
-    .map((entry) => [String(entry.slug || '').toLowerCase(), entry.title || entry.slug || '']));
-
-  const books = ((booksData && booksData.books) || [])
-    .filter((book) => Boolean(book && (getCanonicalBookId(book) || book.slug)))
-    .map((book) => {
-      const seriesSlug = String(book.seriesSlug || '').toLowerCase();
-      const seriesTitle = seriesBySlug.get(seriesSlug) || book.seriesSlug || '';
-      const id = getCanonicalBookId(book) || String(book.slug || '').toUpperCase();
-      const cover = (book.coverImage || '').replace(/^\//, '');
-      const files = cover ? [cover] : [];
-      return {
-        id,
-        title: book.title || id,
-        series: seriesTitle,
-        seriesCode: seriesSlug,
-        folder: `Books/${seriesTitle}`,
-        files,
-        fileTypes: cover
-          ? [{ extension: String(cover).toLowerCase().split('.').pop(), count: 1 }]
-          : []
-      };
-    })
-    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
-
-  return {
-    generatedAt: new Date().toISOString(),
-    libraryRoot: 'data/books.json',
-    synthesized: true,
-    summary: {
-      indexedBooks: books.length,
-      categories: [{ category: 'Books', fileCount: books.length }]
-    },
-    books
-  };
-}
-
 function createMergedBookIndex(libraryIndex, amazonLookup) {
   const records = ((libraryIndex && libraryIndex.books) || []).map((book) => {
     const amazon = getAmazonRecordForBook(book, amazonLookup);
@@ -771,73 +641,6 @@ function createMergedBookIndex(libraryIndex, amazonLookup) {
     },
     records
   };
-}
-
-function createLibraryIndexFromManifest(manifest) {
-  const records = Array.isArray(manifest && manifest.records) ? manifest.records : [];
-  const books = records
-    .filter((record) => record && (record.id || record.slug))
-    .map((record) => {
-      const files = (record.assets || [])
-        .map((asset) => asset && asset.key)
-        .filter((value) => typeof value === 'string' && value.length > 0);
-
-      const fileTypeCounts = new Map();
-      for (const filePath of files) {
-        const extension = path.extname(filePath).toLowerCase().replace(/^\./, '') || 'none';
-        fileTypeCounts.set(extension, (fileTypeCounts.get(extension) || 0) + 1);
-      }
-
-      return {
-        id: record.id || String(record.slug || '').toUpperCase(),
-        title: record.title || record.id || record.slug,
-        series: record.series || '',
-        seriesCode: record.seriesCode || '',
-        folder: `External/${record.series || 'Library'}`,
-        files,
-        fileTypes: Array.from(fileTypeCounts.entries())
-          .sort((a, b) => a[0].localeCompare(b[0]))
-          .map(([extension, count]) => ({ extension, count }))
-      };
-    })
-    .sort((a, b) => String(a.id).localeCompare(String(b.id)));
-
-  return {
-    generatedAt: new Date().toISOString(),
-    libraryRoot: 'generated/manifest/manifest.json',
-    synthesized: true,
-    fromManifest: true,
-    summary: {
-      indexedBooks: books.length,
-      categories: [{ category: 'Books', fileCount: books.length }]
-    },
-    books
-  };
-}
-
-function readLibraryIndexFromManifest(siteRoot) {
-  const candidates = [
-    path.join(siteRoot, 'generated', 'manifest', 'manifest.json'),
-    path.join(siteRoot, 'generated', 'manifest.json')
-  ];
-
-  for (const filePath of candidates) {
-    if (!fs.existsSync(filePath)) {
-      continue;
-    }
-
-    try {
-      const manifest = JSON.parse(fs.readFileSync(filePath, 'utf8'));
-      const index = createLibraryIndexFromManifest(manifest);
-      if ((index.books || []).length > 0) {
-        return index;
-      }
-    } catch (error) {
-      console.warn(`Manifest read failed at ${path.relative(siteRoot, filePath)}: ${error.message}`);
-    }
-  }
-
-  return null;
 }
 
 function writeMergedBookIndex(siteRoot, mergedBookIndex) {
@@ -1334,108 +1137,11 @@ function resolveCharacterExperienceAsset(character, charactersData, booksData, e
   };
 }
 
-// Experience templates transform content objects into visitor-centered journeys.
-function renderCharacterExperiencePage(experience, site, nav, config, banner) {
-  const character = experience.character;
-  const profile = experience.profile;
-  const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
-  const characterFirstName = characterName.split(' ')[0];
-  const relatedStoryCards = experience.relatedStories
-    .map((story) => {
-      const coverImage = story.coverImage
-        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
-        : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
-      const description = story.description ? `<p>${story.description}</p>` : '';
-      const guidanceLine = getStoryGuidanceLine(story, 3);
-      return `<article class="character-story-card">
-        <div class="character-story-media">${coverImage}</div>
-        <div class="character-story-copy">
-          <h3>${story.title}</h3>
-          ${description}
-          ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
-          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
-        </div>
-      </article>`;
-    })
-    .join('');
-
-  const relatedPeopleLinks = experience.relatedPeople.length > 0
-    ? `<ul>${experience.relatedPeople.map((person) => (person.href ? `<li><a href="${person.href}">${person.name}</a></li>` : `<li>${person.name}</li>`)).join('')}</ul>`
-    : '<p>More friendships will appear here as the Hollow keeps growing.</p>';
-
-  const relatedPlaceLinks = experience.relatedPlaces.length > 0
-    ? `<ul>${experience.relatedPlaces.map((place) => (place.href ? `<li><a href="${place.href}">${place.name}</a></li>` : `<li>${place.name}</li>`)).join('')}</ul>`
-    : '<p>Favorite places will be added as new memories are shared.</p>';
-
-  const delightFact = `${character.name.split(' ')[0]} is one of the neighbors children often return to when they want a familiar friend.`;
-
-  return renderLayout(
-    character.name,
-    experience.visitorFeeling,
-    `<section class="content-card" aria-labelledby="character-arrival">
-      <img class="character-hero-full" src="../${experience.heroImage.replace(/^\//, '')}" alt="${character.name}" width="640" height="640" />
-      <h1 id="character-arrival">${profile.arrivalHeading}</h1>
-      <p>${profile.arrivalBody}</p>
-      <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
-      <p><strong>Where to go next:</strong> Continue from the story you just read and choose the next place, person, or memory to follow.</p>
-      <p>
-        <a class="button" href="../books.html">Read another story</a>
-        <a class="button" href="../characters.html">Meet more friends</a>
-      </p>
-    </section>
-
-    <section class="content-card" aria-labelledby="character-together">
-      <h2 id="character-together">${profile.storyHeading}</h2>
-      <p>These are a few stories where you'll continue getting to know ${characterFirstName}.</p>
-      <div class="character-story-list">${relatedStoryCards}</div>
-    </section>
-
-    <section class="content-card" aria-labelledby="character-people">
-      <h2 id="character-people">${profile.friendHeading}</h2>
-      ${relatedPeopleLinks}
-    </section>
-
-    <section class="content-card" aria-labelledby="character-wander">
-      <h2 id="character-wander">${profile.placeHeading}</h2>
-      ${relatedPlaceLinks}
-    </section>
-
-    <section class="content-card" aria-labelledby="character-discovery">
-      <h2 id="character-discovery">${profile.discoveryHeading}</h2>
-      <p>${profile.discoveryLine}</p>
-      <p>${delightFact}</p>
-    </section>
-
-    <section class="content-card" aria-labelledby="character-next">
-      <h2 id="character-next">${profile.nextHeading}</h2>
-      <p>${profile.nextLine}</p>
-      <p>
-        <a class="button" href="../books.html">Read a story</a>
-        <a class="button" href="../map.html">Visit a place</a>
-        <a class="button" href="../community.html">Join the community</a>
-      </p>
-    </section>`,
-    site,
-    nav,
-    `${site.domain}/characters/${character.slug}.html`,
-    config,
-    banner,
-    '',
-    '',
-    {},
-    'body'
-  );
-}
-
 function createEntityIndex(
   mergedBookIndex,
   charactersData,
   characterCanonIndex,
   worldCanonIndex,
-  fallbackWorldCanonIndex,
-  relationshipsData,
-  environmentsData,
-  landmarksData,
   resourcesData,
   libraryScan,
   authorityRegistry
@@ -1523,118 +1229,47 @@ function createEntityIndex(
     };
   });
 
-  const relationshipRecordsFromData = (relationshipsData && relationshipsData.relationships) || [];
-  const environmentRecordsFromData = (environmentsData && environmentsData.environments) || [];
-  const fallbackWorldCanonRelationships = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.relationships) || [];
-  const fallbackWorldCanonEnvironments = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.environments) || [];
-  const fallbackWorldCanonLandmarks = (fallbackWorldCanonIndex && fallbackWorldCanonIndex.byType && fallbackWorldCanonIndex.byType.landmarks) || [];
-  const worldCanonRelationships = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.relationships) || []).length > 0
-    ? worldCanonIndex.byType.relationships
-    : fallbackWorldCanonRelationships;
-  const worldCanonEnvironments = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.environments) || []).length > 0
-    ? worldCanonIndex.byType.environments
-    : fallbackWorldCanonEnvironments;
-  const worldCanonLandmarks = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.landmarks) || []).length > 0
-    ? worldCanonIndex.byType.landmarks
-    : fallbackWorldCanonLandmarks;
-  const effectiveWorldCanonIndex = {
-    ...(worldCanonIndex || {}),
-    byType: {
-      relationships: worldCanonRelationships,
-      environments: worldCanonEnvironments,
-      landmarks: worldCanonLandmarks
-    }
-  };
-
   const sourceObjectsByFile = {
-    'generated/world-canon-index.json': effectiveWorldCanonIndex,
-    'data/relationships.json': { relationships: relationshipRecordsFromData },
-    'data/environments.json': { environments: environmentRecordsFromData },
-    'data/books.json': {},
-    'data/characters.json': {}
+    'generated/world-canon-index.json': worldCanonIndex || {}
   };
 
   const selectedRelationshipSource = selectEntitySourceRecords('relationships', authorityRegistry, sourceObjectsByFile);
   const selectedEnvironmentSource = selectEntitySourceRecords('environments', authorityRegistry, sourceObjectsByFile);
 
-  const relationshipFallback = relationshipRecordsFromData.map((relationship, index) => ({
-    type: 'relationship',
-    id: relationship.id || relationship.slug || `relationship-${index + 1}`,
-    name: relationship.name || relationship.title || relationship.slug || `Relationship ${index + 1}`,
-    href: getEntityPageHref(
-      'relationship',
-      relationship.id || relationship.slug || `relationship-${index + 1}`,
-      relationship.name || relationship.title || relationship.slug || `Relationship ${index + 1}`
-    ),
-    entityPageHref: getEntityPageHref(
-      'relationship',
-      relationship.id || relationship.slug || `relationship-${index + 1}`,
-      relationship.name || relationship.title || relationship.slug || `Relationship ${index + 1}`
-    ),
-    ...relationship
-  }));
-  const canonRelationships = worldCanonRelationships
+  const relationships = selectedRelationshipSource.records
     .map((relationship) => ({
       ...relationship,
       type: 'relationship',
       href: getEntityPageHref('relationship', relationship.id, relationship.name),
       entityPageHref: getEntityPageHref('relationship', relationship.id, relationship.name)
     }));
-  const relationships = selectedRelationshipSource.activeSource.startsWith('generated/world-canon-index.json')
-    ? canonRelationships
-    : relationshipFallback;
 
-  const environmentFallback = environmentRecordsFromData.map((environment, index) => ({
-    type: 'environment',
-    id: environment.id || environment.slug || `environment-${index + 1}`,
-    name: environment.name || environment.title || environment.slug || `Environment ${index + 1}`,
-    href: getEntityPageHref(
-      'environment',
-      environment.id || environment.slug || `environment-${index + 1}`,
-      environment.name || environment.title || environment.slug || `Environment ${index + 1}`
-    ),
-    entityPageHref: getEntityPageHref(
-      'environment',
-      environment.id || environment.slug || `environment-${index + 1}`,
-      environment.name || environment.title || environment.slug || `Environment ${index + 1}`
-    ),
-    ...environment
-  }));
-  const canonEnvironments = worldCanonEnvironments
-    .map((environment) => ({
-      ...environment,
-      type: 'environment',
-      href: getEntityPageHref('environment', environment.id, environment.name),
-      entityPageHref: getEntityPageHref('environment', environment.id, environment.name)
-    }));
-  const environments = selectedEnvironmentSource.activeSource.startsWith('generated/world-canon-index.json')
-    ? canonEnvironments
-    : environmentFallback;
+  const environments = selectedEnvironmentSource.records
+    .map((environment) => {
+      const isFarmhouseExterior = String(environment.id || '').trim().toUpperCase() === 'ENV-0032';
+      const approvedImage = isFarmhouseExterior
+        ? getPlaceArtworkPathByName(environment.name, 'Place')
+        : '';
+      if (isFarmhouseExterior && !approvedImage) {
+        throw new Error('Missing approved public artwork for ENV-0032 Farmhouse Exterior.');
+      }
 
-  const landmarkFallback = ((landmarksData && landmarksData.landmarks) || []).map((landmark, index) => ({
-    type: 'landmark',
-    id: landmark.id || landmark.slug || `landmark-${index + 1}`,
-    name: landmark.name || landmark.title || landmark.slug || `Landmark ${index + 1}`,
-    href: getEntityPageHref(
-      'landmark',
-      landmark.id || landmark.slug || `landmark-${index + 1}`,
-      landmark.name || landmark.title || landmark.slug || `Landmark ${index + 1}`
-    ),
-    entityPageHref: getEntityPageHref(
-      'landmark',
-      landmark.id || landmark.slug || `landmark-${index + 1}`,
-      landmark.name || landmark.title || landmark.slug || `Landmark ${index + 1}`
-    ),
-    ...landmark
-  }));
-  const canonLandmarks = worldCanonLandmarks
+      return {
+        ...environment,
+        ...(isFarmhouseExterior ? { image: approvedImage } : {}),
+        type: 'environment',
+        href: getEntityPageHref('environment', environment.id, environment.name),
+        entityPageHref: getEntityPageHref('environment', environment.id, environment.name)
+      };
+    });
+
+  const landmarks = ((worldCanonIndex && worldCanonIndex.byType && worldCanonIndex.byType.landmarks) || [])
     .map((landmark) => ({
       ...landmark,
       type: 'landmark',
       href: getEntityPageHref('landmark', landmark.id, landmark.name),
       entityPageHref: getEntityPageHref('landmark', landmark.id, landmark.name)
     }));
-  const landmarks = canonLandmarks.length > 0 ? canonLandmarks : landmarkFallback;
 
   const resources = ((resourcesData && resourcesData.resources) || []).map((resource, index) => ({
     type: 'resource',
@@ -1703,7 +1338,7 @@ function writeEntityIndex(siteRoot, entityIndex) {
   return outputPath;
 }
 
-function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords = [], freebieSearchVocabulary = {}, surfaces = new Map()) {
+function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords = [], freebieSearchVocabulary = {}) {
   const records = [];
   const freebieIds = new Set((freebieDiscoveryRecords || []).map((record) => String(record.canonicalId || '').toUpperCase()));
 
@@ -1742,9 +1377,7 @@ function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords =
       id: character.id,
       title: character.name,
       series: 'Characters',
-      href: character.published !== false && character.slug
-        ? `characters/${character.slug}.html`
-        : character.href || '',
+      href: character.legacyHref || character.href || '',
       asin: '',
       amazonUrl: '',
       purchaseLinks: { paperback: '', hardcover: '', kindle: '' },
@@ -1851,43 +1484,46 @@ function createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords =
     records.push(createFreebieSearchIndexRecord(freebie));
   }
 
-  for (const [type, id, title, href] of [
-    ['series', 'storybooks', 'Storybook Shelf', 'storybook-shelf.html'],
-    ['resource', 'resources', 'Family Resources', 'resources.html']
-  ]) {
-    records.push({
-      type, id, title, href, series: '', asin: '', amazonUrl: '',
-      purchaseLinks: { paperback: '', hardcover: '', kindle: '' },
-      keywords: [title]
-    });
-  }
-  const eligibleRecords = records.filter((record) => {
-    const eligibility = surfaces.get(record.href);
-    if (!eligibility) throw new Error(`Search destination lacks public eligibility: ${record.href}`);
-    return eligibility.search;
-  });
-  const countType = (type) => eligibleRecords.filter((record) => record.type === type).length;
+  records.push(
+    {
+      type: 'page',
+      id: 'storybook-shelf',
+      title: 'Storybook Shelf',
+      series: 'Storybooks',
+      href: 'storybook-shelf.html',
+      keywords: ['books', 'read aloud', 'stories']
+    },
+    {
+      type: 'page',
+      id: 'resources',
+      title: 'Resources',
+      series: 'Family Resources',
+      href: 'resources.html',
+      keywords: ['family activities', 'resources', 'songs', 'nursery rhymes']
+    }
+  );
+
   return {
     generatedAt: new Date().toISOString(),
     summary: {
-      totalRecords: eligibleRecords.length,
+      totalRecords: records.length,
       byType: {
-        books: countType('book'),
-        characters: countType('character'),
-        relationships: countType('relationship'),
-        environments: countType('environment'),
-        landmarks: countType('landmark'),
-        activities: countType('activity'),
-        resources: countType('resource'),
-        series: countType('series'),
-        songs: countType('song'),
-        nurseryRhymes: countType('rhyme')
+        books: Math.max(0, ((entityIndex.byType && entityIndex.byType.books) || []).length - freebieIds.size),
+        characters: ((entityIndex.byType && entityIndex.byType.characters) || []).length,
+        relationships: ((entityIndex.byType && entityIndex.byType.relationships) || []).length,
+        environments: ((entityIndex.byType && entityIndex.byType.environments) || []).length,
+        landmarks: ((entityIndex.byType && entityIndex.byType.landmarks) || []).length,
+        activities: ((entityIndex.byType && entityIndex.byType.activities) || []).length,
+        resources: ((entityIndex.byType && entityIndex.byType.resources) || []).length,
+        songs: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'song').length,
+        nurseryRhymes: (freebieDiscoveryRecords || []).filter((record) => record.contentType === 'rhyme').length,
+        pages: 2
       }
     },
     freebieSearch: {
       vocabulary: freebieSearchVocabulary
     },
-    records: eligibleRecords
+    records
   };
 }
 
@@ -2115,8 +1751,19 @@ function normalizeEntityLabel(value, fallback = '') {
   return label;
 }
 
-function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociations = null) {
+function renderUniversalEntityPage(
+  entity,
+  entityIndex,
+  entityGraph,
+  site,
+  nav,
+  config,
+  banners,
+  freebiePageAssociations = null,
+  canonicalBookRouteRegistry = null
+) {
   const nodeId = `${entity.type}:${entity.id}`;
+  const entityEligibility = getPublicSurfaceEligibility({ entity });
   const entityLabel = normalizeEntityLabel(entity.name || entity.title || entity.id, entity.id);
   const publicCharacter = entity.type === 'character'
     ? (readJson('data/characters.json').characters || [])
@@ -2126,7 +1773,28 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     ? { ...entity, description: publicCharacter.description }
     : entity);
   const nodeMap = new Map(((entityGraph && entityGraph.nodes) || []).map((node) => [node.id, node]));
-  const node = nodeMap.get(nodeId) || null;
+  const getPrimaryEntityHref = (type, id, fallback = '') => {
+    const relatedEntity = getEntityByTypeAndId(entityIndex, type, id);
+    if (!relatedEntity) return fallback;
+    if (type === 'book') return getCanonicalBookRoute(relatedEntity, canonicalBookRouteRegistry);
+    if (type === 'character' && relatedEntity.slug) return `characters/${relatedEntity.slug}.html`;
+    return relatedEntity.entityPageHref || relatedEntity.href || fallback;
+  };
+  const toPageRelativeHref = (href) => {
+    const target = String(href || '');
+    if (!target || /^(?:[a-z][a-z0-9+.-]*:|\/\/|#)/i.test(target)) return target;
+    const suffixIndex = target.search(/[?#]/);
+    const targetPath = suffixIndex === -1 ? target : target.slice(0, suffixIndex);
+    const suffix = suffixIndex === -1 ? '' : target.slice(suffixIndex);
+    if (!targetPath) return target;
+    const pageRoute = entity.entityPageHref
+      || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
+    const relativePath = path.posix.relative(
+      path.posix.dirname(String(pageRoute).replace(/\\/g, '/')),
+      targetPath.replace(/\\/g, '/').replace(/^\/+/, '')
+    );
+    return `${relativePath || path.posix.basename(targetPath)}${suffix}`;
+  };
   const edges = ((entityGraph && entityGraph.edges) || []).filter(
     (edge) => edge.from === nodeId || edge.to === nodeId
   );
@@ -2137,9 +1805,6 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
   ];
   if (entity.series) {
     identityRows.push(`<p><strong>Series:</strong> ${entity.series}</p>`);
-  }
-  if (entity.sourceDocument) {
-    identityRows.push(`<p><strong>Source Document:</strong> <code>${entity.sourceDocument}</code></p>`);
   }
   if (entity.legacyHref) {
     const legacyTargetPath = path.join(buildDir, entity.legacyHref);
@@ -2161,8 +1826,10 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       const label = otherNode
         ? `${normalizeEntityLabel(otherNode.name || otherNode.entityId, otherNode.entityId)} (${otherNode.entityType})`
         : otherNodeId;
-      const href = otherNode && otherNode.href ? `../../${otherNode.href}` : '';
-      const link = href ? `<a href="${href}">${label}</a>` : label;
+      const href = otherNode
+        ? getPrimaryEntityHref(otherNode.entityType, otherNode.entityId, otherNode.href)
+        : '';
+      const link = href ? `<a href="${toPageRelativeHref(href)}">${label}</a>` : label;
       const sourceDoc = edge.provenance && edge.provenance.sourceDocument
         ? `<code>${edge.provenance.sourceDocument}</code>`
         : 'unknown source';
@@ -2205,7 +1872,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       id: otherNode.entityId,
       name: normalizeEntityLabel(otherNode.name || otherNode.entityId, otherNode.entityId),
       type: otherNode.entityType,
-      entityPageHref: otherNode.href,
+      entityPageHref: getPrimaryEntityHref(otherNode.entityType, otherNode.entityId, otherNode.href),
       excerpt: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).textExcerpt || '',
       description: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).description || '',
       coverImage: (getEntityByTypeAndId(entityIndex, otherNode.entityType, otherNode.entityId) || {}).coverImage || ''
@@ -2258,7 +1925,7 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
           id: counterpartNode.entityId,
           name: normalizeEntityLabel(counterpartNode.name || counterpartNode.entityId, counterpartNode.entityId),
           type: counterpartNode.entityType,
-          entityPageHref: counterpartNode.href
+          entityPageHref: getPrimaryEntityHref(counterpartNode.entityType, counterpartNode.entityId, counterpartNode.href)
         });
       }
     }
@@ -2286,9 +1953,11 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
     ? `<p><a class="button" href="../../${primaryContinuation.entityPageHref}">Continue with ${primaryContinuation.name}</a></p>`
     : '';
 
-  const placeContinuationList = placeNeighborCandidates.length > 0
-    ? placeNeighborCandidates.slice(0, 8)
-    : continueExploring;
+  const placeContinuationList = entity.type === 'relationship'
+    ? continueExploring.filter((candidate) => candidate.type === 'book' && candidate.entityPageHref).slice(0, 8)
+    : placeNeighborCandidates.length > 0
+      ? placeNeighborCandidates.slice(0, 8)
+      : continueExploring;
 
   const continueHtml = placeContinuationList.length === 0
     ? '<p>More connected entities are still being mapped. For now, choose another nearby path from the map or search.</p>'
@@ -2298,27 +1967,6 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         return `<li>${candidate.name || candidate.title || candidate.id}</li>`;
       }
       return `<li><a href="../../${href}">${candidate.name || candidate.title || candidate.id}</a></li>`;
-    }).join('')}</ul>`;
-
-  const debugNodeProvenance = node && node.provenance
-    ? `<ul>
-        <li><strong>sourceDocument:</strong> ${node.provenance.sourceDocument || 'unknown'}</li>
-        <li><strong>sourceDocuments:</strong> ${(node.provenance.sourceDocuments || []).join(', ') || 'none'}</li>
-      </ul>`
-    : '<p>No node provenance available.</p>';
-
-  const debugEdges = edges.length === 0
-    ? '<p>No graph edges for this entity yet.</p>'
-    : `<ul>${edges.slice(0, 60).map((edge) => {
-      const direction = edge.from === nodeId ? 'outgoing' : 'incoming';
-      const counterpart = edge.from === nodeId ? edge.to : edge.from;
-      return `<li>
-        <strong>${edge.relationshipType}</strong> (${direction}) to ${counterpart}<br />
-        mention: ${edge.mention || 'n/a'}<br />
-        sourceArtifact: ${(edge.provenance && edge.provenance.sourceArtifact) || 'unknown'}<br />
-        sourceDocument: ${(edge.provenance && edge.provenance.sourceDocument) || 'unknown'}<br />
-        extractor: ${(edge.provenance && edge.provenance.extractor) || 'unknown'}
-      </li>`;
     }).join('')}</ul>`;
 
   if (isPlaceLikeEntity) {
@@ -2525,39 +2173,14 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         ${fullNearbyList}
       </section>` : ''}
 
-      <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
-        <h2>Developer Provenance Panel</h2>
-        <p>This panel is shown because <code>?debug=true</code> is present.</p>
-        <h3>Identity</h3>
-        <p><strong>Node ID:</strong> ${nodeId}</p>
-        <p><strong>Entity Path:</strong> ${(entity.entityPageHref || entity.href || 'n/a')}</p>
-
-        <h3>Source Canon</h3>
-        ${debugNodeProvenance}
-
-        <h3>Graph Connections</h3>
-        ${debugEdges}
-      </aside>
-
-      <script>
-        (function () {
-          var panel = document.getElementById('entity-debug-panel');
-          if (!panel) {
-            return;
-          }
-          var params = new URLSearchParams(window.location.search || '');
-          if (String(params.get('debug') || '').toLowerCase() === 'true') {
-            panel.hidden = false;
-          }
-        })();
-      </script>`,
+      `,
       site,
       nav,
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
       placeBanner,
       '../../',
-      '',
+      entityEligibility.robots,
       {},
       'body'
     );
@@ -2616,11 +2239,9 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         return `<li>${href ? `<a href="${href}">${label}</a>` : label} (${typeLabel})</li>`;
       }).join('')}</ul>`;
 
-    const relationshipNextLabel = primaryContinuation && primaryContinuation.name
-      ? `Continue with ${primaryContinuation.name}`
-      : 'Continue exploring Hawkins Hollow';
-    const relationshipPrimaryButton = primaryContinuation && primaryContinuation.entityPageHref
-      ? `<p><a class="button" href="../../${primaryContinuation.entityPageHref}">${relationshipNextLabel}</a></p>`
+    const nextStory = connectedCandidates.find((candidate) => candidate.type === 'book' && candidate.entityPageHref);
+    const relationshipPrimaryButton = nextStory
+      ? `<p><a class="button" href="../../${nextStory.entityPageHref}">Read ${nextStory.name}</a></p>`
       : '<p><a class="button" href="../../map.html">Open the map</a></p>';
 
     return renderLayout(
@@ -2658,64 +2279,14 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
         ${continueHtml}
       </section>
 
-      <section class="content-card" aria-labelledby="developer-mode">
-        <details>
-          <summary id="developer-mode"><strong>Developer Mode:</strong> relationship metadata and provenance</summary>
-          <section class="content-card" aria-labelledby="relationship-identity">
-            <h3 id="relationship-identity">Identity</h3>
-            ${identityRows.join('')}
-          </section>
-
-          <section class="content-card" aria-labelledby="relationship-canon">
-            <h3 id="relationship-canon">Canonical excerpt</h3>
-            <p>${storyText || 'Canonical relationship details will appear here as ingestion expands.'}</p>
-          </section>
-
-          <section class="content-card" aria-labelledby="relationship-connections">
-            <h3 id="relationship-connections">Graph connections</h3>
-            ${connectionsHtml}
-          </section>
-        </details>
-      </section>
-
-      <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
-        <h2>Developer Provenance Panel</h2>
-        <p>This panel is shown because <code>?debug=true</code> is present.</p>
-        <h3>Identity</h3>
-        <p><strong>Node ID:</strong> ${nodeId}</p>
-        <p><strong>Entity Path:</strong> ${(entity.entityPageHref || entity.href || 'n/a')}</p>
-
-        <h3>Source Canon</h3>
-        ${debugNodeProvenance}
-
-        <h3>Graph Connections</h3>
-        ${debugEdges}
-
-        <h3>Generated Page</h3>
-        <p>Renderer: <code>renderUniversalEntityPage</code></p>
-        <p>Graph source: <code>generated/entity-graph.json</code></p>
-        <p>Entity source: <code>generated/entity-index.json</code></p>
-      </aside>
-
-      <script>
-        (function () {
-          var panel = document.getElementById('entity-debug-panel');
-          if (!panel) {
-            return;
-          }
-          var params = new URLSearchParams(window.location.search || '');
-          if (String(params.get('debug') || '').toLowerCase() === 'true') {
-            panel.hidden = false;
-          }
-        })();
-      </script>`,
+      `,
       site,
       nav,
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
       null,
       '../../',
-      '',
+      entityEligibility.robots,
       {},
       'body'
     );
@@ -2752,44 +2323,14 @@ function renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, 
       ${continueHtml}
     </section>
 
-    <aside id="entity-debug-panel" class="content-card entity-debug-panel" hidden>
-      <h2>Developer Provenance Panel</h2>
-      <p>This panel is shown because <code>?debug=true</code> is present.</p>
-      <h3>Identity</h3>
-      <p><strong>Node ID:</strong> ${nodeId}</p>
-      <p><strong>Entity Path:</strong> ${(entity.entityPageHref || entity.href || 'n/a')}</p>
-
-      <h3>Source Canon</h3>
-      ${debugNodeProvenance}
-
-      <h3>Graph Connections</h3>
-      ${debugEdges}
-
-      <h3>Generated Page</h3>
-      <p>Renderer: <code>renderUniversalEntityPage</code></p>
-      <p>Graph source: <code>generated/entity-graph.json</code></p>
-      <p>Entity source: <code>generated/entity-index.json</code></p>
-    </aside>
-
-    <script>
-      (function () {
-        var panel = document.getElementById('entity-debug-panel');
-        if (!panel) {
-          return;
-        }
-        var params = new URLSearchParams(window.location.search || '');
-        if (String(params.get('debug') || '').toLowerCase() === 'true') {
-          panel.hidden = false;
-        }
-      })();
-    </script>`,
+    `,
     site,
     nav,
     `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
     config,
     null,
     '../../',
-    '',
+    entityEligibility.robots,
     {},
     'body'
   );
@@ -3155,6 +2696,89 @@ function renderSearchSection() {
     </script>`;
 }
 
+function renderStartHereDiscoverySections(discoveryIndex) {
+  if (!discoveryIndex || !Array.isArray(discoveryIndex.records)) return '';
+  const records = discoveryIndex.records;
+  const entryTypes = [
+    ['book', 'Read a Story'],
+    ['character', 'Meet a Character'],
+    ['environment', 'Visit a Place'],
+    ['landmark', 'Visit a Landmark'],
+    ['song', 'Sing a Song'],
+    ['rhyme', 'Share a Nursery Rhyme']
+  ];
+  const entryCards = entryTypes.map(([type, label]) => {
+    const record = records.find((entry) => entry.type === type && entry.href);
+    return record
+      ? `<article class="start-here-item" data-discovery-path="${escapeHtml(`${label} ${record.title}`.toLowerCase())}">
+          <h3>${label}</h3>
+          <p>${escapeHtml(record.title)}</p>
+          <a class="button" href="${escapeHtml(record.href)}">Explore ${escapeHtml(record.title)}</a>
+        </article>`
+      : '';
+  }).join('');
+
+  const interestRecords = new Map();
+  for (const record of records) {
+    if (!['book', 'song', 'rhyme'].includes(record.type) || !record.href) continue;
+    for (const tag of record.tags || []) {
+      if (tag.kind !== 'interest') continue;
+      const matches = interestRecords.get(tag.label) || [];
+      matches.push(record);
+      interestRecords.set(tag.label, matches);
+    }
+  }
+  const usedHrefs = new Set();
+  const interestChoices = Array.from(interestRecords.entries())
+    .sort((first, second) => second[1].length - first[1].length || first[0].localeCompare(second[0]))
+    .filter(([, matches]) => matches.some((record) => !usedHrefs.has(record.href)))
+    .slice(0, 4)
+    .map(([interest, matches]) => {
+      const recommendations = matches.filter((record) => !usedHrefs.has(record.href)).slice(0, 2);
+      recommendations.forEach((record) => usedHrefs.add(record.href));
+      return `<details class="discovery-interest-choice">
+        <summary>Explore ${escapeHtml(interest)}</summary>
+        <ul>${recommendations.map((record) => `<li><a href="${escapeHtml(record.href)}">${escapeHtml(record.title)}</a></li>`).join('')}</ul>
+      </details>`;
+    }).join('');
+
+  return `<section class="content-card" aria-labelledby="where-shall-we-go">
+      <h2 id="where-shall-we-go">Where Shall We Go Today?</h2>
+      <p>The paths below are ready to explore without using a filter.</p>
+      <p>
+        <a href="characters.html">Characters</a> &middot;
+        <a href="map.html">Places</a> &middot;
+        <a href="books.html">Books</a> &middot;
+        <a href="kids-songs.html">Kids Songs</a> &middot;
+        <a href="nursery-rhymes.html">Nursery Rhymes</a> &middot;
+        <a href="themes.html">Themes</a> &middot;
+        <a href="resources.html">Resources</a>
+      </p>
+      <label for="discovery-filter"><strong>Show matching paths</strong></label>
+      <input id="discovery-filter" class="search-input" type="search" autocomplete="off" />
+      <div class="start-here-grid" id="discovery-paths">${entryCards}</div>
+      <script>
+        (function () {
+          var input = document.getElementById('discovery-filter');
+          var paths = Array.prototype.slice.call(document.querySelectorAll('[data-discovery-path]'));
+          if (!input) return;
+          input.addEventListener('input', function () {
+            var query = input.value.trim().toLowerCase();
+            paths.forEach(function (path) {
+              path.hidden = query && path.getAttribute('data-discovery-path').indexOf(query) === -1;
+            });
+          });
+        })();
+      </script>
+    </section>
+
+    <section class="content-card" aria-labelledby="what-sounds-good">
+      <h2 id="what-sounds-good">What Sounds Good Right Now?</h2>
+      <p>Choose an idea named in the books, songs, and rhymes to find a place to begin.</p>
+      ${interestChoices}
+    </section>`;
+}
+
 function buildAmazonLookup(amazonIndex) {
   const byId = new Map();
   const byTitle = new Map();
@@ -3272,8 +2896,6 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     title: getBookPublicTitle(book) || canonicalId,
     seriesSlug: resolveSeriesSlug(book)
   };
-  const files = (book.files || []).sort();
-  const previewFiles = files.slice(0, 20);
   const amazon = getAmazonRecordForBook(book, amazonLookup);
   const bookModelByCanonicalId = experienceContext.bookModelByCanonicalId || new Map();
   const characterByCanonicalId = experienceContext.characterByCanonicalId || new Map();
@@ -3288,33 +2910,6 @@ function renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, expe
     && normalizeMetadataTitle(getBookPublicTitle(bannerBook)) === normalizeMetadataTitle(getBookPublicTitle(book))
     ? getBookCoverBanner(bannerBook)
     : null;
-  const fileTypeSummary = ((book.fileTypes || [])
-    .map((item) => `${item.extension.toUpperCase()}: ${item.count}`)
-    .join(' | ')) || 'No file type data';
-
-  const amazonBlock = amazon
-    ? `<p><strong>Publication Status:</strong> ${amazon.status || 'Unknown'}</p>
-      <p><strong>Publication Date:</strong> ${amazon.publicationDate || 'Unknown'}</p>
-      <p><strong>Amazon Price:</strong> ${amazon.price || 'Unknown'}</p>
-      <p><strong>Paperback ASIN:</strong> ${(amazon.identifiers && amazon.identifiers.paperbackAsin) || 'Not provided'}</p>
-      <p><strong>Hardcover ASIN:</strong> ${(amazon.identifiers && amazon.identifiers.hardcoverAsin) || 'Not provided'}</p>
-      <p><strong>Kindle ASIN:</strong> ${(amazon.identifiers && amazon.identifiers.kindleAsin) || 'Not provided'}</p>
-      <p><strong>ISBN:</strong> ${(amazon.identifiers && amazon.identifiers.isbn) || 'Not provided'}</p>
-      <p><strong>ISBN-10:</strong> ${(amazon.identifiers && amazon.identifiers.isbn10) || 'Not provided'}</p>
-      <p><strong>ISBN-13:</strong> ${(amazon.identifiers && amazon.identifiers.isbn13) || 'Not provided'}</p>
-      <p><strong>Series (Catalog):</strong> ${amazon.series || book.series || 'Unknown'}</p>
-      <p>
-        ${amazon.links && amazon.links.paperback ? `<a class="button" href="${amazon.links.paperback}" target="_blank" rel="noopener noreferrer">Buy Paperback</a>` : ''}
-        ${amazon.links && amazon.links.hardcover ? `<a class="button" href="${amazon.links.hardcover}" target="_blank" rel="noopener noreferrer">Buy Hardcover</a>` : ''}
-        ${amazon.links && amazon.links.kindle ? `<a class="button" href="${amazon.links.kindle}" target="_blank" rel="noopener noreferrer">Buy Kindle</a>` : ''}
-      </p>
-      ${amazon.url ? `<p><a href="${amazon.url}" target="_blank" rel="noopener noreferrer">Primary Amazon Link</a></p>` : ''}`
-    : '<p><strong>Amazon Listing:</strong> No workbook match found for this book ID in this release.</p>';
-
-  const fileList = previewFiles
-    .map((file) => `<li><code>${file}</code></li>`)
-    .join('');
-
   const isbnValues = amazon && amazon.identifiers
     ? [amazon.identifiers.isbn13, amazon.identifiers.isbn10, amazon.identifiers.isbn].filter((value) => Boolean(value))
     : [];
@@ -3542,12 +3137,6 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   const bannerTitleTag = headingOwner === 'body' ? 'span' : 'h1';
   const metadataTitle = metadata.title || title;
   const pageTitle = `${metadataTitle} | ${site.siteName}`;
-  const documentTitle = metadata.documentTitle === undefined
-    ? (metadataTitle.includes(site.siteName) ? metadataTitle : pageTitle)
-    : metadata.documentTitle;
-  if (typeof documentTitle !== 'string' || !documentTitle.trim()) {
-    throw new Error(`Invalid document/search title: ${canonicalUrl}`);
-  }
   const normalizedDescription = normalizeMetaDescription(description, `${metadataTitle} in ${site.siteName}.`);
   const metaDescription = normalizedDescription.length < 50
     ? normalizeMetaDescription(`${metadataTitle} in ${site.siteName}. ${normalizedDescription}`, `${metadataTitle} in ${site.siteName}.`)
@@ -3590,7 +3179,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>${escapeHtml(documentTitle)}</title>
+    <title>${escapeHtml(pageTitle)}</title>
     <meta name="description" content="${escapeHtml(metaDescription)}" />
     ${robots ? `<meta name="robots" content="${robots}" />` : ''}
     <link rel="canonical" href="${canonicalUrl}" />
@@ -4004,7 +3593,7 @@ function renderThemesPage(page, site, nav, config, banner, libraryIndex, themeDi
   return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><p id="theme-status" class="story-metadata-line" aria-live="polite"></p><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var statusEl=document.getElementById('theme-status');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();var shown=0;entries.forEach(function(entry){var match=!query||String(entry.getAttribute('data-theme-key')||'').indexOf(query)!==-1;entry.hidden=!match;if(match){shown+=1}});if(query&&statusEl){statusEl.textContent=shown===1?'1 theme matches \u201C'+value+'\u201D.':shown+' themes match \u201C'+value+'\u201D.'}else if(statusEl){statusEl.textContent=''}}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){if(value&&statusEl){statusEl.textContent='No theme named \u201C'+value+'\u201D is used in these stories yet.'}results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">Read '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});if(key){render(key)}})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
 }
 
-function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex = null) {
+function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex = null, publicDiscoveryIndex = null) {
   if (page.slug === 'books') {
     return renderLayout(
       page.title,
@@ -4096,7 +3685,9 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
       <h2 id="books-closing">Looking Ahead</h2>
       <p>Home introduces experiences. Series pages introduce books. Book pages invite you into each story.</p>
       <p>Choose a series, then choose a story.</p>
-    </section>`,
+    </section>
+
+    ${renderSearchSection()}`,
       site,
       nav,
       `${site.domain}/${page.slug}.html`,
@@ -4161,6 +3752,8 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
         </article>
       </div>
     </section>
+
+    ${renderStartHereDiscoverySections(publicDiscoveryIndex)}
 
     <section class="content-card start-here-grownups" aria-labelledby="for-the-grown-ups">
       <h2 id="for-the-grown-ups">For the Grown-Ups</h2>
@@ -4422,7 +4015,7 @@ function renderFreebieVideoPlayer(videoId, label, title) {
     </script>`;
 }
 
-function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
+function renderFreebieDetailPage(record, routing, site, nav, config, banner, discoveryRecord = null, characters = [], entities = []) {
   const collection = getFreebieCollection(record);
   const title = String(record.title || record.canonicalId);
   const metaDescription = getFreebieMetaDescription(record, collection);
@@ -4441,6 +4034,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
   const videoId = routing && /^[A-Za-z0-9_-]{11}$/.test(String(routing.videoId || ''))
     ? routing.videoId
     : '';
+  const youtubeUrl = videoId ? `https://youtu.be/${videoId}` : '';
 
   const aboutRows = (record.infoFields || [])
     .filter((field) => !FREEBIE_ABOUT_HIDDEN_LABELS.has(field.key))
@@ -4459,6 +4053,29 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
     description: metaDescription,
     genre: collection.itemNoun
   }).replace(/</g, '\\u003c');
+  const characterById = new Map((characters || [])
+    .filter((character) => character && character.published !== false && character.slug)
+    .map((character) => [String(character.identity && character.identity.canonicalId || '').toUpperCase(), character]));
+  const entityByKey = new Map((entities || [])
+    .map((entity) => [`${String(entity.type || '').toLowerCase()}:${String(entity.id || '').toUpperCase()}`, entity]));
+  const relatedDestinations = new Map();
+  for (const participant of (discoveryRecord && discoveryRecord.participants) || []) {
+    const character = characterById.get(String(participant.canonicalId || '').toUpperCase());
+    if (!character) continue;
+    relatedDestinations.set(`../characters/${character.slug}.html`, character.name || participant.name);
+  }
+  for (const place of (discoveryRecord && discoveryRecord.canonicalLocations) || []) {
+    if (String(place.id || '').toUpperCase() === 'ENV-0032') continue;
+    const entity = entityByKey.get(`${String(place.type || '').toLowerCase()}:${String(place.id || '').toUpperCase()}`);
+    const href = entity && (entity.entityPageHref || entity.href);
+    if (href) relatedDestinations.set(`../${href}`, entity.name || entity.title || place.name);
+  }
+  const relatedPaths = relatedDestinations.size
+    ? `<section class="content-card" aria-labelledby="freebie-related-paths">
+      <h2 id="freebie-related-paths">Follow a neighbor or place</h2>
+      <ul>${Array.from(relatedDestinations, ([href, label]) => `<li><a href="${escapeHtml(href)}">${escapeHtml(label)}</a></li>`).join('')}</ul>
+    </section>`
+    : '';
 
   return renderLayout(
     title,
@@ -4470,6 +4087,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
       ${description}
       ${record.centralHook ? `<p><strong>The part everyone joins:</strong> ${escapeHtml(record.centralHook)}</p>` : ''}
       ${videoId ? renderFreebieVideoPlayer(videoId, collection.contentType === 'song' ? 'Play Song' : 'Watch Rhyme', title) : ''}
+      ${youtubeUrl ? `<p><a class="button" href="${youtubeUrl}" target="_blank" rel="noopener noreferrer">${collection.listenLabel}</a></p>` : ''}
     </section>
 
     ${renderFreebieTextSection(record, collection)}
@@ -4480,12 +4098,15 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
       ${cues ? `<h3>${collection.cuesHeading}</h3><ul>${cues}</ul>` : ''}
     </section>
 
+    ${relatedPaths}
+
     <section class="content-card" aria-labelledby="freebie-continue">
       <h2 id="freebie-continue">Keep Exploring Hawkins Hollow</h2>
       <p>
         <a class="button" href="../${collection.indexRoute}">More ${collection.itemNounPlural}</a>
         <a class="button" href="../books.html">Read a story</a>
         <a class="button" href="../characters.html">Meet the neighbors</a>
+        <a href="../start-here.html">Choose another path</a>
       </p>
     </section>
     <script type="application/ld+json">${creativeWorkJsonLd}</script>`,
@@ -4496,10 +4117,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner) {
     detailBanner,
     '../',
     '',
-    {
-      socialImageBanner: illustrationHref ? detailBanner : null,
-      documentTitle: getFreebieSearchTitle(record, site.siteName)
-    },
+    { socialImageBanner: illustrationHref ? detailBanner : null },
     'body'
   );
 }
@@ -4642,7 +4260,7 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
     .map((record) => {
       const illustrationHref = getFreebieIllustrationHref(record);
       const routing = routingById.get(record.canonicalId);
-      const hasVideo = Boolean(routing && /^[A-Za-z0-9_-]{11}$/.test(String(routing.videoId || '')));
+      const hasVideo = Boolean(routing && routing.youtubeUrl);
       const media = illustrationHref
         ? `<img src="${illustrationHref}" alt="Title illustration for ${escapeHtml(record.title)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
@@ -4665,7 +4283,7 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
       <p class="eyebrow">${collection.indexTitle}</p>
       <h1 id="freebie-index-doorway">${collection.indexTitle}</h1>
       <p>${collection.indexTagline}</p>
-      <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, an in-site player appears on that page.</p>
+      <p>Every ${collection.itemNoun} below can be read aloud together right now. When a recording is ready, a listening link appears on that page.</p>
     </section>
 
     ${renderFreebieSearchSection(collection)}
@@ -4687,13 +4305,9 @@ function renderFreebieIndexPage(collection, records, routingById, site, nav, con
 }
 
 function renderFreebieMigrationStub(record, site) {
+  const destination = `${String(site.domain || '').replace(/\/$/, '')}/${getFreebieDetailHref(record)}`;
   const relativeDestination = `../${getFreebieDetailHref(record)}`;
-  return renderCompatibilityRedirect(record.title || record.canonicalId, getFreebieDetailHref(record), relativeDestination, site);
-}
-
-function renderCompatibilityRedirect(label, destinationRoute, relativeDestination, site) {
-  const destination = `${String(site.domain || '').replace(/\/$/, '')}/${destinationRoute}`;
-  const title = escapeHtml(String(label));
+  const title = escapeHtml(String(record.title || record.canonicalId));
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -4777,7 +4391,7 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
 }
 
 // Experience templates transform content objects into visitor-centered journeys.
-function renderCharacterExperiencePage(experience, site, nav, config, banner, freebieAssociations = []) {
+function renderCharacterExperiencePage(experience, site, nav, config, banner, freebieAssociations = [], characterConnectionHref = '') {
   const character = experience.character;
   const profile = experience.profile;
   const characterName = String(character.name || character.slug || experience.canonicalId || 'This friend').trim();
@@ -4808,14 +4422,19 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     })
     .join('');
 
-  const bookDiscoveryCards = (experience.bookDiscovery || []).map((book) => {
+  const bookDiscoveryCards = (experience.bookDiscovery || []).slice(0, 6).map((book) => {
     const coverImage = book.coverImage
       ? `<img src="../${book.coverImage}" alt="Cover image for ${book.title}" loading="lazy" width="110" height="150" />`
       : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
     const description = book.description ? `<p>${escapeHtml(book.description)}</p>` : '';
     return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
   }).join('');
-  const bookDiscoverySection = '';
+  const bookDiscoverySection = bookDiscoveryCards
+    ? `<section class="content-card" aria-labelledby="character-books">
+      <h2 id="character-books">Books Featuring This Character</h2>
+      <div class="character-story-list">${bookDiscoveryCards}</div>
+    </section>`
+    : '';
 
   const relatedPlacesCards = (experience.relatedPlacesPreview || experience.relatedPlaces || [])
     .map((place) => {
@@ -4883,11 +4502,10 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     ? `<div class="character-story-list">${relatedPlacesCards}</div>`
     : '<p>Favorite places will be added as new memories are shared.</p>';
 
-  const hasContinuation = (continuationType) => getPublicSurfaceEligibility({ experience, continuationType }).navigation;
-  const hasStoryContinuation = hasContinuation('stories');
-  const hasPeopleContinuation = hasContinuation('people');
-  const hasPlacesContinuation = hasContinuation('places');
-  const hasRelationshipsContinuation = hasContinuation('relationships');
+  const hasStoryContinuation = (experience.relatedStoriesAll || []).length > 0;
+  const hasPeopleContinuation = (experience.relatedPeopleAll || []).length > 0;
+  const hasPlacesContinuation = (experience.relatedPlacesAll || []).length > 0;
+  const hasRelationshipsContinuation = (experience.relatedRelationshipsAll || []).length > 0;
 
   const storyContinuationLink = hasStoryContinuation
     ? `<p class="section-continue"><a class="button" href="${character.slug}-stories.html">Find more stories with ${characterFirstName} &rarr;</a></p>`
@@ -4900,6 +4518,9 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     : '';
   const relationshipsContinuationLink = hasRelationshipsContinuation
     ? `<p class="section-continue"><a class="button" href="${character.slug}-relationships.html">Learn more about ${characterFirstName}'s connections &rarr;</a></p>`
+    : '';
+  const connectionDiscoveryLink = characterConnectionHref
+    ? `<p><a class="button" href="../${characterConnectionHref}">Explore ${characterName}'s connections &rarr;</a></p>`
     : '';
 
   const delightFact = `${characterFirstName} is one of the neighbors children often return to when they want a familiar friend.`;
@@ -4945,11 +4566,12 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       ${placesContinuationLink}
     </section>` : '')}
 
-    ${relatedRelationshipCards ? `<section class="content-card" aria-labelledby="character-connections">
+    ${(relatedRelationshipCards || connectionDiscoveryLink) ? `<section class="content-card" aria-labelledby="character-connections">
       <h2 id="character-connections">Connections around ${characterFirstName}</h2>
-      <p>These are a few of the shared paths that help ${characterFirstName}'s world feel connected.</p>
+      ${relatedRelationshipCards ? `<p>These are a few of the shared paths that help ${characterFirstName}'s world feel connected.</p>` : ''}
       ${relatedRelationshipCards}
       ${relationshipsContinuationLink}
+      ${connectionDiscoveryLink}
     </section>` : ''}
 
     <section class="content-card" aria-labelledby="character-discovery">
@@ -4962,6 +4584,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       <h2 id="character-next">${profile.nextHeading}</h2>
       <p>${profile.nextLine}</p>
       <p>
+        <a class="button" href="../start-here.html">Explore Hawkins Hollow</a>
         <a class="button" href="../books.html">Read a story</a>
         <a class="button" href="../map.html">Visit a place</a>
         <a class="button" href="../community.html">Join the community</a>
@@ -4979,7 +4602,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
   );
 }
 
-function renderCharacterContinuationPage(experience, continuationType, site, nav, config, banner) {
+function renderCharacterContinuationPage(experience, continuationType, site, nav, config, banner, robots = '') {
   const character = experience.character;
   const profile = experience.profile;
   const characterName = String(character.name || character.slug || 'This friend').trim();
@@ -5149,10 +4772,75 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
     config,
     banner,
     '../',
-    '',
+    robots,
     {},
     'body'
   );
+}
+
+function getCharacterContinuationSearchPresentation(characterName, continuationType) {
+  const presentations = {
+    stories: {
+      title: `Stories with ${characterName}`,
+      summary: `Settle in with ${characterName} and discover more stories from this part of Hawkins Hollow.`
+    },
+    places: {
+      title: `Walk with ${characterName}`,
+      summary: `Come walk with ${characterName} and visit places that help tell this neighbor's story.`
+    },
+    people: {
+      title: `Friends of ${characterName}`,
+      summary: `Spend a little more time with ${characterName} by meeting neighbors from this shared corner of Hawkins Hollow.`
+    },
+    relationships: {
+      title: `Connections around ${characterName}`,
+      summary: `Shared relationship moments that help connect ${characterName}'s neighborhood.`
+    }
+  };
+  const presentation = presentations[continuationType];
+  if (!presentation) throw new Error(`Unknown Character continuation: ${continuationType}`);
+  return presentation;
+}
+
+function createCharacterContinuationSearchRecord(experience, continuationType, route) {
+  const collection = CONTINUATION_COLLECTIONS[continuationType];
+  const searchableItemFields = {
+    stories: ['title', 'series', 'description'],
+    places: ['name', 'kind', 'blurb'],
+    people: ['name', 'relationshipTag', 'blurb'],
+    relationships: ['name', 'relationshipTag', 'blurb']
+  }[continuationType];
+  if (!collection) throw new Error(`Unknown Character continuation: ${continuationType}`);
+  if (!searchableItemFields) throw new Error(`Unknown Character continuation: ${continuationType}`);
+  const items = experience[collection];
+  if (!Array.isArray(items)) throw new Error(`Missing current-build Character collection: ${collection}`);
+  if (!items.length) return null;
+
+  const character = experience.character;
+  const characterName = String(character.name || character.slug || 'This friend').trim();
+  const presentation = getCharacterContinuationSearchPresentation(characterName, continuationType);
+  const itemKeywords = items.flatMap((item) => {
+    if (typeof item === 'string') return [item];
+    if (!item || typeof item !== 'object') return [];
+    return searchableItemFields
+      .map((field) => item[field])
+      .filter((value) => typeof value === 'string' && value.trim());
+  });
+
+  return {
+    type: 'character-continuation',
+    id: route.replace(/\.html$/, ''),
+    title: presentation.title,
+    series: 'Character Connections',
+    href: route.split(path.sep).join('/'),
+    summary: presentation.summary,
+    keywords: Array.from(new Set([
+      characterName,
+      presentation.title,
+      continuationType,
+      ...itemKeywords
+    ]))
+  };
 }
 
 function getStorybookCardInvitation(book) {
@@ -5763,7 +5451,7 @@ function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, con
     null,
     '../',
     '',
-    { title: `${routeTitle} Characters`, documentTitle: `${routeTitle} Characters` }
+    { title: `${routeTitle} Characters` }
   );
 }
 
@@ -6224,12 +5912,11 @@ function renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLooku
   const summary = (resource && resource.summary) || 'A warm companion resource that extends the story into daily life.';
   const resourceTitle = resource && resource.publicName ? resource.publicName : (resource && resource.title ? resource.title : 'Companion resource');
   const headline = getCompanionResourceVisitorHeadline(resource);
-  const status = getCompanionResourceStatus(resource);
   const resourceType = String((resource && resource.structural && resource.structural.resourceType) || resource.resourceType || 'Resource').trim();
   const resourceHref = getCompanionResourcePublishedUrl(resource);
   const availabilityMarkup = resourceHref
     ? `<a class="button" href="${escapeHtml(resourceHref)}" target="_blank" rel="noopener noreferrer">Open resource file</a>`
-    : '<strong>Availability:</strong> Not published yet. Check back soon.';
+    : 'Resource details are coming soon.';
   const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
   const bookReturn = bookRouteLookup.get(storyId) || null;
   const bookReturnMarkup = bookReturn
@@ -6242,28 +5929,8 @@ function renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLooku
     <p><strong>${escapeHtml(headline)}</strong></p>
     <p>${escapeHtml(summary)}</p>
     <p><strong>Type:</strong> ${escapeHtml(resourceType)}</p>
-    <p><strong>Status:</strong> ${escapeHtml(status)}</p>
     <p>${escapeHtml(getCompanionResourceVisitorIntro(resource))}</p>
     <p>${availabilityMarkup} ${bookReturnMarkup}</p>
-  </article>`;
-}
-
-function renderCompanionResourceDeveloperCard(resource) {
-  const structural = resource && resource.structural ? resource.structural : {};
-  const worldSummary = getCompanionResourceWorldSummary(resource);
-  const secondaryAudiences = getCompanionResourceSecondaryAudiences(resource);
-  const sourceFile = resource && (resource.sourceFile || resource.filePath || '');
-  const resourceId = resource && resource.resourceId ? resource.resourceId : 'Unknown resource';
-
-  return `<article class="start-here-item companion-resource-registry-card">
-    <p class="eyebrow">${escapeHtml(getCompanionResourceAudience(resource))}</p>
-    <h3>${escapeHtml(resource.publicName || resource.title || resourceId)}</h3>
-    <p><strong>Resource ID:</strong> ${escapeHtml(resourceId)}</p>
-    <p><strong>Resource type:</strong> ${escapeHtml(structural.resourceType || resource.resourceType || 'Resource')}</p>
-    <p><strong>Status:</strong> ${escapeHtml(getCompanionResourceStatus(resource))}</p>
-    ${secondaryAudiences.length > 0 ? `<p><strong>Secondary audience:</strong> ${escapeHtml(secondaryAudiences.join(', '))}</p>` : ''}
-    ${sourceFile ? `<p><strong>Source file:</strong> <code>${escapeHtml(sourceFile)}</code></p>` : ''}
-    ${worldSummary.length > 0 ? `<p><strong>Shared connections:</strong> ${escapeHtml(worldSummary.join(' | '))}</p>` : ''}
   </article>`;
 }
 
@@ -6295,9 +5962,6 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
   const uniqueCharacters = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.characters) || [])))];
   const uniquePlaces = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.places) || [])))];
   const uniqueObjects = [...new Set(resources.flatMap((resource) => ((resource && resource.world && resource.world.objects) || [])))];
-  const storyId = (companionResourceRegistry && companionResourceRegistry.referenceStory && companionResourceRegistry.referenceStory.id) || 'HH-A-0001';
-  const storyTitle = (companionResourceRegistry && companionResourceRegistry.referenceStory && companionResourceRegistry.referenceStory.title) || "Spencer's First Friend";
-
   const audienceCards = groupedResources.map(({ audience, items }) => {
     const cardHtml = items.length > 0
       ? `<div class="start-here-grid">${items.map((resource) => renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLookup)).join('')}</div>`
@@ -6313,17 +5977,6 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
   const storySelectOptions = storyOptions.length > 0
     ? storyOptions.map((option) => `<option value="${escapeHtml(option.storyId)}">${escapeHtml(option.label)}</option>`).join('')
     : '<option value="">No story filters available</option>';
-
-  const developerCards = groupedResources.map(({ audience, items }) => {
-    const cardHtml = items.length > 0
-      ? `<div class="start-here-grid">${items.map(renderCompanionResourceDeveloperCard).join('')}</div>`
-      : '<p>No resources have been assigned here yet.</p>';
-
-    return `<section class="content-card" aria-labelledby="registry-${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">
-      <h3 id="registry-${escapeHtml(audience.toLowerCase().replace(/[^a-z0-9]+/g, '-'))}">${escapeHtml(audience)}</h3>
-      ${cardHtml}
-    </section>`;
-  }).join('\n\n');
 
   return renderLayout(
     'Companion Resources',
@@ -6454,39 +6107,7 @@ function renderCompanionResourceRegistryPage(companionResourceRegistry, site, na
       </div>
     </section>
 
-    <section class="content-card" aria-labelledby="developer-mode">
-      <details>
-        <summary id="developer-mode"><strong>Developer Mode:</strong> registry, metadata, and diagnostics</summary>
-        <p>This is the authoritative registry view for maintainers. It keeps the system visible without putting it in front of visitors.</p>
-        <p><strong>Approved story:</strong> ${escapeHtml(storyId)} ${escapeHtml(storyTitle)}</p>
-        <p><strong>Registry counts:</strong> ${resources.length} resources across ${audiences.length} audience pathways.</p>
-        <section class="content-card" aria-labelledby="registry-model">
-          <h3 id="registry-model">What the registry stores</h3>
-          <div class="start-here-grid">
-            <article class="start-here-item">
-              <h4>Structural relationships</h4>
-              <p>Story, series, resource type, audience, file path, and status.</p>
-            </article>
-            <article class="start-here-item">
-              <h4>World relationships</h4>
-              <p>Characters, places, landmarks, objects, and related story connections.</p>
-            </article>
-            <article class="start-here-item">
-              <h4>Shared assets</h4>
-              <p>Characters, places, objects, and story links that keep every audience in the same world.</p>
-            </article>
-          </div>
-        </section>
-
-        ${developerCards}
-
-        <section class="content-card" aria-labelledby="registry-next">
-          <h3 id="registry-next">What happens next</h3>
-          <p>When the registry is complete, page shells can consume this data without caring where the PDFs live or how they are named.</p>
-          <p><a class="button" href="books.html">Back to Books</a> <a class="button" href="characters.html">Meet Characters</a> <a class="button" href="map.html">Open the Map</a></p>
-        </section>
-      </details>
-    </section>`,
+    `,
     site,
     nav,
     `${site.domain}/resources.html`,
@@ -6739,8 +6360,133 @@ function buildSitemapXml(site, routeNames) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
+function projectPublicSearchIndex(searchIndex) {
+  const recordFields = [
+    'type', 'id', 'title', 'series', 'href', 'asin', 'amazonUrl', 'summary',
+    'imageUrl', 'youtubeUrl', 'theme', 'ageLane', 'keywords', 'searchText'
+  ];
+  const records = (searchIndex.records || []).map((record) => {
+    const publicRecord = Object.fromEntries(recordFields
+      .filter((field) => Object.prototype.hasOwnProperty.call(record, field))
+      .map((field) => [field, record[field]]));
+    publicRecord.purchaseLinks = {
+      paperback: record.purchaseLinks && record.purchaseLinks.paperback || '',
+      hardcover: record.purchaseLinks && record.purchaseLinks.hardcover || '',
+      kindle: record.purchaseLinks && record.purchaseLinks.kindle || ''
+    };
+    publicRecord.participants = (record.participants || [])
+      .map((person) => ({ canonicalId: person.canonicalId || '', name: person.name || '' }));
+    publicRecord.literalLocations = (record.literalLocations || []).filter((name) => typeof name === 'string');
+    publicRecord.canonicalLocations = (record.canonicalLocations || []).map((place) => ({
+      id: place.id || '',
+      name: place.name || '',
+      type: place.type || '',
+      href: place.href || ''
+    }));
+    return publicRecord;
+  });
+  const vocabulary = searchIndex.freebieSearch && searchIndex.freebieSearch.vocabulary || {};
+
+  return {
+    summary: searchIndex.summary,
+    freebieSearch: {
+      vocabulary: {
+        participants: (vocabulary.participants || [])
+          .map((person) => ({ canonicalId: person.canonicalId || '', name: person.name || '' })),
+        uniqueParticipantFirstNames: (vocabulary.uniqueParticipantFirstNames || [])
+          .filter((name) => typeof name === 'string'),
+        places: (vocabulary.places || [])
+          .map((place) => ({ id: place.id || '', name: place.name || '', type: place.type || '' })),
+        literalLocations: (vocabulary.literalLocations || [])
+          .filter((name) => typeof name === 'string')
+      }
+    },
+    records
+  };
+}
+
+function projectPublicEntityIndex(entityIndex) {
+  const projectPlace = (place) => ({
+    type: place.type,
+    id: place.id,
+    name: place.name,
+    href: place.href,
+    entityPageHref: place.entityPageHref
+  });
+  return {
+    byType: {
+      environments: (entityIndex.byType.environments || []).map(projectPlace),
+      landmarks: (entityIndex.byType.landmarks || []).map(projectPlace)
+    }
+  };
+}
+
+function projectPublicEntityGraph(entityGraph) {
+  return {
+    nodes: (entityGraph.nodes || []).map((node) => ({
+      id: node.id,
+      entityType: node.entityType,
+      entityId: node.entityId,
+      name: node.name,
+      href: node.href
+    })),
+    edges: (entityGraph.edges || []).map((edge) => ({
+      from: edge.from,
+      to: edge.to,
+      relationshipType: edge.relationshipType
+    }))
+  };
+}
+
+function projectPublicDiscoveryIndex(discoveryIndex) {
+  return {
+    records: (discoveryIndex.records || []).map((record) => ({
+      type: record.type,
+      id: record.id,
+      title: record.title,
+      href: record.href,
+      summary: record.summary,
+      image: record.image,
+      tags: (record.tags || []).map((tag) => ({
+        kind: tag.kind,
+        label: tag.label
+      })),
+      related: (record.related || []).map((related) => ({
+        type: related.type,
+        title: related.title,
+        href: related.href
+      }))
+    })),
+    facets: (discoveryIndex.facets || []).map((facet) => ({
+      kind: facet.kind,
+      label: facet.label,
+      count: facet.count
+    }))
+  };
+}
+
+function writePublicGeneratedArtifacts(outputDir, { searchIndex, entityIndex, entityGraph, discoveryIndex }) {
+  const generatedOutputDir = path.join(outputDir, 'generated');
+  ensureDir(generatedOutputDir);
+  const payloads = {
+    'entity-graph.json': projectPublicEntityGraph(entityGraph),
+    'entity-index.json': projectPublicEntityIndex(entityIndex),
+    'public-discovery-index.json': projectPublicDiscoveryIndex(discoveryIndex),
+    'search-index.json': projectPublicSearchIndex(searchIndex)
+  };
+  for (const name of PUBLIC_GENERATED_ARTIFACTS) {
+    fs.writeFileSync(path.join(generatedOutputDir, name), `${JSON.stringify(payloads[name], null, 2)}\n`, 'utf8');
+  }
+}
+
 function copyStaticSiteAssets(outputDir) {
   fs.copyFileSync(path.join(root, 'styles.css'), path.join(outputDir, 'styles.css'));
+  fs.writeFileSync(path.join(outputDir, '.nojekyll'), '');
+  fs.writeFileSync(
+    path.join(outputDir, 'CNAME'),
+    `${new URL(readJson('data/site.json').domain).hostname}\n`,
+    'utf8'
+  );
   const rootEntries = fs.readdirSync(root, { withFileTypes: true });
   for (const entry of rootEntries) {
     if (!entry.isFile()) {
@@ -6757,9 +6503,6 @@ function copyStaticSiteAssets(outputDir) {
   if (fs.existsSync(path.join(root, 'assets'))) {
     copyDir(path.join(root, 'assets'), path.join(outputDir, 'assets'));
   }
-  if (fs.existsSync(path.join(root, 'generated'))) {
-    copyDir(path.join(root, 'generated'), path.join(outputDir, 'generated'), new Set(['freebie-routing-index.json']));
-  }
   ensureDir(path.join(outputDir, 'images'));
   if (!fs.existsSync(path.join(outputDir, 'images', 'placeholder-banner.jpg'))) {
     fs.writeFileSync(path.join(outputDir, 'images', 'placeholder-banner.jpg'), 'placeholder-banner');
@@ -6771,6 +6514,9 @@ function copyStaticSiteAssets(outputDir) {
 
 async function buildSite() {
   const libraryArtifacts = writeLibraryArtifacts(root);
+  if (libraryArtifacts.missingLibrary || libraryArtifacts.summary.fileCount === 0) {
+    throw new Error('Cannot build the site without a current, non-empty Library scan.');
+  }
   const amazonArtifacts = writeAmazonKdpArtifact(root);
   console.log(
     `Library index updated: ${libraryArtifacts.summary.fileCount} files, ${libraryArtifacts.summary.indexedBooks} book records.`
@@ -6797,32 +6543,26 @@ async function buildSite() {
   const banners = readJson('data/banners.json');
   const companionResourceRegistry = readJsonIfExists('data/companion-resource-registry.json');
   const authorityRegistry = loadCanonicalAuthorityRegistry();
-  const updatedSourceProjection = writeLegacySourceRegistryProjection(authorityRegistry);
-  if (updatedSourceProjection) {
-    console.log('Updated deprecated source registry projection from canonical-authority-registry.json.');
-  }
   const libraryScan = readJson('generated/library-scan.json');
-  const rawLibraryIndex = readJson('generated/library-index.json');
-  const hasLibraryBooks = Boolean(rawLibraryIndex && Array.isArray(rawLibraryIndex.books) && rawLibraryIndex.books.length > 0);
-  const manifestLibraryIndex = readLibraryIndexFromManifest(root);
-  const libraryIndex = hasLibraryBooks
-    ? rawLibraryIndex
-    : (manifestLibraryIndex || synthesizeLibraryIndexFromBooksData(booksData, seriesData));
-  if (!hasLibraryBooks) {
-    if (manifestLibraryIndex) {
-      console.log(`Library folder unavailable in build environment. Using generated manifest fallback (${libraryIndex.summary.indexedBooks} records).`);
-    } else {
-      console.log(`Library folder unavailable in build environment. Using synthesized index from data/books.json (${libraryIndex.summary.indexedBooks} records).`);
-    }
+  const libraryIndex = readJson('generated/library-index.json');
+  if (libraryIndex.missingLibrary || !Array.isArray(libraryIndex.books) || libraryIndex.books.length === 0) {
+    throw new Error('Current Library index is missing or contains no indexed records.');
   }
-  const indexedBooks = (libraryIndex.books || [])
-    .filter((libraryBook) => String(libraryBook.contentType || 'book') === 'book')
-    .slice()
-    .sort((a, b) => a.id.localeCompare(b.id));
-  const canonicalBookRouteRegistry = createCanonicalBookRouteRegistry(indexedBooks, getBookPageHref);
   const amazonIndex = amazonArtifacts.summary.missingWorkbook
     ? { records: [] }
     : readJson('generated/amazon-index.json');
+  const liveBookIds = createKdpLiveBookIdSet(amazonIndex.records);
+  const indexedBooks = (libraryIndex.books || [])
+    .filter((libraryBook) => String(libraryBook.contentType || 'book') === 'book')
+    .filter((libraryBook) => isKdpLiveBook(libraryBook, liveBookIds))
+    .slice()
+    .sort((a, b) => a.id.localeCompare(b.id));
+  const publicLibraryIndex = {
+    ...libraryIndex,
+    summary: { ...(libraryIndex.summary || {}), indexedBooks: indexedBooks.length },
+    books: indexedBooks
+  };
+  const canonicalBookRouteRegistry = createCanonicalBookRouteRegistry(indexedBooks, getBookPageHref, liveBookIds);
   const freebieRoutingRecords = readFreebieYoutubeRouting();
   const freebieArtifacts = writeFreebieManuscriptArtifact(root, libraryIndex);
   const freebieRoutingById = new Map(freebieRoutingRecords.map((record) => [record.canonicalId, record]));
@@ -6836,26 +6576,18 @@ async function buildSite() {
     `Freebie title-art publication attached: ${freebieRecords.filter((record) => record.illustrationPublished).length} verified external URLs.`
   );
   const amazonLookup = buildAmazonLookup(amazonIndex);
-  const mergedBookIndex = createMergedBookIndex(libraryIndex, amazonLookup);
+  const mergedBookIndex = createMergedBookIndex(publicLibraryIndex, amazonLookup);
   const mergedBookIndexPath = writeMergedBookIndex(root, mergedBookIndex);
-  const relationshipsData = readJson('data/relationships.json');
-  const environmentsData = readJson('data/environments.json');
-  const landmarksData = readJson('data/landmarks.json');
   const resourcesData = readJson('data/resources.json');
   const characterCanonArtifacts = writeCharacterCanonArtifact(root, charactersData, libraryScan);
   const characterCanonIndex = readJson('generated/character-canon-index.json');
   const worldCanonArtifacts = writeWorldCanonArtifacts(root, charactersData, libraryScan);
   const worldCanonIndex = readJson('generated/world-canon-index.json');
-  const fallbackWorldCanonIndex = readJsonIfExists('data/world-canon-fallback.json');
   const entityIndex = createEntityIndex(
     mergedBookIndex,
     charactersData,
     characterCanonIndex,
     worldCanonIndex,
-    fallbackWorldCanonIndex,
-    relationshipsData,
-    environmentsData,
-    landmarksData,
     resourcesData,
     libraryScan,
     authorityRegistry
@@ -6891,6 +6623,43 @@ async function buildSite() {
       detailLinks: associationReport.unresolvedFreebieDetailLinks
     })}`);
   }
+  const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary);
+  const searchEntityByTypeAndId = new Map((entityIndex.entities || [])
+    .map((entity) => [`${entity.type}:${String(entity.id || '').toUpperCase()}`, entity]));
+  searchIndex.records = searchIndex.records.filter((record) => record.type !== 'book'
+    || isKdpLiveBook(record, liveBookIds));
+  searchIndex.records = searchIndex.records.filter((record) => {
+    if (record.type === 'book' || record.type === 'song' || record.type === 'rhyme') return true;
+    if (record.type === 'page') return getPublicSurfaceEligibility({ route: record.href }).search;
+    const entity = searchEntityByTypeAndId.get(`${record.type}:${String(record.id || '').toUpperCase()}`);
+    return entity && getPublicSurfaceEligibility({ entity }).search;
+  });
+  searchIndex.summary.totalRecords = searchIndex.records.length;
+  searchIndex.summary.byType.books = searchIndex.records.filter((record) => record.type === 'book').length;
+  const searchIndexPath = writeSearchIndex(root, searchIndex);
+  const publicEntityIndex = createPublicEntityIndex(
+    entityIndex,
+    (book) => isKdpLiveBook(book, liveBookIds)
+  );
+  const publicEntityGraph = createPublicEntityGraph(entityGraph, publicEntityIndex);
+  const publicEntityByTypeAndId = new Map((publicEntityIndex.entities || [])
+    .map((entity) => [`${entity.type}:${String(entity.id || '').toUpperCase()}`, entity]));
+  const publicSearchRecords = searchIndex.records.filter((record) => {
+    if (record.type === 'song' || record.type === 'rhyme') return true;
+    if (record.type === 'book') return isKdpLiveBook(record, liveBookIds);
+    if (record.type === 'page') return getPublicSurfaceEligibility({ route: record.href }).search;
+    const entity = publicEntityByTypeAndId.get(`${record.type}:${String(record.id || '').toUpperCase()}`);
+    return entity && getPublicSurfaceEligibility({ entity }).search;
+  });
+  const publicDiscoveryIndex = createPublicDiscoveryIndex(
+    publicSearchRecords.filter((record) => record.type !== 'page'),
+    publicEntityIndex,
+    publicEntityGraph,
+    freebieDiscoveryRecords
+  );
+  const publicDiscoveryIndexPath = path.join(root, 'generated', 'public-discovery-index.json');
+  fs.writeFileSync(publicDiscoveryIndexPath, `${JSON.stringify(publicDiscoveryIndex, null, 2)}\n`, 'utf8');
+  console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
   console.log(
     `Merged book index updated: ${mergedBookIndex.summary.recordCount} records (${mergedBookIndex.summary.withAmazonDataCount} with Amazon data).`
   );
@@ -6948,29 +6717,14 @@ async function buildSite() {
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
 
   const sitemapRoutes = new Set();
-  const publicSurfaces = new Map();
-  const titleReservations = [];
-  const writePublicPage = (fileName, html, eligibility = getPublicSurfaceEligibility({ route: fileName })) => {
-    const route = fileName.replace(/\\/g, '/');
-    publicSurfaces.set(route, eligibility);
-    if (!eligibility.generated) {
-      // A locked stale file must fail the build rather than republish a withdrawn URL.
-      for (const outputDir of outputDirs) fs.rmSync(path.join(outputDir, fileName), { force: true });
-      return;
-    }
-    if (eligibility.sitemap) sitemapRoutes.add(route);
-    if (eligibility.state === 'secondary' && !/<meta name="robots"/i.test(html)) {
-      titleReservations.push(readSearchTitlePage(html, route));
-      html = html.replace('</head>', `<meta name="robots" content="${eligibility.robots}" />\n</head>`);
-    }
-    if (eligibility.redirectTo) {
-      titleReservations.push({ ...readSearchTitlePage(html, route), reservationOnly: true });
-      html = renderCompatibilityRedirect('Storybook Series', eligibility.redirectTo, eligibility.redirectTo, site);
+  const writePageToOutputsAndTrack = (fileName, html) => {
+    if (fileName !== 'sitemap.xml') {
+      sitemapRoutes.add(fileName);
     }
     writePageToOutputs(fileName, html);
   };
-  const writePageToOutputsAndTrack = writePublicPage;
 
+  const publicPageSurfaces = [];
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
     const referenceIssue = pageReferenceIssues.get(page.slug);
@@ -6982,12 +6736,17 @@ async function buildSite() {
       html = renderLegacyPreservedPage(legacySource, site, nav, config, banner);
     } else if (referenceIssue) {
       html = renderReferenceFallbackPage(page, referenceIssue, site, nav, constructionData, config, banner);
+    } else if (page.slug === 'storybook-series') {
+      html = renderCompatibilityRedirect(site, {
+        route: 'storybook-series.html',
+        targetRoute: 'storybook-shelf.html'
+      });
     } else if (page.slug === 'index') {
       html = renderLandingPage(page, site, nav, config, banner, seriesData);
     } else if (page.slug === 'characters') {
       html = renderCharactersPage(site, nav, charactersData, config, banner);
     } else if (page.template === 'article') {
-      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex);
+      html = renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex, publicDiscoveryIndex);
     } else if (page.template === 'series') {
       html = renderSeriesPage(page, site, nav, seriesData, booksData, config, banner, amazonLookup, canonicalBookRouteRegistry);
     } else if (page.template === 'book-detail') {
@@ -6997,13 +6756,18 @@ async function buildSite() {
     }
 
     const pageRoute = page.slug === 'index' ? 'index.html' : `${page.slug}.html`;
-    writePublicPage(pageRoute, html, getPublicSurfaceEligibility({ route: pageRoute, legacy: page.status === 'legacy' }));
+    writePageToOutputs(pageRoute, html);
+    const eligibility = getPublicSurfaceEligibility({ route: pageRoute, legacy: page.status === 'legacy' });
+    publicPageSurfaces.push({ route: pageRoute, ...eligibility });
+    if (eligibility.sitemap) sitemapRoutes.add(pageRoute);
   }
 
   const featuredCharacters = charactersData.characters
     .filter((character) => character.published !== false)
     .sort((a, b) => a.sortOrder - b.sortOrder);
   const characterExperienceBanner = (banners && (banners.characters || banners['meet-the-family'])) || null;
+  const publicContinuationSurfaces = [];
+  const characterContinuationSearchRecords = [];
   const libraryBookById = new Map((libraryIndex.books || []).map((book) => [String(book.id || '').toUpperCase(), book]));
   const bookModelByDiscoveryId = new Map((booksData.books || []).map((book) => [getCanonicalBookId(book).toUpperCase(), book]));
   const storyMasterByDiscoveryId = new Map(
@@ -7011,59 +6775,68 @@ async function buildSite() {
       .map((record) => [String(record && record.discoveryId || record && record.id || '').toUpperCase(), record])
       .filter((entry) => Boolean(entry[0]))
   );
-  const bookModelByCanonicalId = bookModelByDiscoveryId;
-  const storyMasterPresentationReport = [];
-  const characterDiscovery = new Map();
-  const themeDiscovery = new Map();
+  const bookModelByCanonicalId = new Map(
+    (booksData.books || [])
+      .map((modelBook) => [getCanonicalBookId(modelBook).toUpperCase(), modelBook])
+      .filter((entry) => Boolean(entry[0]))
+  );
   const characterByCanonicalId = new Map(
     (charactersData.characters || [])
       .map((character) => [String(((character.identity && character.identity.canonicalId) || '').trim()).toUpperCase(), character])
       .filter((entry) => Boolean(entry[0]))
   );
-  const bookDiscoveryPlan = [];
+  const characterByName = new Map(
+    (charactersData.characters || [])
+      .map((character) => [normalizeCharacterNameKey(character.name), character])
+      .filter((entry) => Boolean(entry[0]))
+  );
+  const storyMasterPresentationReport = [];
+  const characterDiscovery = new Map();
+  const themeDiscovery = new Map();
+  const bookPresentationModelsById = new Map();
   for (const book of indexedBooks) {
-    const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
+    const bookId = String(book.id || '').toUpperCase();
     const presentationModel = createBookPagePresentationModel(
       book,
-      storyBook,
-      storyMasterByDiscoveryId.get(String(book.id || '').toUpperCase()) || null,
+      bookModelByCanonicalId.get(bookId) || null,
+      storyMasterByDiscoveryId.get(bookId) || null,
       characterByCanonicalId,
       companionResourceRegistry
     );
+    bookPresentationModelsById.set(bookId, presentationModel);
     if (presentationModel.storyMasterWebsiteDescription) {
       storyMasterPresentationReport.push({
-        discoveryId: String(book.id || '').toUpperCase(),
+        discoveryId: bookId,
         field: 'websiteDescription',
         ...presentationModel.storyMasterWebsiteDescription.provenance
       });
     }
     for (const participant of presentationModel.characters.resolvedParticipants) {
       const entries = characterDiscovery.get(participant.canonicalId) || [];
-      entries.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book), sourceField: participant.provenance.sourceField, sourceDocument: participant.provenance.sourceDocument, sourceSection: participant.provenance.sourceSection, sourceLabel: participant.provenance.sourceLabel });
+      entries.push({
+        bookId,
+        bookHref: getBookPageHref(book),
+        sourceField: participant.provenance.sourceField,
+        sourceDocument: participant.provenance.sourceDocument,
+        sourceSection: participant.provenance.sourceSection,
+        sourceLabel: participant.provenance.sourceLabel
+      });
       characterDiscovery.set(participant.canonicalId, entries);
     }
     for (const theme of (presentationModel.themes && presentationModel.themes.values) || []) {
       const normalized = String(theme || '').trim().toLowerCase();
       if (!normalized) continue;
       const entry = themeDiscovery.get(normalized) || { theme, books: [] };
-      entry.books.push({ bookId: String(book.id || '').toUpperCase(), bookHref: getBookPageHref(book) });
+      entry.books.push({ bookId, bookHref: getBookPageHref(book) });
       themeDiscovery.set(normalized, entry);
     }
-    const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
-    const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
-    if (!detailHref) {
-      console.warn(`[book route warning] skipped indexed Book "${book.id || ''}": no unambiguous canonical route.`);
-      continue;
-    }
-    const charactersHref = storyCharacters.length > 0 ? getBookCharactersRoute(detailHref) : '';
-    bookDiscoveryPlan.push({ book, storyBook, presentationModel, storyCharacters, detailHref, charactersHref });
   }
-
   const characterBookDiscoveryById = new Map(Array.from(characterDiscovery, ([canonicalCharacterId, associations]) => {
     const books = associations.map((association) => {
       const libraryBook = libraryBookById.get(String(association.bookId || '').toUpperCase());
       const bookModel = bookModelByDiscoveryId.get(String(association.bookId || '').toUpperCase());
-      if (!libraryBook) return null;
+      const route = canonicalBookRouteRegistry.get(String(association.bookId || '').toUpperCase());
+      if (!libraryBook || !route || route !== association.bookHref) return null;
       const coverAligned = Boolean(bookModel && bookModel.coverImage
         && normalizeCharacterNameKey(bookModel.title) === normalizeCharacterNameKey(libraryBook.title));
       const storyMasterRecord = storyMasterByDiscoveryId.get(String(association.bookId || '').toUpperCase());
@@ -7074,19 +6847,24 @@ async function buildSite() {
         : '';
       return {
         title: libraryBook.title,
-        href: libraryBook.pageHref || association.bookHref,
+        href: route,
         series: libraryBook.series,
         coverImage: coverAligned ? String(bookModel.coverImage).replace(/^\//, '') : '',
         coverStatus: coverAligned ? 'aligned-book-model-cover' : 'withheld-unproven-cover',
         description: storyMasterDescription
       };
     }).filter(Boolean).sort((first, second) => String(first.href).localeCompare(String(second.href)));
-    return [String(canonicalCharacterId || '').toUpperCase(), books];
+    return [canonicalCharacterId, books];
   }));
   for (const character of featuredCharacters) {
     const canonicalCharacterId = String(character.identity && character.identity.canonicalId || '').toUpperCase();
     const experienceAsset = resolveCharacterExperienceAsset(character, charactersData, booksData, entityIndex, characterBookDiscoveryById.get(canonicalCharacterId) || [], storyMasterIndex);
-    writePublicPage(
+    const characterEntity = (entityIndex.byType.characters || [])
+      .find((entity) => entity.slug === character.slug);
+    if (!characterEntity) {
+      throw new Error(`Missing canonical entity for published Character "${character.slug}".`);
+    }
+    writePageToOutputs(
       path.join('characters', `${character.slug}.html`),
       renderCharacterExperiencePage(
         experienceAsset,
@@ -7094,24 +6872,62 @@ async function buildSite() {
         nav,
         config,
         characterExperienceBanner,
-        freebiePageAssociationIndex.byCharacterCanonicalId.get(canonicalCharacterId) || []
+        freebiePageAssociationIndex.byCharacterCanonicalId.get(canonicalCharacterId) || [],
+        getPublicSurfaceEligibility({ entity: characterEntity }).sitemap
+          ? characterEntity.entityPageHref || ''
+          : ''
       )
     );
-    for (const continuationType of Object.keys(CONTINUATION_COLLECTIONS)) {
-      const eligibility = getPublicSurfaceEligibility({ experience: experienceAsset, continuationType });
-      writePublicPage(
-        path.join('characters', `${character.slug}-${continuationType}.html`),
-        eligibility.generated ? renderCharacterContinuationPage(experienceAsset, continuationType, site, nav, config, characterExperienceBanner) : '',
-        eligibility
-      );
+    const characterRoute = path.join('characters', `${character.slug}.html`);
+    sitemapRoutes.add(characterRoute);
+    const normalizedCharacterRoute = characterRoute.split(path.sep).join('/');
+    publicPageSurfaces.push({
+      route: normalizedCharacterRoute,
+      ...getPublicSurfaceEligibility({ route: normalizedCharacterRoute }),
+      search: getPublicSurfaceEligibility({ entity: characterEntity }).search
+    });
+    for (const continuationType of ['stories', 'places', 'people', 'relationships']) {
+      const route = path.join('characters', `${character.slug}-${continuationType}.html`);
+      const eligibility = getPublicSurfaceEligibility({ continuationType, experience: experienceAsset });
+      const normalizedRoute = route.split(path.sep).join('/');
+      publicContinuationSurfaces.push({ route: normalizedRoute, ...eligibility });
+      if (eligibility.generated) {
+        writePageToOutputs(
+          route,
+          renderCharacterContinuationPage(experienceAsset, continuationType, site, nav, config, characterExperienceBanner, eligibility.robots)
+        );
+      }
+      if (eligibility.search) {
+        const searchRecord = createCharacterContinuationSearchRecord(experienceAsset, continuationType, normalizedRoute);
+        if (searchRecord) characterContinuationSearchRecords.push(searchRecord);
+      }
+      if (eligibility.sitemap) sitemapRoutes.add(route);
     }
   }
 
-  const characterByName = new Map(
-    (charactersData.characters || [])
-      .map((character) => [normalizeCharacterNameKey(character.name), character])
-      .filter((entry) => Boolean(entry[0]))
+  const indexedSearchRoutes = new Set(searchIndex.records.map((record) => record.href));
+  for (const record of characterContinuationSearchRecords) {
+    if (indexedSearchRoutes.has(record.href)) {
+      throw new Error(`Duplicate public search destination for Character continuation "${record.href}".`);
+    }
+    indexedSearchRoutes.add(record.href);
+  }
+  const eligibleContinuationRoutes = new Set(publicContinuationSurfaces
+    .filter((surface) => surface.search)
+    .map((surface) => surface.route));
+  if (eligibleContinuationRoutes.size !== characterContinuationSearchRecords.length
+    || characterContinuationSearchRecords.some((record) => !eligibleContinuationRoutes.has(record.href))) {
+    throw new Error('Eligible Character continuation routes and search records do not match.');
+  }
+  const lastCharacterRecordIndex = searchIndex.records.reduce(
+    (lastIndex, record, index) => (record.type === 'character' ? index : lastIndex),
+    -1
   );
+  searchIndex.records.splice(lastCharacterRecordIndex + 1, 0, ...characterContinuationSearchRecords);
+  searchIndex.summary.totalRecords = searchIndex.records.length;
+  searchIndex.summary.byType.characterContinuations = characterContinuationSearchRecords.length;
+  writeSearchIndex(root, searchIndex);
+
   const companionResourceCharacterIndex = new Map();
   const companionResourceCharacterUnresolved = [];
   for (const resource of getCompanionResourceRegistryResources(companionResourceRegistry)) {
@@ -7139,8 +6955,18 @@ async function buildSite() {
       .map((environment) => [String(environment.id || '').trim().toUpperCase(), environment])
       .filter((entry) => Boolean(entry[0]))
   );
-  for (const { book, storyBook, presentationModel, storyCharacters, detailHref, charactersHref } of bookDiscoveryPlan) {
-    writePublicPage(
+  for (const book of indexedBooks) {
+    const storyBook = bookModelByCanonicalId.get((book.id || '').toUpperCase()) || null;
+    const presentationModel = bookPresentationModelsById.get(String(book.id || '').toUpperCase());
+    if (!presentationModel) throw new Error(`Missing current Book presentation model for "${book.id || ''}".`);
+    const storyCharacters = resolveStoryCharactersForBook(storyBook || book, characterByCanonicalId);
+    const detailHref = getCanonicalBookRoute(book, canonicalBookRouteRegistry);
+    if (!detailHref) {
+      console.warn(`[book route warning] skipped indexed Book "${book.id || ''}": no unambiguous canonical route.`);
+      continue;
+    }
+    const charactersHref = storyCharacters.length > 0 ? getBookCharactersRoute(detailHref) : '';
+    writePageToOutputs(
       detailHref,
       renderIndexedBookDetailPage(book, site, nav, config, amazonLookup, {
         detailHref,
@@ -7153,8 +6979,13 @@ async function buildSite() {
         presentationModel
       })
     );
+    publicPageSurfaces.push({
+      route: detailHref,
+      ...getPublicSurfaceEligibility({ route: detailHref })
+    });
+    sitemapRoutes.add(detailHref);
     if (charactersHref) {
-      writePublicPage(
+      writePageToOutputs(
         charactersHref,
         renderStoryCharactersPage(storyBook || book, storyCharacters, {
           detailHref,
@@ -7162,7 +6993,16 @@ async function buildSite() {
           bookTitle: getBookPublicTitle(book) || getCanonicalBookId(book)
         }, site, nav, config)
       );
+      sitemapRoutes.add(charactersHref);
+      publicPageSurfaces.push({
+        route: charactersHref,
+        ...getPublicSurfaceEligibility({ route: charactersHref })
+      });
     }
+  }
+
+  for (const redirect of APPROVED_COMPATIBILITY_REDIRECTS) {
+    writePageToOutputs(redirect.route, renderCompatibilityRedirect(site, redirect));
   }
 
   fs.writeFileSync(
@@ -7186,17 +7026,34 @@ async function buildSite() {
     const collectionRecords = freebieRecords.filter((record) => record.contentType === collectionKey);
     const collectionBanner = getBannerForPage({ slug: collection.indexRoute.replace(/\.html$/, '') }, banners);
 
-    writePublicPage(
+    writePageToOutputs(
       collection.indexRoute,
       renderFreebieIndexPage(collection, collectionRecords, freebieRoutingById, site, nav, config, collectionBanner)
     );
+    sitemapRoutes.add(collection.indexRoute);
+    publicPageSurfaces.push({
+      route: collection.indexRoute,
+      ...getPublicSurfaceEligibility({ route: collection.indexRoute })
+    });
 
     for (const record of collectionRecords) {
       const detailHref = getFreebieDetailHref(record);
-      writePublicPage(
+      const discoveryRecord = freebieDiscoveryRecords.find((entry) => entry.canonicalId === record.canonicalId);
+      writePageToOutputs(
         detailHref,
-        renderFreebieDetailPage(record, freebieRoutingById.get(record.canonicalId) || null, site, nav, config, collectionBanner)
+        renderFreebieDetailPage(
+          record,
+          freebieRoutingById.get(record.canonicalId) || null,
+          site,
+          nav,
+          config,
+          collectionBanner,
+          discoveryRecord,
+          charactersData.characters,
+          entityIndex.entities
+        )
       );
+      sitemapRoutes.add(detailHref);
       // Legacy book URLs stay reachable as redirect stubs and are deliberately excluded from the sitemap.
       writePageToOutputs(getFreebieLegacyBookHref(record), renderFreebieMigrationStub(record, site));
     }
@@ -7210,35 +7067,65 @@ async function buildSite() {
   });
   const freebieEntityIds = new Set(freebieDiscoveryRecords
     .map((record) => String(record.canonicalId || '').toUpperCase()));
-  let publicEntityCount = 0;
-  for (const entity of allEntities) {
+  const publicEntities = allEntities.filter((entity) => !(entity.type === 'book'
+    && freebieEntityIds.has(String(entity.id || '').toUpperCase())));
+  for (const entity of publicEntities) {
     const pagePath = entity.entityPageHref || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
-    const eligibility = getPublicSurfaceEligibility({
-      entity,
-      freebieEntity: freebieEntityIds.has(String(entity.id || '').toUpperCase())
-    });
-    writePublicPage(pagePath, eligibility.generated
-      ? renderUniversalEntityPage(entity, entityIndex, entityGraph, site, nav, config, banners, freebiePageAssociationIndex)
-      : '', eligibility);
-    if (eligibility.generated) publicEntityCount += 1;
+    writePageToOutputs(
+      pagePath,
+      renderUniversalEntityPage(
+        entity,
+        entityIndex,
+        entityGraph,
+        site,
+        nav,
+        config,
+        banners,
+        freebiePageAssociationIndex,
+        canonicalBookRouteRegistry
+      )
+    );
+    if (getPublicSurfaceEligibility({ entity }).sitemap) sitemapRoutes.add(pagePath);
   }
 
-  const searchIndex = createSearchIndexFromEntityIndex(entityIndex, freebieDiscoveryRecords, freebieSearchVocabulary, publicSurfaces);
-  const searchIndexPath = writeSearchIndex(root, searchIndex);
-  const surfaceIndexPath = path.join(root, 'generated', 'public-surface-index.json');
-  fs.writeFileSync(surfaceIndexPath, `${JSON.stringify({ records: Array.from(publicSurfaces, ([route, eligibility]) => ({ route, ...eligibility })) }, null, 2)}\n`);
-  for (const outputDir of outputDirs) {
-    fs.copyFileSync(searchIndexPath, path.join(outputDir, 'generated', 'search-index.json'));
-    fs.copyFileSync(surfaceIndexPath, path.join(outputDir, 'generated', 'public-surface-index.json'));
+  const publicSurfaceIndexPath = path.join(root, 'generated', 'public-surface-index.json');
+  const publicSurfaces = new Map();
+  for (const record of publicPageSurfaces) publicSurfaces.set(record.route, record);
+  for (const record of publicContinuationSurfaces) publicSurfaces.set(record.route, record);
+  for (const entity of allEntities) {
+    const route = entity.entityPageHref || entity.href
+      || getEntityPageHref(entity.type, entity.id, entity.name || entity.title || '');
+    publicSurfaces.set(route, {
+      route,
+      ...getPublicSurfaceEligibility({ entity })
+    });
   }
-  console.log(`Search index updated: ${searchIndex.summary.totalRecords} eligible primary records.`);
+  for (const record of searchIndex.records) {
+    if (record.type === 'song' || record.type === 'rhyme') {
+      publicSurfaces.set(record.href, {
+        route: record.href,
+        ...getPublicSurfaceEligibility({ route: record.href })
+      });
+    }
+  }
+  const publicSurfaceIndex = { records: Array.from(publicSurfaces.values()) };
+  fs.writeFileSync(publicSurfaceIndexPath, `${JSON.stringify(publicSurfaceIndex, null, 2)}\n`, 'utf8');
+
+  for (const outputDir of outputDirs) {
+    writePublicGeneratedArtifacts(outputDir, {
+      searchIndex,
+      entityIndex: publicEntityIndex,
+      entityGraph: publicEntityGraph,
+      discoveryIndex: publicDiscoveryIndex
+    });
+  }
+
   writePageToOutputs('sitemap.xml', buildSitemapXml(site, sitemapRoutes));
-  finalizeSearchTitles(outputDirs, site, titleReservations);
-  const lastmodLedger = writeSitemapLastmod(outputDirs);
-  console.log(`Sitemap lastmod dates prepared for ${lastmodLedger.entries.length} eligible public URLs.`);
+  finalizeSearchTitles(outputDirs, site);
+  writeSitemapLastmod(outputDirs);
 
   console.log(`Generated ${indexedBooks.length} indexed book detail pages.`);
-  console.log(`Generated ${publicEntityCount} universal entity pages (${allEntities.length - publicEntityCount} freebie Book profiles omitted).`);
+  console.log(`Generated ${publicEntities.length} universal entity pages (${allEntities.length - publicEntities.length} freebie Book profiles omitted).`);
   console.log(`Copied search index to build output from ${path.relative(root, searchIndexPath)}.`);
   console.log(`Merged book index saved to ${path.relative(root, mergedBookIndexPath)}.`);
   console.log(`Entity index saved to ${path.relative(root, entityIndexPath)}.`);

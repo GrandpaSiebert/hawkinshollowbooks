@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
 const { writeLibraryArtifacts } = require('./library-scanner');
+const { classifyBookFolderAssets } = require('./book-asset-classifier');
 
 const root = path.join(__dirname, '..');
 const DEFAULT_OUTPUT = path.join(root, 'generated', 'manifest', 'manifest.json');
@@ -260,7 +261,23 @@ function buildManifest(options = {}) {
       .filter(Boolean);
 
     const prioritized = [];
-    const cover = findPreferredAsset(files, /\.(png|jpe?g|webp)$/i);
+    const isBookFolder = (book.files || []).some((file) => /^Books\//i.test(file));
+    const coverClassification = isBookFolder
+      ? classifyBookFolderAssets(book, {
+        canonicalId: book.id,
+        title: book.title,
+        series: book.series
+      })
+      : null;
+    if (coverClassification
+      && (coverClassification.status === 'ambiguous-cover' || coverClassification.status === 'ownership-conflict')) {
+      console.warn(`${book.id}: manifest front-cover classification requires review (${coverClassification.status}).`);
+    }
+    const coverPath = coverClassification
+      ? coverClassification.status === 'matched' ? coverClassification.frontCoverPaths[0] : ''
+      : '';
+    const cover = files.find((file) => file.sourcePath === coverPath)
+      || (!coverClassification ? findPreferredAsset(files, /\.(png|jpe?g|webp)$/i) : null);
     const pdf = findPreferredAsset(files, /\.pdf$/i);
     if (cover) prioritized.push(cover);
     if (pdf && pdf !== cover) prioritized.push(pdf);

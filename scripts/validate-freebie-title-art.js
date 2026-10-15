@@ -10,7 +10,7 @@ const {
 
 const root = path.join(__dirname, '..');
 const freebieIndexPath = path.join(root, 'generated', 'freebie-index.json');
-const outputDirs = ['build', 'build-recovery'];
+const outputDirs = ['build-recovery'];
 const CANONICAL_ID_PATTERN = /^HH-[SR]-\d{4}$/;
 
 function safeId(value) {

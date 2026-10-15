@@ -4,7 +4,7 @@ const { normalizeSearchText } = require('./freebie-discovery');
 const { readFreebieYoutubeRouting } = require('./freebie-routing-import');
 
 const root = path.join(__dirname, '..');
-const outputs = ['build', 'build-recovery'];
+const outputs = ['build-recovery'];
 const ALLOWED_RECORD_KEYS = new Set([
   'type', 'id', 'title', 'series', 'href', 'asin', 'amazonUrl', 'purchaseLinks',
   'summary', 'imageUrl', 'youtubeUrl', 'participants', 'literalLocations',

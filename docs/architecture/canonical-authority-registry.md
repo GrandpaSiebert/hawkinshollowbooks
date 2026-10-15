@@ -19,18 +19,17 @@ Primary file:
 
 - `data/canonical-authority-registry.json`
 
-Compatibility file (legacy name):
+Deprecated compatibility file (not consumed by the build or QC):
 
 - `data/canonical-source-registry.json`
-
-When both exist, systems should prefer the authority registry.
 
 Governance rule:
 
 - `data/canonical-authority-registry.json` is authoritative.
-- `data/canonical-source-registry.json` is a deprecated compatibility projection only.
-- The legacy file must be generated from the authority registry and never hand-edited.
-- Validation must fail if overlapping declarations drift.
+- `data/canonical-source-registry.json` is historical compatibility data and is not
+  regenerated or consulted by the site generator or canonical validator.
+- Missing or invalid authority-registry data fails closed; consumers do not
+  substitute built-in defaults or compatibility records.
 
 ## Entity Contract
 
@@ -39,30 +38,42 @@ Each entity may define:
 - `canonicalAuthority`: named owner of canonical truth
 - `canonicalSource`: current storage/artifact location for canonical truth
 - `canonicalPath`: path inside the source payload to canonical records
-- `compatibilitySource`: optional transitional fallback source
-- `compatibilityPath`: path inside compatibility source payload
+
+For Library-backed World Canon, the indexed records are generated from the
+current Library scan. The generated index is a build input to downstream
+rendering, not an independent authority.
 
 ## Example Ownership
 
 - Books -> Book Model
-- Characters -> Character Canon
+- Character directory metadata -> `data/characters.json`; character canon
+  documents and their content -> `Library/Characters`
 - Environments -> World Canon
 - Relationships -> World Canon
 
+Book identity and manuscript files come from the Library. Book Model fields
+provide curated presentation metadata, while the unchanged root-level
+`Amazon KDP Info.xlsx` determines KDP Live status.
+
 ## System Expectations
 
-- Validators consult this registry to explain active authority and source.
-- Generators consult this registry to resolve canonical records declaratively.
+- The generator and canonical validator consume this same registry and source
+  selection; validation applies additional checks without selecting alternate
+  records.
+- Library scans and importer outputs are refreshed for each build. Missing
+  Library or required current World Canon records fail the build.
 - Importers/exporters should adopt this registry instead of hardcoding source logic.
 
 ## Design Principle
 
-Prefer declarative authority over procedural source checks.
+Keep each authority explicit and avoid fallback chains that allow stale
+projections to replace current source material.
 
 Good:
 
-- "Environments are owned by World Canon and currently resolved from byType.environments."
+- "Environments are owned by World Canon and resolved from the current
+  Library-derived `byType.environments` projection."
 
 Avoid:
 
-- "If world-canon-index exists, use it."
+- "If the Library is missing, use a prior generated index or a legacy JSON copy."

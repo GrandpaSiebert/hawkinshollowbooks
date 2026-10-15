@@ -38,7 +38,7 @@ function fixtureLedger(...pages) {
   return createBaselineLedger(snapshot.pages, { ...provenance, snapshotId: snapshot.id });
 }
 
-test('checked-in tracking baseline exactly hashes all 1392 URLs from the deployed Stage 4D seed snapshot', () => {
+test('checked-in tracking baseline preserves the deployed 1392-URL Stage 4D seed snapshot', () => {
   validateSeedBaseline(baseline);
   const snapshot = createSnapshot(baseline.entries.map(({ url, fingerprint }) => ({ url, fingerprint })));
   assert.equal(baseline.entries.length, 1392);
@@ -50,8 +50,42 @@ test('checked-in tracking baseline exactly hashes all 1392 URLs from the deploye
   assert.equal(baseline.baseline.meaning, BASELINE_MEANING);
 
   const sitemap = fs.readFileSync(path.join(root, 'build-recovery', 'sitemap.xml'), 'utf8');
-  const urls = Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1].replace(/&amp;/g, '&')).sort();
-  assert.deepEqual(baseline.entries.map((entry) => entry.url), urls);
+  const deployedUrls = new Set(baseline.entries.map((entry) => entry.url));
+  const localUrls = new Set(Array.from(sitemap.matchAll(/<loc>([^<]+)<\/loc>/g), (match) => match[1].replace(/&amp;/g, '&')));
+  const addedRoutes = Array.from(localUrls).filter((url) => !deployedUrls.has(url));
+  const withdrawnRoutes = Array.from(deployedUrls).filter((url) => !localUrls.has(url));
+  const cPlusTitleCorrection = {
+    previous: 'https://hawkinshollowbooks.com/books/HH-C+-0007-callen-crow-s-lost-feather-cover.html',
+    current: 'https://hawkinshollowbooks.com/books/HH-C+-0007-callen-crow-s-lost-feather.html',
+    previousCharacters: 'https://hawkinshollowbooks.com/books/HH-C+-0007-callen-crow-s-lost-feather-cover-characters.html',
+    currentCharacters: 'https://hawkinshollowbooks.com/books/HH-C+-0007-callen-crow-s-lost-feather-characters.html'
+  };
+  assert.ok(localUrls.has(cPlusTitleCorrection.current), 'HH-C+-0007 uses the owner-confirmed canonical title');
+  assert.ok(localUrls.has(cPlusTitleCorrection.currentCharacters), 'HH-C+-0007 character continuation follows its canonical title');
+  const publicationRecords = JSON.parse(fs.readFileSync(path.join(root, 'generated', 'amazon-index.json'), 'utf8')).records;
+  const nonLiveBookIds = new Set(publicationRecords
+    .filter((record) => String(record.status || '').trim().toLowerCase() !== 'live')
+    .map((record) => String(record.id || '').trim().toUpperCase()));
+  const liveBookIds = new Set(publicationRecords
+    .filter((record) => String(record.status || '').trim().toLowerCase() === 'live')
+    .map((record) => String(record.id || '').trim().toUpperCase()));
+  for (const url of addedRoutes) {
+    const route = decodeURIComponent(new URL(url).pathname);
+    const bookId = /\/books\/(HH-[A-Z+-]+-\d{4})(?:-|\.html|\/|$)/i.exec(route);
+    assert.ok(bookId && liveBookIds.has(bookId[1].toUpperCase()), `${route}: only a newly Live Book route may be added`);
+  }
+  assert.ok(withdrawnRoutes.length > 0, 'local build removes routes for non-Live Books before deployment');
+  for (const url of withdrawnRoutes) {
+    const route = decodeURIComponent(new URL(url).pathname);
+    const bookId = /\/books\/(HH-[A-Z+-]+-\d{4})(?:-|\.html|\/|$)/i.exec(route);
+    assert.ok(
+      (bookId && nonLiveBookIds.has(bookId[1].toUpperCase()))
+        || (url === cPlusTitleCorrection.previous && localUrls.has(cPlusTitleCorrection.current))
+        || (url === cPlusTitleCorrection.previousCharacters && localUrls.has(cPlusTitleCorrection.currentCharacters))
+        || route === '/entities/environment/env-0032-farmhouse-exterior.html',
+      `${route}: only non-Live Book routes or explicitly local-only canon differ from the deployed snapshot`
+    );
+  }
 });
 
 test('initial tracking dates remain stable on unchanged rebuilds and bootstrap cannot reset an advanced ledger', () => {

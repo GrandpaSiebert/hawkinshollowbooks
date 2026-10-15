@@ -841,7 +841,7 @@
     {
       "slug": "the-healthy-heart-walk",
       "identity": {
-        "canonicalId": "HH-D-0001",
+        "canonicalId": "HH-C+-0001",
         "legacyAliases": [
           "GT001"
         ]
@@ -858,7 +858,7 @@
     {
       "slug": "brandon-rabbits-make-believe-farm",
       "identity": {
-        "canonicalId": "HH-D-0002",
+        "canonicalId": "HH-C+-0002",
         "legacyAliases": [
           "GT002"
         ]
@@ -875,7 +875,7 @@
     {
       "slug": "callen-crows-leadership",
       "identity": {
-        "canonicalId": "HH-D-0003",
+        "canonicalId": "HH-C+-0003",
         "legacyAliases": [
           "GT003"
         ]
@@ -892,7 +892,7 @@
     {
       "slug": "the-birthday-surprise",
       "identity": {
-        "canonicalId": "HH-D-0004",
+        "canonicalId": "HH-C+-0004",
         "legacyAliases": [
           "GT004"
         ]
@@ -909,7 +909,7 @@
     {
       "slug": "brandon-rabbits-garden-helpers",
       "identity": {
-        "canonicalId": "HH-D-0005",
+        "canonicalId": "HH-C+-0005",
         "legacyAliases": [
           "GT005"
         ]
@@ -926,7 +926,7 @@
     {
       "slug": "the-community-garden",
       "identity": {
-        "canonicalId": "HH-D-0006",
+        "canonicalId": "HH-C+-0006",
         "legacyAliases": [
           "GT006"
         ]
@@ -941,9 +941,99 @@
       "sortOrder": 6
     },
     {
+      "slug": "spencers-grumpy-wake-up",
+      "identity": {
+        "canonicalId": "HH-D-0001",
+        "legacyAliases": []
+      },
+      "title": "Spencer's Grumpy Wake-Up",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL001 Spencer's Grumpy Wake-Up Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "lexs-trying-again-after-a-mistake",
+      "identity": {
+        "canonicalId": "HH-D-0002",
+        "legacyAliases": []
+      },
+      "title": "Lex's Trying Again After a Mistake",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL002 Lex's Trying Again After a Mistake Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "spencers-not-wanting-to-share-the-lead",
+      "identity": {
+        "canonicalId": "HH-D-0003",
+        "legacyAliases": []
+      },
+      "title": "Spencer's Not Wanting to Share the Lead",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL003 Spencer's Not Wanting to Share the Lead Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
+    },
+    {
+      "slug": "aralynn-foxs-my-body-belongs-to-me",
+      "identity": {
+        "canonicalId": "HH-D-0004",
+        "legacyAliases": []
+      },
+      "title": "Aralynn Fox’s My Body Belongs to Me",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL004 Aralynn Fox’s My Body Belongs to Me Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "callen-crows-first-train-ride-dream",
+      "identity": {
+        "canonicalId": "HH-D-0005",
+        "legacyAliases": []
+      },
+      "title": "Callen Crow's First Train Ride Dream",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL005 Callen Crow's First Train Ride Dream Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "lexs-first-drop-off-tears",
+      "identity": {
+        "canonicalId": "HH-D-0006",
+        "legacyAliases": []
+      },
+      "title": "Lex's First Drop-Off Tears",
+      "seriesSlug": "bedtime-library",
+      "coverImage": "/assets/covers/Bedtime Library/BL006 Lex's First Drop-Off Tears Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
       "slug": "callen-crows-lost-feather",
       "identity": {
-        "canonicalId": "HH-D-0007",
+        "canonicalId": "HH-C+-0007",
         "legacyAliases": [
           "GT007"
         ]
@@ -1087,16 +1177,14 @@
       "sortOrder": 7
     },
     {
-      "slug": "aydin-and-albert-einsteins-map",
+      "slug": "austin-turtles-independence-day-quilt-square",
       "identity": {
         "canonicalId": "HH-F-0001",
-        "legacyAliases": [
-          "HR001"
-        ]
+        "legacyAliases": []
       },
-      "title": "Aydin and Albert Einstein’s Map",
-      "seriesSlug": "hero-play-poems",
-      "coverImage": "/assets/covers/Hero Play Poems/HR001 Aydin and Albert Einstein’s Map Cover.png",
+      "title": "Austin Turtle’s Independence Day Quilt Square",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP001 Austin Turtle’s Independence Day Quilt Square Cover.png",
       "description": "",
       "summary": "",
       "characters": [],
@@ -1104,16 +1192,14 @@
       "sortOrder": 1
     },
     {
-      "slug": "emmitt-and-martin-luther-king-jrs-promise",
+      "slug": "aleeas-independence-day-paper-star",
       "identity": {
         "canonicalId": "HH-F-0002",
-        "legacyAliases": [
-          "HR002"
-        ]
+        "legacyAliases": []
       },
-      "title": "Emmitt and Martin Luther King Jr.’s Promise",
-      "seriesSlug": "hero-play-poems",
-      "coverImage": "/assets/covers/Hero Play Poems/HR002 Emmitt and Martin Luther King Jr.’s Promise Cover.png",
+      "title": "Aleea’s Independence Day Paper Star",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP002 Aleea’s Independence Day Paper Star Cover.png",
       "description": "",
       "summary": "",
       "characters": [],
@@ -1121,21 +1207,109 @@
       "sortOrder": 2
     },
     {
-      "slug": "aydin-and-davy-crocketts-map",
+      "slug": "baby-bentleys-friendship-day-painted-pebble",
       "identity": {
         "canonicalId": "HH-F-0003",
-        "legacyAliases": [
-          "HR003"
-        ]
+        "legacyAliases": []
       },
-      "title": "Aydin and Davy Crockett’s Map",
-      "seriesSlug": "hero-play-poems",
-      "coverImage": "/assets/covers/Hero Play Poems/HR003 Aydin and Davy Crockett’s Map Cover.png",
+      "title": "Baby Bentley’s Friendship Day Painted Pebble",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP003 Baby Bentley’s Friendship Day Painted Pebble Cover.png",
       "description": "",
       "summary": "",
       "characters": [],
       "published": false,
       "sortOrder": 3
+    },
+    {
+      "slug": "aralynn-foxs-friendship-day-kindness-circle",
+      "identity": {
+        "canonicalId": "HH-F-0004",
+        "legacyAliases": []
+      },
+      "title": "Aralynn Fox’s Friendship Day Kindness Circle",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP004 Aralynn Fox’s Friendship Day Kindness Circle Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 4
+    },
+    {
+      "slug": "callen-crows-labor-day-helping-hands-morning",
+      "identity": {
+        "canonicalId": "HH-F-0005",
+        "legacyAliases": []
+      },
+      "title": "Callen Crow's Labor Day Helping Hands Morning",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP005 Callen Crow's Labor Day Helping Hands Morning Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 5
+    },
+    {
+      "slug": "aydins-labor-day-worker-thank-you",
+      "identity": {
+        "canonicalId": "HH-F-0006",
+        "legacyAliases": []
+      },
+      "title": "Aydin’s Labor Day Worker Thank-You",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP006 Aydin’s Labor Day Worker Thank-You Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 6
+    },
+    {
+      "slug": "aleeas-grandparents-day-story-chair-welcome-sign",
+      "identity": {
+        "canonicalId": "HH-F-0007",
+        "legacyAliases": []
+      },
+      "title": "Aleea’s Grandparents Day Story Chair Welcome Sign",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HSP007 Aleea’s Grandparents Day Story Chair Welcome Sign Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 7
+    },
+    {
+      "slug": "alice-moles-grandparents-day-memory-walk",
+      "identity": {
+        "canonicalId": "HH-F-0008",
+        "legacyAliases": []
+      },
+      "title": "Alice Mole's Grandparents Day Memory Walk",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HH-F-0008 Alice Mole's Grandparents Day Memory Walk Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 8
+    },
+    {
+      "slug": "aralynn-foxs-patriot-day-quiet-helper-plan-painted-stone",
+      "identity": {
+        "canonicalId": "HH-F-0009",
+        "legacyAliases": []
+      },
+      "title": "Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone",
+      "seriesSlug": "holiday-story-poems",
+      "coverImage": "/assets/covers/Holiday Story Poems/HH-F-0009 Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 9
     },
     {
       "slug": "spencer-washes-up-before-snack",
@@ -1289,6 +1463,57 @@
       "characters": [],
       "published": false,
       "sortOrder": 6
+    },
+    {
+      "slug": "aydin-and-albert-einsteins-map",
+      "identity": {
+        "canonicalId": "HH-HR-0001",
+        "legacyAliases": [
+          "HR001"
+        ]
+      },
+      "title": "Aydin and Albert Einstein’s Map",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR001 Aydin and Albert Einstein’s Map Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 1
+    },
+    {
+      "slug": "emmitt-and-martin-luther-king-jrs-promise",
+      "identity": {
+        "canonicalId": "HH-HR-0002",
+        "legacyAliases": [
+          "HR002"
+        ]
+      },
+      "title": "Emmitt and Martin Luther King Jr.’s Promise",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR002 Emmitt and Martin Luther King Jr.’s Promise Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 2
+    },
+    {
+      "slug": "aydin-and-davy-crocketts-map",
+      "identity": {
+        "canonicalId": "HH-HR-0003",
+        "legacyAliases": [
+          "HR003"
+        ]
+      },
+      "title": "Aydin and Davy Crockett’s Map",
+      "seriesSlug": "hero-play-poems",
+      "coverImage": "/assets/covers/Hero Play Poems/HR003 Aydin and Davy Crockett’s Map Cover.png",
+      "description": "",
+      "summary": "",
+      "characters": [],
+      "published": false,
+      "sortOrder": 3
     },
     {
       "slug": "austin-turtles-independence-day-quilt-square",

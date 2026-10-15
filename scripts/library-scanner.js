@@ -3,6 +3,7 @@ const path = require('path');
 
 const ID_WITH_TITLE_PATTERN = /\b(HH-[A-Z+]+-\d{4})\s+(.+?)\.(pdf|docx|png|jpe?g|json)$/i;
 const ID_PATTERN_GLOBAL = /\b(HH-[A-Z+]+-\d{4})\b/gi;
+const SHORT_ID_PATTERN_GLOBAL = /\b(HH-[A-Z+]+-(\d{1,3}))(?=[\s/\\.-]|$)/gi;
 // Audio deliverables carry an HH-SL sibling code that is not a canonical content identity.
 const MEDIA_DERIVED_ID_PATTERN = /^HH-SL-\d{4}$/i;
 
@@ -40,15 +41,38 @@ function parseSeriesFromBooksPath(relativePath) {
   };
 }
 
+function extractBookFolderId(relativePath) {
+  const segments = String(relativePath || '').replace(/\\/g, '/').split('/').filter(Boolean);
+  if (segments[0] !== 'Books') return null;
+  for (let index = 1; index < segments.length - 1; index += 1) {
+    const match = /^HH-([A-Z+]+)-(\d{1,4})\s+.+$/i.exec(segments[index]);
+    if (match) {
+      return `HH-${match[1].toUpperCase()}-${match[2].padStart(4, '0')}`;
+    }
+  }
+  return null;
+}
+
 function extractPrimaryId(relativePath) {
-  const matches = Array.from(relativePath.matchAll(ID_PATTERN_GLOBAL))
-    .filter((match) => !MEDIA_DERIVED_ID_PATTERN.test(match[1]));
+  const folderId = extractBookFolderId(relativePath);
+  if (folderId) return folderId;
+
+  const matches = [
+    ...Array.from(relativePath.matchAll(ID_PATTERN_GLOBAL))
+      .filter((match) => !MEDIA_DERIVED_ID_PATTERN.test(match[1]))
+      .map((match) => ({ index: match.index, id: match[1] })),
+    ...Array.from(relativePath.matchAll(SHORT_ID_PATTERN_GLOBAL))
+      .filter((match) => !MEDIA_DERIVED_ID_PATTERN.test(match[1]))
+      .map((match) => ({
+        index: match.index,
+        id: match[1].replace(/-(\d{1,3})$/, (_, digits) => `-${digits.padStart(4, '0')}`)
+      }))
+  ].sort((left, right) => left.index - right.index);
   if (matches.length === 0) {
     return null;
   }
 
-  // Pick the last 4-digit ID in the path so range folders do not override the concrete book folder.
-  return matches[matches.length - 1][1];
+  return matches[matches.length - 1].id;
 }
 
 function getContentType(relativePath) {
@@ -67,12 +91,12 @@ function getContentType(relativePath) {
 
 function inferTitleFromPath(relativePath, id) {
   const segments = relativePath.split('/');
-  const prefix = `${id} `;
   // Ignore the leaf file name; infer title from enclosing folder names.
   for (let i = segments.length - 2; i >= 0; i -= 1) {
-    if (segments[i].startsWith(prefix)) {
-      return segments[i].slice(prefix.length).trim();
-    }
+    const match = /^(HH-[A-Z+]+)-(\d{1,4})\s+(.+)$/i.exec(segments[i]);
+    if (!match) continue;
+    const folderId = `${match[1]}-${match[2].padStart(4, '0')}`;
+    if (folderId.toUpperCase() === id.toUpperCase()) return match[3].trim();
   }
 
   return null;
@@ -318,6 +342,7 @@ function writeLibraryArtifacts(siteRoot, outputDir = path.join(siteRoot, 'genera
   return {
     scanPath,
     indexPath,
+    missingLibrary: scan.missingLibrary === true,
     summary: {
       fileCount: scan.summary.fileCount,
       folderCount: scan.summary.folderCount,

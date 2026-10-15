@@ -72,20 +72,16 @@ Open http://localhost:8080/ in a browser.
 
 This repository deploys through GitHub Actions using `.github/workflows/deploy-pages.yml`.
 
-After you make changes, publish with one command from the project root:
+After reviewing the release, pass only the intended repository-relative paths:
 
 ```bash
-npm run publish:pages
+powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1 `
+  -Message "Publish reviewed site update" `
+  -Files "scripts/generate-site.js" "scripts/canonical-book-routes.js"
 ```
 
-Optional custom commit message:
-
-```bash
-powershell -NoProfile -ExecutionPolicy Bypass -File ./scripts/publish-pages.ps1 -Message "Publish summer update"
-```
-
-The publish script builds the site, commits any pending changes, and pushes to `origin/main`.
-GitHub Actions then deploys `build-recovery/` to Pages.
+The publish helper rejects an already-staged index, wildcard paths, directory paths, and path traversal; it stages and commits only the explicit `-Files` allowlist before pushing to `origin/main`. Unrelated unstaged changes are not included.
+GitHub Actions restores canonical `Library/` inputs into its fresh, ephemeral runner workspace using dedicated read-only R2 credentials, verifies required published title-art, runs the serial regression suite, and then performs one strict build. The manual QC workflow and Pages deployment use the same restore command, Node/npm lockfile, deployment date, environment flags, and build validators. Neither workflow writes to R2. The generator includes the Pages marker files and public IndexNow key in `build-recovery/`; after generation, deployment prepares only IndexNow state and uploads that unchanged directory. Missing credentials, inputs, or required title-art stop the workflow before deployment. Populating R2 remains a separately authorized operation.
 
 ### Deployment-aware IndexNow
 
@@ -109,89 +105,6 @@ npm run indexnow:submit:dry-run
 ```
 
 Local preview cannot claim a trustworthy CI baseline. `indexnow:submit` requires the prepared deployment SHA/run and explicit Pages-success gate. The old direct URL/whole-sitemap CLI is intentionally blocked. Run generator integration tests serially: `node --test --test-concurrency=1`.
-
-### Document/search titles
-
-The generator keeps HTML document titles separate from canonical work titles,
-visible headings, and the existing OG/Twitter title. Short Song/Rhyme titles
-retain branding when it fits the 60-character design target; longer titles omit
-branding first. Only titles still over 60 receive equivalent whole-phrase
-abbreviations. An exact trailing catalog sequence may be omitted; arbitrary
-numbers, words, and character ranges are never truncated.
-
-`scripts/search-title-overrides.js` contains reviewed metadata-only exceptions
-keyed by canonical HH ID, with the expected source title and a rationale.
-Changed source titles invalidate their override rather than silently reusing it.
-Book-character document titles use the indexed route title plus `Characters`,
-without branding; their existing H1 and social-title ownership remain separate.
-
-After rendering, `scripts/search-titles.js` checks every sitemap canonical and
-adds a semantic page-family label only to colliding document titles. Both output
-trees receive only the corrected `<title>` text, not rewritten body markup.
-Generation fails for accidental collisions, invalid/empty titles, ellipsis
-shortening, or titles over 70 without a documented exact-title exception.
-60 is preferred; 61-65 and 66-70 are reported for review. These are internal
-quality targets, not a claim about Bing's official threshold.
-
-Run the focused regression with `node --test test/search-titles.test.js`.
-Run all generator tests serially with `node --test --test-concurrency=1`.
-
-Character story trails use the current build's in-memory Book presentation and
-canonical reverse-participant projection. The persisted
-`generated/story-master-character-book-index.json` is output, never a prerequisite
-for Character rendering. The clean/warmed regression removes only that prior
-artifact before the first build and compares both builds' HTML, crawlable graph,
-sitemap, canonical registry, and discovery records.
-
-### Public-surface eligibility
-
-`scripts/public-surface-eligibility.js` separates internal canonical entities
-from generated, indexable, sitemap, search, and navigation eligibility. Book
-entity shells and unfinished Reading Order remain accessible with
-`noindex, follow`, but are not sitemap/search destinations. Pop-pop's entity is
-a preserved secondary authoring/canon surface pending editorial decision;
-the public Character profile remains the visitor/search destination.
-
-Character Stories, Places, People, and Relationships continuations use the
-same current-build structured-collection policy for generation and profile
-navigation. Empty continuations are withdrawn, not redirected. Both output
-trees are reset on each build; named withdrawn routes are also explicitly
-removed (failure to remove a stale file fails generation). Pages deployments
-replace the artifact, so absent routes naturally return 404.
-
-Storybook Series consolidates into Storybook Shelf using the existing immediate
-meta-refresh compatibility stub, destination canonical, `noindex, follow`, and
-ordinary fallback link. GitHub Pages does not supply a configurable HTTP 301;
-this compatibility route returns HTTP 200 before browser navigation. No
-`robots.txt` disallow is added. The generated public-surface index records every
-policy decision, and global search filters destinations through that policy.
-Book details remain searchable; Character search opens public profiles, with
-Storybook Shelf and the public Resources catalog also explicitly searchable.
-
-Document-title allocation reserves retained secondary identities and the
-consolidated series alias, preserving existing primary search titles even when
-those secondary routes leave the sitemap. Internal entity records, IDs, source
-canon, association rules, and Stage 4C/4D behavior are unchanged.
-
-### Persistent canonical entity IDs
-
-Relationship, Environment and Landmark IDs (`REL-`, `ENV-`, `LND-`) come from the
-checked-in `data/entity-id-registry.json`, a persisted source-path to ID mapping
-(`scripts/entity-id-registry.js`). `generated/entity-id-registry.json` is only a
-derived copy; the build never allocates from generated or filesystem state.
-
-- Known path: keeps its ID forever, whatever the enumeration order or other sources.
-- New path: next monotonic number for its prefix (holes are never refilled), in
-  code-unit path order; the build writes the registry, which must be committed.
-  `HH_ENTITY_ID_STRICT=1` makes unregistered sources an error instead.
-- Absent source: its ID stays reserved. `"state": "reserved"` marks an authoritative
-  but unpublished source; remove that marker when the source is published.
-- Rename/move: a new source appearing while an unreserved source disappears fails the
-  build. Rename the registry key to migrate, or move the ID into `retired` to retire it.
-- Duplicate IDs or sources, malformed or missing registry, or a `nextByType` at or
-  below any assigned or retired ID also fail the build.
-
-Run `node --test test/entity-id-stability.test.js`.
 
 ## Library scanner outputs
 

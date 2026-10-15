@@ -230,5 +230,6 @@ function writeAmazonKdpArtifact(siteRoot, outputDir = path.join(siteRoot, 'gener
 }
 
 module.exports = {
+  parseWorkbook,
   writeAmazonKdpArtifact
 };

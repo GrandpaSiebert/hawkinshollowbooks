@@ -5,6 +5,7 @@ const path = require('path');
 const { execFileSync } = require('child_process');
 const {
   LONG_TITLE_EXCEPTIONS,
+  MAXIMUM_LENGTH,
   getFreebieSearchTitle,
   readSearchTitlePage,
   resolveSearchTitles,
@@ -24,6 +25,13 @@ function sitemapRecords() {
     const html = fs.readFileSync(path.join(output, route), 'utf8');
     return { ...readSearchTitlePage(html, route), html, expectedCanonical: canonical };
   });
+}
+
+function withoutPresentationTitles(html) {
+  return html
+    .replace(/<title>[\s\S]*?<\/title>/i, '<title></title>')
+    .replace(/(<meta\s+property="og:title"\s+content=")[^"]*(")/i, '$1$2')
+    .replace(/(<meta\s+name="twitter:title"\s+content=")[^"]*(")/i, '$1$2');
 }
 
 test('freebie document titles preserve identity without word cutting or ellipses', () => {
@@ -81,14 +89,66 @@ test('global collision resolution adds only necessary family semantics', () => {
   assert.throws(() => resolveSearchTitles([{ route: 'a.html', title: 'Broken...' }], siteName), /Invalid document title/);
   assert.doesNotThrow(() => resolveSearchTitles([{ route: 'a.html', title: 'A story | HH-C+-0001' }], siteName));
   assert.throws(() => resolveSearchTitles([{ route: 'a.html', title: 'A story | HH-C+-001' }], siteName), /Malformed/);
-  assert.throws(() => resolveSearchTitles([
+  const duplicateFreebieTitles = resolveSearchTitles([
     { route: 'songs/HH-S-0001-a.html', title: 'Same' },
     { route: 'songs/HH-S-0002-b.html', title: 'Same' }
-  ], siteName), /collision/);
+  ], siteName);
+  assert.equal(new Set(duplicateFreebieTitles.map((record) => record.title)).size, 2);
+  assert.ok(duplicateFreebieTitles.every((record) => titleLength(record.title) <= MAXIMUM_LENGTH));
+});
+
+test('title disambiguation preserves long Book titles and falls back to canonical ID only over the limit', () => {
+  const canonicalTitle = 'Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone';
+  const hhF0009 = resolveSearchTitles([
+    { route: 'books/HH-F-0009-aralynn-fox-title.html', title: `${canonicalTitle} | ${siteName}` },
+    { route: 'entities/book/hh-f-0009-aralynn-fox-title.html', title: `${canonicalTitle} | ${siteName}` }
+  ], siteName);
+
+  assert.equal(hhF0009[0].title, `${canonicalTitle} | Book`);
+  assert.equal(hhF0009[1].title, `${canonicalTitle} | HH-F-0009`);
+  assert.equal(titleLength(hhF0009[1].title), 69);
+  assert.ok(hhF0009[1].title.startsWith(canonicalTitle));
+
+  const longCanonicalTitle = 'A'.repeat(57);
+  const fallback = resolveSearchTitles([
+    { route: 'books/HH-C+-0123-a.html', title: longCanonicalTitle },
+    { route: 'entities/book/hh-c+-0123-a.html', title: longCanonicalTitle }
+  ], siteName);
+
+  assert.equal(fallback[1].title, `${longCanonicalTitle} | HH-C+-0123`);
+  assert.equal(titleLength(fallback[1].title), 70);
+  assert.equal(new Set(fallback.map((record) => record.title)).size, fallback.length);
+
+  const uniqueLongEntity = resolveSearchTitles([
+    { route: 'entities/book/hh-f-0009-aralynn-fox-title.html', title: `${canonicalTitle} | ${siteName}` }
+  ], siteName);
+  assert.equal(uniqueLongEntity[0].title, `${canonicalTitle} | HH-F-0009`);
+
+  const longFreebie = resolveSearchTitles([
+    { route: 'songs/HH-S-0101-long-title.html', title: 'A'.repeat(80) }
+  ], siteName);
+  assert.equal(longFreebie[0].title, `HH-S-0101 | Song | ${siteName}`);
+  assert.ok(titleLength(longFreebie[0].title) <= MAXIMUM_LENGTH);
+
+  const longCharacterList = resolveSearchTitles([
+    {
+      route: 'books/HH-F-0007-aleea-s-grandparents-day-story-chair-welcome-sign-characters.html',
+      title: `Aleea’s Grandparents Day Story Chair Welcome Sign Characters | ${siteName}`
+    }
+  ], siteName);
+  assert.equal(longCharacterList[0].title, 'Aleea’s Grandparents Day Story Chair Welcome Sign Characters');
+  assert.ok(titleLength(longCharacterList[0].title) <= MAXIMUM_LENGTH);
 });
 
 test('all generated canonicals have meaningful unique search titles without collateral changes', (t) => {
   const before = sitemapRecords();
+  const austinCharacters = before.find((record) => record.route === 'books/HH-F-0001-austin-turtle-s-independence-day-quilt-square-characters.html');
+  assert.ok(austinCharacters, 'HH-F-0001 character page has its verified canonical route');
+  assert.equal(austinCharacters.canonical, `https://hawkinshollowbooks.com/${austinCharacters.route}`);
+  const authoritativeAustin = JSON.parse(fs.readFileSync(path.join(root, 'data', 'books.json'), 'utf8')).books
+    .find((book) => book.identity && book.identity.canonicalId === 'HH-F-0001');
+  assert.ok(authoritativeAustin, 'authoritative Book Model record exists for HH-F-0001');
+  assert.deepEqual(austinCharacters.h1, [`${authoritativeAustin.title} Characters`]);
   const sourceFiles = ['data/books.json', 'data/characters.json', 'scripts/publish-library.js'];
   const sourceContents = sourceFiles.map((file) => fs.readFileSync(path.join(root, file)));
   const beforeSearch = JSON.parse(fs.readFileSync(path.join(root, 'generated', 'search-index.json'), 'utf8')).records;
@@ -117,9 +177,9 @@ test('all generated canonicals have meaningful unique search titles without coll
     assert.deepEqual(record.h1, old.h1, record.route);
     assert.equal(record.h1.length, 1, record.route);
     assert.equal(
-      record.html.replace(/<title>[\s\S]*?<\/title>/i, '<title></title>'),
-      old.html.replace(/<title>[\s\S]*?<\/title>/i, '<title></title>'),
-      `${record.route}: only the document title may change, including social metadata`
+      withoutPresentationTitles(record.html),
+      withoutPresentationTitles(old.html),
+      `${record.route}: only document and matching social titles may change`
     );
     assert.ok(record.title.trim() && /[a-z]/i.test(record.title), record.route);
     assert.doesNotMatch(record.title, /(?:\.{3}|\u2026|\uFFFD|<[^>]+>|&(?:amp|lt|gt|quot|#\d+);)/, record.route);
@@ -146,14 +206,27 @@ test('all generated canonicals have meaningful unique search titles without coll
     const work = beforeFreebies.find((record) => record.canonicalId === canonicalId);
     const page = byId.get(canonicalId);
     assert.deepEqual(page.h1, [work.title]);
-    assert.equal(page.title, getFreebieSearchTitle(work, siteName));
+    const preferredTitle = getFreebieSearchTitle(work, siteName);
+    const titleCandidates = [
+      preferredTitle,
+      `${preferredTitle} | ${canonicalId}`,
+      `${canonicalId} | ${page.route.startsWith('songs/') ? 'Song' : 'Nursery Rhyme'} | ${siteName}`
+    ].filter((title) => titleLength(title) <= MAXIMUM_LENGTH);
+    assert.ok(titleCandidates.includes(page.title), `${canonicalId}: unexpected bounded title "${page.title}"`);
   }
-  for (const id of ['HH-F-0005', 'HH-HR-0002', 'HH-F-0004', 'HH-F-0007', 'HH-E-0005', 'HH-F-0001']) {
+  for (const id of ['HH-F-0005', 'HH-F-0004', 'HH-F-0007', 'HH-E-0005', 'HH-F-0001']) {
     const page = after.find((record) => record.route.startsWith(`books/${id}-`) && record.route.endsWith('-characters.html'));
     assert.ok(page && page.title.endsWith(' Characters'));
     assert.ok(titleLength(page.title) <= 60);
   }
+  const mlkPromise = after.find((record) => record.route.startsWith('books/HH-HR-0002-') && !record.route.endsWith('-characters.html'));
+  assert.ok(mlkPromise, 'the workbook-confirmed Live Book receives a public detail page');
+  assert.equal(mlkPromise.canonical, mlkPromise.expectedCanonical);
+  assert.equal(mlkPromise.h1.length, 1);
   const austin = after.find((record) => record.route.startsWith('books/HH-F-0001-') && record.route.endsWith('-characters.html'));
   assert.equal(austin.title, 'Austin Turtle\u2019s Independence Day Quilt Square Characters');
-  assert.deepEqual(austin.h1, ['Aydin and Albert Einstein\u2019s Map Characters']);
+  assert.equal(austin.route, 'books/HH-F-0001-austin-turtle-s-independence-day-quilt-square-characters.html');
+  assert.equal(austin.canonical, `https://hawkinshollowbooks.com/${austin.route}`);
+  assert.equal(austin.canonical, austin.expectedCanonical);
+  assert.deepEqual(austin.h1, [`${authoritativeAustin.title} Characters`]);
 });

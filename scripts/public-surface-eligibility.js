@@ -5,6 +5,10 @@ const CONTINUATION_COLLECTIONS = Object.freeze({
   relationships: 'relatedRelationshipsAll'
 });
 
+function isPublicEntityEligible(entity) {
+  return Boolean(entity);
+}
+
 function surface(state, reason, redirectTo = '') {
   const primary = state === 'primary';
   return Object.freeze({
@@ -35,12 +39,16 @@ function getPublicSurfaceEligibility({ route = '', entity, freebieEntity = false
     return surface('redirect', 'Storybooks primary destination is Storybook Shelf.', 'storybook-shelf.html');
   }
   if (entity) {
+    if (!isPublicEntityEligible(entity)) {
+      return surface('withdrawn', 'This canonical entity is retained for internal canon only.');
+    }
     if (entity.type === 'book') {
       return freebieEntity
         ? surface('withdrawn', 'Song/Rhyme primary detail replaces competing Book entity surface.')
         : surface('secondary', 'Internal Book entity retained; ordinary Book detail is the visitor destination.');
     }
-    if (entity.type === 'character' && entity.slug === 'pop-pop-farmer-hawkins') {
+    if (entity.type === 'character'
+      && (entity.id === 'Pop' || entity.slug === 'pop-pop-farmer-hawkins' || entity.slug === 'pop-pop-pop-farmer-hawkins')) {
       return surface('secondary', 'Preserved secondary authoring/canon surface pending editorial decision.');
     }
     if (entity.type === 'resource' && entity.id === 'reading-order') {
@@ -52,4 +60,4 @@ function getPublicSurfaceEligibility({ route = '', entity, freebieEntity = false
     : surface('primary', 'Existing public visitor destination.');
 }
 
-module.exports = { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility };
+module.exports = { CONTINUATION_COLLECTIONS, getPublicSurfaceEligibility, isPublicEntityEligible };

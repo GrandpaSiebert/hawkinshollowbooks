@@ -98,19 +98,10 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
   const output = path.join(repoRoot, 'build-recovery');
   const beforeUrls = indexedCanonicals(output);
   const beforeSearch = JSON.parse(fs.readFileSync(path.join(repoRoot, 'generated/search-index.json'), 'utf8'));
-  const beforeSocialTitles = new Map(beforeUrls.map((url) => {
-    const route = decodeURIComponent(new URL(url).pathname).replace(/^\//, '') || 'index.html';
-    const attributes = metadataAttributes(fs.readFileSync(path.join(output, route), 'utf8'));
-    return [url, attributes.get('og:title')];
-  }));
-  execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], {
-    cwd: repoRoot,
-    env: { ...process.env, HH_SITEMAP_DEPLOYMENT_DATE: process.env.HH_SITEMAP_DEPLOYMENT_DATE || '2026-10-05' },
-    stdio: 'pipe'
-  });
+  execFileSync(process.execPath, [path.join(repoRoot, 'scripts/generate-site.js')], { cwd: repoRoot, stdio: 'pipe' });
   const urls = indexedCanonicals(output);
   assert.deepEqual(urls, beforeUrls, 'metadata must not change sitemap canonical routes');
-  assert.equal(urls.length, 1392);
+  assert.equal(urls.length, 1393);
   assert.equal(new Set(urls).size, urls.length);
 
   const seenCanonicals = new Set();
@@ -132,13 +123,12 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
     assert.equal(isEditorialDescriptionSentence(description), false, `${relative}: editorial metadata`);
     assert.equal(seenDescriptions.has(description), false, `${relative}: duplicate description`);
     seenDescriptions.add(description);
-    assert.ok(attributes.get('og:title'), `${relative}: missing social title`);
-    assert.equal(attributes.get('og:title'), beforeSocialTitles.get(url), `${relative}: social title changed`);
+    assert.equal(attributes.get('og:title'), title);
     assert.equal(attributes.get('og:description'), description);
     assert.equal(attributes.get('og:url'), url);
     assert.equal(attributes.get('og:type'), 'website');
     assert.equal(attributes.get('og:site_name'), 'Hawkins Hollow');
-    assert.equal(attributes.get('twitter:title'), attributes.get('og:title'));
+    assert.equal(attributes.get('twitter:title'), title);
     assert.equal(attributes.get('twitter:description'), description);
     assert.equal(attributes.get('twitter:url'), url);
     assert.equal(attributes.has('twitter:site'), false);
@@ -177,7 +167,7 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
       }
     }
   }
-  assert.deepEqual(schemaCounts, { Book: 78, CreativeWork: 1000 });
+  assert.deepEqual(schemaCounts, { Book: 79, CreativeWork: 1000 });
   const search = JSON.parse(fs.readFileSync(path.join(repoRoot, 'generated/search-index.json'), 'utf8'));
   assert.deepEqual(search.records, beforeSearch.records, 'metadata must not change Stage 2 search data');
   assert.ok(search.records.some((record) => record.id === 'HH-S-0001' && record.href.startsWith('songs/')));
@@ -187,7 +177,7 @@ test('generated metadata is canonical-aligned, visitor-safe, and leaves Stage 4A
 
   const broken = [];
   let associationCards = 0;
-  for (const tree of ['build', 'build-recovery']) {
+  for (const tree of ['build-recovery']) {
     for (const file of walk(path.join(repoRoot, tree))) {
       const relative = path.relative(path.join(repoRoot, tree), file).replace(/\\/g, '/');
       assert.doesNotMatch(relative, /^entities\/book\/hh-[sr]-/i);

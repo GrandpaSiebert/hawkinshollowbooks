@@ -223,10 +223,12 @@ function writePublishSummary(summary) {
 
 function createR2Client(credentials) {
   const { S3Client } = require('@aws-sdk/client-s3');
+  const { NodeHttpHandler } = require('@smithy/node-http-handler');
 
   return new S3Client({
     region: 'auto',
     endpoint: `https://${credentials.accountId}.r2.cloudflarestorage.com`,
+    requestHandler: new NodeHttpHandler({ connectionTimeout: 10000, socketTimeout: 120000 }),
     credentials: {
       accessKeyId: credentials.accessKeyId,
       secretAccessKey: credentials.secretAccessKey
@@ -592,6 +594,9 @@ async function run(options = {}) {
         multipartThresholdBytes: Number(options.multipartThresholdMb) * 1024 * 1024
       });
       uploadedCount += 1;
+      if (uploadedCount % 50 === 0) {
+        console.log(`- Verified uploaded files: ${uploadedCount}/${uploadPlan.filesToUpload.length}`);
+      }
     } catch (error) {
       failedUploads.push({ key: asset.key, reason: error.message });
       break;
