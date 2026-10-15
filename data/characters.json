@@ -209,7 +209,7 @@
       "code": "Bax",
       "name": "Baxter Badger",
       "heroImage": "/assets/characters/individuals/Bax-HP-V001.png",
-      "description": "",
+      "description": "An eager young neighbor learning to slow down, listen, and make room for others.",
       "featured": false,
       "published": true,
       "sortOrder": 110
@@ -225,7 +225,7 @@
       "code": "Blain",
       "name": "Blain Turtle",
       "heroImage": "/assets/characters/individuals/Blain-HP-V001.png",
-      "description": "",
+      "description": "Austin’s steady dad, who turns everyday chores into chances to try, help, and grow.",
       "featured": false,
       "published": true,
       "sortOrder": 120
@@ -325,7 +325,7 @@
       "code": "Gar",
       "name": "Garrett Hedgehog",
       "heroImage": "/assets/characters/individuals/Gar-HP-V001.png",
-      "description": "",
+      "description": "Lex’s patient dad, who stays close while a small next step becomes possible.",
       "featured": false,
       "published": true,
       "sortOrder": 160
@@ -341,7 +341,7 @@
       "code": "Gma",
       "name": "Grandma Siebert",
       "heroImage": "/assets/characters/individuals/Gma-HP-V001.png",
-      "description": "",
+      "description": "A quietly strong grandmother who notices the little things and makes family feel cared for.",
       "featured": false,
       "published": true,
       "sortOrder": 170
@@ -357,7 +357,7 @@
       "code": "Har",
       "name": "Harlie Mouse",
       "heroImage": "/assets/characters/individuals/Har-HP-V001.png",
-      "description": "",
+      "description": "A thoughtful mother who helps Spencer and Emmitt feel prepared, understood, and at home.",
       "featured": false,
       "published": true,
       "sortOrder": 180
@@ -373,7 +373,7 @@
       "code": "Hay",
       "name": "Haylee Prairie Dog",
       "heroImage": "/assets/characters/individuals/Hay-HP-V001.png",
-      "description": "",
+      "description": "Brandon’s friendly older sister, who notices who needs a welcome and helps everyone find a place.",
       "featured": false,
       "published": true,
       "sortOrder": 190
@@ -389,7 +389,7 @@
       "code": "Kayla",
       "name": "Kayla Rabbit",
       "heroImage": "/assets/characters/individuals/Kayla-HP-V001.png",
-      "description": "",
+      "description": "A calm, capable mother who offers practical care and helps children feel safe enough to try.",
       "featured": false,
       "published": true,
       "sortOrder": 200
@@ -433,7 +433,7 @@
       "code": "Lil",
       "name": "Lillian Squirrel",
       "heroImage": "/assets/characters/individuals/Lil-HP-V001.png",
-      "description": "",
+      "description": "A gentle squirrel neighbor who shares a friendly greeting and a little everyday kindness.",
       "featured": false,
       "published": true,
       "sortOrder": 220
@@ -449,7 +449,7 @@
       "code": "Mimi",
       "name": "Mimi Hawkins",
       "heroImage": "/assets/characters/individuals/Mimi-HP-V001.png",
-      "description": "",
+      "description": "A welcoming grandmother who remembers family traditions and makes room for everyone at the table.",
       "featured": false,
       "published": true,
       "sortOrder": 230
@@ -465,7 +465,7 @@
       "code": "Pop",
       "name": "Pop-pop/Farmer Hawkins",
       "heroImage": "/assets/characters/individuals/Pop-HP-V001.png",
-      "description": "",
+      "description": "A patient farm grown-up who helps children try useful work safely, with room to learn.",
       "featured": false,
       "published": true,
       "sortOrder": 240
@@ -481,7 +481,7 @@
       "code": "Sky",
       "name": "Skylin Crow",
       "heroImage": "/assets/characters/individuals/Sky-HP-V001.png",
-      "description": "",
+      "description": "A gentle mother who notices what each child needs and helps a busy family feel connected.",
       "featured": false,
       "published": true,
       "sortOrder": 250
@@ -497,7 +497,7 @@
       "code": "Trinity",
       "name": "Trinity Egret",
       "heroImage": "/assets/characters/individuals/Trinity-HP-V001.png",
-      "description": "",
+      "description": "A dependable young aunt who lends a hand at family gatherings and brings patience to little moments.",
       "featured": false,
       "published": true,
       "sortOrder": 260
@@ -513,7 +513,7 @@
       "code": "Zyl",
       "name": "Zylar Squirrel",
       "heroImage": "/assets/characters/individuals/Zyl-HP-V001.png",
-      "description": "",
+      "description": "A friendly squirrel neighbor who joins in with a warm greeting and a little curiosity.",
       "featured": false,
       "published": true,
       "sortOrder": 270

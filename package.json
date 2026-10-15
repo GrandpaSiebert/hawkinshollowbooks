@@ -4,7 +4,8 @@
   "description": "This project is a small static-site generator that uses shared layouts, reusable components, and separate JSON data files.",
   "main": "index.js",
   "scripts": {
-    "build": "node scripts/generate-site.js && node scripts/validate-freebie-title-art.js && node scripts/validate-freebie-discovery.js && node scripts/validate-canonical-ids.js --strict --report generated/validation/canonical-id-report.json && node scripts/validate-published-routes.js",
+    "build": "node scripts/validate-character-catalog.js && node scripts/generate-site.js && node scripts/validate-freebie-title-art.js && node scripts/validate-freebie-discovery.js && node scripts/validate-canonical-ids.js --strict --report generated/validation/canonical-id-report.json && node scripts/validate-published-routes.js",
+    "validate:character-catalog": "node scripts/validate-character-catalog.js",
     "build:site": "node scripts/generate-site.js",
     "validate:freebie-discovery": "node scripts/validate-freebie-discovery.js",
     "validate:freebie-title-art": "node scripts/validate-freebie-title-art.js",
