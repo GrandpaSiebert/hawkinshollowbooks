@@ -274,6 +274,16 @@ test('Actions authentication or retrieval failure never becomes a first-run rese
     fetchImpl: async () => ({ ok: false, status: 403 }) }), /baseline not reset/);
 });
 
+test('workflow restore command is available and requires authenticated state retrieval', () => {
+  const result = spawnSync(process.execPath, [path.join(__dirname, '../scripts/indexnow-deployment.js'), 'restore'], {
+    encoding: 'utf8',
+    env: { ...process.env, GITHUB_REPOSITORY: '', GITHUB_TOKEN: '', GITHUB_RUN_ID: '' }
+  });
+  assert.equal(result.status, 1);
+  assert.match(result.stderr, /Actions repository and read-scoped token are required/);
+  assert.doesNotMatch(result.stderr, /Use restore, prepare, preview, or finalize/);
+});
+
 test('legacy whole-sitemap command cannot bypass deployment delta eligibility', () => {
   const result = spawnSync(process.execPath, [path.join(__dirname, '../scripts/indexnow-submit.js'), '--from-sitemap',
     'build-recovery/sitemap.xml', '--dry-run'], { encoding: 'utf8' });
