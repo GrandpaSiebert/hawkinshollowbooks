@@ -59,7 +59,7 @@ jobs:
             echo "Refusing to restore into an existing Library directory."
             exit 1
           fi
-          node scripts/restore-library-canon.js --r2-only --destination "$GITHUB_WORKSPACE/Library"
+          node scripts/restore-library-canon.js --r2-only --required-source-map data/discovery-review-source-objects.json --destination "$GITHUB_WORKSPACE/Library"
 
       - name: Verify required published title-art dependencies (read-only)
         run: node scripts/verify-freebie-title-art-readonly.js

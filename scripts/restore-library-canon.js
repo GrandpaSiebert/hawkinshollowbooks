@@ -17,6 +17,7 @@ function parseArgs(argv) {
     publicOnly: false,
     r2Only: false,
     manifestFile: null,
+    requiredSourceMap: null,
     coverSourceIds: []
   };
 
@@ -37,6 +38,9 @@ function parseArgs(argv) {
     } else if (argv[index] === '--manifest-file' && argv[index + 1]) {
       options.manifestFile = path.resolve(argv[index + 1]);
       index += 1;
+    } else if (argv[index] === '--required-source-map' && argv[index + 1]) {
+      options.requiredSourceMap = path.resolve(argv[index + 1]);
+      index += 1;
     } else if (argv[index] === '--cover-source-id' && argv[index + 1]) {
       options.coverSourceIds.push(String(argv[index + 1]).trim().toUpperCase());
       index += 1;
@@ -48,6 +52,9 @@ function parseArgs(argv) {
   }
   if (options.coverSourceIds.length && !options.r2Only) {
     throw new Error('--cover-source-id requires --r2-only.');
+  }
+  if (options.requiredSourceMap && !options.r2Only) {
+    throw new Error('--required-source-map requires --r2-only.');
   }
   return options;
 }
@@ -170,6 +177,9 @@ async function restoreLibraryCanon(options = {}) {
   if (options.publicOnly && manifestFile) {
     throw new Error('Public-only restore cannot also use a local manifest file.');
   }
+  if (options.requiredSourceMap && !options.r2Only) {
+    throw new Error('Required source restoration requires explicit R2-only access.');
+  }
   const credentials = options.publicOnly
     ? { accountId: '', accessKeyId: '', secretAccessKey: '', configured: false }
     : (options.credentials || getR2Credentials());
@@ -195,6 +205,22 @@ async function restoreLibraryCanon(options = {}) {
   const documentsByPath = new Map(assets
     .filter((asset) => isCanonicalDocument(asset.sourcePath))
     .map((asset) => [asset.sourcePath, asset]));
+  if (options.requiredSourceMap) {
+    const requiredSources = JSON.parse(fs.readFileSync(options.requiredSourceMap, 'utf8'));
+    if (!Array.isArray(requiredSources)) throw new Error('Required source map must be an array.');
+    for (const asset of requiredSources) {
+      toDestination(destination, asset.sourcePath);
+      if (!/^Books\/.+\.(?:pdf|docx)$/i.test(asset.sourcePath)
+        || typeof asset.key !== 'string' || !asset.key
+        || !/^[a-f0-9]{64}$/.test(asset.sha256)
+        || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) {
+        throw new Error('Required source needs an explicit Book path, R2 key, SHA-256 and byte size.');
+      }
+      const existing = documentsByPath.get(asset.sourcePath);
+      if (existing && existing.key !== asset.key) throw new Error('Required source conflicts with manifest identity.');
+      documentsByPath.set(asset.sourcePath, { ...asset, requiredSource: true });
+    }
+  }
   const documentKeys = new Set(Array.from(documentsByPath.values(), (document) => document.key || document.sourcePath));
   // Manifest sourcePath is authoritative for original Library identity (preserves '+', casing, punctuation);
   // the CDN object key is lossy (slugified) and must never be reverse-engineered into a Library path.
@@ -267,7 +293,12 @@ async function restoreLibraryCanon(options = {}) {
     const outputPath = toDestination(destination, document.sourcePath);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     if (r2Client || document.r2Only) {
-      fs.writeFileSync(outputPath, await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, document.key));
+      const bytes = await fetchR2Object(titleArtR2Client, options.bucket || defaultBucket, document.key);
+      if (document.requiredSource && (bytes.length !== document.sizeBytes
+        || crypto.createHash('sha256').update(bytes).digest('hex') !== document.sha256)) {
+        throw new Error(`Required source size or SHA-256 does not match the reviewed original: ${document.sourcePath}.`);
+      }
+      fs.writeFileSync(outputPath, bytes);
     } else if (options.publicOnly) {
       const sourceUrl = document.url || `${baseUrl}/${encodeURI(document.key)}`;
       const response = await fetch(sourceUrl);
@@ -339,7 +370,7 @@ async function restoreLibraryCanon(options = {}) {
   const sourceDescription = options.publicOnly
     ? baseUrl
     : (r2Client ? `R2 bucket ${options.bucket || defaultBucket}` : `local manifest ${manifestFile}`);
-  console.log(`Restored ${documents.length} canonical Library DOCX files and ${placeholderCount} catalog paths from ${sourceDescription}.`);
+  console.log(`Restored ${documents.length} canonical Library source files and ${placeholderCount} catalog paths from ${sourceDescription}.`);
   return { documentCount: documents.length, catalogObjectCount: placeholderCount, destination };
 }
 
