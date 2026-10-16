@@ -3,7 +3,24 @@ const asset = (url, prefix = '') => /^https?:/.test(url || '') ? url : prefix + 
 function card(record, prefix = '') {
   return '<article class="discovery-card">' + (record.image ? '<a tabindex="-1" aria-hidden="true" href="' + escape(prefix + record.href) + '"><img src="' + escape(asset(record.image, prefix)) + '" alt="" loading="lazy" width="240" height="180"></a>' : '') + '<div><p class="eyebrow">' + escape(record.series || record.type) + '</p><h3><a href="' + escape(prefix + record.href) + '">' + escape(record.title) + '</a></h3>' + (record.summary ? '<p>' + escape(record.summary) + '</p>' : '') + (record.readingGuidance ? '<p class="discovery-guidance"><strong>Reading together:</strong> ' + escape(record.readingGuidance) + '</p>' : '') + '</div></article>';
 }
-function discoveryBrowser() {
+function matchesDiscovery(record, choices, omitKind = '') {
+  const needle = String(choices.query || '').trim().toLowerCase();
+  return (!choices.type || record.type === choices.type)
+    && (!choices.series || record.series === choices.series)
+    && (!needle || [record.title, record.summary, record.series, ...(record.tags || []).map(tag => tag.label)].join(' ').toLowerCase().includes(needle))
+    && Object.entries(choices.facets || {}).every(([kind, value]) => kind === omitKind || !value || (record.tags || []).some(tag => tag.kind === kind && tag.label === value));
+}
+function orderDiscoveryRecords(records) {
+  const interleave = groups => { const ordered = []; for (let row = 0; groups.some(group => row < group.length); row++) for (const group of groups) if (group[row]) ordered.push(group[row]); return ordered; };
+  const collections = new Map(); const types = new Map();
+  for (const record of records) {
+    const map = record.type === 'book' ? collections : types;
+    const key = record.type === 'book' ? record.series : record.type;
+    const bucket = map.get(key) || []; bucket.push(record); map.set(key,bucket);
+  }
+  return interleave([interleave([...collections.values()]), ...types.values()]);
+}
+function discoveryBrowser(matchesDiscovery, orderDiscoveryRecords) {
   const form = document.getElementById('discovery-controls');
   const results = document.getElementById('discovery-results');
   const status = document.getElementById('discovery-status');
@@ -11,12 +28,12 @@ function discoveryBrowser() {
   form.addEventListener('submit', event => event.preventDefault());
   fetch('generated/public-discovery-index.json').then(response => { if (!response.ok) throw Error('Unavailable'); return response.json(); }).then(index => {
     form.hidden = false; let limit = 12;
-    const groups = ['book','character','environment','song','rhyme','landmark','relationship'].map(type => index.records.filter(record => record.type === type));
-    const orderedRecords = [];
-    for (let row = 0; groups.some(group => row < group.length); row++) for (const group of groups) if (group[row]) orderedRecords.push(group[row]);
+    const orderedRecords = orderDiscoveryRecords(index.records);
     const more = document.getElementById('discovery-more');
     const query = document.getElementById('discovery-filter');
     const type = document.getElementById('discovery-type');
+    const series = document.getElementById('discovery-series');
+    [...new Set(index.records.filter(record => record.type === 'book').map(record => record.series).filter(Boolean))].sort().forEach(label => { const option = document.createElement('option'); option.value = label; option.textContent = label; series.appendChild(option); });
     const selects = ['interest','feeling','activity','age'].map(kind => {
       const select = document.getElementById('discovery-' + kind);
       const values = (index.facets || []).filter(facet => facet.kind === kind && facet.label.length <= 64).sort((a,b) => b.count-a.count).slice(0, kind === 'interest' ? 60 : 40).sort((a,b) => a.label.localeCompare(b.label));
@@ -24,8 +41,20 @@ function discoveryBrowser() {
       select.parentElement.hidden = values.length === 0; return [kind, select];
     });
     function render() {
-      const needle = query.value.trim().toLowerCase();
-      const matches = orderedRecords.filter(record => (!type.value || record.type === type.value) && (!needle || [record.title, record.summary, record.series, ...(record.tags || []).map(tag => tag.label)].join(' ').toLowerCase().includes(needle)) && selects.every(([kind, select]) => !select.value || (record.tags || []).some(tag => tag.kind === kind && tag.label === select.value)));
+      const choices = {query:query.value, type:type.value, series:series.value, facets:Object.fromEntries(selects.map(([kind,select]) => [kind,select.value]))};
+      const matches = orderedRecords.filter(record => matchesDiscovery(record, choices));
+      for (const [kind, select] of selects) {
+        const candidates = orderedRecords.filter(record => matchesDiscovery(record, choices, kind));
+        const counts = new Map();
+        for (const record of candidates) for (const tag of record.tags || []) if (tag.kind === kind) counts.set(tag.label, (counts.get(tag.label) || 0) + 1);
+        const current = select.value;
+        const values = [...counts.entries()].sort((a,b) => b[1]-a[1]).slice(0,60).sort((a,b) => a[0].localeCompare(b[0]));
+        if (current && !values.some(([label]) => label === current)) values.push([current,counts.get(current) || 0]);
+        const any = document.createElement('option'); any.value = ''; any.textContent = values.length ? 'Any' : 'No labeled matches'; select.replaceChildren(any);
+        for (const [label,count] of values) { const option = document.createElement('option'); option.value = label; option.textContent = label + ' (' + count + ')'; option.disabled = count === 0; select.appendChild(option); }
+        select.value = current;
+
+      }
       results.replaceChildren();
       matches.slice(0, limit).forEach(record => {
         const article = document.createElement('article'); article.className = 'discovery-card';
@@ -39,7 +68,10 @@ function discoveryBrowser() {
       status.textContent = matches.length ? 'Showing ' + Math.min(limit, matches.length) + ' of ' + matches.length + ' matching paths.' : 'No paths match these choices. Clear a choice to explore more.';
       more.hidden = matches.length <= limit;
     }
+    type.addEventListener('change', () => { if (type.value && type.value !== 'book') series.value = ''; selects.forEach(([,select]) => { select.value = ''; }); });
+    series.addEventListener('change', () => { if (series.value) type.value = 'book'; selects.forEach(([,select]) => { select.value = ''; }); });
     form.addEventListener('input', () => { limit = 12; render(); });
+    form.addEventListener('change', () => { limit = 12; render(); });
     form.addEventListener('reset', () => setTimeout(() => { limit = 12; render(); }, 0));
     more.addEventListener('click', () => { limit += 12; render(); }); render();
   }).catch(() => { status.textContent = 'Choose an illustrated doorway above to keep exploring.'; });
@@ -55,7 +87,7 @@ function renderDiscoveryHub(index) {
     return '<details class="discovery-interest-choice"><summary>Explore ' + escape(facet.label) + '</summary><ul>' + choices.map(record => '<li><a href="' + escape(record.href) + '">' + escape(record.title) + '</a></li>').join('') + '</ul></details>';
   }).join('');
   return '<section class="content-card discovery-welcome" aria-labelledby="where-shall-we-go"><p class="eyebrow">A little adventure starts here</p><h2 id="where-shall-we-go">Where Shall We Go Today?</h2><p>One story, one friend, one song, or one place. Choose what catches your eye and see where it leads.</p><p>The paths below are ready to explore without using a filter.</p><div class="discovery-grid discovery-doorways">' + doorCards + '</div><p><a href="themes.html">Explore all themes</a> &middot; <a href="resources.html">Find family resources</a></p></section>' +
-    '<section class="content-card" aria-labelledby="what-sounds-good"><h2 id="what-sounds-good">What Sounds Good Right Now?</h2><p>Follow an interest, explore a feeling named in a story, or choose a reading or activity path. These choices come from the books, songs, and rhymes themselves.</p>' + interests + '<form id="discovery-controls" hidden class="discovery-controls"><label>Show matching paths<input id="discovery-filter" type="search" placeholder="A name, place, story, or idea"></label><label>Kind of adventure<select id="discovery-type"><option value="">All kinds</option>' + ['book','character','environment','landmark','song','rhyme','relationship'].map(type => '<option value="' + type + '">' + type[0].toUpperCase() + type.slice(1) + '</option>').join('') + '</select></label>' + [['interest','Interests'],['feeling','Feelings in the stories'],['activity','Skills and activities'],['age','Reading and age guidance']].map(([kind,label]) => '<label>' + label + '<select id="discovery-' + kind + '"><option value="">Any</option></select></label>').join('') + '<button type="reset">Clear choices</button></form><p id="discovery-status" role="status"></p><div id="discovery-results" class="discovery-grid"></div><button id="discovery-more" type="button" hidden>Show more paths</button><noscript><p>Open an interest above or choose any illustrated doorway to browse the full collection.</p></noscript></section><script>(' + discoveryBrowser.toString() + ')();</script>';
+    '<section class="content-card" aria-labelledby="what-sounds-good"><h2 id="what-sounds-good">What Sounds Good Right Now?</h2><p>Follow an interest, explore a feeling named in a story, or choose a reading or activity path. Start with any choice; each additional choice narrows the results. Feelings and activities appear only where they are named in the book, song, or rhyme.</p>' + interests + '<form id="discovery-controls" hidden class="discovery-controls"><label>Show matching paths<input id="discovery-filter" type="search" placeholder="A name, place, story, or idea"></label><label>Kind of adventure<select id="discovery-type"><option value="">All kinds</option>' + ['book','character','environment','landmark','song','rhyme','relationship'].map(type => '<option value="' + type + '">' + type[0].toUpperCase() + type.slice(1) + '</option>').join('') + '</select></label><label>Book collection<select id="discovery-series"><option value="">Every collection</option></select></label>' + [['interest','Interests'],['feeling','Feelings in the stories'],['activity','Skills and activities'],['age','Reading and age guidance']].map(([kind,label]) => '<label>' + label + '<select id="discovery-' + kind + '"><option value="">Any</option></select></label>').join('') + '<button type="reset">Clear choices</button></form><p id="discovery-status" role="status"></p><div id="discovery-results" class="discovery-grid"></div><button id="discovery-more" type="button" hidden>Show more paths</button><noscript><p>Open an interest above or choose any illustrated doorway to browse the full collection.</p></noscript></section><script>(' + discoveryBrowser.toString() + ')(' + matchesDiscovery.toString() + ',' + orderDiscoveryRecords.toString() + ');</script>';
 }
 function shelfBrowser() {
   const form = document.getElementById('bookshelf-controls'); if (!form) return; form.hidden = false;
@@ -77,4 +109,4 @@ function renderKeepExploring(index, href, prefix = '') {
   for (const item of related) { if (selected.length >= 4) break; if (!selected.includes(item)) selected.push(item); }
   return '<section class="content-card" aria-labelledby="connected-paths"><h2 id="connected-paths">Keep Exploring</h2>' + (selected.length ? '<p>Follow another connection from this visit.</p><ul>' + selected.slice(0,4).map(item => '<li><a href="' + escape(prefix + item.href) + '">' + escape(item.title) + '</a> <span class="eyebrow">' + escape(item.type) + '</span></li>').join('') + '</ul>' : '') + '<p><a class="button" href="' + prefix + 'start-here.html#where-shall-we-go">Where Shall We Go Today? &rarr;</a></p></section>';
 }
-module.exports = { renderDiscoveryHub, renderCompleteBookshelf, renderKeepExploring };
+module.exports = { renderDiscoveryHub, renderCompleteBookshelf, renderKeepExploring, matchesDiscovery, orderDiscoveryRecords };

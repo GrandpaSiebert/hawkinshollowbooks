@@ -23,3 +23,18 @@ test('similar themes never fabricate a relationship', () => {
  const result=createPublicDiscoveryIndex([{type:'book',id:'B1',title:'One',href:'one.html',theme:'Kindness'},{type:'book',id:'B2',title:'Two',href:'two.html',theme:'Kindness'}],{entities:[]},{edges:[]},[]);
  assert.ok(result.records.every(record => record.related.length === 0));
 });
+
+
+test('plain source age ranges keep every book collection discoverable', () => {
+ const {matchesDiscovery,orderDiscoveryRecords}=require('../scripts/visitor-discovery');
+ const series=['Storybooks','First Readers','Second Readers','Growing Together','Bedtime Library','Tender Times','Holiday Story Poems','Basic Training','Hero Play Poems'];
+ const search=series.map((name,i)=>({type:'book',id:'B'+i,title:name,href:'book-'+i+'.html'}));
+ const metadata=new Map(series.map((name,i)=>['B'+i,{series:name,readingGuidance:i<2?'Ages 4–8; shared reading':'4–8'}]));
+ const result=createPublicDiscoveryIndex(search,{entities:[]},{edges:[]},[],[],new Map(),metadata);
+ assert.ok(result.records.every(record=>record.tags.some(tag=>tag.kind==='age'&&tag.label==='Ages 4–8')));
+ assert.equal(result.records.filter(record=>matchesDiscovery(record,{facets:{age:'Ages 4–8'}})).length,9);
+ assert.equal(result.records.filter(record=>matchesDiscovery(record,{series:'Second Readers',facets:{age:'Ages 4–8'}})).length,1);
+ assert.equal(result.records.filter(record=>matchesDiscovery(record,{facets:{feeling:'Hopeful'}})).length,0,'missing feeling labels are never invented');
+ const books=series.flatMap((name,i)=>Array.from({length:3},(_,j)=>({type:'book',series:name,id:i+'-'+j})));
+ assert.equal(new Set(orderDiscoveryRecords(books).slice(0,9).map(record=>record.series)).size,9,'first results represent every collection');
+});

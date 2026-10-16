@@ -5,7 +5,7 @@ function interestLabel(value) {
   return text.split(/\s*[—;]\s*|\s+through\s+/i)[0].replace(/^and\s+/i, '').trim();
 }
 function ageLabel(value) {
-  const match = String(value || '').match(/ages?\s*(\d+)\s*[–—-]\s*(\d+)/i);
+  const match = String(value || '').match(/(?:ages?\s*|^\s*)(\d+)\s*[–—-]\s*(\d+)(?:\s*(?:years?|yrs?)\s*)?(?:$|[;,.\s])/i);
   if (match) return 'Ages ' + match[1] + '–' + match[2];
   const newborn = String(value || '').match(/newborn through age\s*(\d+)/i);
   return newborn ? 'Newborn–' + newborn[1] : '';
