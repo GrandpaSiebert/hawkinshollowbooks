@@ -322,3 +322,26 @@ test('illustrated hub, full bookshelf, and character journeys expose the complet
     assert.ok(html.includes('start-here.html'), 'character journey returns to discovery');
   }
 });
+
+
+test('relationship visits show their own portrait, individual neighbor thumbnails, and honest book links', () => {
+  const entities=JSON.parse(fs.readFileSync(path.join(root,'generated/entity-index.json'),'utf8'));
+  for (const relationship of entities.byType.relationships) {
+    const html=fs.readFileSync(path.join(output,relationship.entityPageHref),'utf8');
+    const document=parse5.parse(html);
+    const hero=elements(document,'img').find(node=>attribute(node,'data-banner-id')==='relationship-portrait');
+    assert.ok(hero, relationship.id+': relationship portrait is displayed');
+    assert.ok(attribute(hero,'src').endsWith(relationship.id.toLowerCase()+'.webp'));
+    const imagePath=path.resolve(output,path.dirname(relationship.entityPageHref),attribute(hero,'src'));
+    assert.ok(fs.existsSync(imagePath));
+    assert.doesNotMatch(html,/>Read (?:a story|another story|the Story)</i);
+    const neighbors=elements(document,'section').find(node=>attribute(node,'aria-labelledby')==='relationship-neighbors');
+    const cards=elements(neighbors,'article');
+    assert.ok(cards.length>0);
+    for (const card of cards) {
+      const image=elements(card,'img')[0]; assert.ok(image,relationship.id+': neighbor thumbnail is present');
+      assert.ok(attribute(image,'src').includes('assets/character-thumbnails/'));
+      assert.ok(fs.existsSync(path.resolve(output,path.dirname(relationship.entityPageHref),attribute(image,'src'))));
+    }
+  }
+});

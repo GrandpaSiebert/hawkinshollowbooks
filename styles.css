@@ -854,3 +854,7 @@ h2 {
 .discovery-home-entry { font-size:1.1rem; }
 .discovery-guidance { font-size:.9rem; }
 @media (max-width:600px) { .discovery-grid { grid-template-columns:1fr; } .discovery-doorways { grid-template-columns:repeat(2,minmax(0,1fr)); gap:.65rem; } .discovery-doorways .discovery-card img { height:110px; } .discovery-doorways .discovery-card > div { padding:.65rem; } .discovery-doorways h3 { font-size:1.05rem; } }
+
+.page-banner[data-banner-id="relationship-portrait"] { min-height:0; background:#f0e6d2; }
+.page-banner-image[data-banner-id="relationship-portrait"] { width:100%; height:auto; max-height:520px; object-fit:contain; }
+.relationship-neighbor-portrait { display:block; width:144px; height:144px; max-width:100%; object-fit:contain; margin-bottom:1rem; }

@@ -78,7 +78,7 @@ function discoveryBrowser(matchesDiscovery, orderDiscoveryRecords) {
 }
 function renderDiscoveryHub(index) {
   if (!index) return '';
-  const doors = [['character','Meet a Character','characters.html','Find a familiar friend.'],['environment','Visit a Place','map.html','Follow a path through the Hollow.'],['book','Read a Story','books.html','Find your next shared story.'],['song','Sing a Song','kids-songs.html','Bring a little music to the day.'],['rhyme','Share a Nursery Rhyme','nursery-rhymes.html','Enjoy words and rhythm together.'],['landmark','Explore a Landmark','map.html','Discover a place to remember.']];
+  const doors = [['character','Meet a Character','characters.html','Find a familiar friend.'],['environment','Visit a Place','map.html','Follow a path through the Hollow.'],['book','Explore Books','books.html','Find your next shared story.'],['song','Sing a Song','kids-songs.html','Bring a little music to the day.'],['rhyme','Share a Nursery Rhyme','nursery-rhymes.html','Enjoy words and rhythm together.'],['landmark','Explore a Landmark','map.html','Discover a place to remember.']];
   const doorCards = doors.map(([type,title,href,summary]) => { const sample = index.records.find(record => record.type === type && record.image); return card({type:'',title,href,summary,image:sample && sample.image || ''}); }).join('');
   const used = new Set();
   const interests = (index.facets || []).filter(facet => facet.kind === 'interest').sort((a,b) => b.count-a.count).slice(0,4).map(facet => {

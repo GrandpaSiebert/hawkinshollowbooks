@@ -302,6 +302,37 @@ async function writePlaceThumbnails(entityIndex) {
   }
 }
 
+function getRelationshipArtworkPath(relationship) {
+  const sourceCode = path.basename(String(relationship.sourceDocument || '').replace(/\\/g, '/')).replace(/ Visual Canon\.docx$/i, '');
+  const code = ({'Emm-Har-Spe':'Har-Emm-Spe','G[a-Ali':'Gpa-Ali','Trinity-Mimi':'Tri-Mim'})[sourceCode] || sourceCode;
+  if (!/^[A-Za-z]+(?:-[A-Za-z]+)+$/.test(code)) return '';
+  const source = 'assets/characters/relationships/' + code + '-RELHP-V001.png';
+  return fs.existsSync(path.join(root, source)) ? source : '';
+}
+function getRelationshipPortraitPath(relationship) {
+  return getRelationshipArtworkPath(relationship) ? 'assets/relationship-portraits/' + toSlug(relationship.id) + '.webp' : '';
+}
+function getCharacterThumbnailPath(character) {
+  return character.heroImage && fs.existsSync(path.join(root,character.heroImage.replace(/^\//,'')))
+    ? 'assets/character-thumbnails/' + toSlug(character.id) + '.webp' : '';
+}
+async function writeRelationshipPortraits(entityIndex) {
+  for (const character of entityIndex.byType.characters || []) {
+    const thumbnail = getCharacterThumbnailPath(character); if (!thumbnail) continue;
+    const bytes = await sharp(path.join(root,character.heroImage.replace(/^\//,''))).rotate().resize({width:192,height:192,fit:'inside',withoutEnlargement:true}).webp({quality:80}).toBuffer();
+    for (const outputDir of outputDirs) { const destination = path.join(outputDir,thumbnail); ensureDir(path.dirname(destination)); fs.writeFileSync(destination,bytes); }
+  }
+  for (const relationship of entityIndex.byType.relationships || []) {
+    const source = getRelationshipArtworkPath(relationship);
+    if (!source) continue;
+    const bytes = await sharp(path.join(root, source)).rotate().resize({width:960,height:720,fit:'inside',withoutEnlargement:true}).webp({quality:82}).toBuffer();
+    for (const outputDir of outputDirs) {
+      const destination = path.join(outputDir, getRelationshipPortraitPath(relationship));
+      ensureDir(path.dirname(destination)); fs.writeFileSync(destination,bytes);
+    }
+  }
+}
+
 function toBookPageSlug(book) {
   const safeId = getCanonicalBookId(book) || 'unknown'
     .replace(/[^A-Za-z0-9+-]+/g, '-')
@@ -2226,6 +2257,8 @@ function renderUniversalEntityPage(
   }
 
   if (entity.type === 'relationship') {
+    const portrait = getRelationshipPortraitPath(entity);
+    const relationshipBanner = portrait ? {image:portrait, bannerId:'relationship-portrait', alt:'Relationship portrait of ' + entityLabel} : null;
     const relationshipParticipants = connectedCandidates.filter((candidate) => candidate.type === 'character');
     const relationshipPlaces = connectedCandidates.filter(
       (candidate) => candidate.type === 'environment' || candidate.type === 'landmark'
@@ -2253,6 +2286,9 @@ function renderUniversalEntityPage(
       : `<div class="start-here-grid">${relationshipParticipants.slice(0, 6).map((candidate) => {
         const name = normalizeEntityLabel(candidate.name || 'Neighbor', candidate.id);
         const firstName = name.split(' ')[0];
+        const character = getEntityByTypeAndId(entityIndex, 'character', candidate.id) || {};
+        const thumbnail = getCharacterThumbnailPath(character);
+        const portrait = thumbnail ? `<img class="relationship-neighbor-portrait" src="../../${escapeHtml(thumbnail)}" alt="${escapeHtml(name)}" width="144" height="144" loading="lazy" />` : '';
         const note = toWarmExcerpt(
           candidate.excerpt || candidate.description,
           `${firstName} helps this connection stay warm, clear, and easy to step into.`,
@@ -2260,6 +2296,7 @@ function renderUniversalEntityPage(
         );
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         return `<article class="start-here-item">
+          ${portrait}
           <p class="eyebrow">Neighbor in this connection</p>
           <h3>${href ? `<a href="${href}">${name}</a>` : name}</h3>
           <p>${note}</p>
@@ -2280,7 +2317,7 @@ function renderUniversalEntityPage(
 
     const nextStory = connectedCandidates.find((candidate) => candidate.type === 'book' && candidate.entityPageHref);
     const relationshipPrimaryButton = nextStory
-      ? `<p><a class="button" href="../../${nextStory.entityPageHref}">Read ${nextStory.name}</a></p>`
+      ? `<p><a class="button" href="../../${nextStory.entityPageHref}">About ${nextStory.name}</a></p>`
       : '<p><a class="button" href="../../map.html">Open the map</a></p>';
 
     return renderLayout(
@@ -2295,7 +2332,7 @@ function renderUniversalEntityPage(
         <p>
           <a class="button" href="../../characters.html">Meet the neighbors</a>
           <a class="button" href="../../map.html">Open the map</a>
-          <a class="button" href="../../storybook-shelf.html">Read a story</a>
+          <a class="button" href="../../storybook-shelf.html">Browse books</a>
         </p>
       </section>
 
@@ -2323,7 +2360,7 @@ function renderUniversalEntityPage(
       nav,
       `${site.domain}/${entity.entityPageHref || entity.href || ''}`,
       config,
-      null,
+      relationshipBanner,
       '../../',
       entityEligibility.robots,
       {},
@@ -3126,7 +3163,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   const bannerSubtitle = banner ? banner.subtitle || '' : '';
   const bannerAlt = banner && banner.alt ? banner.alt : bannerTitle;
   const bannerIdAttr = banner && banner.bannerId ? ` data-banner-id="${banner.bannerId}"` : '';
-  const bannerSectionIdAttr = banner && banner.imageIsExternal ? bannerIdAttr : '';
+  const bannerSectionIdAttr = banner && (banner.imageIsExternal || banner.bannerId === 'relationship-portrait') ? bannerIdAttr : '';
   const bannerImageSrc = banner && banner.image
     ? (banner.imageIsExternal ? banner.image : `${pathPrefix}${banner.image}`)
     : '';
@@ -3203,9 +3240,9 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
       <h2 id="act-two">Where would you like to begin today?</h2>
       <p>Choose any path. You do not have to start in one place to belong here.</p>
       <div class="start-anywhere-grid">
-        <a class="start-anywhere-item" href="books.html" aria-label="Read a Story">
+        <a class="start-anywhere-item" href="books.html" aria-label="Explore Books">
           <p class="start-anywhere-icon" aria-hidden="true">📚</p>
-          <h3>Read a Story</h3>
+          <h3>Explore Books</h3>
           <p>Browse stories, reading paths, and shared-reading collections.</p>
         </a>
 
@@ -3402,7 +3439,7 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
                 copy: 'The evenings have been staying with us a little longer. Plenty of time for one more chapter.'
               }
             ],
-            featureTitle: 'Read a Story',
+            featureTitle: 'Explore Books',
             featureHref: 'books.html',
             featureCopy: 'Summer is a good time to slow down, settle in, and read together. A shared story can turn a long evening into a favorite family memory.'
           },
@@ -3551,7 +3588,7 @@ function renderThemesPage(page, site, nav, config, banner, libraryIndex, themeDi
   const themeData = JSON.stringify(themes).replace(/</g, '\\u003c');
   const directory = themes.map((entry) => `<a class="start-here-item" data-theme-entry data-theme-key="${escapeHtml(entry.key)}" href="themes.html?theme=${encodeURIComponent(entry.key)}"><h3>${escapeHtml(entry.theme)}</h3><p>${entry.books.length} ${entry.books.length === 1 ? 'book' : 'books'}</p></a>`).join('');
   const options = themes.map((entry) => `<option value="${escapeHtml(entry.key)}">${escapeHtml(entry.theme)} (${entry.books.length})</option>`).join('');
-  return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><p id="theme-status" class="story-metadata-line" aria-live="polite"></p><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var statusEl=document.getElementById('theme-status');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();var shown=0;entries.forEach(function(entry){var match=!query||String(entry.getAttribute('data-theme-key')||'').indexOf(query)!==-1;entry.hidden=!match;if(match){shown+=1}});if(query&&statusEl){statusEl.textContent=shown===1?'1 theme matches \u201C'+value+'\u201D.':shown+' themes match \u201C'+value+'\u201D.'}else if(statusEl){statusEl.textContent=''}}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){if(value&&statusEl){statusEl.textContent='No theme named \u201C'+value+'\u201D is used in these stories yet.'}results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">Read '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});if(key){render(key)}})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
+  return renderLayout(page.title, 'Browse the ideas already named in Hawkins Hollow stories.', `<section class="content-card" aria-labelledby="themes-heading"><h2 id="themes-heading">Explore Themes</h2><div class="resource-filter-controls"><label for="theme-search"><strong>Find a theme</strong></label><input id="theme-search" type="search" autocomplete="off" /><label for="theme-filter"><strong>Theme</strong></label><select id="theme-filter"><option value="">Choose a theme</option>${options}</select></div><p id="theme-status" class="story-metadata-line" aria-live="polite"></p><div id="theme-directory" class="start-here-grid">${directory}</div></section><section class="content-card" id="theme-results" hidden aria-live="polite"></section><script>(function(){var themes=${themeData};var select=document.getElementById('theme-filter');var search=document.getElementById('theme-search');var statusEl=document.getElementById('theme-status');var entries=Array.prototype.slice.call(document.querySelectorAll('[data-theme-entry]'));var results=document.getElementById('theme-results');var key=(new URLSearchParams(window.location.search)).get('theme')||'';function safe(value){return String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}function filterDirectory(value){var query=String(value||'').trim().toLowerCase();var shown=0;entries.forEach(function(entry){var match=!query||String(entry.getAttribute('data-theme-key')||'').indexOf(query)!==-1;entry.hidden=!match;if(match){shown+=1}});if(query&&statusEl){statusEl.textContent=shown===1?'1 theme matches \u201C'+value+'\u201D.':shown+' themes match \u201C'+value+'\u201D.'}else if(statusEl){statusEl.textContent=''}}function render(value){select.value=value;var entry=themes.find(function(item){return item.key===value});if(!entry){if(value&&statusEl){statusEl.textContent='No theme named \u201C'+value+'\u201D is used in these stories yet.'}results.hidden=true;return}results.hidden=false;results.innerHTML='<h2>'+safe(entry.theme)+'</h2><div class="character-story-list">'+entry.books.map(function(book){return '<article class="character-story-card"><div class="character-story-copy"><h3>'+safe(book.title)+'</h3><p class="story-metadata-line">'+safe(book.series)+'</p><p><a class="character-story-link" href="'+book.href+'">About '+safe(book.title)+' &rarr;</a></p></div></article>'}).join('')+'</div>'}search.addEventListener('input',function(){filterDirectory(search.value)});select.addEventListener('change',function(){var next=new URL(window.location.href);if(select.value){next.searchParams.set('theme',select.value)}else{next.searchParams.delete('theme')}window.history.replaceState({},'',next.toString());render(select.value)});if(key){render(key)}})();</script>`, site, nav, `${site.domain}/themes.html`, config, banner);
 }
 
 function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazonLookup, entityIndex = null, publicDiscoveryIndex = null) {
@@ -3966,7 +4003,7 @@ function renderFreebieDetailPage(record, routing, site, nav, config, banner, dis
       <h2 id="freebie-continue">Keep Exploring Hawkins Hollow</h2>
       <p>
         <a class="button" href="../${collection.indexRoute}">More ${collection.itemNounPlural}</a>
-        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../books.html">Browse books</a>
         <a class="button" href="../characters.html">Meet the neighbors</a>
         <a href="../start-here.html">Choose another path</a>
       </p>
@@ -4278,7 +4315,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
           <h3>${story.title}</h3>
           <p>${description}</p>
           ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
-          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
+          <p><a class="character-story-link" href="../${story.href}">About ${story.title} &rarr;</a></p>
         </div>
       </article>`;
     })
@@ -4289,7 +4326,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       ? `<img src="../${book.coverImage}" alt="Cover image for ${book.title}" loading="lazy" width="110" height="150" />`
       : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
     const description = book.description ? `<p>${escapeHtml(book.description)}</p>` : '';
-    return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">Read ${book.title} &rarr;</a></p></div></article>`;
+    return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">About ${book.title} &rarr;</a></p></div></article>`;
   }).join('');
   const bookDiscoverySection = bookDiscoveryCards
     ? `<section class="content-card" aria-labelledby="character-books">
@@ -4401,7 +4438,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
       <p><strong>Where to go next:</strong> Continue from the story you just read and choose the next place, person, or memory to follow.</p>
       <p>
-        <a class="button" href="../books.html">Read another story</a>
+        <a class="button" href="../books.html">Browse more books</a>
         <a class="button" href="../characters.html">Meet more friends</a>
       </p>
     </section>
@@ -4441,7 +4478,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       <p>${profile.nextLine}</p>
       <p>
         <a class="button" href="../start-here.html">Explore Hawkins Hollow</a>
-        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../books.html">Browse books</a>
         <a class="button" href="../map.html">Visit a place</a>
         <a class="button" href="../community.html">Join the community</a>
       </p>
@@ -4487,7 +4524,7 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
           <h3>${story.title}</h3>
           ${description}
           ${guidanceLine ? `<p class="story-metadata-line">${guidanceLine}</p>` : ''}
-          <p><a class="character-story-link" href="../${story.href}">Read ${story.title} &rarr;</a></p>
+          <p><a class="character-story-link" href="../${story.href}">About ${story.title} &rarr;</a></p>
         </div>
       </article>`;
     }).join('');
@@ -4617,7 +4654,7 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
       <h2 id="continuation-next">Where would you like to wander next?</h2>
       <p>${profile.nextLine}</p>
       <p>
-        <a class="button" href="../books.html">Read a story</a>
+        <a class="button" href="../books.html">Browse books</a>
         <a class="button" href="../map.html">Visit a place</a>
         <a class="button" href="../community.html">Join the community</a>
       </p>
@@ -5774,7 +5811,7 @@ function renderCompanionResourceVisitorCard(resource, bookLookup, bookRouteLooku
   const storyId = String((resource && resource.structural && resource.structural.storyId) || '').trim().toUpperCase();
   const bookReturn = bookRouteLookup.get(storyId) || null;
   const bookReturnMarkup = bookReturn
-    ? `<a class="button" href="${escapeHtml(bookReturn.href)}">Read the Story</a>`
+    ? `<a class="button" href="${escapeHtml(bookReturn.href)}">About this story and resources</a>`
     : '';
 
   return `<article class="start-here-item companion-resource-card" data-companion-resource-card data-companion-resource-id="${escapeHtml(resource.resourceId || '')}" data-companion-resource-story-id="${escapeHtml(storyId)}">
@@ -6685,6 +6722,7 @@ async function buildSite() {
   outputDirs.forEach((outputDir) => resetDir(outputDir));
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
   await writePlaceThumbnails(entityIndex);
+  await writeRelationshipPortraits(entityIndex);
 
   const sitemapRoutes = new Set();
   const writePageToOutputsAndTrack = (fileName, html) => {
