@@ -38,3 +38,23 @@ test('plain source age ranges keep every book collection discoverable', () => {
  const books=series.flatMap((name,i)=>Array.from({length:3},(_,j)=>({type:'book',series:name,id:i+'-'+j})));
  assert.equal(new Set(orderDiscoveryRecords(books).slice(0,9).map(record=>record.series)).size,9,'first results represent every collection');
 });
+
+
+test('discovery separates missing metadata from confirmed matches and explicit mismatches', () => {
+ const {classifyDiscovery,discoveryFacetValues,orderDiscoveryRecords}=require('../scripts/visitor-discovery');
+ const choices={facets:{feeling:'Hopeful',age:'Age 6'}};
+ const known={type:'book',series:'Storybooks',tags:[{kind:'feeling',label:'Hopeful'},{kind:'age',label:'Ages 3–7'}]};
+ assert.equal(classifyDiscovery(known,choices),'match');
+ assert.equal(classifyDiscovery({...known,tags:[{kind:'age',label:'Ages 4–8'}]},choices),'unclassified');
+ assert.equal(classifyDiscovery({...known,tags:[{kind:'feeling',label:'Sad'},{kind:'age',label:'Ages 3–7'}]},choices),'excluded');
+ assert.equal(classifyDiscovery({...known,tags:[{kind:'age',label:'Ages 8–12'}]},choices),'excluded');
+ assert.equal(classifyDiscovery({type:'rhyme',tags:[]},choices),'unclassified');
+ assert.equal(classifyDiscovery({type:'character',tags:[]},choices),'unclassified');
+ assert.equal(classifyDiscovery({type:'rhyme',tags:[]},{...choices,type:'book'}),'excluded');
+ assert.equal(classifyDiscovery(known,{...choices,series:'First Readers'}),'excluded');
+ assert.equal(classifyDiscovery(known,{facets:{feeling:'Hopeful'}},'feeling'),'match');
+ const facets=Array.from({length:85},(_,i)=>({kind:'interest',label:'Interest '+i}));
+ assert.equal(discoveryFacetValues(facets,'interest').length,85,'uncommon labels are never capped out');
+ assert.deepEqual(discoveryFacetValues([{kind:'age',label:'Ages 4–8'},{kind:'age',label:'Ages 6–9'}],'age'),['Age 4','Age 5','Age 6','Age 7','Age 8','Age 9']);
+ assert.ok(orderDiscoveryRecords([known,{type:'rhyme',tags:[]}]).length===2);
+});

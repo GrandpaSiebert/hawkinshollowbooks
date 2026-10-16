@@ -858,3 +858,6 @@ h2 {
 .page-banner[data-banner-id="relationship-portrait"] { min-height:0; background:#f0e6d2; }
 .page-banner-image[data-banner-id="relationship-portrait"] { width:100%; height:auto; max-height:520px; object-fit:contain; }
 .relationship-neighbor-portrait { display:block; width:144px; height:144px; max-width:100%; object-fit:contain; margin-bottom:1rem; }
+
+.discovery-more-to-explore { margin:1.5rem 0; padding:1rem; border:1px solid #d9c7aa; border-radius:8px; }
+.discovery-more-to-explore > summary { cursor:pointer; font-weight:600; }

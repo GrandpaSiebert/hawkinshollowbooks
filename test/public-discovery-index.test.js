@@ -345,3 +345,19 @@ test('relationship visits show their own portrait, individual neighbor thumbnail
     }
   }
 });
+
+
+test('every discovery category retains unlabeled eligible assets and offers every recorded choice', () => {
+ const {classifyDiscovery,discoveryFacetValues}=require('../scripts/visitor-discovery');
+ const index=JSON.parse(fs.readFileSync(path.join(output,'generated/public-discovery-index.json'),'utf8'));
+ const html=fs.readFileSync(path.join(output,'start-here.html'),'utf8');
+ assert.ok(html.includes('discovery-unclassified-results'));
+ for (const kind of ['interest','feeling','activity','age']) {
+   const values=discoveryFacetValues(index.facets,kind); assert.ok(values.length>0);
+   if(kind!=='age') assert.equal(values.length,new Set(index.facets.filter(tag=>tag.kind===kind).map(tag=>tag.label)).size);
+   const unlabeled=index.records.filter(record=>!record.tags.some(tag=>tag.kind===kind));
+   for(const value of values) for(const record of unlabeled) assert.equal(classifyDiscovery(record,{facets:{[kind]:value}}),'unclassified',record.id+': missing '+kind+' stays reachable');
+ }
+ const sixYearOlds=index.records.filter(record=>record.type==='book'&&classifyDiscovery(record,{facets:{age:'Age 6'}})==='match');
+ assert.equal(new Set(sixYearOlds.map(record=>record.series)).size,9,'age six reaches matching books from all nine collections');
+});
