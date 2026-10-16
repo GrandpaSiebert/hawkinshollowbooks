@@ -28,6 +28,9 @@ test('Pages deployment restores shared canonical inputs read-only using existing
   assert.match(restore, /secrets\.R2_SECRET_ACCESS_KEY/);
   assert.doesNotMatch(workflow, /secrets\.R2_READONLY_/);
   const validationWorkflow = fs.readFileSync(path.join(root, '.github', 'workflows', 'build-only-validation.yml'), 'utf8');
+  for (const pipeline of [workflow, validationWorkflow]) {
+    assert.match(pipeline, /--required-source-map data\/discovery-review-source-objects\.json/);
+  }
   for (const name of ['CLOUDFLARE_ACCOUNT_ID', 'R2_ACCESS_KEY_ID', 'R2_SECRET_ACCESS_KEY']) {
     assert.ok(validationWorkflow.includes(`secrets.${name}`));
   }
