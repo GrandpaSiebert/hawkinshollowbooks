@@ -334,6 +334,20 @@ async function writeRelationshipPortraits(entityIndex) {
   }
 }
 
+async function writeHomepagePreviews() {
+  for (const artwork of readJson('data/homepage-illustrations.json').illustrations) {
+    if (!artwork.image.startsWith('assets/homepage-previews/')) continue;
+    const bytes = await sharp(path.join(root, artwork.source)).rotate()
+      .resize({ width: 360, height: 360, fit: 'inside', withoutEnlargement: true })
+      .webp({ quality: 82 }).toBuffer();
+    for (const outputDir of outputDirs) {
+      const destination = path.join(outputDir, artwork.image);
+      ensureDir(path.dirname(destination));
+      fs.writeFileSync(destination, bytes);
+    }
+  }
+}
+
 function toBookPageSlug(book) {
   const safeId = getCanonicalBookId(book) || 'unknown'
     .replace(/[^A-Za-z0-9+-]+/g, '-')
@@ -3206,6 +3220,15 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
 }
 
 function renderLandingPage(page, site, nav, config, banner, seriesData) {
+  const illustrations = new Map(readJson('data/homepage-illustrations.json').illustrations.map(artwork => [artwork.key, artwork]));
+  const illustrate = (key, representativeBook = false) => {
+    const artwork = illustrations.get(key);
+    if (!artwork) return '';
+    const image = `<img src="${escapeHtml(artwork.image)}" alt="${representativeBook ? escapeHtml(artwork.alt) : ''}" width="360" height="360" loading="lazy" decoding="async" />`;
+    return representativeBook
+      ? `<figure class="home-series-preview">${image}<figcaption>${escapeHtml(artwork.caption)}</figcaption></figure>`
+      : `<div class="home-discovery-illustration" aria-hidden="true">${image}</div>`;
+  };
   const homepageSeries = ((seriesData && seriesData.series) || [])
     .slice()
     .sort((a, b) => (a.sortOrder || Number.MAX_SAFE_INTEGER) - (b.sortOrder || Number.MAX_SAFE_INTEGER));
@@ -3240,39 +3263,39 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
       <p class="eyebrow">Act Two</p>
       <h2 id="act-two">Where would you like to begin today?</h2>
       <p>Choose any path. You do not have to start in one place to belong here.</p>
-      <div class="start-anywhere-grid">
+      <div class="start-anywhere-grid home-discovery-grid">
         <a class="start-anywhere-item" href="books.html" aria-label="Explore Books">
-          <p class="start-anywhere-icon" aria-hidden="true">📚</p>
+          ${illustrate('discover-books')}
           <h3>Explore Books</h3>
           <p>Browse stories, reading paths, and shared-reading collections.</p>
         </a>
 
         <a class="start-anywhere-item" href="characters.html" aria-label="Meet a Character">
-          <p class="start-anywhere-icon" aria-hidden="true">👧</p>
+          ${illustrate('discover-character')}
           <h3>Meet a Character</h3>
           <p>Meet the friends and families who make Hawkins Hollow feel like home.</p>
         </a>
 
         <a class="start-anywhere-item" href="map.html" aria-label="Visit a Place">
-          <p class="start-anywhere-icon" aria-hidden="true">🌳</p>
+          ${illustrate('discover-place')}
           <h3>Visit a Place</h3>
           <p>Explore familiar places and see where a walk through Hawkins Hollow might lead.</p>
         </a>
 
         <a class="start-anywhere-item" href="books.html" aria-label="Explore a Friendship">
-          <p class="start-anywhere-icon" aria-hidden="true">❤️</p>
+          ${illustrate('discover-friendship')}
           <h3>Explore a Friendship</h3>
           <p>Follow relationships through connected stories and journeys.</p>
         </a>
 
         <a class="start-anywhere-item" href="resources.html" aria-label="Find a Family Activity">
-          <p class="start-anywhere-icon" aria-hidden="true">🎁</p>
+          ${illustrate('discover-activity')}
           <h3>Find a Family Activity</h3>
           <p>Find a shared activity, then continue into a related story.</p>
         </a>
 
         <a class="start-anywhere-item" href="community.html" aria-label="Celebrate a Season">
-          <p class="start-anywhere-icon" aria-hidden="true">🎄</p>
+          ${illustrate('discover-season')}
           <h3>Celebrate a Season</h3>
           <p>Discover seasonal story poems, gatherings, and neighborhood traditions.</p>
         </a>
@@ -3283,11 +3306,12 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
       <p class="eyebrow">Choose a shelf</p>
       <h2 id="series-spotlight">Choose the kind of experience you want today</h2>
       <p>Each series is a different way into the same Hawkins Hollow world. Choose the kind of story, reading moment, or everyday discovery that fits today.</p>
-      <div class="start-here-grid">
+      <div class="start-here-grid home-series-grid">
         ${homepageSeries.map((series) => {
           const presentation = getSeriesPresentationAuthority(series);
           const editorial = getSeriesEditorial(series);
           return `<article class="start-here-item">
+          ${illustrate('series-' + series.slug, true)}
           <h3>${series.title}</h3>
           <p>${presentation.lead}</p>
           <p><a class="button" href="${getSeriesPageHref(series.slug)}">${editorial.invitationLabel}</a></p>
@@ -3303,13 +3327,13 @@ function renderLandingPage(page, site, nav, config, banner, seriesData) {
       <p>Bring Hawkins Hollow into the room, the car, the classroom, or a quiet moment together with songs and nursery rhymes made for joining in.</p>
       <div class="start-anywhere-grid">
         <a class="start-anywhere-item" href="kids-songs.html" aria-label="Kids Songs">
-          <p class="start-anywhere-icon" aria-hidden="true">🎵</p>
+          ${illustrate('resource-songs')}
           <h3>Kids Songs</h3>
           <p>Singable Hawkins Hollow songs with words to follow, easy ways to join in, and recordings when available.</p>
         </a>
 
         <a class="start-anywhere-item" href="nursery-rhymes.html" aria-label="Nursery Rhymes">
-          <p class="start-anywhere-icon" aria-hidden="true">🌙</p>
+          ${illustrate('resource-rhymes')}
           <h3>Nursery Rhymes</h3>
           <p>Short Hawkins Hollow rhymes made to read, say, tap, and share together, with recordings when available.</p>
         </a>
@@ -6734,6 +6758,7 @@ async function buildSite() {
   outputDirs.forEach((outputDir) => copyStaticSiteAssets(outputDir));
   await writePlaceThumbnails(entityIndex);
   await writeRelationshipPortraits(entityIndex);
+  await writeHomepagePreviews();
 
   const sitemapRoutes = new Set();
   const writePageToOutputsAndTrack = (fileName, html) => {

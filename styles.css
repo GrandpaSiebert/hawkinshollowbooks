@@ -224,6 +224,74 @@ h2 {
   font-size: 1.35rem;
 }
 
+/* Homepage previews keep the established card grid and reading width. */
+.home-discovery-illustration {
+  height: 140px;
+  margin-bottom: 0.85rem;
+}
+
+.home-discovery-illustration img,
+.home-series-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 8px;
+}
+
+.home-series-preview {
+  margin: 0 0 0.85rem;
+}
+
+.home-series-preview img {
+  height: 180px;
+}
+
+.home-series-preview figcaption {
+  margin-top: 0.45rem;
+  color: var(--ink);
+  font-size: 0.8rem;
+  text-align: center;
+}
+
+/* Version B: homepage-only spacing; natural artwork proportions remain intact. */
+.home-discovery-grid .home-discovery-illustration {
+  height: 160px;
+  margin-bottom: 0.65rem;
+}
+
+.home-series-grid {
+  align-items: start;
+}
+
+.home-series-grid .start-here-item {
+  padding: 0.85rem 1rem;
+}
+
+.home-series-grid .home-series-preview {
+  margin-bottom: 0.65rem;
+}
+
+.home-series-grid .home-series-preview img {
+  height: 200px;
+}
+
+.home-series-grid .home-series-preview figcaption {
+  margin-top: 0.35rem;
+}
+
+.home-series-grid .start-here-item h3 {
+  margin-bottom: 0.65rem;
+}
+
+.home-series-grid .start-here-item p {
+  margin: 0.65rem 0;
+}
+
+.home-series-grid .start-here-item p:last-child {
+  margin-bottom: 0;
+}
+
 .map-grid {
   display: grid;
   gap: 0.8rem;

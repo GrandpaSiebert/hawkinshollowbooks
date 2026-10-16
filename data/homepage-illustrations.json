@@ -1,0 +1,188 @@
+{
+  "illustrations": [
+    {
+      "key": "discover-books",
+      "source": "assets/covers/Storybooks/SB002 The Sharing Acorn Cover.png",
+      "image": "assets/homepage-previews/discover-books.webp",
+      "alt": "Cover of The Sharing Acorn",
+      "caption": "A book from this series",
+      "bookId": "HH-A-0002",
+      "sourcePage": "books/HH-A-0002-the-sharing-acorn.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "Shows a shared story and familiar friends without repeating the Storybooks preview."
+    },
+    {
+      "key": "discover-character",
+      "image": "assets/character-thumbnails/spe.webp",
+      "source": "assets/characters/individuals/Spe-HP-V001.png",
+      "alt": "Spencer Field Mouse",
+      "sourcePage": "characters/spencer-field-mouse.html",
+      "authority": "Character Directory hero; Characters/Spe Visual Canon.docx",
+      "reason": "Uses the same approved portrait as Spencer’s character page."
+    },
+    {
+      "key": "discover-place",
+      "image": "assets/place-thumbnails/environment-env-0002.webp",
+      "source": "assets/environments/Barn Lane-HEP-V001.png",
+      "alt": "Barn Lane leading toward the red barn",
+      "sourcePage": "entities/environment/env-0002-barn-lane.html",
+      "authority": "Existing site environment hero; Environments/Barn Lane Visual Canon.docx",
+      "reason": "Recognizable path into the map; same Barn Lane artwork as the place page."
+    },
+    {
+      "key": "discover-friendship",
+      "image": "assets/relationship-portraits/rel-0006.webp",
+      "source": "assets/characters/relationships/Bra-Aus-RELHP-V001.png",
+      "alt": "Brandon Rabbit and Austin Turtle walking together",
+      "sourcePage": "entities/relationship/rel-0006-brandon-rabbit-austin-turtle.html",
+      "authority": "Existing relationship portrait; Relationships/Bra-Aus Visual Canon.docx",
+      "reason": "Shows the actual established pairing, using the same portrait as its relationship page."
+    },
+    {
+      "key": "discover-activity",
+      "source": "assets/banners/141 Hawkins Hollow Free Child Resoures Ribbon.png",
+      "image": "assets/homepage-previews/discover-activity.webp",
+      "alt": "Activity sheets and pencils ready to share in Hawkins Hollow",
+      "sourcePage": "resources.html",
+      "authority": "Existing approved Companion Resources page banner; data/banners.json",
+      "reason": "Uses the destination’s own activity-table illustration rather than implying a particular story is a downloadable activity."
+    },
+    {
+      "key": "discover-season",
+      "source": "assets/covers/Holiday Story Poems/HSP003 Baby Bentley’s Friendship Day Painted Pebble Cover.png",
+      "image": "assets/homepage-previews/discover-season.webp",
+      "alt": "Cover of Baby Bentley’s Friendship Day Painted Pebble",
+      "caption": "A book from this series",
+      "bookId": "HH-F-0003",
+      "sourcePage": "books/HH-F-0003-baby-bentley-s-friendship-day-painted-pebble.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A published Friendship Day celebration represents the seasonal and community tradition path without locking the homepage to one current season."
+    },
+    {
+      "key": "series-storybooks",
+      "source": "assets/covers/Storybooks/SB001 Spencer’s First Friend Cover.png",
+      "image": "assets/homepage-previews/series-storybooks.webp",
+      "alt": "Cover of Spencer's First Friend",
+      "caption": "A book from this series",
+      "bookId": "HH-A-0001",
+      "sourcePage": "books/HH-A-0001-spencer-s-first-friend.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "storybooks"
+    },
+    {
+      "key": "series-first-readers",
+      "source": "assets/covers/First Readers/FR001 Spencer's Sound Trail Cover.png",
+      "image": "assets/homepage-previews/series-first-readers.webp",
+      "alt": "Cover of Spencer's Sound Trail",
+      "caption": "A book from this series",
+      "bookId": "HH-B-0001",
+      "sourcePage": "books/HH-B-0001-spencer-s-sound-trail.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "first-readers"
+    },
+    {
+      "key": "series-second-readers",
+      "source": "assets/covers/Second Readers/SR001 The Summary Mystery Cover.png",
+      "image": "assets/homepage-previews/series-second-readers.webp",
+      "alt": "Cover of The Summary Mystery",
+      "caption": "A book from this series",
+      "bookId": "HH-C-0001",
+      "sourcePage": "books/HH-C-0001-the-summary-mystery.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "second-readers"
+    },
+    {
+      "key": "series-basic-training",
+      "source": "assets/covers/Basic Training/BT001 Spencer Washes Up before Snack Cover.png",
+      "image": "assets/homepage-previews/series-basic-training.webp",
+      "alt": "Cover of Spencer Washes Up before Snack",
+      "caption": "A book from this series",
+      "bookId": "HH-G-0001",
+      "sourcePage": "books/HH-G-0001-spencer-washes-up-before-snack.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "basic-training"
+    },
+    {
+      "key": "series-growing-together",
+      "source": "assets/covers/Growing Together/GT001 The Healthy Heart Walk Cover.png",
+      "image": "assets/homepage-previews/series-growing-together.webp",
+      "alt": "Cover of The Healthy Heart Walk",
+      "caption": "A book from this series",
+      "bookId": "HH-C+-0001",
+      "sourcePage": "books/HH-C+-0001-the-healthy-heart-walk.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "growing-together"
+    },
+    {
+      "key": "series-bedtime-library",
+      "source": "assets/covers/Bedtime Library/BL001 Spencer's Grumpy Wake-Up Cover.png",
+      "image": "assets/homepage-previews/series-bedtime-library.webp",
+      "alt": "Cover of Spencer's Grumpy Wake-Up",
+      "caption": "A book from this series",
+      "bookId": "HH-D-0001",
+      "sourcePage": "books/HH-D-0001-spencer-s-grumpy-wake-up.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "bedtime-library"
+    },
+    {
+      "key": "series-tender-times",
+      "source": "assets/covers/Tender Times/TT001 Alice Mole and the Anniversary Star Wish Cover.png",
+      "image": "assets/homepage-previews/series-tender-times.webp",
+      "alt": "Cover of Alice Mole and the Anniversary Star Wish",
+      "caption": "A book from this series",
+      "bookId": "HH-E-0001",
+      "sourcePage": "books/HH-E-0001-alice-mole-and-the-anniversary-star-wish.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "tender-times"
+    },
+    {
+      "key": "series-holiday-story-poems",
+      "source": "assets/covers/Holiday Story Poems/HSP001 Austin Turtle’s Independence Day Quilt Square Cover.png",
+      "image": "assets/homepage-previews/series-holiday-story-poems.webp",
+      "alt": "Cover of Austin Turtle’s Independence Day Quilt Square",
+      "caption": "A book from this series",
+      "bookId": "HH-F-0001",
+      "sourcePage": "books/HH-F-0001-austin-turtle-s-independence-day-quilt-square.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "holiday-story-poems"
+    },
+    {
+      "key": "series-hero-play-poems",
+      "source": "assets/covers/Hero Play Poems/HR001 Aydin and Albert Einstein’s Map Cover.png",
+      "image": "assets/homepage-previews/series-hero-play-poems.webp",
+      "alt": "Cover of Aydin and Albert Einstein’s Map",
+      "caption": "A book from this series",
+      "bookId": "HH-HR-0001",
+      "sourcePage": "books/HH-HR-0001-aydin-and-albert-einstein-s-map.html",
+      "authority": "Published book cover; existing book model and live catalog",
+      "reason": "A representative published book showing the collection’s distinctive reading experience.",
+      "seriesSlug": "hero-play-poems"
+    },
+    {
+      "key": "resource-songs",
+      "image": "https://library.hawkinshollowbooks.com/Freebies/Title%20Art/HH-S-0001.webp",
+      "source": "https://library.hawkinshollowbooks.com/Freebies/Title%20Art/HH-S-0001.webp",
+      "alt": "Title illustration for Singable Hollow Welcome",
+      "sourcePage": "songs/HH-S-0001-singable-hollow-welcome.html",
+      "authority": "Verified published canonical freebie title art, existing R2 URL",
+      "reason": "A welcoming singalong uses the same title illustration as its song page."
+    },
+    {
+      "key": "resource-rhymes",
+      "image": "https://library.hawkinshollowbooks.com/Freebies/Title%20Art/HH-R-0001.webp",
+      "source": "https://library.hawkinshollowbooks.com/Freebies/Title%20Art/HH-R-0001.webp",
+      "alt": "Title illustration for Bouncy Puddle Parade",
+      "sourcePage": "nursery-rhymes/HH-R-0001-bouncy-puddle-parade.html",
+      "authority": "Verified published canonical freebie title art, existing R2 URL",
+      "reason": "A playful turn-taking rhyme uses the same title illustration as its nursery-rhyme page."
+    }
+  ]
+}
