@@ -361,3 +361,20 @@ test('every discovery category retains unlabeled eligible assets and offers ever
  const sixYearOlds=index.records.filter(record=>record.type==='book'&&classifyDiscovery(record,{facets:{age:'Age 6'}})==='match');
  assert.equal(new Set(sixYearOlds.map(record=>record.series)).size,9,'age six reaches matching books from all nine collections');
 });
+
+test('manuscript review fills missing book categories without exposing internal evidence', () => {
+ const index=JSON.parse(fs.readFileSync(path.join(output,'generated/public-discovery-index.json'),'utf8'));
+ const books=index.records.filter(record=>record.type==='book');
+ const has=(record,kind,label)=>record.tags.some(tag=>tag.kind===kind&&(!label||tag.label===label));
+ assert.equal(books.filter(record=>has(record,'feeling')).length,55);
+ assert.equal(books.filter(record=>has(record,'activity')).length,64);
+ assert.equal(books.filter(record=>has(record,'interest')).length,79);
+ assert.equal(books.filter(record=>has(record,'age')).length,79);
+ assert.ok(has(books.find(record=>record.id==='HH-D-0001'),'feeling','Grumpy'));
+ assert.ok(has(books.find(record=>record.id==='HH-B-0002'),'activity','Practicing vowel sounds'));
+ assert.ok(!has(books.find(record=>record.id==='HH-E-0004'),'feeling','Happy'));
+ assert.doesNotMatch(JSON.stringify(index),/"(?:sourceDocument|sourceSha256|pdfPage|evidence|paragraph)"\s*:/);
+ const report=JSON.parse(fs.readFileSync(path.join(root,'generated/validation/discovery-book-review.json'),'utf8'));
+ assert.equal(report.reviewedBooks,79);
+ assert.deepEqual(report.withheld,[]);
+});

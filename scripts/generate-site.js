@@ -49,6 +49,7 @@ const {
 } = require('./public-surface-eligibility');
 const { finalizeSearchTitles } = require('./search-titles');
 const { writeSitemapLastmod } = require('./sitemap-lastmod');
+const { loadBookDiscoveryAnnotations } = require('./discovery-book-annotations');
 
 const root = path.join(__dirname, '..');
 const buildDir = path.join(root, 'build-recovery');
@@ -6650,6 +6651,15 @@ async function buildSite() {
     const id = String(book.id || '').toUpperCase();
     return [id, [...((bookPresentationModelsById.get(id).themes || {}).values || []), ...((bookModelByCanonicalId.get(id) || {}).themes || [])]];
   }));
+  const discoveryBookReviews = loadBookDiscoveryAnnotations({
+    libraryRoot: path.join(root, 'Library'),
+    data: JSON.parse(fs.readFileSync(path.join(root, 'data', 'discovery-book-annotations.json'), 'utf8')),
+    eligibleBookIds: new Set(publicSearchRecords.filter(record => record.type === 'book').map(record => String(record.id).toUpperCase()))
+  });
+  const reviewReportDirectory = path.join(root, 'generated', 'validation');
+  fs.mkdirSync(reviewReportDirectory, { recursive: true });
+  fs.writeFileSync(path.join(reviewReportDirectory, 'discovery-book-review.json'), JSON.stringify(discoveryBookReviews.report, null, 2) + '\n');
+  if (discoveryBookReviews.report.withheld.length) console.warn('Book discovery reviews withheld:', discoveryBookReviews.report.withheld);
   const publicDiscoveryIndex = createPublicDiscoveryIndex(
     publicSearchRecords.filter((record) => record.type !== 'page'),
     publicEntityIndex,
@@ -6657,7 +6667,8 @@ async function buildSite() {
     freebieDiscoveryRecords,
     Array.from(characterDiscovery, ([canonicalCharacterId, books]) => ({ canonicalCharacterId, characterName: (characterByCanonicalId.get(canonicalCharacterId) || {}).name, books })),
     discoveryBookThemes,
-    discoveryBookMetadata
+    discoveryBookMetadata,
+    discoveryBookReviews.tagsById
   );
   for (const record of publicDiscoveryIndex.records) {
     if (['environment', 'landmark'].includes(record.type) && !record.image) {

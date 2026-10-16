@@ -1,0 +1,3401 @@
+{
+  "version": 1,
+  "scope": "Published books missing discovery classifications; songs and rhymes excluded from this pass.",
+  "records": [
+    {
+      "id": "HH-A-0001",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0001 Spencer's First Friend/HH-A-0001 Story Master.docx",
+      "sourceSha256": "673eaa628189b1d986b0dbc220c649d5fcd618aee7b1d807a6cfb409457a1d50",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing small brave steps",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then act out a small new-friend moment and help your child practice one calm breath and one brave sentence."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0002",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0002 The Sharing Acorn/HH-A-0002 Story Master.docx",
+      "sourceSha256": "f44b0cf575d7cf60ecb1bd9b918d9378a5f9e17290184582bfa497365ab7b206",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sharing fairly",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then use a few small objects and practice making two fair piles."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0003",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0003 Alice's Underground Party/HH-A-0003 Story Master.docx",
+      "sourceSha256": "978217f2212218600880c252409a1940b6cfa1b4437a4794db4885fd79b8696d",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Including everyone",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then use a few toys or drawings and practice noticing who is missing and how to invite them in."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0004",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0004 When Callen Said Sorry/HH-A-0004 Story Master.docx",
+      "sourceSha256": "457ab6c4525dc838a1d1eec8ea03be4ce0159ae8d79514543574cb77e0df277b",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing an apology",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Practice The Real Sorry 3 with a stuffed animal."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0005",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0005 The New Animals in the Hollow/HH-A-0005 Story Master.docx",
+      "sourceSha256": "7533561b6a8d7c72f320fa0199b7d7314cd8920359689bf7c9ea04d8f1357c27",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Nervous",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Kaydence’s tight posture and startled response ease through a sustained gentle welcome.",
+                "evidence": [
+                  {
+                    "paragraph": 12,
+                    "page": 3,
+                    "quote": "Her shoulders curled. Her paws held tight."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "resolution",
+                "rationale": "A calm pace, space and rhythm are central to the welcome.",
+                "evidence": [
+                  {
+                    "paragraph": 22,
+                    "page": 13,
+                    "quote": "Rhythm calms my body."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Welcoming new friends",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story teaches this skill repeatedly and its support page invites readers to practice it.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then act out welcoming someone new with one quiet hello, one step back, and one small helpful action."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0006",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0006 Taking Turns at the Pond/HH-A-0006 Story Master.docx",
+      "sourceSha256": "753026c99370568f06cd6cb0170721c8087f9372cabef51bcb14ec4016000919",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Excited bodies wanting the first turn drive the conflict and the waiting plan.",
+                "evidence": [
+                  {
+                    "paragraph": 10,
+                    "page": 1,
+                    "quote": "Brandon bounced with rabbit excitement."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "resolution",
+                "rationale": "Visible turns and waiting jobs produce a sustained calmer ending.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 15,
+                    "quote": "Lex leaned close with calm quills now."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Taking turns",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story teaches this skill repeatedly and its support page invites readers to practice it.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then use the stones for turns in a simple game."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0007",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0007 Callen's New Baby Brother/HH-A-0007 Story Master.docx",
+      "sourceSha256": "26cc0eae70fe23e2b379652ab2d959d6ce0290762cbd81f782bc69522fa94a9c",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Callen’s big joyful announcement and the friends’ rushed welcome must find a gentler shape.",
+                "evidence": [
+                  {
+                    "paragraph": 22,
+                    "page": 13,
+                    "quote": "Big joy had learned a softer shape."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Helping gently with a baby",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story teaches this skill repeatedly and its support page invites readers to practice it.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then practice one tiny helper job with a stuffed baby or blanket bundle."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0008",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0008 Aralynn Fox's Promise/HH-A-0008 Story Master.docx",
+      "sourceSha256": "07dcd352d1b1f42c9793921447cff608d8e25ea91958dec7bacc653ac84baebb",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Keeping a promise builds Spencer’s felt safety and steadiness across the story.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 15,
+                    "quote": "Promises help friends feel safe inside. Promises help hearts feel steady too."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Keeping promises",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story teaches this skill repeatedly and its support page invites readers to practice it.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then choose one small promise for the day and practice following all three steps."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0009",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0009 The Thank You Trail/HH-A-0009 Story Master.docx",
+      "sourceSha256": "764667101f346d1e0691229b54e8bfe7a566fd9fa3cf550b747658a564c8a8e9",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Thankful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Noticing kindness and expressing gratitude drive every stop and the ending.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 15,
+                    "quote": "Not crowded. Not buzzy. Just thankful."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Saying thank you",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story teaches this skill repeatedly and its support page invites readers to practice it.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then practice thanking one person for one specific helpful thing."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0010",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0001-0010/HH-A-0010 Aralynn Fox Feels Left  Out/HH-A-0010 Story Master.docx",
+      "sourceSha256": "e07fcb1f7bf0ed0157fcbe271ec565c1824d4f3765003b531215f3ab56ebc1b4",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Left out",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Being unheard and excluded drives the teamwork conflict.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 5,
+                    "quote": "Not from sun. From left-out feeling."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Working as a team",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit practice invitation in the grown-up guide.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then try a small team task such as carrying books or building blocks, giving each person one clear job."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0011",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0011 Brandons Listening Ears/HH-A-0011 Story Master.docx",
+      "sourceSha256": "43b620dfe58d4a35da08347cc29776141e49ec1d00c1d102dd8e033362384a7f",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing listening skills",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then take turns giving one short direction and repeating it back before doing it."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0012",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0012 The Forgiveness Garden/HH-A-0012 Story Master.docx",
+      "sourceSha256": "ccc60d022e8e83158c18bf245e93df97d05b4b94b6fc57054440e6ecf27680f0",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Angry",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Anger after being hurt persists through gradual repair and forgiveness.",
+                "evidence": [
+                  {
+                    "paragraph": 21,
+                    "page": 11,
+                    "quote": "I'm not all done being mad."
+                  }
+                ]
+              },
+              {
+                "label": "Scared",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The frightening joke and its bodily aftermath are named and revisited in the repair.",
+                "evidence": [
+                  {
+                    "paragraph": 16,
+                    "page": 6,
+                    "quote": "\"I felt scared,\" Spencer said first."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Making a repair after a mistake",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit practice invitation in the grown-up guide.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then talk about one small fix that could help after a mistake."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0013",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0013 Standing Up for Spencer/HH-A-0013 Story Master.docx",
+      "sourceSha256": "acaef83f986182545e8efcc94af0b47c9e150511b242aa8c0d9bf30b478f8676",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Scared",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Spencer freezes, clutches his pouch and remains shaky after intimidating words.",
+                "evidence": [
+                  {
+                    "paragraph": 21,
+                    "page": 11,
+                    "quote": "Spencer nodded once, still feeling shaky."
+                  }
+                ]
+              },
+              {
+                "label": "Brave",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Lex’s steady protective action is a sustained central response.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 4,
+                    "quote": "Lex felt a hot brave feeling."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Standing up for a friend",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit practice invitation in the grown-up guide.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Step 1: stand beside a partner."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0014",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0014 The Compliment Chain/HH-A-0014 Story Master.docx",
+      "sourceSha256": "1b0c4d35458a950d65b1078f06d9f0c5ba4f164390d04779761f1dc901840f04",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Kaydence’s droopy sadness motivates the whole chain of encouragement.",
+                "evidence": [
+                  {
+                    "paragraph": 12,
+                    "page": 2,
+                    "quote": "her eyes a little sad."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Giving specific compliments",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit practice invitation in the grown-up guide.",
+                "evidence": [
+                  {
+                    "paragraph": 40,
+                    "page": 15,
+                    "quote": "Take turns practicing the three steps: say a name, say what you noticed, and say “That helps” or “I like that.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0015",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0015 Austin’s Quiet Day/HH-A-0015 Story Master.docx",
+      "sourceSha256": "f3faf8208b46714db70cb145a802482edd9c5565534b5fe43afb6a1449d92889",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing quiet together time",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then choose one soft thing to watch together, like a leaf moving or a bug walking."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0016",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0016 When Aralynn Fox Told the Truth/HH-A-0016 Story Master.docx",
+      "sourceSha256": "6b39155837609ee1ceba1d7ad2724cddf610c6dfe8663abd00c86749426ee381",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Worried",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "A hidden mistake becomes a growing bodily uh-oh until Aralynn tells the truth and repairs it.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 4,
+                    "quote": "Aralynn's uh-oh feeling got much bigger."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Telling the truth and making a repair",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit practice invitation in the grown-up guide.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice “Truth + Fix 3” with blocks or toys."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0017",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0017 Lex Learns to Wait/HH-A-0017 Story Master.docx",
+      "sourceSha256": "e321d2a8f067eb63ab6724c6dbe30a14bf64970815f40a4a940e3e427eaedcef",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Frustrated",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Buzzy, hot frustration with waiting drives Lex’s repeated practice.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 4,
+                    "quote": "Lex huffed a frustrated, not-mean huff."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "resolution",
+                "rationale": "The waiting plan produces sustained calmer watching and walking.",
+                "evidence": [
+                  {
+                    "paragraph": 23,
+                    "page": 13,
+                    "quote": "Lex’s eyes stayed on it, calm."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing patience",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit reader practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice Team-Speed Walk together."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0018",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0018 The Secret Keeper/HH-A-0018 Story Master.docx",
+      "sourceSha256": "83bc8446b1e5a36ba8186bd116f2f164bb1251dac238906c884016575620e293",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; the story teaches a social decision rather than sustaining a particular feeling strongly enough for an emotional recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sorting surprises and safety concerns",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit reader practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Play “Surprise or Safety?” with a few simple scenarios."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0019",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0019 Playing Fair at the Fair/HH-A-0019 Story Master.docx",
+      "sourceSha256": "0f19da92682595df23fa6231d7d7bfa83c4ccf518c936a99d103aef613f57bda",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Proud",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Lex repeatedly practices expressing pride without bragging or hurting other players.",
+                "evidence": [
+                  {
+                    "paragraph": 16,
+                    "page": 6,
+                    "quote": "Lex said, \"I feel proud. Good game.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Playing fair",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit reader practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Make a mini fair at home with one simple toss game."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0020",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0011-0020/HH-A-0020 The Helping Paws Club/HH-A-0020 Story Master.docx",
+      "sourceSha256": "38880d1c2baad8180712a49fb1dbba6255929d2233c0796e7ec339135328fc3e",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; the story teaches a social decision rather than sustaining a particular feeling strongly enough for an emotional recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Asking before helping",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit reader practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice the script: “I noticed…”, “Would you like help?”, and “Okay” if the answer is yes or no."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0021",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0021 The Berry Basket Truth/HH-A-0021 Story Master.docx",
+      "sourceSha256": "e4627ea1e0ce1f882fdc60df90df2eb036971596938ff45dc1e395d426471bab",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Guilty",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Hiding the cracked basket weighs on Aralynn until she tells the truth and helps repair it.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 4,
+                    "quote": "Her cheeks felt hot with guilty feeling."
+                  }
+                ]
+              },
+              {
+                "label": "Worried",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Spencer’s distress over unexpected messy change is revisited through the repair.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 4,
+                    "quote": "His face looked scrunched and worried-tight."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Telling the truth and making a repair",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "A repeated story skill with an explicit reader practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice “Truth + Repair 3” with a small pretend mistake like a tipped cup or spilled pile of blocks."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0022",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0022 The Kindness Competition/HH-A-0022 Story Master.docx",
+      "sourceSha256": "c5ffec99b2c5c058c0fafc2a1d5477f95702d23979ad970d84107ea395e62875",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; brief emotional reactions support a social skill plot, without a sufficiently sustained feeling to warrant an emotional recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Asking before helping",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central skill is practiced in the story and explicitly invited in its support page.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Do a “No-Points Kindness Hunt.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0023",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0023 Callen’s Gossip Problem/HH-A-0023 Story Master.docx",
+      "sourceSha256": "27b84c9183e29f9f86538a041b8ebd9b082bc5f46def7c10ab25dd27aea8179e",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Hurt",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Spencer’s hurt from gossip motivates apology, correction and changed speech throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 19,
+                    "page": 9,
+                    "quote": "\"It hurts to hear.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Checking words are kind and true",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central skill is practiced in the story and explicitly invited in its support page.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice “Stop–Think–Check” with pretend examples."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0024",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0024 The Buddy System/HH-A-0024 Story Master.docx",
+      "sourceSha256": "0dc87bdf46ce4f58180fdd7559f52383d962b571611ed49630c02bd2849b653f",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Worried",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Spencer’s repeated bodily unease around an unfamiliar edge is eased by staying with a buddy.",
+                "evidence": [
+                  {
+                    "paragraph": 16,
+                    "page": 6,
+                    "quote": "Spencer whispered, \"Edge prickles my body.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing the buddy system",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central skill is practiced in the story and explicitly invited in its support page.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Practice a buddy walk together."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0025",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0025 Respecting Differences/HH-A-0025 Story Master.docx",
+      "sourceSha256": "00e1a76ff44c929b653223ba9b1d752e540b3f08a531a76488650b4f67e6eef6",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Adjusting noise, pace and space so friends can settle is sustained throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 14,
+                    "quote": "Spencer’s body felt calm, not busy."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Building an inclusive fort",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central skill is practiced in the story and explicitly invited in its support page.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Build a small Respect Fort with pillows or blankets."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0026",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0026 The Friendship Recipe/HH-A-0026 Story Master.docx",
+      "sourceSha256": "b3e59dc53278a70f72f959c09aa179753a759aed5e3b1d4fdfb03a11e5c607bf",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; brief emotional reactions support a social skill plot, without a sufficiently sustained feeling to warrant an emotional recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing friendship skills",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central skill is practiced in the story and explicitly invited in its support page.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then act out a small pretend problem and practice the steps one ingredient at a time."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0027",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0027 Spencer’s Big Feelings/HH-A-0027 Story Master.docx",
+      "sourceSha256": "f76b465f29bbdacb09b1f893346ef8af6745789db97f1987e4f7c653a20cbd07",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Overwhelmed",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Crowded sounds, thoughts and choices affect Spencer throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 17,
+                    "page": 7,
+                    "quote": "\"Too many sounds and too many choices.\""
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "resolution",
+                "rationale": "Small manageable steps lead to a roomier calmer ending.",
+                "evidence": [
+                  {
+                    "paragraph": 25,
+                    "page": 15,
+                    "quote": "\"You found your calm.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Choosing one small next step",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then give a pretend problem like a messy room, a loud sound, or too many choices, and help your child choose just one next step."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0028",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0028 The Angry Hedgehog/HH-A-0028 Story Master.docx",
+      "sourceSha256": "8c14a9a8196d837d4041686b6033c0e6ba120833ce75a9210b42a2fd77e95683",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Angry",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Anger following a fallen tower drives the entire safe-choice and repair plot.",
+                "evidence": [
+                  {
+                    "paragraph": 21,
+                    "page": 11,
+                    "quote": "Lex said, “I can feel angry inside.”"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing safe anger choices",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then act out a small pretend problem like a block tower falling or a toy getting bumped and practice a safe stomp spot, one slow breath, and one repair sentence."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0029",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0029 Brandon’s Wiggly Worries/HH-A-0029 Story Master.docx",
+      "sourceSha256": "25fe45008fbef5cb0c893e48d85ee6a22e8dddff78a26b09deee101c12d189ab",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Worried",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Repeated worry about gusts and a fort is named and addressed throughout.",
+                "evidence": [
+                  {
+                    "paragraph": 16,
+                    "page": 7,
+                    "quote": "Brandon said, \"I’m worried about wind.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Putting worries into words",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 27,
+                    "page": 15,
+                    "quote": "Step 2: Say “I’m worried about…”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0030",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0021-0030/HH-A-0030 Callen’s Jealous Feathers/HH-A-0030 Story Master.docx",
+      "sourceSha256": "6c3ec7e5f60295764b9e534b12d43a2fd65d7877e26f98ffbaafe1869494c836",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Jealous",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Repeated jealousy over another friend receiving attention is named and addressed throughout.",
+                "evidence": [
+                  {
+                    "paragraph": 15,
+                    "page": 6,
+                    "quote": "Callen said, \"I feel jealous right now.\""
+                  }
+                ]
+              },
+              {
+                "label": "Left out",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Wanting recognition and feeling left out drive the jealousy conflict.",
+                "evidence": [
+                  {
+                    "paragraph": 13,
+                    "page": 4,
+                    "quote": "Callen huffed. \"I feel left out.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Asking for attention kindly",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then make up a small pretend problem—like someone else getting praise, the first turn, or a special job—and help your child practice a kind sentence and a turn-taking request."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0031",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0031-0040/HH-A-0031 The Sad Day/HH-A-0031 Story Master.docx",
+      "sourceSha256": "9e60609cdd4d57f997c0e6df3b474cb6bc64908c8f7dcea00046c9967327e11d",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Sadness remains allowed throughout; company replaces efforts to cheer it away.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 15,
+                    "quote": "Austin still felt a little sad."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Offering company or space",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then act out a small pretend sad moment and let your child choose whether they want someone nearby or a little quiet space."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0032",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0031-0040/HH-A-0032 Alice Mole Feels Left Out/HH-A-0032 Story Master.docx",
+      "sourceSha256": "fee978da0b5958ca51800929dc167949a76589375315a7044124bcb12c0d0ef4",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Asking to join and checking assumptions",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript teaches the skill and explicitly invites reader practice.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 15,
+                    "quote": "Then act out a small pretend misunderstanding and help your child practice asking a kind, honest question instead of walking away."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-A-0033",
+      "sourceDocument": "Books/HH-A Storybooks/HH-A-0031-0040/HH-A-0033 The Excitement Overflow/HH-A-0033 Story Master.docx",
+      "sourceSha256": "100cce522ce801ffc34adf194b94061b80a9010d2d29b215174607c898b24406",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Excitement remains present while characters learn to direct their energy safely.",
+                "evidence": [
+                  {
+                    "paragraph": 22,
+                    "page": 13,
+                    "quote": "Lex said, \"I still feel excited.\""
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Giving excitement a safe job",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central coping skill is taught repeatedly and offered as a pretend practice activity.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 15,
+                    "quote": "Then pretend to get super excited about building, racing, or a surprise—and help your child choose one safe job for that big energy."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-B-0001",
+      "sourceDocument": "Books/HH-B First Readers/HH-B-0001-0010/HH-B-0001 Spencer's Sound Trail/HH-B-0001 Story Master.docx",
+      "sourceSha256": "fe54696c345e6553ad0b4fd0e4b49cb951b82c7e34c4826d17c4f9124683f6f4",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Confident",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Repeated attempts and independent first-sound discoveries move Spencer toward a sustained willingness to read.",
+                "evidence": [
+                  {
+                    "paragraph": 103,
+                    "page": 23,
+                    "quote": "Reading did not feel far. It felt close enough to try."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing beginning sounds",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story repeatedly practices initial sounds and its support page invites the same activity.",
+                "evidence": [
+                  {
+                    "paragraph": 111,
+                    "page": 26,
+                    "quote": "Say one word from the story. Ask, “What sound starts this word?”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-B-0002",
+      "sourceDocument": "Books/HH-B First Readers/HH-B-0001-0010/HH-B-0002 The Vowel Mystery/HH-B-0002 Story Master.docx",
+      "sourceSha256": "3541c5e2afe31958de75b9bb35cc507c3b37f3a6fd92211655cf3bbeaf4e4905",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Curious",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Alice’s questions and continued search for additional clues drive the entire word-sound mystery.",
+                "evidence": [
+                  {
+                    "paragraph": 21,
+                    "page": 6,
+                    "quote": "“One clue is not enough,” she said. Aleea nodded. “Mysteries need more.”"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing vowel sounds",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Alice listens for middle sounds throughout the route; the practice page makes the skill explicit.",
+                "evidence": [
+                  {
+                    "paragraph": 59,
+                    "page": 25,
+                    "quote": "Say each word slowly. Listen for the middle sound."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-B-0003",
+      "sourceDocument": "Books/HH-B First Readers/HH-B-0001-0010/HH-B-0003 Austin Turtle and the Sight Word Challenge/HH-B-0003 Story Master.docx",
+      "sourceSha256": "a33a83b47a59abdf5a8ad00dc6392009069381ea6d3f4b2b39a66a024109984e",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The story centers on recognizing repeated sight words. Brief tension, friendly encouragement, and success do not establish a sufficiently significant feeling category.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Practicing sight words",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Recognizing and rereading recurring small words is the central story action and an explicit practice invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 63,
+                    "page": 27,
+                    "quote": "Choose one sight word. Read it slowly. Find it again."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-B-0004",
+      "sourceDocument": "Books/HH-B First Readers/HH-B-0001-0010/HH-B-0004 The Hollow Rhyme Day/HH-B-0004 Story Master.docx",
+      "sourceSha256": "d2659489dac25bb52e15d786b43806430b3dbe178898e0b1217539317b99e06c",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Callen’s urge to call out and move quickly recurs throughout the rhyme hunt; he retains enthusiasm while learning to listen first.",
+                "evidence": [
+                  {
+                    "paragraph": 33,
+                    "page": 12,
+                    "quote": "Callen’s wings popped open. He wanted to call it fast."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Finding rhyming words",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The route repeatedly compares word endings, including a nonmatching example, and invites readers to try.",
+                "evidence": [
+                  {
+                    "paragraph": 63,
+                    "page": 27,
+                    "quote": "Find two safe objects. Say both names slowly. Listen to the ending. Do they rhyme?"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-B-0005",
+      "sourceDocument": "Books/HH-B First Readers/HH-B-0001-0010/HH-B-0005 Aralynn Fox’s Word Family Discovery/HH-B-0005 Story Master.docx",
+      "sourceSha256": "7e482770669308403d2def6fa4f6c7ed657bcedb27640ff862a888c0177f6d99",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Word-family pattern checking is the sustained focus. Momentary pride does not justify presenting the whole story as a feeling-based discovery result.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sorting word families",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The plot sorts several word families and checks a misleading nonmember before the support-page invitation.",
+                "evidence": [
+                  {
+                    "paragraph": 63,
+                    "page": 27,
+                    "quote": "Choose two little words. Look at the ending. Say the words slowly. Do they belong together?"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0001",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0001 The Summary Mystery/HH-C-0001 Story Master.docx",
+      "sourceSha256": "4be8a27e549c0d11699997cd2f988e7f66654702a221580e9cafff7c02199ed3",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story focuses on learning and applying a thinking skill; incidental curiosity, frustration and pride do not establish a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Summarizing a story",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central learning skill is repeatedly demonstrated and reinforced in the learning pages.",
+                "evidence": [
+                  {
+                    "paragraph": 72,
+                    "page": 31,
+                    "quote": "A summary keeps the heart of a story."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0002",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0002 Aralynn Fox's Five-Minute Clock Discovery/HH-C-0002 Story Master.docx",
+      "sourceSha256": "5ad4efa4f77a2c053918d63f04d8c81cd8c38b38061b57a7cf24f93c4fc87a23",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story focuses on learning and applying a thinking skill; incidental curiosity, frustration and pride do not establish a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Telling time to five minutes",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central learning skill is repeatedly demonstrated and reinforced in the learning pages.",
+                "evidence": [
+                  {
+                    "paragraph": 75,
+                    "page": 32,
+                    "quote": "To tell time well, read both hands together."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0003",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0003 Austin Turtle's Alphabetical Trail/HH-C-0003 Story Master.docx",
+      "sourceSha256": "868f4bf74c9dac659876470afa3a594a346c9f3b7c844fb635e9e46d58cd7ace",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story focuses on learning and applying a thinking skill; incidental curiosity, frustration and pride do not establish a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Putting words in alphabetical order",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The central learning skill is repeatedly demonstrated and reinforced in the learning pages.",
+                "evidence": [
+                  {
+                    "paragraph": 76,
+                    "page": 33,
+                    "quote": "Find three safe objects nearby. Say each object’s name. Listen to the first letter. Place them in order."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0004",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0004 Spencer and the Peace Talk Challenge/HH-C-0004 Story Master.docx",
+      "sourceSha256": "72003bf052a5cd58af4c6493862460b91aaad38eec5e476106c09f04a384d070",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The story centers on a social reasoning skill; brief worry, pride or frustration does not establish a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Talking through disagreements",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The skill is repeatedly demonstrated as the central learning purpose of the manuscript.",
+                "evidence": [
+                  {
+                    "paragraph": 72,
+                    "page": 31,
+                    "quote": "Try a peace-talk sentence."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0005",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0005 Aralynn Fox's Rights Trail/HH-C-0005 Story Master.docx",
+      "sourceSha256": "8d7c75296e253955a878a9c925c17a588b92e129f0ef6a3554917b0d4db39e52",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The story centers on a social reasoning skill; brief worry, pride or frustration does not establish a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Pairing rights and responsibilities",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The skill is repeatedly demonstrated as the central learning purpose of the manuscript.",
+                "evidence": [
+                  {
+                    "paragraph": 72,
+                    "page": 31,
+                    "quote": "Name one right in a shared place. Name one responsibility that goes with it."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C-0006",
+      "sourceDocument": "Books/HH-C Second Readers/HH-C-0001-0010/HH-C-0006 Bentley's First Week in the Nest/HH-C-0006 Story Master.docx",
+      "sourceSha256": "71873a4194692f197e9a0d6327b715a1b88571928aefce688269eba309520fd8",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Proud",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Callen’s pride in his new sibling repeatedly changes from loud announcement to quiet attentiveness.",
+                "evidence": [
+                  {
+                    "paragraph": 48,
+                    "page": 26,
+                    "quote": "Callen still felt proud inside."
+                  }
+                ]
+              },
+              {
+                "label": "Worried",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Callen repeatedly notices his own worry and distinguishes guessing from observing the baby.",
+                "evidence": [
+                  {
+                    "paragraph": 44,
+                    "page": 22,
+                    "quote": "“Then I felt worried,” Callen whispered."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Noticing feeling clues",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The skill is repeatedly demonstrated as the central learning purpose of the manuscript.",
+                "evidence": [
+                  {
+                    "paragraph": 50,
+                    "page": 28,
+                    "quote": "Face, body, sound, and change. Then choose the next kind thing."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0001",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0001 The Healthy Heart Walk/HH-C+-0001 Story Master.docx",
+      "sourceSha256": "bec9c5ebe136a6c3eca933ac23ed53f32373dbb69f5a86efb2cd3aedaa9c4e93",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full story reviewed; its central discovery is a way of acting and thinking, without a sustained particular feeling that warrants an emotional-help recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Taking a steady walk",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "This action and skill drive the narrative and are demonstrated repeatedly across the story.",
+                "evidence": [
+                  {
+                    "paragraph": 45,
+                    "page": 32,
+                    "quote": "“Start where the gate bends.” “Breathe where the shade begins.” “Climb the rise steady.” “Rest at the stump.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0002",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0002 Brandon Rabbit's Make-Believe Farm/HH-C+-0002 Story Master.docx",
+      "sourceSha256": "4d833d2b0bc30e70d55f6c2fedcde256edf0c28d79ec68f08c0c8e7778fb3507",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full story reviewed; its central discovery is a way of acting and thinking, without a sustained particular feeling that warrants an emotional-help recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sharing pretend play",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "This action and skill drive the narrative and are demonstrated repeatedly across the story.",
+                "evidence": [
+                  {
+                    "paragraph": 45,
+                    "page": 32,
+                    "quote": "“If you want, there is room here.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0003",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0003 Callen Crow’s Leadership/HH-C+-0003 Story Master.docx",
+      "sourceSha256": "bb96b80130b5fc031244cfba9bfef576755f2e699e3c15a67909100bc504b88a",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full story reviewed; its central discovery is a way of acting and thinking, without a sustained particular feeling that warrants an emotional-help recommendation.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Leading by listening and noticing",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "This action and skill drive the narrative and are demonstrated repeatedly across the story.",
+                "evidence": [
+                  {
+                    "paragraph": 49,
+                    "page": 36,
+                    "quote": "Callen still loved being heard. Now he also loved knowing when to listen first."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0004",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0004 The Birthday Surprise/HH-C+-0004 Story Master.docx",
+      "sourceSha256": "c3210bc08396c623c851a0370d3812941d53bff5c00506de6431fba409f8e6f6",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Worried",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Spencer repeatedly worries about surprises, being watched and performing gratitude; a gentle birthday makes room for those concerns.",
+                "evidence": [
+                  {
+                    "paragraph": 30,
+                    "page": 18,
+                    "quote": "“What if I do not know how to be thankful enough?”"
+                  }
+                ]
+              },
+              {
+                "label": "Thankful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Honest small thank-yous grow into Spencer independently remembering another person.",
+                "evidence": [
+                  {
+                    "paragraph": 44,
+                    "page": 31,
+                    "quote": "“This one is for you helping without hurrying me,” Spencer said."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Saying thank you",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Spencer practices specific, honest appreciation and carries it into an independent act of thanks.",
+                "evidence": [
+                  {
+                    "paragraph": 43,
+                    "page": 30,
+                    "quote": "“This one is for Emmitt walking slow.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0005",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0005 Brandon Rabbit’s Garden Helpers/HH-C+-0005 Story Master.docx",
+      "sourceSha256": "d051b99bc26f4472a6b5fec1c5ed3036c19df307c01ca566ebce439ca5c3e17a",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The sustained focus is understanding and participating in garden care; brief excitement or uncertainty is not an emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Caring for a garden",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Soil checking, careful watering, compost and making room for other garden helpers drive the whole story.",
+                "evidence": [
+                  {
+                    "paragraph": 108,
+                    "page": 25,
+                    "quote": "First, he checked the soil. Then he loosened a crumbly edge. He added compost close to the stem."
+                  }
+                ]
+              },
+              {
+                "label": "Noticing nature helpers",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story and support page invite observation of quiet garden helpers.",
+                "evidence": [
+                  {
+                    "paragraph": 150,
+                    "page": 39,
+                    "quote": "Look outside with someone you trust. Can you find one quiet helper?"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0006",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0006 The Community Garden/HH-C+-0006 Story Master.docx",
+      "sourceSha256": "a12e77e2c1936941043f8119d0ee4d81f6e0c3e26a0e22873ef7827e754a5136",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full narrative centers on shared responsibility and inclusion; its brief emotional reactions are not a sustained emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Working as a team",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Shared choosing, fitting jobs to people and making space drive the garden narrative.",
+                "evidence": [
+                  {
+                    "paragraph": 93,
+                    "page": 21,
+                    "quote": "“If we grow it together,” she said, “we should choose together, too.”"
+                  }
+                ]
+              },
+              {
+                "label": "Caring for a garden",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Garden work is the sustained setting and action through watering, tying, planting and sharing the harvest.",
+                "evidence": [
+                  {
+                    "paragraph": 109,
+                    "page": 26,
+                    "quote": "Spencer kept the tool place small. Lex tied one string, then paused. Haylee checked the path opening. Aralynn set seeds where the curve began."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-C+-0007",
+      "sourceDocument": "Books/HH-C+ Growing Together/HH-C+-0001-0010/HH-C+-0007 Callen Crow’s Lost Feather/HH-C+-0007 Story Master.docx",
+      "sourceSha256": "995d1202828d5521e0d4bc4e795ab755c708417aa2aab25d247375d8e865f41d",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "A sustained experience of hurt and missing a valued lost feather leads to remembering without pretending the loss is fixed.",
+                "evidence": [
+                  {
+                    "paragraph": 33,
+                    "page": 26,
+                    "quote": "His chest still hurt a little. The hurt had somewhere to sit."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The story models acceptance and remembering through lived growth; it does not offer a reader task or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0001",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0001 Spencer's Grumpy Wake-Up/HH-D-0001 Story Master.docx",
+      "sourceSha256": "c6f240904026d8150c75cbe722a08b106a1c9eb3aa1d1ee740bab9721fdce194",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Grumpy",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The opening feeling persists through the meadow walk and is accepted rather than erased.",
+                "evidence": [
+                  {
+                    "paragraph": 12,
+                    "page": 1,
+                    "quote": "“I woke up grumpy,” he whispered."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "strongly-implied",
+                "significance": "resolution",
+                "rationale": "The repeated slowing, softer body sensations, and sleep-ready ending form the principal emotional movement.",
+                "evidence": [
+                  {
+                    "paragraph": 36,
+                    "page": 23,
+                    "quote": "The grumpy feeling came too. But it came smaller."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0002",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0002 Lex's Trying Again After a Mistake/HH-D-0002 Story Master.docx",
+      "sourceSha256": "2d159224598348183abc0e1f06dd86080b7ab1423aed5a177dc756460fb11975",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Worried",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Lex repeatedly revisits the mistake and cannot settle until he can let repair wait until morning.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 3,
+                    "quote": "“I keep thinking about it.”"
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "strongly-implied",
+                "significance": "resolution",
+                "rationale": "His grip and body loosen across the walk, leading to rest while the mistake remains unfinished.",
+                "evidence": [
+                  {
+                    "paragraph": 37,
+                    "page": 24,
+                    "quote": "His chest was softer. Tomorrow was still out there"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0003",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0003 Spencer's Not Wanting to Share the Lead/HH-D-0003 Story Master.docx",
+      "sourceSha256": "0484811c6c6f8960f753ac1da7a9477e7c5fc3c5d3109de90fa147edceb5a388",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Calm",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "The sustained emotional arc moves from a tight desire to be first toward an easier shared pace and sleep.",
+                "evidence": [
+                  {
+                    "paragraph": 36,
+                    "page": 23,
+                    "quote": "The front feeling was not bossing him now. It was only a tired thought near the edge of sleep."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0004",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0004 Aralynn Fox’s My Body Belongs to Me/HH-D-0004 Story Master.docx",
+      "sourceSha256": "f5d68cfcc391ba7201cb4816fbf5e44ad30abf82d058670edd8efc5c3d3e573d",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Calm",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Repeatedly being heard and choosing closeness or space produces the story’s sustained peaceful bedtime resolution.",
+                "evidence": [
+                  {
+                    "paragraph": 24,
+                    "page": 12,
+                    "quote": "Aralynn watched and felt calm. Help could be gentle. Help could have permission."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0005",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0005 Callen Crow's First Train Ride Dream/HH-D-0005 Story Master.docx",
+      "sourceSha256": "6f3cfd00dd5260f0ebe98fbd82cc233077c337f2fb4440a3d1b58c24f96e1464",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Callen’s bright first-ride excitement is repeatedly acknowledged and gradually quieted without disappearing.",
+                "evidence": [
+                  {
+                    "paragraph": 45,
+                    "page": 21,
+                    "quote": "Callen thought about being excited. It had been big at first."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "strongly-implied",
+                "significance": "resolution",
+                "rationale": "The repeated train and rain rhythms accompany bodily stillness and an excitement that becomes sleep-ready.",
+                "evidence": [
+                  {
+                    "paragraph": 48,
+                    "page": 24,
+                    "quote": "Callen’s excitement had found a pillow."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-D-0006",
+      "sourceDocument": "Books/HH-D Bedtime Library/HH-D-0001-0010/HH-D-0006 Lex's First Drop-Off Tears/HH-D-0006 Story Master.docx",
+      "sourceSha256": "427e9242d42916514dece38d3fb3e36a169270fd1c4ecd683f3ef498722fb91e",
+      "review": {
+        "method": "Full story-body reading, with significance assessed across the emotional arc; illustration prompts and production descriptions excluded as evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Tears and missing someone recur throughout the temporary-goodbye walk rather than appearing incidentally.",
+                "evidence": [
+                  {
+                    "paragraph": 35,
+                    "page": 12,
+                    "quote": "That felt a little sad. But the path curved on."
+                  }
+                ]
+              },
+              {
+                "label": "Lonely",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The separation feeling persists until the return path becomes reassuring; the story explicitly names its softening.",
+                "evidence": [
+                  {
+                    "paragraph": 39,
+                    "page": 16,
+                    "quote": "The evening felt less lonely."
+                  }
+                ]
+              },
+              {
+                "label": "Calm",
+                "confidence": "strongly-implied",
+                "significance": "resolution",
+                "rationale": "Missing remains real while the child’s body settles and the ending becomes ready for sleep.",
+                "evidence": [
+                  {
+                    "paragraph": 48,
+                    "page": 24,
+                    "quote": "And now was ready for sleep."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The bedtime manuscript offers quiet reflection rather than a structured activity or skill-practice invitation; no activity classification added.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0001",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0001 Alice Mole and the Anniversary Star Wish/HH-E-0001 Story Master.docx",
+      "sourceSha256": "fb675740a360ff6091546a3e83a34f1423df51f797bffa1b96ff2d7dce829813",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The manuscript offers optional memory-sharing and emotional companionship, explicitly as a comfort story rather than a lesson or activity plan.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0002",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0002 Callen Crow and the Night of Many Feelings/HH-E-0002 Story Master.docx",
+      "sourceSha256": "016f21262d021b7dccbdccc722fbf480cfaee167d38069b389ce0435f8700725",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Angry",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Anger recurs alongside grief rather than being corrected or dismissed.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 3,
+                    "quote": "“One feeling is mad,” Callen said."
+                  }
+                ]
+              },
+              {
+                "label": "Scared",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Fear is repeatedly named among the feelings accompanying bereavement.",
+                "evidence": [
+                  {
+                    "paragraph": 14,
+                    "page": 3,
+                    "quote": "“One feeling is scared.”"
+                  }
+                ]
+              },
+              {
+                "label": "Sad",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Missing someone who died is a sustained emotional thread throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 34,
+                    "page": 21,
+                    "quote": "So did missing."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The manuscript offers companionship and reassurance rather than a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0003",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0003 Alice Mole and the New Family Picnic/HH-E-0003 Story Master.docx",
+      "sourceSha256": "414a2c2f1468876564e5139afc605f31e9339f54f97e14ddd350151d460cc010",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Curious",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Curiosity accompanies uncertainty throughout the unfamiliar family gathering.",
+                "evidence": [
+                  {
+                    "paragraph": 19,
+                    "page": 8,
+                    "quote": "“And curious.”"
+                  }
+                ]
+              },
+              {
+                "label": "Worried",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Repeated worries about having a place in the changed family drive the story.",
+                "evidence": [
+                  {
+                    "paragraph": 15,
+                    "page": 4,
+                    "quote": "“What if there is not room for my old place?” Alice asked."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The manuscript offers companionship and reassurance rather than a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0004",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0004 Baby Bentley and the Small Invitation/HH-E-0004 Story Master.docx",
+      "sourceSha256": "20fe0d0b9bf3503b965a6703afddb26f4916da37f6a1c2d26134b8ab5008efda",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Lonely",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The newborn’s loneliness and the comfort of familiar presence form the central emotional thread.",
+                "evidence": [
+                  {
+                    "paragraph": 28,
+                    "page": 16,
+                    "quote": "The lonely place did not disappear. It became less alone."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The manuscript offers companionship and reassurance rather than a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0005",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0005 Brandon Rabbit and the Long Goodbye Lantern/HH-E-0005 Story Master.docx",
+      "sourceSha256": "c2534af0103aa27f9d4ec70eddb5575a51cbc3fa555e205ddf7724d28d048c0c",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Sadness remains present throughout a long goodbye.",
+                "evidence": [
+                  {
+                    "paragraph": 15,
+                    "page": 4,
+                    "quote": "Sad was there."
+                  }
+                ]
+              },
+              {
+                "label": "Hopeful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The story repeatedly permits hope and heartbreak to coexist without promising an outcome.",
+                "evidence": [
+                  {
+                    "paragraph": 17,
+                    "page": 6,
+                    "quote": "“Hope is not wrong,” he said."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "A quiet comfort narrative; ordinary objects and companionship are not presented as a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0006",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0006 Aralynn Fox and the Hard News Raincloud/HH-E-0006 Story Master.docx",
+      "sourceSha256": "713ff5de91de99f5050231d060bde0018ef78fb01159e4e897c60a7d33ffe071",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Sadness following hard news remains present rather than being fixed.",
+                "evidence": [
+                  {
+                    "paragraph": 87,
+                    "page": 19,
+                    "quote": "“I am still sad,” Aralynn said."
+                  }
+                ]
+              },
+              {
+                "label": "Hopeful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Fragile hope and sadness coexist throughout the hard-news story.",
+                "evidence": [
+                  {
+                    "paragraph": 87,
+                    "page": 19,
+                    "quote": "“And I still hope,” Aralynn said."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "A quiet comfort narrative; ordinary objects and companionship are not presented as a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-E-0007",
+      "sourceDocument": "Books/HH-E Tender Times/HH-E-0001-0010/HH-E-0007 Asher and the Goodbye Song/HH-E-0007 Story Master.docx",
+      "sourceSha256": "2d21a8e982533bfe4e06689c4d15bbd2a00e6fa92a27f33bbaef57bcb5058713",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Unsure",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Uncertainty about an unfamiliar goodbye ritual shapes the full story and remains allowed.",
+                "evidence": [
+                  {
+                    "paragraph": 40,
+                    "page": 17,
+                    "quote": "His unsure feeling was still there."
+                  }
+                ]
+              },
+              {
+                "label": "Sad",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The goodbye song makes room for sadness and continued missing.",
+                "evidence": [
+                  {
+                    "paragraph": 42,
+                    "page": 19,
+                    "quote": "The song did not chase sadness away."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "A quiet comfort narrative; ordinary objects and companionship are not presented as a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0001",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0001 Austin Turtle’s Independence Day Quilt Square/HH-F-0001 Story Master.docx",
+      "sourceSha256": "54a57fa14fa97fc26a0a1b46f1cb4ecef4e0253654ab654964e23547982ed692",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Austin’s desire for a wide bright celebration is repeatedly shaped toward safe, considerate participation.",
+                "evidence": [
+                  {
+                    "paragraph": 12,
+                    "page": 5,
+                    "quote": "I want to cheer, but safely, if I can."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Celebrating considerately",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 15,
+                    "page": 8,
+                    "quote": "Then choose one kind next step for all of us."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0002",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0002 Aleea’s Independence Day Paper Star/HH-F-0002 Story Master.docx",
+      "sourceSha256": "f7716e7392323f10c5ed16bfbd65dd0b92c7842609ae8dc35970d4ddd589ffab",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Excited",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Aleea’s repeated wish for a big bright celebration becomes a quiet welcome without erasing gladness.",
+                "evidence": [
+                  {
+                    "paragraph": 31,
+                    "page": 23,
+                    "quote": "Aleea felt the gladness change its shape; It settled like a hand upon her heart."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Welcoming new friends",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 29,
+                    "page": 21,
+                    "quote": "She set her star beside the welcome path, Not high to startle, not where feet would trip."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0003",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0003 Baby Bentley’s Friendship Day Painted Pebble/HH-F-0003 Story Master.docx",
+      "sourceSha256": "09e2e23cebead65a2561803b2e8c79c3c8443e016b5d3cd6bf8ddf783d89d096",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; welcoming and making room are sustained actions, but brief brightness or excitement does not establish a specific emotional-help focus.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Welcoming new friends",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 95,
+                    "page": 26,
+                    "quote": "They chose a flat stone where all paws could see, but none would have to crowd or reach too far."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0004",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0004 Aralynn Fox’s Friendship Day Kindness Circle/HH-F-0004 Story Master.docx",
+      "sourceSha256": "64a5a2ce14e1616e554ceeef137fb2627491c8ef901aa3b6b901f0d1987db1d0",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; welcoming and making room are sustained actions, but brief brightness or excitement does not establish a specific emotional-help focus.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Including everyone",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 80,
+                    "page": 21,
+                    "quote": "Would you like near, or would you rather watch? Her words made room before her feet went in."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0005",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0005 Callen Crow's Labor Day Helping Hands Morning/HH-F-0005 Story Master.docx",
+      "sourceSha256": "b63ca07abd8c9b6719b1a09d7492f6268c35f513925e950452c780ecd0ea687e",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Thankful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Callen carries appreciation of others’ work into repeated practical acts of thanks.",
+                "evidence": [
+                  {
+                    "paragraph": 39,
+                    "page": 31,
+                    "quote": "And knew that thanks could live in work well done."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Showing thanks through helping",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 24,
+                    "quote": "He shared one load and let his walking slow."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0006",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0006 Aydin’s Labor Day Worker Thank-You/HH-F-0006 Story Master.docx",
+      "sourceSha256": "6d5a2adce4ea541b627f2de4b1090290a2d9b848bd1caee6046515ed892dac8c",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Thankful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Gratitude for workers’ quiet care grows into repeated useful acts of appreciation.",
+                "evidence": [
+                  {
+                    "paragraph": 57,
+                    "page": 16,
+                    "quote": "He felt the grateful feeling settle low, like steady feet before a useful task."
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Showing thanks through helping",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Aydin’s gratitude becomes a useful cloth placement and keeping a gateway clear.",
+                "evidence": [
+                  {
+                    "paragraph": 81,
+                    "page": 24,
+                    "quote": "It felt like saying thank you with his feet, by leaving care exactly where care worked."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0007",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0007 Aleea’s Grandparents Day Story Chair Welcome Sign/HH-F-0007 Story Master.docx",
+      "sourceSha256": "4976518d0b6dfaf6b22fc5fc6bcedccfc94029a36dd9851ace79cb2d45ac4b0a",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The sustained focus is welcome and receiving an elder’s story; quiet atmosphere is not itself proof of a character’s emotional-help theme.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Listening to family stories",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Aleea learns that welcome requires stopping to hear Grandma and waiting for space before asking questions.",
+                "evidence": [
+                  {
+                    "paragraph": 81,
+                    "page": 24,
+                    "quote": "Aleea kept her questions soft and small, and held them back until the pause was wide."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0008",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-008 Alice Mole's Grandparents Day Memory Walk/HH-F-0008 Story Master.docx",
+      "sourceSha256": "0cfc9c6c02f941304038824a75da7a6809c40864cec8576452ff0a77776002c5",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Thankful",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Gratitude and tender missing coexist throughout the grandparents memory walk.",
+                "evidence": [
+                  {
+                    "paragraph": 70,
+                    "page": 11,
+                    "quote": "“It feels like missing, wrapped in thankful warmth,”"
+                  }
+                ]
+              },
+              {
+                "label": "Sad",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Tender missing is repeatedly allowed to remain alongside gratitude rather than being erased.",
+                "evidence": [
+                  {
+                    "paragraph": 106,
+                    "page": 23,
+                    "quote": "The missing stayed, but did not feel alone;"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Listening to family stories",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "The whole memory walk practices listening to and making room for elder wisdom.",
+                "evidence": [
+                  {
+                    "paragraph": 112,
+                    "page": 25,
+                    "quote": "“I think today means listening with care, then making room for wisdom to sit down.”"
+                  }
+                ]
+              }
+            ]
+          },
+          "interest": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Grandparents Day",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The occasion frames the full memory walk.",
+                "evidence": [
+                  {
+                    "paragraph": 133,
+                    "page": 32,
+                    "quote": "And Grandparents Day walked home with Alice,"
+                  }
+                ]
+              },
+              {
+                "label": "Family memories",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Remembering elder wisdom is the central narrative purpose.",
+                "evidence": [
+                  {
+                    "paragraph": 82,
+                    "page": 15,
+                    "quote": "and made a quiet room for memory."
+                  }
+                ]
+              }
+            ]
+          },
+          "age": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Ages 4–8",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The manuscript’s publication metadata explicitly states this range; no developmental inference used.",
+                "evidence": [
+                  {
+                    "paragraph": 16,
+                    "page": null,
+                    "quote": "Age Range: 4–8"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-F-0009",
+      "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0009 Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone/HH-F-0009 Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone.pdf",
+      "sourceSha256": "1e6ba7cf80fdaa08ac065bdbe3a721bd5af7489c4e01bdcbb55d05a4ca206ad4",
+      "review": {
+        "method": "Full visual reading of the image-only published PDF, story pages 1–32 (PDF pages 4–35). Labels follow narrative text, not illustration interpretation or the analysis summary. Age comes separately from the stated source-document audience.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The poem reflects on communal remembrance and considerate helping; it does not establish a sustained specific personal feeling or emotional-help focus.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Asking before helping",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Listening to what help feels right precedes a sustained, optional practical comfort-basket response.",
+                "evidence": [
+                  {
+                    "pdfPage": 14,
+                    "page": 11,
+                    "quote": "We can ask first what kind of help feels right."
+                  }
+                ]
+              }
+            ]
+          },
+          "interest": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Remembrance",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "Remembering loss and honoring helping hands frame the quiet helper plan.",
+                "evidence": [
+                  {
+                    "pdfPage": 9,
+                    "page": 6,
+                    "quote": "This day remembers loss,"
+                  }
+                ]
+              },
+              {
+                "label": "Patriot Day",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The title explicitly names the occasion addressed by the whole remembrance poem.",
+                "evidence": [
+                  {
+                    "pdfPage": 1,
+                    "page": null,
+                    "quote": "Patriot Day"
+                  }
+                ]
+              }
+            ]
+          },
+          "age": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Ages 4–8",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The source document explicitly states the best-fit audience; no inferred age assigned.",
+                "evidence": [
+                  {
+                    "sourceDocument": "Books/HH-F Holiday Story Poems/HH-F-0001-0010/HH-F-0009 Aralynn Fox’s Patriot Day Quiet Helper Plan Painted Stone/HH-F-0009 Story Master.docx",
+                    "sourceSha256": "cc85179aa218faf4dd62fed1523d6acbf0b7aa6ad4bcd2a192af4d11b019210c",
+                    "paragraph": 40,
+                    "page": null,
+                    "quote": "Best-Fit Audience: Ages 4–8 / Preschool through Grade 3"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-G-0001",
+      "sourceDocument": "Books/HH-G Basic Training/HH-G-0001-0010/HH-G-0001 Spencer Washes Up before Snack/HH-G-0001 Story Master.docx",
+      "sourceSha256": "d8bdac0d7829862c15bb9e94525e1773a266ca69a675f2a7c8db42c33497dca0",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story centers on independently practicing an everyday practical skill; brief satisfaction and surprise do not justify an emotional-help classification.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Washing hands before snack",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The practical skill is repeatedly tried, adjusted, checked and used independently throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 45,
+                    "page": 22,
+                    "quote": "Wash, check, then snack."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-G-0002",
+      "sourceDocument": "Books/HH-G Basic Training/HH-G-0001-0010/HH-G-0002 Lex and the Waiting Coat Hook/HH-G-0002 Story Master.docx",
+      "sourceSha256": "7f563970901330648f944bc3994f94d44c749ff5b69780b48d3d1244eb72d12e",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story centers on independently practicing an everyday practical skill; brief satisfaction and surprise do not justify an emotional-help classification.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Hanging up coats",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The practical skill is repeatedly tried, adjusted, checked and used independently throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 36,
+                    "page": 13,
+                    "quote": "His paws searched for the loop, the same way they had searched at home."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-G-0003",
+      "sourceDocument": "Books/HH-G Basic Training/HH-G-0001-0010/HH-G-0003 Brandon’s Muddy Boots/HH-G-0003 Story Master.docx",
+      "sourceSha256": "95554c61f3499dc0f25b8e32c45613726e0ac7fc41e631429b7b90746dae1bd9",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "The full story centers on independently practicing an everyday practical skill; brief satisfaction and surprise do not justify an emotional-help classification.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Putting on and taking off boots",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The practical skill is repeatedly tried, adjusted, checked and used independently throughout the story.",
+                "evidence": [
+                  {
+                    "paragraph": 32,
+                    "page": 20,
+                    "quote": "He sat on the step, opened the first boot, and found room for his toes."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-HR-0001",
+      "sourceDocument": "Books/HH-HR Hero Play Poems/HH-HR-0001-0010/HH-HR-0001 Aydin and Albert Einstein’s Map/HH-HR-0001 Story Master.docx",
+      "sourceSha256": "b08f0e770151d4e8e5031e6ca90bcb175a0cc2629781d45ab92d1ed03adb8a75",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Curious",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Aydin’s sustained wonder and unanswered why drive every stage of the story.",
+                "evidence": [
+                  {
+                    "paragraph": 35,
+                    "page": 12,
+                    "quote": "He whispered, “What can pull without a hand? What knows a path that no one drew for me?”"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Exploring compass directions",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 33,
+                    "page": 10,
+                    "quote": "He turned the compass once, then twice, then still; the needle found its quiet way again."
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-HR-0002",
+      "sourceDocument": "Books/HH-HR Hero Play Poems/HH-HR-0001-0010/HH-HR-0002 Emmitt and Martin Luther King Jr.’s Promise/HH-HR-0002 Story Master.docx",
+      "sourceSha256": "7beefd80398ceb8b189081b4ff9d4a6056b390594801b23f06105fc026fb2715",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed-without-label",
+            "reason": "Full narrative reviewed; welcoming and making room are sustained actions, but brief brightness or excitement does not establish a specific emotional-help focus.",
+            "labels": []
+          },
+          "activity": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Making room to listen",
+                "confidence": "explicit",
+                "significance": "central",
+                "rationale": "The action is demonstrated repeatedly and carries the story’s central discovery.",
+                "evidence": [
+                  {
+                    "paragraph": 54,
+                    "page": 29,
+                    "quote": "“Let every voice have room enough to rise.”"
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "HH-HR-0003",
+      "sourceDocument": "Books/HH-HR Hero Play Poems/HH-HR-0001-0010/HH-HR-0003 Aydin and Davy Crockett’s Map/HH-HR-0003 Story Master.docx",
+      "sourceSha256": "77b01663471ca110bf0ea8c3c7bb2ecdb66b1a579cc37c481e635a1faf5ec69b",
+      "review": {
+        "method": "Full story-body reading; emotional significance assessed across the story; illustration prompts and production descriptions excluded as classification evidence.",
+        "categories": {
+          "feeling": {
+            "status": "reviewed",
+            "labels": [
+              {
+                "label": "Brave",
+                "confidence": "strongly-implied",
+                "significance": "central",
+                "rationale": "Beginning again despite uncertainty and accompanying another child are sustained through the route.",
+                "evidence": [
+                  {
+                    "paragraph": 39,
+                    "page": 16,
+                    "quote": "He thought, “Maybe courage needs a gate— a way to start when all the way is wide.”"
+                  }
+                ]
+              }
+            ]
+          },
+          "activity": {
+            "status": "reviewed-without-label",
+            "reason": "The poem offers a lived example of beginning again; it does not offer a reader activity or structured skill practice.",
+            "labels": []
+          }
+        }
+      }
+    }
+  ]
+}

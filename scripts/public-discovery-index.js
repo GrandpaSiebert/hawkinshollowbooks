@@ -58,7 +58,8 @@ function createPublicDiscoveryIndex(
   freebieRecords,
   characterBookIndex = [],
   bookThemesById = new Map(),
-  bookMetadataById = new Map()
+  bookMetadataById = new Map(),
+  bookAnnotationsById = new Map()
 ) {
   const entityByHref = new Map((entityIndex.entities || [])
     .flatMap((entity) => [entity.entityPageHref, entity.href, entity.legacyHref].filter(Boolean).map(href => [href, entity]))
@@ -148,6 +149,12 @@ function createPublicDiscoveryIndex(
         freebie.skill && { kind: 'activity', label: freebie.skill },
         false
       ].filter(Boolean);
+      if (record.type === 'book') {
+        const recordedKinds = new Set(tags.map(tag => tag.kind));
+        for (const tag of bookAnnotationsById.get(String(record.id || '').toUpperCase()) || []) {
+          if (!recordedKinds.has(tag.kind)) tags.push({ kind: tag.kind, label: tag.label });
+        }
+      }
       const relatedCandidates = Array.from(relatedByNode.get(`${record.type}:${String(record.id || '').toUpperCase()}`) || [])
         .map((nodeId) => searchByNode.get(nodeId))
         .filter(Boolean)
