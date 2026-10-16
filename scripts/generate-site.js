@@ -2108,7 +2108,7 @@ function renderUniversalEntityPage(
           <div class="character-story-copy">
             <h3>${storyTitle}</h3>
             <p>${storyNote}</p>
-            ${href ? `<p><a class="character-story-link" href="${href}">Read this story &rarr;</a></p>` : ''}
+            ${href ? `<p><a class="character-story-link" href="${href}">About this story and resources &rarr;</a></p>` : ''}
           </div>
         </article>`;
       }).join('')}</div>`;
@@ -5088,7 +5088,7 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup, canonicalBookR
                 ${getStoryGuidanceLine(book, 3) ? `<p class="story-metadata-line">${getStoryGuidanceLine(book, 3)}</p>` : ''}
                 <div class="story-card-actions">
                   ${amazonHref ? `<a class="button" href="${amazonHref}" target="_blank" rel="noopener noreferrer">View on Amazon</a>` : ''}
-                  <a class="button" href="${detailHref}">Read this story</a>
+                  <a class="button" href="${detailHref}">About this story and resources</a>
                 </div>
               </div>
             </article>`;
@@ -5112,7 +5112,6 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
   const audienceHeadingId = `${page.slug}-audience`;
   const shelfHeadingId = `${page.slug}-shelf`;
   const continueHeadingId = `${page.slug}-continue`;
-  const invitationLabel = editorial.invitationLabel || `Explore ${series.title}`;
   const presentation = getSeriesPresentationAuthority(series);
   const openingLead = presentation.lead;
   const openingBody = presentation.descriptor;
@@ -5128,7 +5127,6 @@ function renderSeriesPage(page, site, nav, seriesData, booksData, config, banner
       <h2 id="${collectionHeadingId}">${series.title}</h2>
       <p>${openingLead}</p>
       <p>${openingBody}</p>
-      <p><a class="button" href="${getSeriesPageHref(series.slug)}">${invitationLabel}</a></p>
     </section>
 
     <section class="content-card" aria-labelledby="${audienceHeadingId}">
@@ -5232,7 +5230,7 @@ function buildRelatedStorybookCards(booksData, currentBookSlug) {
         <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
         <h3>${book.title}</h3>
         <p>${getBookSpecificInvitation(book, { mode: 'card' })}</p>
-        <a class="button" href="${book.slug}.html">Read this story</a>
+        <a class="button" href="${book.slug}.html">About this story and resources</a>
       </article>`
     )
     .join('');

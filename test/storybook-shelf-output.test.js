@@ -64,7 +64,7 @@ test('generator publishes first readers page using shared series invitation stru
   assert.match(html, /Spencer's Sound Trail/);
   assert.match(html, /href="books\/HH-B-0001-spencer-s-sound-trail\.html"/);
   assert.ok(fs.existsSync(path.join(repoRoot, 'build-recovery', 'books', 'HH-B-0001-spencer-s-sound-trail.html')));
-  assert.match(html, /Read this story/);
+  assert.match(html, /About this story and resources/);
   assert.doesNotMatch(html, /More stories are on the way/);
   assert.match(html, /Browse all series/);
   assert.match(html, /data-display-order="rotating"/);
