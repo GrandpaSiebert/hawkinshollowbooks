@@ -1,0 +1,874 @@
+{
+  "purpose": "Presentation-only descriptions of reviewed existing artwork; does not replace catalog or Visual Canon identities.",
+  "images": [
+    {
+      "image": "assets/banners/061 Hawkins Hollow Basic Training Ribbon.png",
+      "alt": "A worktable with hand tools beneath an oak beside the path to the farmhouse and red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/046 Hawkins Hollow Bedtime Library Ribbon.png",
+      "alt": "A rocking chair and lantern beside a moonlit path to the farmhouse and red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/016 Hawkins Hollow Explore Ribbon.png",
+      "alt": "Books and a basket beneath a tree, with a path leading past the farmhouse to a red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/011 Hawkins Hollow Meet Ribbon.png",
+      "alt": "Illustrated cards on a table beneath an oak beside the path to the farmhouse.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/characters/individuals/Ale-HP-V001.png",
+      "alt": "Aleea Caracara wearing a blue jacket beside a wooden fence.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/ale.webp"
+      ],
+      "visualCanon": "Library/Characters/Ale Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Ali-HP-V001.png",
+      "alt": "Alice Mole sorting objects into trays on a wooden bench.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/alice-mole.webp"
+      ],
+      "visualCanon": "Library/Characters/Ali Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Ara-HP-V001.png",
+      "alt": "Aralynn Fox in a green dress beside a woodland path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/ara.webp"
+      ],
+      "visualCanon": "Library/Characters/Ara Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Ash-HP-V001.png",
+      "alt": "Asher Chipmunk seated in his wheelchair beneath a tree beside a path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/ash.webp"
+      ],
+      "visualCanon": "Library/Characters/Ash Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Aus-HP-V001.png",
+      "alt": "Austin Turtle wearing a green vest beside the barn and garden.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/aus.webp"
+      ],
+      "visualCanon": "Library/Characters/Aus Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Ayd-HP-V001.png",
+      "alt": "Aydin Caracara wearing a vest beside a wooden fence.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/ayd.webp"
+      ],
+      "visualCanon": "Library/Characters/Ayd Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Bax-HP-V001.png",
+      "alt": "Baxter Badger standing beside a gate with one hand behind his head.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/bax.webp"
+      ],
+      "visualCanon": "Library/Characters/Bax Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Ben-HP-V001.png",
+      "alt": "Bentley Baby Crow cradled in an adult crow's arms.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/ben.webp"
+      ],
+      "visualCanon": "Library/Characters/Ben Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Blain-HP-V001.png",
+      "alt": "Blain Turtle wearing a brown jacket with his hands in his pockets.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/blain.webp"
+      ],
+      "visualCanon": "Library/Characters/Blain Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Bra-HP-V001.png",
+      "alt": "Brandon Rabbit in a yellow checked shirt and blue overalls, with his arms outstretched.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/bra.webp"
+      ],
+      "visualCanon": "Library/Characters/Bra Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Cal-HP-V001.png",
+      "alt": "Callen Crow holding a notebook and raising one wing beside the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/cal.webp"
+      ],
+      "visualCanon": "Library/Characters/Cal Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Emm-HP-V001.png",
+      "alt": "Emmitt Armadillo wearing a vest beside a wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/emm.webp"
+      ],
+      "visualCanon": "Library/Characters/Emm Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Gar-HP-V001.png",
+      "alt": "Garrett Hedgehog wearing a brown jacket in a farmhouse doorway.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/gar.webp"
+      ],
+      "visualCanon": "Library/Characters/Gar Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Gma-HP-V001.png",
+      "alt": "Grandma Siebert standing in a doorway beside a basket.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/gma.webp"
+      ],
+      "visualCanon": "Library/Characters/Gma Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Gpa-HP-V001.png",
+      "alt": "Grandpa seated on the porch steps overlooking the farm.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/gpa.webp"
+      ],
+      "visualCanon": "Library/Characters/Gpa Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Har-HP-V001.png",
+      "alt": "Harlie Mouse wearing a green cardigan in the farmhouse entry.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/har.webp"
+      ],
+      "visualCanon": "Library/Characters/Har Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Hay-HP-V001.png",
+      "alt": "Haylee Prairie Dog wearing a yellow hoodie beside a flower bed.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/hay.webp"
+      ],
+      "visualCanon": "Library/Characters/Hay Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Kay-HP-V001.png",
+      "alt": "Kaydence Chipmunk wearing glasses and a purple dress beside a path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/kay.webp"
+      ],
+      "visualCanon": "Library/Characters/Kay Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Kayla-HP-V001.png",
+      "alt": "Kayla Rabbit wearing glasses and a green jacket beside the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/kayla.webp"
+      ],
+      "visualCanon": "Library/Characters/Kayla Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Lex-HP-V001.png",
+      "alt": "Lex Hedgehog wearing a blue checked shirt beside the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/lex.webp"
+      ],
+      "visualCanon": "Library/Characters/Lex Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Lil-HP-V001.png",
+      "alt": "Lillian Squirrel holding a flower and wearing a green dress.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/lil.webp"
+      ],
+      "visualCanon": "Library/Characters/Lil Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Mimi-HP-V001.png",
+      "alt": "Mimi Hawkins seated on the porch, wearing a patterned apron.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/mimi.webp"
+      ],
+      "visualCanon": "Library/Characters/Mimi Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Pop-HP-V001.png",
+      "alt": "Farmer Hawkins (Pop-pop) wearing a hat beside a farm gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/pop.webp"
+      ],
+      "visualCanon": "Library/Characters/Pop Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Sky-HP-V001.png",
+      "alt": "Skylin Crow wearing a teal cardigan in the farmhouse entry.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/sky.webp"
+      ],
+      "visualCanon": "Library/Characters/Sky Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Spe-HP-V001.png",
+      "alt": "Spencer Field Mouse holding a dandelion and wearing blue overalls.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/spe.webp"
+      ],
+      "visualCanon": "Library/Characters/Spe Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Trinity-HP-V001.png",
+      "alt": "Trinity Egret, a white bird with a long yellow beak, beside a wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/trinity.webp"
+      ],
+      "visualCanon": "Library/Characters/Trinity Visual Canon.docx"
+    },
+    {
+      "image": "assets/characters/individuals/Zyl-HP-V001.png",
+      "alt": "Zylar Squirrel wearing a straw hat and checked shirt, holding a flower.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "aliases": [
+        "assets/character-thumbnails/zyl.webp"
+      ],
+      "visualCanon": "Library/Characters/Zyl Visual Canon.docx"
+    },
+    {
+      "image": "assets/banners/116 Hawkins Hollow Grandpa's Porch Ribbon.png",
+      "alt": "A rocking chair and lantern beneath an oak beside a warmly lit farmhouse at dusk.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/021 Hawkins Hollow Places Ribbon.png",
+      "alt": "An open map on a wooden table overlooking paths, the farmhouse and red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/environments/Barn Interior-HEP-V001.png",
+      "alt": "Barn Interior: hay bales, baskets and shelves inside a timber barn with a sunlit open doorway.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Barn Interior Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Barn Lane-HEP-V001.png",
+      "alt": "Barn Lane: a winding dirt lane between wooden fences leading to a red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Barn Lane Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Barn Loft-HEP-V001.png",
+      "alt": "Barn Loft: hay bales beneath timber rafters, with sunlight falling through a high window.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Barn Loft Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Barn Path-HEP-V001.png",
+      "alt": "Barn Path: a dirt path and wooden fences leading past a weathered barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Barn Path Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Barnyard-HEP-V001.png",
+      "alt": "Barnyard: a fenced dirt yard beside an open red barn, with baskets and a chicken coop.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Barnyard Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Blackberry Lane-HEP-V001.png",
+      "alt": "Blackberry Lane: a narrow path between berry bushes and a wooden fence, with a basket beside it.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Blackberry Lane Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Cobb Farm Orchard-HEP-V001.png",
+      "alt": "Cobb Farm Orchard: a grassy path between rows of fruit trees, with a basket in the foreground.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Cobb Farm Orchard Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Community Porch-HEP-V001.png",
+      "alt": "Community Porch: rocking chairs outside a warmly lit wooden farmhouse, with an access ramp.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Community Porch Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Creek Bridge-HEP-V001.png",
+      "alt": "Creek Bridge: a wooden footbridge over a creek beside a tree-lined path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Creek Bridge Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Farmhouse Porch-HEP-V001.png",
+      "alt": "Farmhouse Porch: chairs and potted plants outside a farmhouse doorway, with a ramp beside the steps.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Farmhouse Porch Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Fence Line-HEP-V001.png",
+      "alt": "Fence Line: a wooden fence alongside a dirt path, with a basket and bucket beside a post.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Fence Line Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Firefly Field-HEP-V001.png",
+      "alt": "Firefly Field: fireflies glowing over a grassy field at dusk.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Firefly Field Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Firefly Hill-HEP-V001.png",
+      "alt": "Firefly Hill: fireflies along a grassy hillside path beneath a sunset sky.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Firefly Hill Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Front Gate-HEP-V001.png",
+      "alt": "Front Gate: an open wooden garden gate leading toward the farmhouse.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Front Gate Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Garden Row-HEP-V001.png",
+      "alt": "Garden Row: straight planted rows beside a farmhouse path, with a basket and watering can.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Garden Row Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Garden-HEP-V001.png",
+      "alt": "Garden: vegetable beds, flowers and a narrow path enclosed by wooden fencing.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Garden Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Kitchen-HEP-V001.png",
+      "alt": "Kitchen: a wooden table, dishes, baskets and shelves beneath a sunlit farmhouse window.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Kitchen Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Listening Stump-HEP-V001.png",
+      "alt": "Listening Stump: a low tree stump in a clearing beneath overhanging willow branches.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Listening Stump Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Mailbox Path-HEP-V001.png",
+      "alt": "Mailbox Path: a dirt path passing a mailbox and flower beds toward the farmhouse.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Mailbox Path Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Mudroom-HEP-V001.png",
+      "alt": "Mudroom: coats and hats on wall hooks above a wooden bench beside the door.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Mudroom Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Old Oak-HEP-V001.png",
+      "alt": "Old Oak: a broad oak tree with spreading roots and sunlit fields beyond.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Old Oak Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Old Stump School-HEP-V001.png",
+      "alt": "Old Stump School: a large central stump surrounded by log seats beneath the trees.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Old Stump School Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Pond Edge-HEP-V001.png",
+      "alt": "Pond Edge: reeds beside a sunlit pond, with books and a basket on the bank.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Pond Edge Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Reading Knook-HEP-V001.png",
+      "alt": "Reading Nook: an upholstered chair, cushions, books and a lantern beside a farmhouse window.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Reading Knook Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Reading Stump-HEP-V001 for.png",
+      "alt": "Reading Stump: books on a tree stump beside a basket overlooking a field.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Reading Stump Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Red Barn Gate-HEP-V001.png",
+      "alt": "Red Barn Gate: an open wooden gate beside a red barn and a fenced farm path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Red Barn Gate Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Stone Footbridge-HEP-V001.png",
+      "alt": "Stone Footbridge: a small arched stone bridge over a creek beneath a willow tree.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Stone Footbridge Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Story Stump-HEP-V001.png",
+      "alt": "Story Stump: an open book on a broad stump overlooking a grassy field.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Story Stump Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Treehouse-HEP-V001.png",
+      "alt": "Treehouse: a wooden platform and shelter built around an oak, with steps and an access ramp.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Treehouse Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Willow Circle-HEP-V001.png",
+      "alt": "Willow Circle: a shaded clearing enclosed by hanging willow branches.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Willow Circle Visual Canon.docx"
+    },
+    {
+      "image": "assets/environments/Farmhouse Exterior-HEP-V001.png",
+      "alt": "Farmhouse Exterior: a white wooden farmhouse with a covered porch beside a dirt path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Environments/Farmhouse Exterior Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Barn Path-HLP-V001.png",
+      "alt": "Barn Path landmark: a narrow path beside a red barn leading to a wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Barn Path Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Bench-HLP-V001.png",
+      "alt": "Bench: a wooden bench with a book beside the path and pond.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Bench Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Chicken Yard-HLP-V001.png",
+      "alt": "Chicken Yard: chickens and a small coop inside a fenced yard beside the barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Chicken Yard Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Clover Field-HLP-V001.png",
+      "alt": "Clover Field: a path through flowering clover, with books and a cup at its edge.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Clover Field Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Community Garden-HLP-V001.png",
+      "alt": "Community Garden: planted beds and flowers around a path, with a wooden bench and watering cans.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Community Garden Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Council Circle-HLP-V001.png",
+      "alt": "Council Circle: curved wooden benches around a central basket beneath an oak.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Council Circle Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Creek Bank-HLP-V001.png",
+      "alt": "Creek Bank: a shaded stream bank with books and a cup beside the water.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Creek Bank Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Garden Bench-HLP-V001.png",
+      "alt": "Garden Bench: a wooden bench holding a basket of produce beside vegetable beds.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Garden Bench Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Garden Path-HLP-V001.png",
+      "alt": "Garden Path: a dirt path through flowers and vegetables toward a small wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Garden Path Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Latch-HLP-V001.png",
+      "alt": "Latch: a close view of a metal latch joining a wooden gate to its post.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Latch Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Low Gate-HLP-V001.png",
+      "alt": "Low Gate: a low wooden gate across a path beside the red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Low Gate Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Mailbox Post-HLP-V001.png",
+      "alt": "Mailbox Post: a metal mailbox on a wooden post beside a flower-lined farmhouse path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Mailbox Post Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Moonlit Meadow-HLP-V001.png",
+      "alt": "Moonlit Meadow: a moonlit path through a meadow beneath a starry sky.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Moonlit Meadow Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Orchard Baskets-HLP-V001.png",
+      "alt": "Orchard Baskets: wicker baskets beneath fruit trees, with fallen fruit on the ground.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Orchard Baskets Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Orchard Bend-HLP-V001.png",
+      "alt": "Orchard Bend: a curving path between fruit trees, with a basket and fruit crate beside it.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Orchard Bend  Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Orchard Path-HLP-V001.png",
+      "alt": "Orchard Path: a straight grassy path between rows of fruit trees.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Orchard Path Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Orchard Row-HLP-V001.png",
+      "alt": "Orchard Row: rows of fruit trees with baskets, a bucket and a fruit crate in the foreground.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Orchard Row Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Orchard Stump-HLP-V001.png",
+      "alt": "Orchard Stump: a low stump beneath fruit trees, with baskets beside its roots.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Orchard Stump Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Pasture Fence-HLP-V001.png",
+      "alt": "Pasture Fence: a wooden fence alongside a path overlooking grazing animals and a red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Pasture Fence Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Path Bend-HLP-V001.png",
+      "alt": "Path Bend: a winding dirt path beneath trees, with a basket beside the bend.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Path Bend Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Pond Shore-HLP-V001.png",
+      "alt": "Pond Shore: a path and reeds beside a sunlit pond, with a basket and books on the bank.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Pond Shore Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Pond Stones-HLP-V001.png",
+      "alt": "Pond Stones: flat stones beside a pond, with a closed book nearby.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Pond Stones Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Porch Rail-HLP-V001.png",
+      "alt": "Porch Rail: a wooden porch railing overlooking a farm gate and path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Porch Rail Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Porch Steps-HLP-V001.png",
+      "alt": "Porch Steps: wooden steps leading to a farmhouse porch, with a basket beside the door.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Porch Steps Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Quiet Stump-HLP-V001.png",
+      "alt": "Quiet Stump: books on a tree stump beside a path through a sunlit meadow.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Quiet Stump Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Rail-HLP-V001.png",
+      "alt": "Rail: a low wooden fence rail beside the path to a red barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Rail Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Red Barn Doorway-HLP-V001.png",
+      "alt": "Red Barn Doorway: an open red barn door revealing hay bales inside.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Red Barn Doorway Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Riverside Bend-HLP-V001.png",
+      "alt": "Riverside Bend: a curving shaded riverbank with stepping stones beside the water.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Riverside Bend Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Schoolyard-HLP-V001.png",
+      "alt": "Schoolyard: wooden benches and log seats beside a small wooden school building.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Schoolyard Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Smooth Stones-HLP-V001.png",
+      "alt": "Smooth Stones: rounded stones beside a pond, with a basket, books and a small kettle.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Smooth Stones Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Story Chair-HLP-V001.png",
+      "alt": "Story Chair: a wooden armchair with a cushion and patchwork blanket beside a lantern.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Story Chair Visual Canon.docx"
+    },
+    {
+      "image": "assets/landmarks/Tool Bench-HLP-V001.png",
+      "alt": "Tool Bench: hand tools, baskets and a bucket on a workbench against a barn wall.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Landmarks/Tool Bench Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0001.webp",
+      "alt": "Aleea Caracara and Callen Crow together beside a wooden fence.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Ale-Cal Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0002.webp",
+      "alt": "Aydin Caracara pointing across the fields while Aleea Caracara stands beside him.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Ayd-Ale Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0003.webp",
+      "alt": "Aydin Caracara and Brandon Rabbit together beside a gate, with Aydin extending one wing.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Ayd-Bra Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0004.webp",
+      "alt": "Baxter Badger beside Brandon Rabbit near a wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "ownerConfirmation": "The owner confirmed on 2026-10-22 that the young rabbit in this portrait is Brandon Rabbit.",
+      "visualCanon": "Library/Relationships/Bax-Lea Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0005.webp",
+      "alt": "Blain Turtle and Austin Turtle working together beside a small wooden birdhouse.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Bla-Aus Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0006.webp",
+      "alt": "Brandon Rabbit and Austin Turtle walking together along a path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Bra-Aus Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0007.webp",
+      "alt": "Callen Crow kneeling beside Bentley Baby Crow in a padded basket.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Cal-Ben Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0008.webp",
+      "alt": "Harlie Mouse standing beside Spencer Field Mouse and Emmitt Armadillo in the farmhouse entry.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Emm-Har-Spe Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0009.webp",
+      "alt": "Grandpa Siebert and Alice Mole sitting together beside a small table on the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0010.webp",
+      "alt": "Garrett Hedgehog kneeling beside Lex Hedgehog in the farmhouse entry.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Gar-Lex Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0011.webp",
+      "alt": "Grandma Siebert standing beside Grandpa Siebert seated on the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Gma-Gpa Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0012.webp",
+      "alt": "Grandpa Siebert seated beside Asher Chipmunk in his wheelchair on the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Gpa-Ash Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0013.webp",
+      "alt": "Harlie Mouse sitting beside Spencer Field Mouse on the floor.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Har-Spe Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0014.webp",
+      "alt": "Haylee Prairie Dog and Brandon Rabbit together beside the farmhouse porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Hay-Bra Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0015.webp",
+      "alt": "Haylee Prairie Dog and Kaydence Chipmunk standing together beside the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Hay-Kay Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0016.webp",
+      "alt": "Kaydence Chipmunk standing beside Asher Chipmunk in his wheelchair.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Kay-Ash Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0017.webp",
+      "alt": "Kayla Rabbit kneeling beside Brandon Rabbit.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Kayla-Bra Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0018.webp",
+      "alt": "Lillian Squirrel and Zylar Squirrel standing together beside a wooden fence.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Lil-Zyl Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0019.webp",
+      "alt": "Mimi Hawkins and Farmer Hawkins (Pop-pop) seated together on the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Mimi-Pop Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0020.webp",
+      "alt": "Farmer Hawkins (Pop-pop) and Lex Hedgehog beside a farm gate, with a tractor beyond.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Pop-Lex Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0021.webp",
+      "alt": "Skylin Crow kneeling beside Aralynn Fox near the barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Ara Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0022.webp",
+      "alt": "Skylin Crow kneeling beside Asher Chipmunk in his wheelchair.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Ash Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0023.webp",
+      "alt": "Skylin Crow cradling Bentley Baby Crow in her arms.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Ben Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0024.webp",
+      "alt": "Skylin Crow kneeling beside Callen Crow.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Cal Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0025.webp",
+      "alt": "Skylin Crow and Kaydence Chipmunk together on the porch.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Kay Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0026.webp",
+      "alt": "Skylin Crow beside Kaydence Chipmunk and Asher Chipmunk in his wheelchair.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Sky-Kay-Ash Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0027.webp",
+      "alt": "Spencer Field Mouse and Emmitt Armadillo beside a wooden gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Spe-Emm Visual Canon.docx"
+    },
+    {
+      "image": "assets/relationship-portraits/rel-0028.webp",
+      "alt": "Trinity Egret and Mimi Hawkins together at a kitchen table with bowls and baskets.",
+      "review": "Inspected existing artwork; descriptive accessibility text only.",
+      "visualCanon": "Library/Relationships/Trinity-Mimi Visual Canon.docx"
+    },
+    {
+      "image": "assets/banners/036 Hawkins Hollow First Readers Ribbon.png",
+      "alt": "Upright books in a wooden crate beside a tree-lined farm path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/051 Hawkins Hollow Growing Together Ribbon.png",
+      "alt": "A round table and stools beneath an oak by the path to the farmhouse and barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/076 Hawkins Hollow Hero Ribbon.png",
+      "alt": "An open book and loose pages beneath an oak beside a lantern-lit farmhouse at dusk.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/151 Hawkins Hollow Holidays in the Hollow Ribbon.png",
+      "alt": "Books on a table beneath autumn-colored trees beside the farmhouse path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/001 Hawkins Hollow Homepage Ribbon.png",
+      "alt": "Welcome Home to Hawkins Hollow banner showing the farmhouse, red barn, oak tree, and front gate.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/141 Hawkins Hollow Free Child Resoures Ribbon.png",
+      "alt": "An outdoor activity table with open worksheets, pencils and books beside the farmhouse path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/041 Hawkins Hollow Second Readers Ribbon.png",
+      "alt": "An open book and lantern on a wooden table beside the path to the farmhouse and barn.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/006 Hawkins Hollow New to Hawkins Hollow Ribbon.png",
+      "alt": "Books on a wooden bench beneath an oak, with the farmhouse and red barn beyond.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/023 Hawkins Hollow Storybook Shelf Ribbon.png",
+      "alt": "Stacks of books and an open book beneath an oak beside the farmhouse path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    },
+    {
+      "image": "assets/banners/056 Hawkins Hollow Tender Times Ribbon.png",
+      "alt": "A cup, books and folded cloth on an outdoor table overlooking the farmhouse path.",
+      "review": "Inspected existing artwork; descriptive accessibility text only."
+    }
+  ]
+}

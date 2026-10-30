@@ -219,14 +219,14 @@
     "relationship:Relationships/Emm-Har-Spe Visual Canon.docx": {
       "id": "REL-0008"
     },
-    "relationship:Relationships/G[a-Ali Visual Canon.docx": {
-      "id": "REL-0009"
-    },
     "relationship:Relationships/Gar-Lex Visual Canon.docx": {
       "id": "REL-0010"
     },
     "relationship:Relationships/Gma-Gpa Visual Canon.docx": {
       "id": "REL-0011"
+    },
+    "relationship:Relationships/Gpa-Ali Visual Canon.docx": {
+      "id": "REL-0009"
     },
     "relationship:Relationships/Gpa-Ash Visual Canon.docx": {
       "id": "REL-0012"

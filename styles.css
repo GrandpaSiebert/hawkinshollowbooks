@@ -929,3 +929,20 @@ h2 {
 
 .discovery-more-to-explore { margin:1.5rem 0; padding:1rem; border:1px solid #d9c7aa; border-radius:8px; }
 .discovery-more-to-explore > summary { cursor:pointer; font-weight:600; }
+
+/* Page-specific full-length theme recordings. */
+.page-theme, .page-theme-track { min-width: 0; overflow-wrap: anywhere; }
+.page-theme-track + .page-theme-track { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border-color, #dec8b6); }
+.page-theme audio { display: block; width: 100%; max-width: 100%; min-width: 0; }
+.page-theme-status { font-size: .95em; }
+
+.theme-play { margin-bottom: .7rem; }
+.theme-library audio { display:block; width:100%; max-width:100%; min-width:0; margin-top:1rem; }
+.theme-library-player, .theme-library li { min-width:0; overflow-wrap:anywhere; }
+.theme-library-filters { display:flex; flex-wrap:wrap; gap:1rem; }
+.theme-library-filters label { display:flex; flex-direction:column; min-width:0; max-width:100%; }
+.theme-library-filters input, .theme-library-filters select { max-width:100%; min-width:0; }
+.theme-library-list { padding-left:0; list-style:none; }
+.theme-library-list li { padding:1rem 0; border-top:1px solid #dec8b6; display:flex; flex-wrap:wrap; align-items:center; gap:.6rem; }
+.theme-library-list li[hidden] { display:none; }
+.theme-library-list button { white-space:normal; max-width:100%; text-align:left; }

@@ -93,7 +93,8 @@ test('generator omits non-Live and unroutable series records without rewriting t
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-S-0001'));
   assert.ok(searchIndex.records.some((record) => record.id === 'HH-R-0001'));
   const sitemap = readBuildHtml('sitemap.xml');
-  assert.equal((sitemap.match(/<loc>/g) || []).length, 1393);
+  assert.equal((sitemap.match(/<loc>/g) || []).length, 1394);
+  assert.match(sitemap, /<loc>https:\/\/hawkinshollowbooks\.com\/theme-songs\.html<\/loc>/);
   assert.doesNotMatch(sitemap, /entities\/book\/hh-[sr]-/i);
 
   const porchLight = readBuildHtml('the-porch-light.html');

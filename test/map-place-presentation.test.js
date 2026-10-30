@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const parse5 = require('parse5');
 const { inspectImageAsset } = require('../scripts/image-asset');
+const { getImageAlt } = require('../scripts/image-alt-text');
 
 const root = path.join(__dirname, '..');
 const output = path.join(root, 'build-recovery');
@@ -29,7 +30,9 @@ test('every map destination has a small, accessible place thumbnail and a workin
     assert.ok(fs.existsSync(path.join(output, place.entityPageHref)), `${place.name}: destination exists`);
     const image = find(card, (node) => node.tagName === 'img')[0];
     assert.ok(image, `${place.name}: thumbnail exists`);
-    assert.equal(attribute(image, 'alt'), place.name);
+    assert.equal(attribute(image, 'alt'), '', 'thumbnail repeats the destination heading inside the same link');
+    assert.ok(find(card, node => node.tagName === 'h3').some(heading => text(heading) === place.name),
+      `${place.name}: visible heading supplies the accessible destination name`);
     assert.equal(attribute(image, 'loading'), 'lazy');
     const bytes = fs.readFileSync(resolveAsset(attribute(image, 'src'), 'map.html'));
     const dimensions = inspectImageAsset(bytes, '.webp');
@@ -58,7 +61,8 @@ test('place neighbor cards show each character’s own introduction and portrait
         `${place.name}: ${character.name} has their own introduction`);
       assert.doesNotMatch(text(card), /is often part of what makes .* feel familiar/);
       const image = find(card, (node) => node.tagName === 'img')[0];
-      assert.equal(attribute(image, 'alt'), character.name);
+      assert.equal(attribute(image, 'alt'), getImageAlt('portrait', character.name, character.heroImage));
+      assert.notEqual(attribute(image, 'alt'), character.name, 'portrait adds reviewed visual details beyond the destination name');
       assert.ok(fs.existsSync(resolveAsset(attribute(image, 'src'), route)));
       introductions.push(character.description);
       checked += 1;

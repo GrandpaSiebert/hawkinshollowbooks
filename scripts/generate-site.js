@@ -1,4 +1,7 @@
+const { renderThemeLibrary } = require('./theme-song-library');
+const { renderThemeSection, validateDestinations } = require('./page-themes');
 const { renderDiscoveryHub, renderCompleteBookshelf, renderKeepExploring } = require('./visitor-discovery');
+const { getImageAlt, imageAlt } = require('./image-alt-text');
 const fs = require('fs');
 const path = require('path');
 const AdmZip = require('adm-zip');
@@ -2125,7 +2128,7 @@ function renderUniversalEntityPage(
         const name = normalizeEntityLabel(candidate.name || 'Neighbor', candidate.id);
         const note = candidate.description || '';
         const portrait = candidate.heroImage
-          ? `<img class="place-neighbor-portrait" src="../../${escapeHtml(candidate.heroImage.replace(/^\//, ''))}" alt="${escapeHtml(name)}" width="96" height="96" loading="lazy" />`
+          ? `<img class="place-neighbor-portrait" src="../../${escapeHtml(candidate.heroImage.replace(/^\//, ''))}" alt="${imageAlt('portrait', name, candidate.heroImage)}" width="96" height="96" loading="lazy" />`
           : '';
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         return `<article class="character-neighbor-card">
@@ -2146,7 +2149,7 @@ function renderUniversalEntityPage(
         );
         const coverPath = String(candidate.coverImage || '').replace(/^\//, '');
         const media = coverPath
-          ? `<img src="../../${coverPath}" alt="Cover image for ${storyTitle}" loading="lazy" width="110" height="150" />`
+          ? `<img src="../../${coverPath}" alt="${imageAlt('cover', storyTitle)}" loading="lazy" width="110" height="150" />`
           : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         return `<article class="character-story-card">
@@ -2166,7 +2169,7 @@ function renderUniversalEntityPage(
         const kind = candidate.type === 'landmark' ? 'Landmark' : 'Place';
         const nearbyImage = getPlaceArtworkPathByName(nearbyName, kind).replace(/^\//, '');
         const media = nearbyImage
-          ? `<img src="../../${nearbyImage}" alt="${nearbyName}" loading="lazy" width="110" height="150" />`
+          ? `<img src="../../${nearbyImage}" alt="${imageAlt('place', nearbyName, nearbyImage)}" loading="lazy" width="110" height="150" />`
           : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
         const href = candidate.entityPageHref ? `../../${candidate.entityPageHref}` : '';
         return `<article class="character-story-card">
@@ -2206,7 +2209,7 @@ function renderUniversalEntityPage(
       : '<p>More nearby places are still being mapped.</p>';
 
     const placeHero = placeArtwork
-      ? `<img class="character-hero-full" src="../../${placeArtwork.replace(/^\//, '')}" alt="${placeName}" width="640" height="640" />`
+      ? `<img class="character-hero-full" src="../../${placeArtwork.replace(/^\//, '')}" alt="${imageAlt('place', placeName, placeArtwork)}" width="640" height="640" />`
       : '';
 
     return renderLayout(
@@ -2303,7 +2306,7 @@ function renderUniversalEntityPage(
         const firstName = name.split(' ')[0];
         const character = getEntityByTypeAndId(entityIndex, 'character', candidate.id) || {};
         const thumbnail = getCharacterThumbnailPath(character);
-        const portrait = thumbnail ? `<img class="relationship-neighbor-portrait" src="../../${escapeHtml(thumbnail)}" alt="${escapeHtml(name)}" width="144" height="144" loading="lazy" />` : '';
+        const portrait = thumbnail ? `<img class="relationship-neighbor-portrait" src="../../${escapeHtml(thumbnail)}" alt="${imageAlt('portrait', name, thumbnail)}" width="144" height="144" loading="lazy" />` : '';
         const note = toWarmExcerpt(
           candidate.excerpt || candidate.description,
           `${firstName} helps this connection stay warm, clear, and easy to step into.`,
@@ -3146,6 +3149,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   if (!['banner', 'body'].includes(headingOwner)) {
     throw new Error(`Unknown primary heading owner: ${headingOwner}`);
   }
+  const themeSection = renderThemeSection(new URL(canonicalUrl).pathname.replace(/^\//, ''), { previewBase: process.env.HH_THEME_SONG_PREVIEW_BASE || '' });
   const bannerTitleTag = headingOwner === 'body' ? 'span' : 'h1';
   const metadataTitle = metadata.title || title;
   const pageTitle = `${metadataTitle} | ${site.siteName}`;
@@ -3176,14 +3180,14 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
     : '';
   const bannerTitle = banner ? banner.title || title : title;
   const bannerSubtitle = banner ? banner.subtitle || '' : '';
-  const bannerAlt = banner && banner.alt ? banner.alt : bannerTitle;
+  const bannerAlt = banner && banner.alt === '' ? '' : getImageAlt('banner', banner && banner.alt || bannerTitle, banner && banner.image);
   const bannerIdAttr = banner && banner.bannerId ? ` data-banner-id="${banner.bannerId}"` : '';
   const bannerSectionIdAttr = banner && (banner.imageIsExternal || banner.bannerId === 'relationship-portrait') ? bannerIdAttr : '';
   const bannerImageSrc = banner && banner.image
     ? (banner.imageIsExternal ? banner.image : `${pathPrefix}${banner.image}`)
     : '';
   const bannerImage = banner && banner.image
-    ? `<img class="page-banner-image" src="${bannerImageSrc}" alt="${bannerAlt}"${bannerIdAttr} />`
+    ? `<img class="page-banner-image" src="${bannerImageSrc}" alt="${escapeHtml(bannerAlt)}"${bannerIdAttr} />`
     : '';
 
   return `<!DOCTYPE html>
@@ -3209,7 +3213,7 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
 
     <main class="page-shell">
       ${bannerTitle ? `<section class="page-banner"${bannerSectionIdAttr}>${bannerImage}<div class="page-banner-copy"><${bannerTitleTag}>${bannerTitle}</${bannerTitleTag}>${bannerSubtitle ? `<p>${bannerSubtitle}</p>` : ''}</div></section>` : ''}
-      ${content}
+      ${themeSection}${content}
     </main>
 
     <footer class="site-footer">
@@ -3757,7 +3761,7 @@ function renderArticlePage(page, site, nav, config, banner, libraryIndex, amazon
         const kind = place.type === 'environment' ? 'Place' : 'Landmark';
         const thumbnail = getPlaceThumbnailPath(place);
         const media = thumbnail
-          ? `<div class="map-place-media"><img src="${escapeHtml(thumbnail)}" alt="${escapeHtml(name)}" width="480" height="320" loading="lazy" /></div>`
+          ? `<div class="map-place-media"><img src="${escapeHtml(thumbnail)}" alt="" width="480" height="320" loading="lazy" /></div>`
           : '';
         return href
           ? `<a class="map-place-card" href="${escapeHtml(href)}">${media}<div class="map-place-copy"><p class="map-place-kind">${escapeHtml(kind)}</p><h3>${escapeHtml(name)}</h3><p>Visit this place &rarr;</p></div></a>`
@@ -4258,7 +4262,7 @@ function renderCharactersPage(site, nav, charactersData, config, banner) {
     .map(
         (character) => `<a class="character-card" href="characters/${character.slug}.html" aria-label="Meet ${character.name}">
           <div class="character-card-media">
-            <img class="character-hero-thumb" src="${character.heroImage.replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
+            <img class="character-hero-thumb" src="${character.heroImage.replace(/^\//, '')}" alt="" width="320" height="320" loading="lazy" />
           </div>
           <div class="character-card-copy">
             <h3>${character.name}</h3>
@@ -4328,7 +4332,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
   const relatedStoryCards = (experience.relatedStoriesPreview || experience.relatedStories || [])
     .map((story) => {
       const coverImage = story.coverImage
-        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
+        ? `<img src="../${story.coverImage}" alt="${imageAlt('cover', story.title)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
       const description = story.description
         ? story.description
@@ -4348,7 +4352,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
 
   const bookDiscoveryCards = (experience.bookDiscovery || []).slice(0, 6).map((book) => {
     const coverImage = book.coverImage
-      ? `<img src="../${book.coverImage}" alt="Cover image for ${book.title}" loading="lazy" width="110" height="150" />`
+      ? `<img src="../${book.coverImage}" alt="${imageAlt('cover', book.title)}" loading="lazy" width="110" height="150" />`
       : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
     const description = book.description ? `<p>${escapeHtml(book.description)}</p>` : '';
     return `<article class="character-story-card"><div class="character-story-media">${coverImage}</div><div class="character-story-copy"><h3>${book.title}</h3>${description}<p class="story-metadata-line">${book.series || 'Hawkins Hollow'}</p><p><a class="character-story-link" href="../${book.href}">About ${book.title} &rarr;</a></p></div></article>`;
@@ -4368,7 +4372,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
       const placeHref = place && place.href ? place.href : '../map.html';
       const placeImage = place && place.image ? String(place.image).replace(/^\//, '') : '';
       const mediaHtml = placeImage
-        ? `<img src="../${placeImage}" alt="${placeName}" loading="lazy" width="110" height="150" />`
+        ? `<img src="../${placeImage}" alt="${imageAlt('place', placeName, placeImage)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
       return `<article class="character-story-card">
         <div class="character-story-media">${mediaHtml}</div>
@@ -4457,7 +4461,7 @@ function renderCharacterExperiencePage(experience, site, nav, config, banner, fr
     character.name || characterName,
     warmDescription,
     `<section class="content-card" aria-labelledby="character-arrival">
-      <img class="character-hero-full" src="../${experience.heroImage.replace(/^\//, '')}" alt="${character.name || characterName}" width="640" height="640" />
+      <img class="character-hero-full" src="../${experience.heroImage.replace(/^\//, '')}" alt="${imageAlt('portrait', character.name || characterName, experience.heroImage)}" width="640" height="640" />
       <h1 id="character-arrival">${profile.arrivalHeading}</h1>
       <p>${profile.arrivalBody}</p>
       <p><strong>This visit should feel:</strong> ${experience.visitorFeeling}</p>
@@ -4539,7 +4543,7 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
     introLine = `These stories help you keep walking through ${firstName}'s world one gentle page at a time.`;
     cardsHtml = (experience.relatedStoriesAll || []).map((story) => {
       const coverImage = story.coverImage
-        ? `<img src="../${story.coverImage}" alt="Cover image for ${story.title}" loading="lazy" width="110" height="150" />`
+        ? `<img src="../${story.coverImage}" alt="${imageAlt('cover', story.title)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder" aria-hidden="true"></div>';
       const description = story.description ? `<p>${story.description}</p>` : '';
       const guidanceLine = getStoryGuidanceLine(story, 3);
@@ -4565,7 +4569,7 @@ function renderCharacterContinuationPage(experience, continuationType, site, nav
       const placeHref = place && place.href ? place.href : '../map.html';
       const placeImage = place && place.image ? String(place.image).replace(/^\//, '') : '';
       const mediaHtml = placeImage
-        ? `<img src="../${placeImage}" alt="${placeName}" loading="lazy" width="110" height="150" />`
+        ? `<img src="../${placeImage}" alt="${imageAlt('place', placeName, placeImage)}" loading="lazy" width="110" height="150" />`
         : '<div class="character-story-thumb-placeholder place-thumb" aria-hidden="true"></div>';
       return `<article class="character-story-card">
         <div class="character-story-media">${mediaHtml}</div>
@@ -5142,7 +5146,7 @@ function buildSeriesPreviewCards(booksData, series, amazonLookup, canonicalBookR
                 : '';
               return `<article class="book-card storybook-card">
               <div class="storybook-card-media">
-                <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
+                <img src="${toOutputAssetPath(book.coverImage)}" alt="${imageAlt('cover', book.title)}" loading="lazy" />
               </div>
               <div class="storybook-card-copy">
                 <h3 class="story-card-title">${book.title}</h3>
@@ -5289,7 +5293,7 @@ function buildRelatedStorybookCards(booksData, currentBookSlug) {
   return relatedBooks
     .map(
       (book) => `<article class="book-card">
-        <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${book.title}" loading="lazy" />
+        <img src="${toOutputAssetPath(book.coverImage)}" alt="${imageAlt('cover', book.title)}" loading="lazy" />
         <h3>${book.title}</h3>
         <p>${getBookSpecificInvitation(book, { mode: 'card' })}</p>
         <a class="button" href="${book.slug}.html">About this story and resources</a>
@@ -5343,7 +5347,7 @@ function renderStoryCharactersPage(book, storyCharacters, routes, site, nav, con
     : `Meet the characters in ${routeTitle}. Follow their character pages and return to the book.`;
   const characterCards = storyCharacters.map((character) => `<a class="character-card" href="../characters/${character.slug}.html" aria-label="Meet ${character.name}">
         <div class="character-card-media">
-          <img class="character-hero-thumb" src="../${String(character.heroImage || '').replace(/^\//, '')}" alt="${character.name}" width="320" height="320" loading="lazy" />
+          <img class="character-hero-thumb" src="../${String(character.heroImage || '').replace(/^\//, '')}" alt="${imageAlt('portrait', character.name, character.heroImage)}" width="320" height="320" loading="lazy" />
         </div>
         <div class="character-card-copy">
           <h3>${character.name}</h3>
@@ -5397,7 +5401,7 @@ function renderBookDetailPage(page, site, nav, booksData, config, banner) {
     `<section class="content-card">
       <p class="eyebrow">${seriesLabel}</p>
       <h2>${publicTitle}</h2>
-      <img src="${toOutputAssetPath(book.coverImage)}" alt="Cover image for ${publicTitle}" />
+      <img src="${toOutputAssetPath(book.coverImage)}" alt="${imageAlt('cover', publicTitle)}" />
       <p>${getBookSpecificInvitation(book, { mode: 'detail' })}</p>
       ${storyGuidanceBlock}
       <p><strong>Series:</strong> ${book.seriesSlug || 'Hawkins Hollow'}</p>
@@ -6700,6 +6704,7 @@ async function buildSite() {
       if (entity) record.image = getPlaceThumbnailPath(entity);
     }
   }
+  validateDestinations(require('../data/page-themes.json'), entityIndex, publicDiscoveryIndex);
   const publicDiscoveryIndexPath = path.join(root, 'generated', 'public-discovery-index.json');
   fs.writeFileSync(publicDiscoveryIndexPath, `${JSON.stringify(publicDiscoveryIndex, null, 2)}\n`, 'utf8');
   console.log(`Search index updated: ${searchIndex.summary.totalRecords} records.`);
@@ -6726,6 +6731,7 @@ async function buildSite() {
 
 
   const pageDefinitions = pages.map((page) => ({ ...page }));
+  pageDefinitions.push({ slug: 'theme-songs', title: 'Theme Songs', template: 'theme-song-library' });
   const existingSlugs = new Set(pageDefinitions.map((page) => page.slug));
   for (const item of nav.items) {
     const slug = item.href.replace(/\.html$/, '');
@@ -6768,6 +6774,7 @@ async function buildSite() {
     writePageToOutputs(fileName, html);
   };
 
+
   const publicPageSurfaces = [];
   for (const page of pageDefinitions) {
     const banner = getBannerForPage(page, banners);
@@ -6785,6 +6792,8 @@ async function buildSite() {
         route: 'storybook-series.html',
         targetRoute: 'storybook-shelf.html'
       });
+    } else if (page.slug === 'theme-songs') {
+      html = renderLayout('Theme Songs', 'Listen to the full themes for Hawkins Hollow books, characters, relationships, and places. Choose a song or enjoy a random playlist.', renderThemeLibrary({ previewBase: process.env.HH_THEME_SONG_PREVIEW_BASE || '' }), site, nav, `${site.domain}/theme-songs.html`, config, banners.home, '', '', {}, 'body');
     } else if (page.slug === 'index') {
       html = renderLandingPage(page, site, nav, config, banner, seriesData);
     } else if (page.slug === 'characters') {

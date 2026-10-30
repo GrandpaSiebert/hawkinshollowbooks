@@ -309,11 +309,12 @@ test('workflow plans after build and persists only after successful Pages deploy
   assert.doesNotMatch(packageJson.scripts['indexnow:submit'], /--from-sitemap/);
 });
 
-test('existing production artifact has 1393 eligible pages and unchanged fingerprints across reads', () => {
+test('production artifact includes the Theme Songs page and preserves fingerprints across reads', () => {
   const output = path.join(__dirname, '..', 'build-recovery');
   const first = snapshotFromBuild(output);
   const second = snapshotFromBuild(output);
-  assert.equal(first.pages.length, 1393);
+  assert.equal(first.pages.length, 1394);
+  assert.ok(first.pages.some(page => page.url === `${ORIGIN}/theme-songs.html`));
   assert.equal(first.id, second.id);
   assert.equal(planDelta(second, state(first)).candidates.length, 0);
 });

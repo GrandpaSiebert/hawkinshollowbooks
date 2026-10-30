@@ -237,7 +237,15 @@ async function restoreLibraryCanon(options = {}) {
     for (const key of await listR2ObjectKeys(titleArtR2Client, bucket)) {
       if (isFreebieTitleArtDerivative(key)) continue;
       if (isWorldCanonDocument(key) && !documentKeys.has(key)) {
-        documentsByPath.set(key, { key, sourcePath: key, r2Only: true });
+        const correction = (options.sourcePathCorrections || require('../data/canonical-source-path-corrections.json')).find(record => record.key === key);
+        const sourcePath = correction ? correction.sourcePath : key;
+        toDestination(destination, sourcePath);
+        if (correction && (!isWorldCanonDocument(sourcePath) || !/^[a-f0-9]{64}$/.test(correction.sha256)
+          || !Number.isSafeInteger(correction.sizeBytes) || correction.sizeBytes <= 0)) {
+          throw new Error('Canonical filename correction requires a reviewed path, SHA-256 and byte size.');
+        }
+        if (documentsByPath.has(sourcePath)) throw new Error(`Conflicting canonical source paths: ${sourcePath}.`);
+        documentsByPath.set(sourcePath, { key, sourcePath, r2Only: true, ...(correction || {}), requiredSource: Boolean(correction) });
         documentKeys.add(key);
       }
       if (r2Client && isFreebieManuscript(key)) {
