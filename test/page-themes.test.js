@@ -2,7 +2,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const parse5=require('parse5');
 const manifest=require('../data/page-themes.json');
 const {validateManifest,validateDestinations,selectTracks,renderThemeSection}=require('../scripts/page-themes');
-const {designation,inspectMp3}=require('../scripts/page-theme-inventory');
+const {designation,bookCanonicalId,inspectMp3}=require('../scripts/page-theme-inventory');
 const {createPlan,classifyRemote,publish}=require('../scripts/publish-page-themes');
 const {createPreviewHandler}=require('../scripts/preview-page-themes');
 const {elements,attr,text}=require('../scripts/audit-image-alt');
@@ -12,13 +12,72 @@ const first=manifest.recordings.find(t=>t.primary);
 const previewBase='http://127.0.0.1:8094/audio';
 
 test('all recordings retain a canonical page association and their explicit designation',()=>{
-  assert.equal(manifest.recordings.length,274);
-  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,274);
-  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,137);
-  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[137,128,9]);
-  for(const track of manifest.recordings){assert.equal(track.classification,designation(track.originalFilename));assert.ok(track.sourcePath.startsWith('Library/Theme Songs/'));assert.equal(path.posix.basename(track.sourcePath),track.originalFilename);assert.ok(!track.sourcePath.includes('\\'));assert.ok(track.durationSeconds>0);}
+  assert.equal(manifest.recordings.length,328);
+  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,328);
+  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,164);
+  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[164,154,10]);
+  for(const track of manifest.recordings){assert.equal(track.filenameDesignation,designation(track.originalFilename));assert.ok(track.sourcePath.startsWith('Library/Theme Songs/'));assert.equal(path.posix.basename(track.sourcePath),track.originalFilename);assert.ok(!track.sourcePath.includes('\\'));assert.ok(track.durationSeconds>0);}
   assert.equal(validateManifest(manifest),true);
   assert.equal(validateDestinations(manifest,require('../generated/entity-index.json'),require('../generated/public-discovery-index.json')),true);
+});
+test('every recording is reconciled to its lyric document or has an explicit review status',()=>{
+  assert.equal(manifest.supportingFiles.filter(file=>/\.docx?$/i.test(file.sourcePath)).length,165);
+  assert.deepEqual(manifest.lyricReconciliation,{
+    documentCount:165,
+    matchedRecordingCount:328,
+    missingRecordingCount:0,
+    ambiguousRecordingCount:0,
+    categoryMismatchRecordingCount:0,
+    orphanDocuments:[],
+    misfiledDocuments:[],
+    plannedAudioDocuments:[{
+      sourcePath:'Library/Theme Songs/Relationships/HH-R-0233 — The Bridge Alcove Three-Voice Sound Braid And The Whispering Echo Cup.docx',
+      canonicalId:'HH-R-0233'
+    }]
+  });
+  assert.ok(manifest.supportingFiles.filter(file=>/\.docx?$/i.test(file.sourcePath)).every(file=>/^[a-f0-9]{64}$/.test(file.sha256)));
+  assert.equal(manifest.recordings.filter(track=>track.lyricMatchStatus==='missing').length,0);
+  assert.equal(manifest.recordings.filter(track=>track.lyricMatchStatus==='category-mismatch').length,0);
+});
+test('R/P lyric-only assets above 0125 are tracked as planned audio, not orphan lyrics',()=>{
+  const {isPlannedAudioDocument}=require('../scripts/page-theme-inventory');
+  assert.equal(isPlannedAudioDocument('HH-R-0125'),false);
+  assert.equal(isPlannedAudioDocument('HH-P-0126'),true);
+  assert.equal(isPlannedAudioDocument('HH-R-0500'),true);
+  assert.equal(isPlannedAudioDocument('HH-P-0501'),false);
+  assert.equal(isPlannedAudioDocument('HH-A-0233'),false);
+});
+test('Aleea and Skylin recordings now match their corrected Character lyric documents',()=>{
+  for(const [canonicalId,filename] of [
+    ['HH-CHR-0006','Aleea Caracara - A Little Closer Look - Character Theme Song.docx'],
+    ['HH-CHR-0025','Skylin Crow - Room for Every Voice - Character Theme Song.docx']
+  ]){
+    const tracks=manifest.recordings.filter(track=>track.canonicalId===canonicalId);
+    assert.equal(tracks.length,2);
+    assert.ok(tracks.every(track=>track.lyricMatchStatus==='matched'));
+    assert.ok(tracks.every(track=>track.lyricDocument.sourcePath.endsWith(filename)));
+  }
+});
+test('recovered A-0016 assets map to Storybooks and withhold the byte-identical Alternate',()=>{
+  const tracks=manifest.recordings.filter(track=>track.canonicalId==='HH-A-0016');
+  assert.equal(tracks.length,2);
+  assert.ok(tracks.every(track=>track.page==='books/HH-A-0016-when-aralynn-fox-told-the-truth.html'));
+  assert.ok(tracks.every(track=>track.series==='Storybooks'&&track.seriesSlug==='storybooks'));
+  assert.ok(tracks.every(track=>track.recordingTitle==='The Hardest Words'));
+  assert.ok(tracks.every(track=>track.lyricMatchStatus==='matched'&&track.lyricDocument.sourcePath.endsWith('HH-A-0016 The Hardest Words - Book Theme Song .docx')));
+  assert.equal(tracks[0].sha256,tracks[1].sha256);
+  assert.equal(tracks[0].sizeBytes,11964463);
+  assert.equal(tracks[0].durationSeconds,372.219);
+  assert.equal(tracks.filter(track=>track.classification==='confirmed-primary').length,1);
+  const withheld=tracks.find(track=>track.filenameDesignation==='confirmed-alternate');
+  assert.equal(withheld.classification,'unresolved');
+  assert.match(withheld.approvalStatus,/withheld-duplicate-content/);
+  assert.ok(withheld.issues.some(issue=>issue.includes('Byte-identical to the Primary')));
+});
+test('book canonical IDs remain recognizable when a filename omits the separator before its title',()=>{
+  assert.equal(bookCanonicalId('HH-A-0022The Kindness Competition - Book Theme Song Primary.mp3'),'HH-A-0022');
+  assert.equal(bookCanonicalId('HH-C+-0001 The Healthy Heart Walk - Book Theme Song Alternate.mp3'),'HH-C+-0001');
+  assert.equal(bookCanonicalId('HH-A-00220 Not a canonical ID.mp3'),undefined);
 });
 test('case-sensitive routes, canonical identities, Primary flags and deterministic keys fail closed',()=>{
   for(const change of [t=>t.page=t.page.toLowerCase(),t=>t.canonicalId='HH-A-9999']){
@@ -62,7 +121,7 @@ test('native players have individual names, normal transport controls, and no au
   assert.equal(renderThemeSection(first.page,{publication:{records:[]}}),'');
 });
 test('upload plan preserves all confirmed associations, deduplicates objects, and refuses conflicting objects or absent approval',async()=>{
-  const plan=createPlan(manifest);assert.equal(plan.tracks.length,265);assert.equal(plan.withheld.length,9);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
+  const plan=createPlan(manifest);assert.equal(plan.tracks.length,318);assert.equal(plan.withheld.length,10);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
   const asset=plan.objects[0];assert.equal(classifyRemote(asset,null),'new-object');
   assert.equal(classifyRemote(asset,{Metadata:{sha256:asset.sha256},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),'reuse-verified-identical');
   assert.throws(()=>classifyRemote(asset,{Metadata:{sha256:'wrong'},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),/no overwrite/);

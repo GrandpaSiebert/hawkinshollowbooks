@@ -41,6 +41,105 @@ function designation(filename) {
   return 'unresolved';
 }
 
+function bookCanonicalId(filename) {
+  return String(filename).match(/\b(HH-[A-Z+]+-\d{4})(?!\d)/)?.[1];
+}
+
+function lyricDocumentCategory(sourcePath) {
+  const folder = sourcePath.split('/')[2];
+  return { Books: 'book', Characters: 'character', Relationships: 'relationship', Environments: 'environment', Landsmarks: 'landmark' }[folder] || '';
+}
+
+function lyricDocumentSubject(filename) {
+  const stem = path.basename(filename).replace(/\.docx?$/i, '')
+    .replace(/\s*(?:Book|Story|Character|Relationship|Environment|Landmark)\s+Them(?:e)?(?:\s+Song)?$/i, '')
+    .replace(/\s*(?:Book|Story|Character|Relationship|Environment|Landmark)\s+Theme(?:\s+Song)?$/i, '')
+    .trim();
+  return stem.split(/\s+[-=]\s*|\s*[–—]\s*|\s*=\s*/)[0].trim();
+}
+
+function lyricDocumentTitle(sourcePath, canonicalId) {
+  const stem = path.basename(sourcePath).replace(/\.docx?$/i, '').trim();
+  const withoutId = stem.replace(/^(HH-[A-Z+]+-\d{4})\s*/i, '');
+  const title = withoutId
+    .replace(/\s*(?:Book|Story|Character|Relationship|Environment|Landmark)\s+Them(?:e)?(?:\s+Song)?$/i, '')
+    .replace(/\s*(?:Book|Story|Character|Relationship|Environment|Landmark)\s+Theme(?:\s+Song)?$/i, '')
+    .trim().replace(/[-=–—]\s*$/, '').trim();
+  return canonicalId && bookCanonicalId(stem) === canonicalId ? title : '';
+}
+
+function isPlannedAudioDocument(canonicalId) {
+  const match = String(canonicalId || '').match(/^HH-[RP]-(\d{4})$/);
+  return Boolean(match && Number(match[1]) > 125 && Number(match[1]) <= 500);
+}
+
+function associateLyricDocuments(recordings, supportingFiles) {
+  const documents = supportingFiles.filter(file => /\.docx?$/i.test(file.sourcePath)).map(file => ({
+    ...file,
+    category: lyricDocumentCategory(file.sourcePath),
+    subject: lyricDocumentSubject(file.sourcePath),
+    canonicalId: bookCanonicalId(path.basename(file.sourcePath))
+  }));
+  const matchedPaths = new Set();
+  const misfiledPaths = new Set();
+  for (const track of recordings) {
+    let matches;
+    let matchMethod;
+    if (track.category === 'book') {
+      matches = documents.filter(document => document.category === 'book' && document.canonicalId === track.canonicalId);
+      matchMethod = 'canonical-book-id';
+    } else {
+      const owner = normalize(track.mappingEvidence?.matchedSubject || track.mappingEvidence?.canonicalName || '');
+      matches = documents.filter(document => document.category === track.category && normalize(document.subject) === owner);
+      matchMethod = 'recording-owner-name';
+    }
+
+    if (matches.length === 1) {
+      const document = matches[0];
+      track.lyricDocument = {
+        sourcePath: document.sourcePath,
+        sizeBytes: document.sizeBytes,
+        sha256: document.sha256,
+        matchMethod
+      };
+      track.lyricMatchStatus = 'matched';
+      matchedPaths.add(document.sourcePath);
+      if (track.category === 'book') {
+        track.recordingTitle = lyricDocumentTitle(document.sourcePath, track.canonicalId) || track.title;
+      }
+      continue;
+    }
+
+    const owner = normalize(track.mappingEvidence?.matchedSubject || track.mappingEvidence?.canonicalName || '');
+    const crossCategoryMatches = track.category === 'book' ? [] : documents.filter(document =>
+      document.category !== track.category && normalize(document.subject) === owner);
+    for (const document of crossCategoryMatches) misfiledPaths.add(document.sourcePath);
+    track.lyricDocument = null;
+    track.lyricCandidates = (matches.length ? matches : crossCategoryMatches).map(document => document.sourcePath);
+    track.lyricMatchStatus = matches.length > 1 ? 'ambiguous'
+      : crossCategoryMatches.length ? 'category-mismatch'
+        : matches.length === 1 ? 'matched' : 'missing';
+  }
+  const unmatchedDocuments = documents.filter(document => !matchedPaths.has(document.sourcePath) && !misfiledPaths.has(document.sourcePath));
+  const plannedAudioDocuments = unmatchedDocuments.filter(document => isPlannedAudioDocument(document.canonicalId));
+  const plannedAudioPaths = new Set(plannedAudioDocuments.map(document => document.sourcePath));
+  const orphanDocuments = unmatchedDocuments.filter(document => !plannedAudioPaths.has(document.sourcePath));
+  const lyricSummary = {
+    documentCount: documents.length,
+    matchedRecordingCount: recordings.filter(track => track.lyricMatchStatus === 'matched').length,
+    missingRecordingCount: recordings.filter(track => track.lyricMatchStatus === 'missing').length,
+    ambiguousRecordingCount: recordings.filter(track => track.lyricMatchStatus === 'ambiguous').length,
+    categoryMismatchRecordingCount: recordings.filter(track => track.lyricMatchStatus === 'category-mismatch').length,
+    orphanDocuments: orphanDocuments.map(document => document.sourcePath),
+    misfiledDocuments: [...misfiledPaths],
+    plannedAudioDocuments: plannedAudioDocuments.map(document => ({
+      sourcePath: document.sourcePath,
+      canonicalId: document.canonicalId
+    }))
+  };
+  return lyricSummary;
+}
+
 function createInventory() {
   const index = read('generated/entity-index.json');
   const discovery = read('generated/public-discovery-index.json');
@@ -51,7 +150,9 @@ function createInventory() {
     relationship: { 'aydin aleea caracara': 'REL-0002', 'mimi hawkins farmer hawkins pop pop': 'REL-0019' }
   };
   const candidates = {
-    book: discovery.records.filter(item => item.type === 'book').map(item => ({ id: item.id, name: item.title, href: item.href })),
+    book: discovery.records.filter(item => item.type === 'book').map(item => ({
+      id: item.id, name: item.title, href: item.href, series: item.series, seriesSlug: item.seriesSlug
+    })),
     character: characters.filter(item => item.published !== false).map(item => ({ id: item.identity.canonicalId, name: item.name, href: `characters/${item.slug}.html` })),
     relationship: index.byType.relationships.map(item => ({ ...item, href: item.entityPageHref })),
     environment: index.byType.environments.map(item => ({ ...item, href: item.entityPageHref })),
@@ -63,14 +164,23 @@ function createInventory() {
       const absolute = path.join(directory, item.name);
       if (item.isDirectory()) { visit(absolute); continue; }
       const sourcePath = path.relative(root, absolute).replace(/\\/g, '/');
-      if (!/\.mp3$/i.test(item.name)) { supportingFiles.push({ sourcePath, status: 'supporting-file-not-an-audio-release', sizeBytes: fs.statSync(absolute).size }); continue; }
+      if (!/\.mp3$/i.test(item.name)) {
+        const bytes = fs.readFileSync(absolute);
+        supportingFiles.push({
+          sourcePath,
+          status: 'supporting-file-not-an-audio-release',
+          sizeBytes: bytes.length,
+          sha256: hash(bytes)
+        });
+        continue;
+      }
       const category = types[sourcePath.split('/')[2]];
       const base = item.name.replace(/\.mp3$/i, '');
       const clean = base.replace(/\s*\(\d+\)$/, '').replace(/\s*(?:Primary|Alternate|Alternative|Altermate)$/i, '')
         .replace(/\s*[-_=]?\s*(?:Book|Story|Character|Relationship|Environment|Landmark)\s+Theme(?:\s+Song){0,2}$/i, '').trim();
       const parts = clean.split(/\s+[-=]\s*|\s*=\s*/);
       const subject = parts[0].replace(/\s*_$/, '').trim();
-      const canonicalId = category === 'book' ? base.match(/\bHH-[A-Z+]+-\d{4}\b/)?.[0] : explicitAliases[category]?.[normalize(subject)];
+      const canonicalId = category === 'book' ? bookCanonicalId(base) : explicitAliases[category]?.[normalize(subject)];
       const matched = candidates[category]?.filter(record => canonicalId ? record.id === canonicalId : [record.name, path.basename(record.sourceDocument || '').replace(/ Visual Canon\.docx$/i, '')].some(name => normalize(name) === normalize(subject))) || [];
       const entity = matched.length === 1 ? matched[0] : null;
       const bytes = fs.readFileSync(absolute), sha256 = hash(bytes);
@@ -82,15 +192,62 @@ function createInventory() {
       recordings.push({ id: `theme-${entity?.id || 'unmapped'}-${sha256}`.toLowerCase(), originalFilename: item.name, sourcePath,
         title: category === 'book' || !parts[1] ? `${entity?.name || subject} — Theme Song` : parts.slice(1).join(' - '), category,
         canonicalId: entity?.id || '', page: entity?.href || '', pageTitle: entity?.name || subject,
+        series: entity?.series || '', seriesSlug: entity?.seriesSlug || '',
         mappingEvidence: entity ? { canonicalName: entity.name, sourceDocument: entity.sourceDocument || null, matchedSubject: subject, explicitAlias: Boolean(canonicalId && category !== 'book') } : null,
-        classification, primary: classification === 'confirmed-primary', designationEvidence: classification === 'unresolved' ? 'Supporting Word documents reviewed separately; no recording-specific designation found' : `Explicit ${classification === 'confirmed-primary' ? 'Primary' : 'Alternate/Alternative'} suffix in original filename`,
+        classification, filenameDesignation: classification, primary: classification === 'confirmed-primary',
+        designationEvidence: classification === 'unresolved' ? 'No explicit Primary/Alternate recording designation in the filename' : `Explicit ${classification === 'confirmed-primary' ? 'Primary' : 'Alternate/Alternative'} suffix in original filename`,
         approvalStatus: 'awaiting-owner-release-approval', sizeBytes: bytes.length, sha256, ...media,
         objectKey: key, publicUrl: `https://library.hawkinshollowbooks.com/${key}`, uploadStatus: 'not-uploaded-by-this-release', integrationStatus: 'candidate-only', issues });
     }
   }
   visit(path.join(root, 'Library/Theme Songs'));
+  const duplicateOwners = new Map();
+  for (const track of recordings) {
+    const key = `${track.category}:${track.canonicalId}:${track.sha256}`;
+    duplicateOwners.set(key, [...(duplicateOwners.get(key) || []), track]);
+  }
+  for (const duplicates of duplicateOwners.values()) {
+    if (duplicates.length < 2) continue;
+    const primary = duplicates.filter(track => track.filenameDesignation === 'confirmed-primary');
+    const alternates = duplicates.filter(track => track.filenameDesignation === 'confirmed-alternate');
+    for (const track of duplicates) {
+      track.duplicateContentWith = duplicates.filter(other => other !== track).map(other => other.sourcePath);
+    }
+    if (primary.length === 1 && alternates.length === 1 && duplicates.length === 2) {
+      primary[0].issues.push('A byte-identical Alternate file exists; the Alternate is withheld pending owner review');
+      alternates[0].classification = 'unresolved';
+      alternates[0].primary = false;
+      alternates[0].approvalStatus = 'withheld-duplicate-content-owner-review';
+      alternates[0].issues.push('Byte-identical to the Primary recording for this page; owner review required before release');
+    } else {
+      for (const track of duplicates) {
+        track.classification = 'unresolved';
+        track.primary = false;
+        track.approvalStatus = 'withheld-duplicate-content-owner-review';
+        track.issues.push('Duplicate content shares a canonical page; owner review required before release');
+      }
+    }
+  }
+  const recordingIds = new Map();
+  for (const track of recordings) recordingIds.set(track.id, [...(recordingIds.get(track.id) || []), track]);
+  for (const duplicates of recordingIds.values()) {
+    if (duplicates.length < 2) continue;
+    for (const track of duplicates) {
+      const suffix = track.filenameDesignation.replace(/^confirmed-/, '');
+      track.id = `${track.id}-${suffix}`;
+    }
+  }
   recordings.sort((a,b) => a.sourcePath.localeCompare(b.sourcePath, 'en'));
-  return { schemaVersion: 1, sourceFolder: 'Library/Theme Songs', bucket: 'hawkins-hollow-library', baseUrl: 'https://library.hawkinshollowbooks.com', recordings, supportingFiles };
+  const lyricReconciliation = associateLyricDocuments(recordings, supportingFiles);
+  return {
+    schemaVersion: 1,
+    sourceFolder: 'Library/Theme Songs',
+    bucket: 'hawkins-hollow-library',
+    baseUrl: 'https://library.hawkinshollowbooks.com',
+    recordings,
+    supportingFiles,
+    lyricReconciliation
+  };
 }
 
 if (require.main === module) {
@@ -99,6 +256,19 @@ if (require.main === module) {
   fs.writeFileSync(dest, JSON.stringify(inventory, null, 2) + '\n');
   console.log(JSON.stringify({ recordings: inventory.recordings.length, supportingFiles: inventory.supportingFiles.length,
     classifications: Object.fromEntries(['confirmed-primary','confirmed-alternate','unresolved'].map(value => [value,inventory.recordings.filter(r=>r.classification===value).length])),
+    filenameDesignations: Object.fromEntries(['confirmed-primary','confirmed-alternate','unresolved'].map(value => [value,inventory.recordings.filter(r=>r.filenameDesignation===value).length])),
+    lyricReconciliation: inventory.lyricReconciliation,
     mappingIssues: inventory.recordings.filter(r=>!r.page).map(r=>r.sourcePath), invalidAudio: inventory.recordings.filter(r=>!r.durationSeconds).map(r=>({file:r.sourcePath,issues:r.issues})) }, null, 2));
 }
-module.exports = { createInventory, inspectMp3, designation, normalize };
+module.exports = {
+  createInventory,
+  inspectMp3,
+  designation,
+  bookCanonicalId,
+  isPlannedAudioDocument,
+  lyricDocumentCategory,
+  lyricDocumentSubject,
+  lyricDocumentTitle,
+  associateLyricDocuments,
+  normalize
+};

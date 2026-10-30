@@ -129,7 +129,21 @@ test('search-enabled routes have direct, shared, or navigational discovery', () 
   ))));
   assert.equal(freebieHubGaps.length, 2, 'song and rhyme hubs share discovery with their indexed contents');
   assert.ok(childSearchTypes.has('song') && childSearchTypes.has('rhyme'));
-  assert.equal(navigationLandingGaps.length, 15, 'landing and series pages remain discoverable through navigation and their indexed contents');
+  assert.deepEqual(
+    navigationLandingGaps.filter((surface) => surface.route !== 'theme-songs.html').map((surface) => surface.route).sort(),
+    [
+      'index.html', 'start-here.html', 'books.html', 'characters.html', 'themes.html',
+      'community.html', 'map.html', 'first-readers.html', 'second-readers.html',
+      'bedtime-library.html', 'growing-together.html', 'tender-times.html',
+      'basic-training.html', 'holiday-story-poems.html', 'hero-play-poems.html'
+    ].sort(),
+    'all original 15 landing and series pages retain their discovery classification'
+  );
+  assert.equal(navigationLandingGaps.filter((surface) => surface.route === 'theme-songs.html').length, 1,
+    'Theme Songs is the single additional navigation-discovered landing page');
+  assert.ok(readJson(path.join(root, 'data', 'navigation.json')).items.some((item) => item.href === 'theme-songs.html'),
+    'Theme Songs has an explicit navigation destination');
+  assert.equal(navigationLandingGaps.length, 16, 'landing and series pages, including Theme Songs, remain discoverable through navigation and their indexed contents');
   assert.equal(
     unmatched.length,
     bookCharacterGaps.length

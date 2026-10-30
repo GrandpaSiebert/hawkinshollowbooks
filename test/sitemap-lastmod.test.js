@@ -69,10 +69,14 @@ test('checked-in tracking baseline preserves the deployed 1392-URL Stage 4D seed
   const liveBookIds = new Set(publicationRecords
     .filter((record) => String(record.status || '').trim().toLowerCase() === 'live')
     .map((record) => String(record.id || '').trim().toUpperCase()));
+  assert.ok(localUrls.has(`${ORIGIN}/theme-songs.html`), 'the approved Theme Songs canonical route is present');
   for (const url of addedRoutes) {
     const route = decodeURIComponent(new URL(url).pathname);
     const bookId = /\/books\/(HH-[A-Z+-]+-\d{4})(?:-|\.html|\/|$)/i.exec(route);
-    assert.ok(bookId && liveBookIds.has(bookId[1].toUpperCase()), `${route}: only a newly Live Book route may be added`);
+    assert.ok(
+      (bookId && liveBookIds.has(bookId[1].toUpperCase())) || url === `${ORIGIN}/theme-songs.html`,
+      `${route}: only a newly Live Book route or the authorized Theme Songs page may be added`
+    );
   }
   assert.ok(withdrawnRoutes.length > 0, 'local build removes routes for non-Live Books before deployment');
   for (const url of withdrawnRoutes) {

@@ -1,0 +1,22 @@
+[
+  {
+    "id": "HH-R-0400",
+    "lineCount": 37,
+    "orderedLinesSha256": "d53937fa46a7876f425edf856cfb43ff4420244a1328f57a2286e1a8e33e6159",
+    "preservedHeadingCounts": {
+      "First Aloud and Natural-Language Pass": 2,
+      "Pre-Visual World-State Ledger": 2,
+      "Optional Action and Caregiver Cues": 2
+    }
+  },
+  {
+    "id": "HH-S-0474",
+    "lineCount": 54,
+    "orderedLinesSha256": "7f4b9eb16535524b55d749f956e626446c7de59992a33e1cfe9a139d1913d323",
+    "preservedHeadingCounts": {
+      "First Aloud and Natural-Language Pass": 2,
+      "Pre-Visual World-State Ledger": 1,
+      "Performance and Participation Cues": 2
+    }
+  }
+]
