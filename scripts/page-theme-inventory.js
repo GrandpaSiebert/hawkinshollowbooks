@@ -42,7 +42,20 @@ function designation(filename) {
 }
 
 function bookCanonicalId(filename) {
-  return String(filename).match(/\b(HH-[A-Z+]+-\d{4})(?!\d)/)?.[1];
+  const canonical = String(filename).match(/\b(HH-[A-Z+]+-\d{4})(?!\d)/)?.[1];
+  if (canonical) return canonical;
+  // These two exact production filename prefixes omit a zero. Their supporting
+  // Word documents explicitly give the four-digit canonical IDs and titles.
+  // Preserve original files; never pad arbitrary or title-mismatched IDs.
+  const stem = path.basename(String(filename)).replace(/\.(?:mp3|docx?)$/i, '');
+  const reviewed = {
+    'HH-E-006 Aralynn Fox and the Hard News Raincloud': 'HH-E-0006',
+    'HH-E-007 Asher and the Goodbye Song': 'HH-E-0007'
+  };
+  for (const [prefix, id] of Object.entries(reviewed)) {
+    if ([`${prefix} - Book Theme Song`, `${prefix} - Book Theme Song Primary`, `${prefix} - Book Theme Song Alternate`].includes(stem)) return id;
+  }
+  return undefined;
 }
 
 function lyricDocumentCategory(sourcePath) {

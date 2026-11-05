@@ -4,10 +4,10 @@ const {themePlayerBrowser}=require('../scripts/page-themes');
 const {elements,attr}=require('../scripts/audit-image-alt');
 const options={previewBase:'http://127.0.0.1:8094/audio'};
 test('library contains all confirmed recordings, preserves associations and excludes unresolved tracks only',()=>{
-  const list=libraryTracks(options);assert.equal(list.length,318);assert.equal(new Set(list.map(t=>t.id)).size,318);assert.ok(list.every(t=>t.classification!=='unresolved'&&t.page));assert.equal(libraryTracks({publication:{records:[]}}).length,0);
+  const list=libraryTracks(options);assert.equal(list.length,384);assert.equal(new Set(list.map(t=>t.id)).size,384);assert.ok(list.every(t=>t.classification!=='unresolved'&&t.page));assert.equal(libraryTracks({publication:{records:[]}}).length,0);
   const doc=parse5.parseFragment(renderThemeLibrary(options));assert.equal(elements(doc,'audio').length,1);assert.equal(attr(elements(doc,'audio')[0],'src'),undefined);assert.equal(attr(elements(doc,'audio')[0],'autoplay'),undefined);assert.equal(attr(elements(doc,'audio')[0],'loop'),undefined);assert.equal(attr(elements(doc,'audio')[0],'preload'),'none');
   assert.equal(elements(parse5.parseFragment(renderThemeLibrary({publication:{records:[]}})),'audio').length,0,'unverified production recordings must not emit a player');
-  assert.equal(elements(doc,'button').filter(n=>attr(n,'data-theme-id')).length,318);assert.equal(elements(doc,'a').length,318);
+  assert.equal(elements(doc,'button').filter(n=>attr(n,'data-theme-id')).length,384);assert.equal(elements(doc,'a').length,384);
   for(const id of ['theme-library-random','theme-library-next','theme-library-pause','theme-library-stop'])assert.ok(elements(doc,'button').some(button=>attr(button,'id')===id));
 });
 test('shuffle is a permutation without repeats and does not change Primary status or original order',()=>{
@@ -52,7 +52,7 @@ test('generated theme library is discoverable without replacing the existing dis
     assert.equal(elements(doc,'audio').length,1);
     assert.equal(attr(elements(doc,'audio')[0],'preload'),'none');
     assert.equal(attr(elements(doc,'audio')[0],'autoplay'),undefined);
-    assert.equal(elements(doc,'button').filter(b=>attr(b,'data-theme-id')).length,318);
+    assert.equal(elements(doc,'button').filter(b=>attr(b,'data-theme-id')).length,384);
     assert.deepEqual(elements(doc,'button').map(b=>attr(b,'data-theme-id')).filter(Boolean).sort(),libraryTracks().map(t=>t.id).sort());
     for(const id of ['theme-library-random','theme-library-pause','theme-library-stop'])assert.ok(elements(doc,'button').some(b=>attr(b,'id')===id));
     assert.doesNotMatch(html,/Theme songs will appear here when their recordings are ready/);

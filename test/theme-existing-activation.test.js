@@ -4,17 +4,22 @@ const manifest = require('../data/page-themes.json');
 const publication = require('../data/page-theme-publication.json');
 const { libraryTracks } = require('../scripts/theme-song-library');
 
-test('all 318 delivered themes stay active, all 265 prior receipts remain unchanged, and ten withheld recordings stay inactive', () => {
+test('all 384 delivered themes stay active, all 318 prior receipts remain unchanged, and ten withheld recordings stay inactive', () => {
   const active = libraryTracks();
-  assert.equal(publication.records.length, 318);
-  assert.equal(active.length, 318);
+  assert.equal(publication.records.length, 384);
+  assert.equal(active.length, 384);
   assert.deepEqual(active.map(t => t.id).sort(), publication.records.map(r => r.id).sort());
   const previous = require('./fixtures/previously-verified-theme-receipts.json');
   assert.equal(previous.records.length, 265);
   const previousIds = new Set(previous.records.map(r => r.id));
   for (const receipt of previous.records) assert.deepEqual(publication.records.find(r => r.id === receipt.id), receipt);
-  assert.equal(active.filter(t => !previousIds.has(t.id)).length, 53);
+  assert.equal(active.filter(t => !previousIds.has(t.id)).length, 119);
   assert.deepEqual(active.map(t => t.id).sort(), manifest.recordings.filter(t => t.classification !== 'unresolved').map(t => t.id).sort());
+  const lastRelease = require('./fixtures/theme-receipts-october-30-2026.json');
+  assert.equal(lastRelease.records.length, 318);
+  const lastReleaseIds = new Set(lastRelease.records.map(r => r.id));
+  for (const receipt of lastRelease.records) assert.deepEqual(publication.records.find(r => r.id === receipt.id), receipt);
+  assert.equal(active.filter(t => !lastReleaseIds.has(t.id)).length, 66);
   const activeIds = new Set(active.map(t => t.id));
   const duplicatePair = manifest.recordings.filter(t => t.canonicalId === 'HH-A-0016');
   assert.equal(duplicatePair.length, 2);

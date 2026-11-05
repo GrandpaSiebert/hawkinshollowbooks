@@ -3180,6 +3180,666 @@
       "objectKey": "themes/full/1eda2ca0d98d72d05d990ce36a7e1b165eb6bbf5f85a8a8a82edf1143f4b3e0d.mp3",
       "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/1eda2ca0d98d72d05d990ce36a7e1b165eb6bbf5f85a8a8a82edf1143f4b3e0d.mp3",
       "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0002-9ea581964d44ee3c38ec38929766d98ab47e9866316b66888b2058f0f6b395d5",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "9ea581964d44ee3c38ec38929766d98ab47e9866316b66888b2058f0f6b395d5",
+      "sizeBytes": 6878101,
+      "objectKey": "themes/full/9ea581964d44ee3c38ec38929766d98ab47e9866316b66888b2058f0f6b395d5.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/9ea581964d44ee3c38ec38929766d98ab47e9866316b66888b2058f0f6b395d5.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0002-650bee0279282229042d90ddff1e4dd4cd2493f06d3613a7aaa1a7ded8fe30d7",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "650bee0279282229042d90ddff1e4dd4cd2493f06d3613a7aaa1a7ded8fe30d7",
+      "sizeBytes": 6741764,
+      "objectKey": "themes/full/650bee0279282229042d90ddff1e4dd4cd2493f06d3613a7aaa1a7ded8fe30d7.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/650bee0279282229042d90ddff1e4dd4cd2493f06d3613a7aaa1a7ded8fe30d7.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0003-498358f209115eb6f27edc15409e845e91f0748d192761d5dcbe28f17fdaa03c",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "498358f209115eb6f27edc15409e845e91f0748d192761d5dcbe28f17fdaa03c",
+      "sizeBytes": 10458497,
+      "objectKey": "themes/full/498358f209115eb6f27edc15409e845e91f0748d192761d5dcbe28f17fdaa03c.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/498358f209115eb6f27edc15409e845e91f0748d192761d5dcbe28f17fdaa03c.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0003-ce4e9571e96f947d06113d175ca1547154dcfcbbf072567df59f21d844b401c5",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "ce4e9571e96f947d06113d175ca1547154dcfcbbf072567df59f21d844b401c5",
+      "sizeBytes": 10315074,
+      "objectKey": "themes/full/ce4e9571e96f947d06113d175ca1547154dcfcbbf072567df59f21d844b401c5.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/ce4e9571e96f947d06113d175ca1547154dcfcbbf072567df59f21d844b401c5.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0004-57d0307032bd235e2ce91c0d06c67722f940f6e7fd29fae0ddc680e11e1326ba",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "57d0307032bd235e2ce91c0d06c67722f940f6e7fd29fae0ddc680e11e1326ba",
+      "sizeBytes": 7622050,
+      "objectKey": "themes/full/57d0307032bd235e2ce91c0d06c67722f940f6e7fd29fae0ddc680e11e1326ba.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/57d0307032bd235e2ce91c0d06c67722f940f6e7fd29fae0ddc680e11e1326ba.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0004-903989a7c860a4c591d986ace9fa9a30f6f5319d46a374bcad79e50836318582",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "903989a7c860a4c591d986ace9fa9a30f6f5319d46a374bcad79e50836318582",
+      "sizeBytes": 8374532,
+      "objectKey": "themes/full/903989a7c860a4c591d986ace9fa9a30f6f5319d46a374bcad79e50836318582.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/903989a7c860a4c591d986ace9fa9a30f6f5319d46a374bcad79e50836318582.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0005-caf240f3626c442b2642f205022f6b14ad184d9a3f9eebd2c52297bca4a97534",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "caf240f3626c442b2642f205022f6b14ad184d9a3f9eebd2c52297bca4a97534",
+      "sizeBytes": 9927224,
+      "objectKey": "themes/full/caf240f3626c442b2642f205022f6b14ad184d9a3f9eebd2c52297bca4a97534.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/caf240f3626c442b2642f205022f6b14ad184d9a3f9eebd2c52297bca4a97534.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0005-7cb936d9e5c5e2063229fdc49af8d8a021838432dbc4e23c5c1d27c96cb12075",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "7cb936d9e5c5e2063229fdc49af8d8a021838432dbc4e23c5c1d27c96cb12075",
+      "sizeBytes": 9740327,
+      "objectKey": "themes/full/7cb936d9e5c5e2063229fdc49af8d8a021838432dbc4e23c5c1d27c96cb12075.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/7cb936d9e5c5e2063229fdc49af8d8a021838432dbc4e23c5c1d27c96cb12075.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0006-e7c1e0d1e0a81ca22c84781b91f9ad53c89996feab11a5aa4557dff4be0a1b3d",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "e7c1e0d1e0a81ca22c84781b91f9ad53c89996feab11a5aa4557dff4be0a1b3d",
+      "sizeBytes": 8445549,
+      "objectKey": "themes/full/e7c1e0d1e0a81ca22c84781b91f9ad53c89996feab11a5aa4557dff4be0a1b3d.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/e7c1e0d1e0a81ca22c84781b91f9ad53c89996feab11a5aa4557dff4be0a1b3d.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0006-02d984ac3b3cc092beca7552a4f3b1b6f36f0aeef7f38b5a931fb91fadc73fb7",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "02d984ac3b3cc092beca7552a4f3b1b6f36f0aeef7f38b5a931fb91fadc73fb7",
+      "sizeBytes": 8024148,
+      "objectKey": "themes/full/02d984ac3b3cc092beca7552a4f3b1b6f36f0aeef7f38b5a931fb91fadc73fb7.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/02d984ac3b3cc092beca7552a4f3b1b6f36f0aeef7f38b5a931fb91fadc73fb7.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0007-f967ae3121f0801c16239f8d0db4f0e3d21eb485b79d508d37efa7a0969e64b2",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "f967ae3121f0801c16239f8d0db4f0e3d21eb485b79d508d37efa7a0969e64b2",
+      "sizeBytes": 10300051,
+      "objectKey": "themes/full/f967ae3121f0801c16239f8d0db4f0e3d21eb485b79d508d37efa7a0969e64b2.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/f967ae3121f0801c16239f8d0db4f0e3d21eb485b79d508d37efa7a0969e64b2.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-c+-0007-ef0895ad9e5c70547720cf92f576fa7f8299903d3352c8c2e16996740e68717e",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "ef0895ad9e5c70547720cf92f576fa7f8299903d3352c8c2e16996740e68717e",
+      "sizeBytes": 10234339,
+      "objectKey": "themes/full/ef0895ad9e5c70547720cf92f576fa7f8299903d3352c8c2e16996740e68717e.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/ef0895ad9e5c70547720cf92f576fa7f8299903d3352c8c2e16996740e68717e.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0001-7017c34e2787f9832293d70f8a29cc2bf548c08cb7d00bf1dbeff1ab87b3da78",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "7017c34e2787f9832293d70f8a29cc2bf548c08cb7d00bf1dbeff1ab87b3da78",
+      "sizeBytes": 10297789,
+      "objectKey": "themes/full/7017c34e2787f9832293d70f8a29cc2bf548c08cb7d00bf1dbeff1ab87b3da78.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/7017c34e2787f9832293d70f8a29cc2bf548c08cb7d00bf1dbeff1ab87b3da78.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0001-5aaf7ecb0ce6fcabd959377ebfad037be8660c9402f4560208ff1b2c67e0d969",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "5aaf7ecb0ce6fcabd959377ebfad037be8660c9402f4560208ff1b2c67e0d969",
+      "sizeBytes": 10642874,
+      "objectKey": "themes/full/5aaf7ecb0ce6fcabd959377ebfad037be8660c9402f4560208ff1b2c67e0d969.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/5aaf7ecb0ce6fcabd959377ebfad037be8660c9402f4560208ff1b2c67e0d969.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0002-891924ecc7e27cfbaedd6ed80fdfa324425ad03a8a76b1e161ef88253aacc10b",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "891924ecc7e27cfbaedd6ed80fdfa324425ad03a8a76b1e161ef88253aacc10b",
+      "sizeBytes": 9879351,
+      "objectKey": "themes/full/891924ecc7e27cfbaedd6ed80fdfa324425ad03a8a76b1e161ef88253aacc10b.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/891924ecc7e27cfbaedd6ed80fdfa324425ad03a8a76b1e161ef88253aacc10b.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0002-b3862475858dbb32f6ac02b9f989874b60e866da96dc138c524c6866f142d8a7",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "b3862475858dbb32f6ac02b9f989874b60e866da96dc138c524c6866f142d8a7",
+      "sizeBytes": 10247985,
+      "objectKey": "themes/full/b3862475858dbb32f6ac02b9f989874b60e866da96dc138c524c6866f142d8a7.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/b3862475858dbb32f6ac02b9f989874b60e866da96dc138c524c6866f142d8a7.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0003-fd9576d097aaf6f06af2c12a9acb969f382905bc0c22fceef5d606e49d9befba",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "fd9576d097aaf6f06af2c12a9acb969f382905bc0c22fceef5d606e49d9befba",
+      "sizeBytes": 9733916,
+      "objectKey": "themes/full/fd9576d097aaf6f06af2c12a9acb969f382905bc0c22fceef5d606e49d9befba.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/fd9576d097aaf6f06af2c12a9acb969f382905bc0c22fceef5d606e49d9befba.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0003-0f9c032721519db2052caf9e7c580f4216fa5a5db8b3e49002e3cc1a480c14a9",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "0f9c032721519db2052caf9e7c580f4216fa5a5db8b3e49002e3cc1a480c14a9",
+      "sizeBytes": 9174434,
+      "objectKey": "themes/full/0f9c032721519db2052caf9e7c580f4216fa5a5db8b3e49002e3cc1a480c14a9.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/0f9c032721519db2052caf9e7c580f4216fa5a5db8b3e49002e3cc1a480c14a9.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0004-0e40cd93a9450f30a3442d949b116560d14a52be2bb23d6425b59bee5094da36",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "0e40cd93a9450f30a3442d949b116560d14a52be2bb23d6425b59bee5094da36",
+      "sizeBytes": 9581345,
+      "objectKey": "themes/full/0e40cd93a9450f30a3442d949b116560d14a52be2bb23d6425b59bee5094da36.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/0e40cd93a9450f30a3442d949b116560d14a52be2bb23d6425b59bee5094da36.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0004-ff1ce2e0abbd36370fa23aa95676d85fbaee9aa0849e611d9de12dc665a00f09",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "ff1ce2e0abbd36370fa23aa95676d85fbaee9aa0849e611d9de12dc665a00f09",
+      "sizeBytes": 9924911,
+      "objectKey": "themes/full/ff1ce2e0abbd36370fa23aa95676d85fbaee9aa0849e611d9de12dc665a00f09.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/ff1ce2e0abbd36370fa23aa95676d85fbaee9aa0849e611d9de12dc665a00f09.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0006-d6b6037ac3aa95e265c1ccd9dd19917f5b31c95661f2ff8c7a8598e7049e4f41",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "d6b6037ac3aa95e265c1ccd9dd19917f5b31c95661f2ff8c7a8598e7049e4f41",
+      "sizeBytes": 11331483,
+      "objectKey": "themes/full/d6b6037ac3aa95e265c1ccd9dd19917f5b31c95661f2ff8c7a8598e7049e4f41.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/d6b6037ac3aa95e265c1ccd9dd19917f5b31c95661f2ff8c7a8598e7049e4f41.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-d-0006-a430112c56fcbc932d330882a7ab70795ad211b8192c4bcdea394c3ed23d839d",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "a430112c56fcbc932d330882a7ab70795ad211b8192c4bcdea394c3ed23d839d",
+      "sizeBytes": 11884873,
+      "objectKey": "themes/full/a430112c56fcbc932d330882a7ab70795ad211b8192c4bcdea394c3ed23d839d.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/a430112c56fcbc932d330882a7ab70795ad211b8192c4bcdea394c3ed23d839d.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0001-b3e51acea05c4b8d1fd1bdb52bc3d91b8818f1e0363e193d8887019a414dd348",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "b3e51acea05c4b8d1fd1bdb52bc3d91b8818f1e0363e193d8887019a414dd348",
+      "sizeBytes": 10217753,
+      "objectKey": "themes/full/b3e51acea05c4b8d1fd1bdb52bc3d91b8818f1e0363e193d8887019a414dd348.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/b3e51acea05c4b8d1fd1bdb52bc3d91b8818f1e0363e193d8887019a414dd348.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0001-d1bad827cf1e229151511658c2d0a4fd8162f35fe87b95d03be0eb093ec5d0a3",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "d1bad827cf1e229151511658c2d0a4fd8162f35fe87b95d03be0eb093ec5d0a3",
+      "sizeBytes": 10825100,
+      "objectKey": "themes/full/d1bad827cf1e229151511658c2d0a4fd8162f35fe87b95d03be0eb093ec5d0a3.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/d1bad827cf1e229151511658c2d0a4fd8162f35fe87b95d03be0eb093ec5d0a3.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0002-35694fe819ffddc176b462ac660407945a0a63ebc86baf1bf0bb5fbd860ebd39",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "35694fe819ffddc176b462ac660407945a0a63ebc86baf1bf0bb5fbd860ebd39",
+      "sizeBytes": 10606467,
+      "objectKey": "themes/full/35694fe819ffddc176b462ac660407945a0a63ebc86baf1bf0bb5fbd860ebd39.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/35694fe819ffddc176b462ac660407945a0a63ebc86baf1bf0bb5fbd860ebd39.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0002-fd544691136eab9a6edffc39caeca72ea39f34f9fd5a6b0d8ea8bd8afb7a0038",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "fd544691136eab9a6edffc39caeca72ea39f34f9fd5a6b0d8ea8bd8afb7a0038",
+      "sizeBytes": 11121405,
+      "objectKey": "themes/full/fd544691136eab9a6edffc39caeca72ea39f34f9fd5a6b0d8ea8bd8afb7a0038.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/fd544691136eab9a6edffc39caeca72ea39f34f9fd5a6b0d8ea8bd8afb7a0038.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0003-c0113578d9e16b48eb7887ad5907a51abadd7ab45ee4f6e81594d666042caabc",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "c0113578d9e16b48eb7887ad5907a51abadd7ab45ee4f6e81594d666042caabc",
+      "sizeBytes": 9860704,
+      "objectKey": "themes/full/c0113578d9e16b48eb7887ad5907a51abadd7ab45ee4f6e81594d666042caabc.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/c0113578d9e16b48eb7887ad5907a51abadd7ab45ee4f6e81594d666042caabc.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0003-1cc669a4ec802261912dad301a3b2fa3b73cf341cae4ce08c8ffe3c1c61da727",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "1cc669a4ec802261912dad301a3b2fa3b73cf341cae4ce08c8ffe3c1c61da727",
+      "sizeBytes": 9774779,
+      "objectKey": "themes/full/1cc669a4ec802261912dad301a3b2fa3b73cf341cae4ce08c8ffe3c1c61da727.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/1cc669a4ec802261912dad301a3b2fa3b73cf341cae4ce08c8ffe3c1c61da727.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0004-bd4094bb4e2b48d435bd0d055172ac19e8ea5a3d2c0b2b18f2f97c70d30b73f8",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "bd4094bb4e2b48d435bd0d055172ac19e8ea5a3d2c0b2b18f2f97c70d30b73f8",
+      "sizeBytes": 9958720,
+      "objectKey": "themes/full/bd4094bb4e2b48d435bd0d055172ac19e8ea5a3d2c0b2b18f2f97c70d30b73f8.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/bd4094bb4e2b48d435bd0d055172ac19e8ea5a3d2c0b2b18f2f97c70d30b73f8.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0004-ed08f65141658813f3002e420c11da6b448e1c8fbf241fb5572f0032a5a56ba5",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "ed08f65141658813f3002e420c11da6b448e1c8fbf241fb5572f0032a5a56ba5",
+      "sizeBytes": 10199869,
+      "objectKey": "themes/full/ed08f65141658813f3002e420c11da6b448e1c8fbf241fb5572f0032a5a56ba5.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/ed08f65141658813f3002e420c11da6b448e1c8fbf241fb5572f0032a5a56ba5.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0005-2737ad833ccbf5fd80243bac638edf4f4ed44e06e436c40f0c32f3445343b259",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "2737ad833ccbf5fd80243bac638edf4f4ed44e06e436c40f0c32f3445343b259",
+      "sizeBytes": 11008719,
+      "objectKey": "themes/full/2737ad833ccbf5fd80243bac638edf4f4ed44e06e436c40f0c32f3445343b259.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/2737ad833ccbf5fd80243bac638edf4f4ed44e06e436c40f0c32f3445343b259.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0005-c9d753fc6e1b018652c0fe7584929600aa946126f0259ab2b021a4fb21330da8",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "c9d753fc6e1b018652c0fe7584929600aa946126f0259ab2b021a4fb21330da8",
+      "sizeBytes": 11391965,
+      "objectKey": "themes/full/c9d753fc6e1b018652c0fe7584929600aa946126f0259ab2b021a4fb21330da8.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/c9d753fc6e1b018652c0fe7584929600aa946126f0259ab2b021a4fb21330da8.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0006-b0eb724b0270c26de0442bb878b42e3d87348f5114cdb89b8b56b78583c9e353",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "b0eb724b0270c26de0442bb878b42e3d87348f5114cdb89b8b56b78583c9e353",
+      "sizeBytes": 8305743,
+      "objectKey": "themes/full/b0eb724b0270c26de0442bb878b42e3d87348f5114cdb89b8b56b78583c9e353.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/b0eb724b0270c26de0442bb878b42e3d87348f5114cdb89b8b56b78583c9e353.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0006-eda0c4b841135585a90db2bc0479db26e7368482a8c45de104c249db47156cc7",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "eda0c4b841135585a90db2bc0479db26e7368482a8c45de104c249db47156cc7",
+      "sizeBytes": 9474591,
+      "objectKey": "themes/full/eda0c4b841135585a90db2bc0479db26e7368482a8c45de104c249db47156cc7.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/eda0c4b841135585a90db2bc0479db26e7368482a8c45de104c249db47156cc7.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0007-9e376306c7a68b952b2b474c4564c680446c2cba6f1fcdac90dcf328993429ec",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "9e376306c7a68b952b2b474c4564c680446c2cba6f1fcdac90dcf328993429ec",
+      "sizeBytes": 10814357,
+      "objectKey": "themes/full/9e376306c7a68b952b2b474c4564c680446c2cba6f1fcdac90dcf328993429ec.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/9e376306c7a68b952b2b474c4564c680446c2cba6f1fcdac90dcf328993429ec.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-e-0007-1081bb08fe3cfeb57bc9431b3afbb8c53959d2ac567dc0a2c586e2a5c68fe412",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "1081bb08fe3cfeb57bc9431b3afbb8c53959d2ac567dc0a2c586e2a5c68fe412",
+      "sizeBytes": 10367729,
+      "objectKey": "themes/full/1081bb08fe3cfeb57bc9431b3afbb8c53959d2ac567dc0a2c586e2a5c68fe412.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/1081bb08fe3cfeb57bc9431b3afbb8c53959d2ac567dc0a2c586e2a5c68fe412.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0001-90d70df34c3fc8a91fca7781f6edd1f7d94e6aa6794f48609e34693d8e567e39",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "90d70df34c3fc8a91fca7781f6edd1f7d94e6aa6794f48609e34693d8e567e39",
+      "sizeBytes": 9984181,
+      "objectKey": "themes/full/90d70df34c3fc8a91fca7781f6edd1f7d94e6aa6794f48609e34693d8e567e39.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/90d70df34c3fc8a91fca7781f6edd1f7d94e6aa6794f48609e34693d8e567e39.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0001-daad89368d391fe1ff9f668af911a73f82ee5ba197f93f419e4296d1ef5a562a",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "daad89368d391fe1ff9f668af911a73f82ee5ba197f93f419e4296d1ef5a562a",
+      "sizeBytes": 10362829,
+      "objectKey": "themes/full/daad89368d391fe1ff9f668af911a73f82ee5ba197f93f419e4296d1ef5a562a.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/daad89368d391fe1ff9f668af911a73f82ee5ba197f93f419e4296d1ef5a562a.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0002-26be49b237220cbe528fa7332dd0e7bd7dea4e1968dc36a1a060421d1b861e69",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "26be49b237220cbe528fa7332dd0e7bd7dea4e1968dc36a1a060421d1b861e69",
+      "sizeBytes": 9240870,
+      "objectKey": "themes/full/26be49b237220cbe528fa7332dd0e7bd7dea4e1968dc36a1a060421d1b861e69.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/26be49b237220cbe528fa7332dd0e7bd7dea4e1968dc36a1a060421d1b861e69.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0002-633847d581a5ec96cb4c31a0574661c42b4368c5cc68843264927bbe0523e63b",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "633847d581a5ec96cb4c31a0574661c42b4368c5cc68843264927bbe0523e63b",
+      "sizeBytes": 8840664,
+      "objectKey": "themes/full/633847d581a5ec96cb4c31a0574661c42b4368c5cc68843264927bbe0523e63b.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/633847d581a5ec96cb4c31a0574661c42b4368c5cc68843264927bbe0523e63b.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0003-238501944f150258345a7ec83b44913fbc7b1a3198834a14a9325c03509e728a",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "238501944f150258345a7ec83b44913fbc7b1a3198834a14a9325c03509e728a",
+      "sizeBytes": 8018269,
+      "objectKey": "themes/full/238501944f150258345a7ec83b44913fbc7b1a3198834a14a9325c03509e728a.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/238501944f150258345a7ec83b44913fbc7b1a3198834a14a9325c03509e728a.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0003-86e3aeaf08a7cf407bf3518da835cbad3700f6645065c6c1f3797afdad853e1d",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "86e3aeaf08a7cf407bf3518da835cbad3700f6645065c6c1f3797afdad853e1d",
+      "sizeBytes": 7711107,
+      "objectKey": "themes/full/86e3aeaf08a7cf407bf3518da835cbad3700f6645065c6c1f3797afdad853e1d.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/86e3aeaf08a7cf407bf3518da835cbad3700f6645065c6c1f3797afdad853e1d.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0004-e522bed9370b02dad7a72d82392b09fe5b18337e0a2fc6790d4129b9fa4eec3d",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "e522bed9370b02dad7a72d82392b09fe5b18337e0a2fc6790d4129b9fa4eec3d",
+      "sizeBytes": 8938265,
+      "objectKey": "themes/full/e522bed9370b02dad7a72d82392b09fe5b18337e0a2fc6790d4129b9fa4eec3d.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/e522bed9370b02dad7a72d82392b09fe5b18337e0a2fc6790d4129b9fa4eec3d.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0004-cfa9ba643a9da7573f4a21d1b25e12a420bce2b9491c2ba710b08c4434cb0f48",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "cfa9ba643a9da7573f4a21d1b25e12a420bce2b9491c2ba710b08c4434cb0f48",
+      "sizeBytes": 9311680,
+      "objectKey": "themes/full/cfa9ba643a9da7573f4a21d1b25e12a420bce2b9491c2ba710b08c4434cb0f48.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/cfa9ba643a9da7573f4a21d1b25e12a420bce2b9491c2ba710b08c4434cb0f48.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0005-7213936f80f2a1e7fb494b4ea2cb313899519788e7b45e8b5970be3ed4d38d09",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "7213936f80f2a1e7fb494b4ea2cb313899519788e7b45e8b5970be3ed4d38d09",
+      "sizeBytes": 8154592,
+      "objectKey": "themes/full/7213936f80f2a1e7fb494b4ea2cb313899519788e7b45e8b5970be3ed4d38d09.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/7213936f80f2a1e7fb494b4ea2cb313899519788e7b45e8b5970be3ed4d38d09.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0005-c34127dcdecb8bb5d8c295a207c972845cbb97aaced42f175a2276ba16be8e27",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "c34127dcdecb8bb5d8c295a207c972845cbb97aaced42f175a2276ba16be8e27",
+      "sizeBytes": 8832588,
+      "objectKey": "themes/full/c34127dcdecb8bb5d8c295a207c972845cbb97aaced42f175a2276ba16be8e27.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/c34127dcdecb8bb5d8c295a207c972845cbb97aaced42f175a2276ba16be8e27.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0006-badb646ffdc4182bfbd168464730d1d8704e1a6c0659d8db1a3ce55c2e8e2379",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "badb646ffdc4182bfbd168464730d1d8704e1a6c0659d8db1a3ce55c2e8e2379",
+      "sizeBytes": 8878977,
+      "objectKey": "themes/full/badb646ffdc4182bfbd168464730d1d8704e1a6c0659d8db1a3ce55c2e8e2379.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/badb646ffdc4182bfbd168464730d1d8704e1a6c0659d8db1a3ce55c2e8e2379.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0006-12a95ce8b45ffe8b6973a3a1f285558d411ef4a5557700614a92742ba68cd380",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "12a95ce8b45ffe8b6973a3a1f285558d411ef4a5557700614a92742ba68cd380",
+      "sizeBytes": 9022593,
+      "objectKey": "themes/full/12a95ce8b45ffe8b6973a3a1f285558d411ef4a5557700614a92742ba68cd380.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/12a95ce8b45ffe8b6973a3a1f285558d411ef4a5557700614a92742ba68cd380.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0007-4032f1bb6965f8da66f91add72a469da52af6eb25623718a0486823c0e297a3c",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "4032f1bb6965f8da66f91add72a469da52af6eb25623718a0486823c0e297a3c",
+      "sizeBytes": 10040695,
+      "objectKey": "themes/full/4032f1bb6965f8da66f91add72a469da52af6eb25623718a0486823c0e297a3c.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/4032f1bb6965f8da66f91add72a469da52af6eb25623718a0486823c0e297a3c.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0007-75a8e2a44f07b8eab02409ed483607f791a90d41e1c0fbc900037cdb0a21a90f",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "75a8e2a44f07b8eab02409ed483607f791a90d41e1c0fbc900037cdb0a21a90f",
+      "sizeBytes": 9852814,
+      "objectKey": "themes/full/75a8e2a44f07b8eab02409ed483607f791a90d41e1c0fbc900037cdb0a21a90f.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/75a8e2a44f07b8eab02409ed483607f791a90d41e1c0fbc900037cdb0a21a90f.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0008-22baac2d8db43e98df72cbb4b263e9a9ab49fa29fb097c7cbc20b60f5045b9af",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "22baac2d8db43e98df72cbb4b263e9a9ab49fa29fb097c7cbc20b60f5045b9af",
+      "sizeBytes": 10882611,
+      "objectKey": "themes/full/22baac2d8db43e98df72cbb4b263e9a9ab49fa29fb097c7cbc20b60f5045b9af.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/22baac2d8db43e98df72cbb4b263e9a9ab49fa29fb097c7cbc20b60f5045b9af.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0008-a6fbc3912bf67f1eb29cfe14837ee1851b1ac7bd6b6619eabd04402f515ccad3",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "a6fbc3912bf67f1eb29cfe14837ee1851b1ac7bd6b6619eabd04402f515ccad3",
+      "sizeBytes": 9849362,
+      "objectKey": "themes/full/a6fbc3912bf67f1eb29cfe14837ee1851b1ac7bd6b6619eabd04402f515ccad3.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/a6fbc3912bf67f1eb29cfe14837ee1851b1ac7bd6b6619eabd04402f515ccad3.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0009-7e5005a3191645b73e46b55098fd7ff8f63ed748b9707a080f29a0f150bab4ff",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "7e5005a3191645b73e46b55098fd7ff8f63ed748b9707a080f29a0f150bab4ff",
+      "sizeBytes": 9891339,
+      "objectKey": "themes/full/7e5005a3191645b73e46b55098fd7ff8f63ed748b9707a080f29a0f150bab4ff.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/7e5005a3191645b73e46b55098fd7ff8f63ed748b9707a080f29a0f150bab4ff.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-f-0009-a7f0cf354202314137250fd6d276457b9ee2ab16eb608a08f52e16962bf01cd4",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "a7f0cf354202314137250fd6d276457b9ee2ab16eb608a08f52e16962bf01cd4",
+      "sizeBytes": 10321513,
+      "objectKey": "themes/full/a7f0cf354202314137250fd6d276457b9ee2ab16eb608a08f52e16962bf01cd4.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/a7f0cf354202314137250fd6d276457b9ee2ab16eb608a08f52e16962bf01cd4.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0001-4913d3e76b74800f9cab36c95887170f2680afff21c61d0907abc2bddb749348",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "4913d3e76b74800f9cab36c95887170f2680afff21c61d0907abc2bddb749348",
+      "sizeBytes": 10262558,
+      "objectKey": "themes/full/4913d3e76b74800f9cab36c95887170f2680afff21c61d0907abc2bddb749348.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/4913d3e76b74800f9cab36c95887170f2680afff21c61d0907abc2bddb749348.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0001-f59222da8b461f0faa6c8a5fd35f14b2412510bd7cb6e5a2144e3357283a9e04",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "f59222da8b461f0faa6c8a5fd35f14b2412510bd7cb6e5a2144e3357283a9e04",
+      "sizeBytes": 9257769,
+      "objectKey": "themes/full/f59222da8b461f0faa6c8a5fd35f14b2412510bd7cb6e5a2144e3357283a9e04.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/f59222da8b461f0faa6c8a5fd35f14b2412510bd7cb6e5a2144e3357283a9e04.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0002-37973f9a29d2535324058372ea6b32e461ecfdaa663d6413ef65dea14848e1e9",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "37973f9a29d2535324058372ea6b32e461ecfdaa663d6413ef65dea14848e1e9",
+      "sizeBytes": 11110831,
+      "objectKey": "themes/full/37973f9a29d2535324058372ea6b32e461ecfdaa663d6413ef65dea14848e1e9.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/37973f9a29d2535324058372ea6b32e461ecfdaa663d6413ef65dea14848e1e9.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0002-470a2d056a31d2699dd3adf69e7e7215fe1e9bc41e2837971aca88443f3be9b6",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "470a2d056a31d2699dd3adf69e7e7215fe1e9bc41e2837971aca88443f3be9b6",
+      "sizeBytes": 10523512,
+      "objectKey": "themes/full/470a2d056a31d2699dd3adf69e7e7215fe1e9bc41e2837971aca88443f3be9b6.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/470a2d056a31d2699dd3adf69e7e7215fe1e9bc41e2837971aca88443f3be9b6.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0003-d5f8193e3e3c3fa1c5577b0bbda428e8766fc3a33433034ca56af13fda877b93",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "d5f8193e3e3c3fa1c5577b0bbda428e8766fc3a33433034ca56af13fda877b93",
+      "sizeBytes": 11635026,
+      "objectKey": "themes/full/d5f8193e3e3c3fa1c5577b0bbda428e8766fc3a33433034ca56af13fda877b93.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/d5f8193e3e3c3fa1c5577b0bbda428e8766fc3a33433034ca56af13fda877b93.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-g-0003-32edfa24a02ff3b759eea77136aa31f165415b00a18f2552f8b8d92041f6c583",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "32edfa24a02ff3b759eea77136aa31f165415b00a18f2552f8b8d92041f6c583",
+      "sizeBytes": 11218234,
+      "objectKey": "themes/full/32edfa24a02ff3b759eea77136aa31f165415b00a18f2552f8b8d92041f6c583.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/32edfa24a02ff3b759eea77136aa31f165415b00a18f2552f8b8d92041f6c583.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0001-5e0c77ed42a3a7da898109475bf9cb1f77c5c1395fcbd19fc9112020f8eb95d2",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "5e0c77ed42a3a7da898109475bf9cb1f77c5c1395fcbd19fc9112020f8eb95d2",
+      "sizeBytes": 11530266,
+      "objectKey": "themes/full/5e0c77ed42a3a7da898109475bf9cb1f77c5c1395fcbd19fc9112020f8eb95d2.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/5e0c77ed42a3a7da898109475bf9cb1f77c5c1395fcbd19fc9112020f8eb95d2.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0001-3a3177858624549061f569bd9adec3a5277da6eccae00e7c67bcfbdcb511ae9a",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "3a3177858624549061f569bd9adec3a5277da6eccae00e7c67bcfbdcb511ae9a",
+      "sizeBytes": 10914474,
+      "objectKey": "themes/full/3a3177858624549061f569bd9adec3a5277da6eccae00e7c67bcfbdcb511ae9a.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/3a3177858624549061f569bd9adec3a5277da6eccae00e7c67bcfbdcb511ae9a.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0002-0912205e84a5d1d9dc9f695c9d05eabd4e5d8b4db5ed10956c3226a45a390b98",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "0912205e84a5d1d9dc9f695c9d05eabd4e5d8b4db5ed10956c3226a45a390b98",
+      "sizeBytes": 10845417,
+      "objectKey": "themes/full/0912205e84a5d1d9dc9f695c9d05eabd4e5d8b4db5ed10956c3226a45a390b98.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/0912205e84a5d1d9dc9f695c9d05eabd4e5d8b4db5ed10956c3226a45a390b98.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0002-606081757cc939f35c6580ebbd948b3b5d45477deb10ba7a254bb1d9a74e23cd",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "606081757cc939f35c6580ebbd948b3b5d45477deb10ba7a254bb1d9a74e23cd",
+      "sizeBytes": 11470089,
+      "objectKey": "themes/full/606081757cc939f35c6580ebbd948b3b5d45477deb10ba7a254bb1d9a74e23cd.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/606081757cc939f35c6580ebbd948b3b5d45477deb10ba7a254bb1d9a74e23cd.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0003-05fa8b60bd50455f54567bb72265de1916a5e784c15350813939128e8aa952bd",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "05fa8b60bd50455f54567bb72265de1916a5e784c15350813939128e8aa952bd",
+      "sizeBytes": 11903450,
+      "objectKey": "themes/full/05fa8b60bd50455f54567bb72265de1916a5e784c15350813939128e8aa952bd.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/05fa8b60bd50455f54567bb72265de1916a5e784c15350813939128e8aa952bd.mp3",
+      "rangeVerified": true
+    },
+    {
+      "id": "theme-hh-hr-0003-6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553",
+      "sizeBytes": 11393891,
+      "objectKey": "themes/full/6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553.mp3",
+      "rangeVerified": true
     }
   ]
 }

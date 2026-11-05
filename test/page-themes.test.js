@@ -12,19 +12,19 @@ const first=manifest.recordings.find(t=>t.primary);
 const previewBase='http://127.0.0.1:8094/audio';
 
 test('all recordings retain a canonical page association and their explicit designation',()=>{
-  assert.equal(manifest.recordings.length,328);
-  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,328);
-  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,164);
-  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[164,154,10]);
+  assert.equal(manifest.recordings.length,394);
+  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,394);
+  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,197);
+  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[197,187,10]);
   for(const track of manifest.recordings){assert.equal(track.filenameDesignation,designation(track.originalFilename));assert.ok(track.sourcePath.startsWith('Library/Theme Songs/'));assert.equal(path.posix.basename(track.sourcePath),track.originalFilename);assert.ok(!track.sourcePath.includes('\\'));assert.ok(track.durationSeconds>0);}
   assert.equal(validateManifest(manifest),true);
   assert.equal(validateDestinations(manifest,require('../generated/entity-index.json'),require('../generated/public-discovery-index.json')),true);
 });
 test('every recording is reconciled to its lyric document or has an explicit review status',()=>{
-  assert.equal(manifest.supportingFiles.filter(file=>/\.docx?$/i.test(file.sourcePath)).length,165);
+  assert.equal(manifest.supportingFiles.filter(file=>/\.docx?$/i.test(file.sourcePath)).length,198);
   assert.deepEqual(manifest.lyricReconciliation,{
-    documentCount:165,
-    matchedRecordingCount:328,
+    documentCount:198,
+    matchedRecordingCount:394,
     missingRecordingCount:0,
     ambiguousRecordingCount:0,
     categoryMismatchRecordingCount:0,
@@ -79,6 +79,15 @@ test('book canonical IDs remain recognizable when a filename omits the separator
   assert.equal(bookCanonicalId('HH-C+-0001 The Healthy Heart Walk - Book Theme Song Alternate.mp3'),'HH-C+-0001');
   assert.equal(bookCanonicalId('HH-A-00220 Not a canonical ID.mp3'),undefined);
 });
+test('only the two evidence-reviewed shortened Tender Times filename prefixes map to their canonical IDs',()=>{
+  for(const [prefix,id] of [
+    ['HH-E-006 Aralynn Fox and the Hard News Raincloud','HH-E-0006'],
+    ['HH-E-007 Asher and the Goodbye Song','HH-E-0007']
+  ])for(const suffix of [' - Book Theme Song Primary.mp3',' - Book Theme Song Alternate.mp3',' - Book Theme Song.docx'])assert.equal(bookCanonicalId(prefix+suffix),id);
+  assert.equal(bookCanonicalId('HH-E-006 Another Title - Book Theme Song Primary.mp3'),undefined);
+  assert.equal(bookCanonicalId('HH-E-008 Another Title - Book Theme Song Primary.mp3'),undefined);
+  assert.equal(bookCanonicalId('HH-E-007 Asher and the Goodbye Song - Book Theme Song Primary Copy.mp3'),undefined);
+});
 test('case-sensitive routes, canonical identities, Primary flags and deterministic keys fail closed',()=>{
   for(const change of [t=>t.page=t.page.toLowerCase(),t=>t.canonicalId='HH-A-9999']){
     const m=clone(manifest);change(m.recordings[0]);assert.throws(()=>validateDestinations(m,require('../generated/entity-index.json'),require('../generated/public-discovery-index.json')),/canonical routing/);
@@ -121,7 +130,7 @@ test('native players have individual names, normal transport controls, and no au
   assert.equal(renderThemeSection(first.page,{publication:{records:[]}}),'');
 });
 test('upload plan preserves all confirmed associations, deduplicates objects, and refuses conflicting objects or absent approval',async()=>{
-  const plan=createPlan(manifest);assert.equal(plan.tracks.length,318);assert.equal(plan.withheld.length,10);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
+  const plan=createPlan(manifest);assert.equal(plan.tracks.length,384);assert.equal(plan.withheld.length,10);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
   const asset=plan.objects[0];assert.equal(classifyRemote(asset,null),'new-object');
   assert.equal(classifyRemote(asset,{Metadata:{sha256:asset.sha256},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),'reuse-verified-identical');
   assert.throws(()=>classifyRemote(asset,{Metadata:{sha256:'wrong'},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),/no overwrite/);
