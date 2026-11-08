@@ -28,6 +28,15 @@ test('Community presents one visible primary heading and all eight connected-wor
   assert.doesNotMatch(content, /Read this story|Read a story|Subscribe|Sign up/i);
 });
 
+test('Community closing retains its approved links and restores the functional search entry point', () => {
+  const closing = elements(body(), 'section').find(s => attr(s, 'aria-labelledby') === 'community-next');
+  const links = elements(closing, 'a');
+  assert.deepEqual(links.map(a => attr(a, 'href')), [
+    'start-here.html#where-shall-we-go', 'theme-songs.html', 'index.html', 'index.html#library-search'
+  ]);
+  assert.equal(text(links[3]), 'Search Hawkins Hollow');
+});
+
 test('landing-page themes accept only the published Community catalog association', () => {
   const input = fixture().manifest;
   Object.assign(input.recordings[0], { category:'page', canonicalId:'community' });

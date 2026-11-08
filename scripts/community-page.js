@@ -141,7 +141,7 @@ function renderCommunityContent() {
 </section>
 <section class="content-card community-closing" aria-labelledby="community-next"><h2 id="community-next">Keep the Porch Light On</h2>
   <p>You can follow one connection today and leave another for tomorrow. Bring a question, share a small discovery, or return to a familiar friend. There is room for another visit.</p>
-  <p><a class="button" href="start-here.html#where-shall-we-go">Find your next little adventure</a><a class="button" href="theme-songs.html">Choose some music for your visit</a><a class="button" href="index.html">Return to Welcome Home</a></p>
+  <p><a class="button" href="start-here.html#where-shall-we-go">Find your next little adventure</a><a class="button" href="theme-songs.html">Choose some music for your visit</a><a class="button" href="index.html">Return to Welcome Home</a><a class="button" href="index.html#library-search">Search Hawkins Hollow</a></p>
 </section>
 </div>`;
 }
