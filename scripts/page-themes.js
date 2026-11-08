@@ -1,8 +1,15 @@
 const manifest = require('../data/page-themes.json');
 const publication = require('../data/page-theme-publication.json');
+const pages = require('../data/pages.json').pages;
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const { URL } = require('url');
 const BASE = 'https://library.hawkinshollowbooks.com';
+
+// Only this reviewed landing page is supported; the published page catalog remains authoritative.
+function isCommunityDestination(track) {
+  return track.category === 'page' && track.canonicalId === 'community' && track.page === 'community.html'
+    && pages.some(page => page.slug === 'community' && page.published === true);
+}
 
 function validateManifest(input) {
   if (input.schemaVersion !== 1 || !Array.isArray(input.recordings)) throw Error('Invalid page theme manifest');
@@ -14,7 +21,9 @@ function validateManifest(input) {
     if (!/^[a-f0-9]{64}$/.test(track.sha256) || track.objectKey !== `themes/full/${track.sha256}.mp3`
       || track.publicUrl !== `${BASE}/${track.objectKey}`) throw Error('Invalid content-addressed MP3 URL');
     if (!(track.sizeBytes > 0) || !(track.durationSeconds > 0) || !track.title?.trim()) throw Error('Invalid audio metadata');
-    if (!track.canonicalId || !track.page || !/^(?:books|characters|entities\/(?:relationship|environment|landmark))\/[A-Za-z0-9+_-]+\.html$/.test(track.page)) throw Error('Invalid canonical theme destination');
+    const validDestination = track.category === 'page' ? isCommunityDestination(track)
+      : /^(?:books|characters|entities\/(?:relationship|environment|landmark))\/[A-Za-z0-9+_-]+\.html$/.test(track.page);
+    if (!track.canonicalId || !track.page || !validDestination) throw Error('Invalid canonical theme destination');
     const owner = `${track.category}:${track.canonicalId}`;
     if (owners.has(owner) && owners.get(owner) !== track.page) throw Error('Owner assigned to multiple theme destinations'); owners.set(owner,track.page);
     if (track.primary) primaries.set(owner,(primaries.get(owner)||0)+1);
@@ -43,7 +52,8 @@ function selectTracks(page, options = {}) {
 function validateDestinations(input, entityIndex, discovery) {
   for (const track of input.recordings) {
     let destination;
-    if (track.category === 'character') destination = (entityIndex.byType.characters || []).find(r=>r.identity?.canonicalId === track.canonicalId)?.legacyHref;
+    if (track.category === 'page') destination = isCommunityDestination(track) ? 'community.html' : undefined;
+    else if (track.category === 'character') destination = (entityIndex.byType.characters || []).find(r=>r.identity?.canonicalId === track.canonicalId)?.legacyHref;
     else if (track.category === 'book') destination = discovery.records.find(r=>r.type === 'book' && r.id === track.canonicalId)?.href;
     else destination = (entityIndex.entities || []).find(r=>r.type === track.category && r.id === track.canonicalId)?.entityPageHref;
     if (!destination || destination !== track.page) throw Error(`Theme destination disagrees with canonical routing: ${track.id}`);

@@ -1,5 +1,6 @@
 const { renderThemeLibrary } = require('./theme-song-library');
 const { renderThemeSection, validateDestinations } = require('./page-themes');
+const { renderCommunityContent, renderCommunityTheme } = require('./community-page');
 const { renderDiscoveryHub, renderCompleteBookshelf, renderKeepExploring } = require('./visitor-discovery');
 const { getImageAlt, imageAlt } = require('./image-alt-text');
 const fs = require('fs');
@@ -3149,7 +3150,8 @@ function renderLayout(title, description, content, site, nav, canonicalUrl, conf
   if (!['banner', 'body'].includes(headingOwner)) {
     throw new Error(`Unknown primary heading owner: ${headingOwner}`);
   }
-  const themeSection = renderThemeSection(new URL(canonicalUrl).pathname.replace(/^\//, ''), { previewBase: process.env.HH_THEME_SONG_PREVIEW_BASE || '' });
+  const themePage = new URL(canonicalUrl).pathname.replace(/^\//, '');
+  const themeSection = themePage === 'community.html' ? renderCommunityTheme() : renderThemeSection(themePage, { previewBase: process.env.HH_THEME_SONG_PREVIEW_BASE || '' });
   const bannerTitleTag = headingOwner === 'body' ? 'span' : 'h1';
   const metadataTitle = metadata.title || title;
   const pageTitle = `${metadataTitle} | ${site.siteName}`;
@@ -6102,57 +6104,17 @@ function renderUnderConstructionPage(page, site, nav, constructionData, config, 
   if (page && page.slug === 'community') {
     return renderLayout(
       'Community',
-      'A place for shared moments, kind conversations, and neighborly discovery.',
-      `<section class="content-card" aria-labelledby="community-doorway">
-        <h2 id="community-doorway">Step Onto the Porch</h2>
-        <p><strong>Who this is for:</strong> Visitors who want to feel connected through shared moments and neighborhood warmth.</p>
-        <p><strong>What you can experience:</strong> Friendships, place-based wandering, and simple invitations to join in with others.</p>
-        <p><strong>Where to begin:</strong> <a href="#community-paths">Choose one way to join in today</a></p>
-      </section>
-
-      <section class="content-card" aria-labelledby="community-intro">
-        <h2 id="community-intro">Community in Hawkins Hollow</h2>
-        <p>Hawkins Hollow grows through shared moments. Begin with one friendly path and see where it leads.</p>
-      </section>
-
-      <section class="content-card" aria-labelledby="community-paths">
-        <h2 id="community-paths">Ways to Join In</h2>
-        <div class="start-here-grid">
-          <article class="start-here-item">
-            <h3>Follow a Friendship</h3>
-            <p>Search for two friends and discover how their stories connect.</p>
-            <a class="button" href="books.html#library-search">Explore Friendships</a>
-          </article>
-
-          <article class="start-here-item">
-            <h3>Wander Together</h3>
-            <p>Pick a place from the map and let each family member notice one detail.</p>
-            <a class="button" href="map.html">Visit a Place</a>
-          </article>
-
-          <article class="start-here-item">
-            <h3>Meet Someone New</h3>
-            <p>Spend a few minutes with a character your family has not met yet.</p>
-            <a class="button" href="characters.html">Meet Characters</a>
-          </article>
-
-          <article class="start-here-item">
-            <h3>Take a Story Home</h3>
-            <p>When you find a story that feels right, save it for tonight's reading time.</p>
-            <a class="button" href="books.html">Browse Books</a>
-          </article>
-        </div>
-      </section>
-
-      <section class="content-card" aria-labelledby="community-next">
-        <h2 id="community-next">Keep the porch light on</h2>
-        <p><a class="button" href="index.html">Return to Welcome Home</a></p>
-      </section>`,
+      'Find your way into Hawkins Hollow through its neighbors, story series, familiar places, free songs, nursery rhymes, and shared discoveries.',
+      renderCommunityContent(),
       site,
       nav,
       `${site.domain}/community.html`,
       config,
-      banner
+      banner,
+      '',
+      '',
+      {},
+      'body'
     );
   }
 

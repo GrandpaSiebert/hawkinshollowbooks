@@ -12,10 +12,10 @@ const first=manifest.recordings.find(t=>t.primary);
 const previewBase='http://127.0.0.1:8094/audio';
 
 test('all recordings retain a canonical page association and their explicit designation',()=>{
-  assert.equal(manifest.recordings.length,394);
-  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,394);
-  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,197);
-  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[197,187,10]);
+  assert.equal(manifest.recordings.length,395);
+  assert.equal(new Set(manifest.recordings.map(t=>t.id)).size,395);
+  assert.equal(new Set(manifest.recordings.map(t=>t.page)).size,198);
+  assert.deepEqual(['confirmed-primary','confirmed-alternate','unresolved'].map(c=>manifest.recordings.filter(t=>t.classification===c).length),[198,187,10]);
   for(const track of manifest.recordings){assert.equal(track.filenameDesignation,designation(track.originalFilename));assert.ok(track.sourcePath.startsWith('Library/Theme Songs/'));assert.equal(path.posix.basename(track.sourcePath),track.originalFilename);assert.ok(!track.sourcePath.includes('\\'));assert.ok(track.durationSeconds>0);}
   assert.equal(validateManifest(manifest),true);
   assert.equal(validateDestinations(manifest,require('../generated/entity-index.json'),require('../generated/public-discovery-index.json')),true);
@@ -130,7 +130,7 @@ test('native players have individual names, normal transport controls, and no au
   assert.equal(renderThemeSection(first.page,{publication:{records:[]}}),'');
 });
 test('upload plan preserves all confirmed associations, deduplicates objects, and refuses conflicting objects or absent approval',async()=>{
-  const plan=createPlan(manifest);assert.equal(plan.tracks.length,384);assert.equal(plan.withheld.length,10);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
+  const plan=createPlan(manifest);assert.equal(plan.tracks.length,385);assert.equal(plan.withheld.length,10);assert.equal(new Set(plan.objects.map(a=>a.key)).size,plan.objects.length);
   const asset=plan.objects[0];assert.equal(classifyRemote(asset,null),'new-object');
   assert.equal(classifyRemote(asset,{Metadata:{sha256:asset.sha256},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),'reuse-verified-identical');
   assert.throws(()=>classifyRemote(asset,{Metadata:{sha256:'wrong'},ContentLength:asset.sizeBytes,ContentType:'audio/mpeg'}),/no overwrite/);

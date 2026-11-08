@@ -15949,6 +15949,38 @@
         "matchMethod": "recording-owner-name"
       },
       "lyricMatchStatus": "matched"
+    },
+    {
+      "id": "theme-community-434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166",
+      "originalFilename": "Community - Page Theme Song Primary.mp3",
+      "sourcePath": "Library/Theme Songs/Landing Pages/Community - Page Theme Song Primary.mp3",
+      "title": "Come See the Hollow",
+      "category": "page",
+      "canonicalId": "community",
+      "page": "community.html",
+      "pageTitle": "Community",
+      "mappingEvidence": {
+        "catalog": "data/pages.json",
+        "publishedSlug": "community"
+      },
+      "classification": "confirmed-primary",
+      "primary": true,
+      "designationEvidence": "Explicit Primary filename; owner-approved Version 1 in Community brief",
+      "sizeBytes": 11367675,
+      "sha256": "434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166",
+      "durationSeconds": 353.411,
+      "frames": 13529,
+      "format": "MP3 / MPEG Layer III",
+      "objectKey": "themes/full/434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166.mp3",
+      "filenameDesignation": "confirmed-primary",
+      "approvalStatus": "awaiting-owner-release-approval",
+      "uploadStatus": "not-uploaded-by-this-release",
+      "integrationStatus": "candidate-only",
+      "lyricMatchStatus": "not-required-page-theme",
+      "lyricDocument": null,
+      "recordingTitle": "Come See the Hollow",
+      "issues": []
     }
   ],
   "supportingFiles": [

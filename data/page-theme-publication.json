@@ -3840,6 +3840,16 @@
       "objectKey": "themes/full/6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553.mp3",
       "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/6e887a857afa63bed34c64671496ca2ae5fd9698a7646354a7c69931d2ddb553.mp3",
       "rangeVerified": true
+    },
+    {
+      "id": "theme-community-434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166",
+      "status": "verified",
+      "ownerApproved": true,
+      "sha256": "434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166",
+      "sizeBytes": 11367675,
+      "objectKey": "themes/full/434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166.mp3",
+      "publicUrl": "https://library.hawkinshollowbooks.com/themes/full/434c188cda96e5f0fd912cb883aa0af7ec97eacbc833b810fe36ab534f383166.mp3",
+      "rangeVerified": true
     }
   ]
 }
